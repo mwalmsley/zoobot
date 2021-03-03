@@ -12,30 +12,31 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    # possible driver errors if you don't include this, try it and see
-    physical_devices = tf.config.list_physical_devices('GPU')
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    # useful to avoid errors on small GPU
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        for gpu in gpus:
+          tf.config.experimental.set_memory_growth(gpu, True)
 
-    # decals schema, replace the args if you defined your own
+    # replace the question_answer_pairs if you defined your own
     schema = schemas.Schema(
-        label_cols=label_metadata.decals_label_cols,
-        questions=label_metadata.decals_questions,
-        version='decals'
+        question_answer_pairs=label_metadata.decals_pairs,
+        dependencies=label_metadata.get_gz2_and_decals_dependencies(label_metadata.decals_pairs)
     )
 
-    initial_size = 300
+    initial_size = 64  # 300 for paper
     crop_size = int(initial_size * 0.75)
-    final_size = 224
+    final_size = 32  # 224 for paper
     channels = 3
     
-    batch_size = 8  # 128 for the paper, but you'll need a good GPU
+    batch_size = 8  # 128 for paper, you'll need a good GPU
     n_samples = 5
 
     # TODO you'll want to replace these with your own paths
-    catalog_loc = 'data/gz2/gz2_master_catalog.csv'
-    tfrecord_locs = glob.glob(f'/home/walml/repos/zoobot/results/temp/gz2_all_actual_sim_2p5_unfiltered_300_eval_shards/*.tfrecord')
-    checkpoint_dir = 'results/temp/all_actual_sim_2p5_unfiltered_300_small_first_baseline_1q_effnetv2/models/final'
-    save_loc = 'temp/all_actual_sim_2p5_unfiltered_300_small_first_baseline_1q_effnetv2.csv'
+    catalog_loc = '/home/walml/repos/zoobot_private/data/decals/decals_master_catalog.csv'
+    tfrecord_locs = glob.glob(f'/home/walml/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/eval_shards/*.tfrecord')
+    checkpoint_dir = '/home/walml/repos/zoobot_private/results/debug/models/final'
+    save_loc = '/home/walml/repos/zoobot_private/temp/debug_predictions.csv'
 
     predict_on_images.predict(
         schema=schema,

@@ -16,7 +16,7 @@ def prediction_to_row(prediction, id_str, schema):
     row = {
         'id_str': id_str
     }
-    for n in range(schema.label_cols):
+    for n in range(len(schema.label_cols)):
         answer = schema.label_cols[n]
         row[answer + '_concentration'] = json.dumps(list(prediction[n].astype(float)))
         row[answer + '_concentration_mean'] = float(prediction[n].mean())
