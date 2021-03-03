@@ -1,0 +1,23 @@
+# coverage
+# python-coveralls
+# pytest>=4.6.3
+# attrs>=19.1.0
+# pytest-cov
+# pytest-mock
+# pytest-xdist
+# codecov
+
+# tensorflow >= 2.3 # or do manually to avoid messing with other installs on server
+tqdm
+pillow
+numpy
+pandas
+scipy
+scikit-image
+matplotlib
+python-dateutil==2.8.1  # for boto3
+boto3
+statsmodels
+requests>=2.4.2  # for panoptes-client
+panoptes-client
+# also requires personal package shared_astro_utils, pip install -e ../shared-astro-utilities
