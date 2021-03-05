@@ -7,70 +7,28 @@ import pandas as pd
 import tensorflow as tf
 from skimage.transform import warp, AffineTransform, SimilarityTransform
 
-from zoobot.data_utils.tfrecord_io import load_dataset
-from zoobot.data_utils.read_tfrecord import get_feature_spec
 
-
-class InputConfig():
+class PreprocessingConfig():
+    """
+    Simple data class for common input properties
+    e.g. config.input_size, config.shuffle, etc
+    """
 
     def __init__(
             self,
             name: str,
-            tfrecord_loc: str,
-            label_cols: List,
-            initial_size: int,
-            final_size: int,
+            label_cols: List,  # use [] if no labels
+            input_size: int,
             channels: int,
-            batch_size: int,
-            shuffle: bool,
-            repeat: bool,
-            drop_remainder: bool,
-            # stratify: bool,
-            # stratify_col=None,
-            # stratify_probs=None,
-            # regression=True,
-            # geometric_augmentation=True,
-            # max_shift=15,
-            # max_shear=30.,
-            # zoom=(1., 1.1),
-            # photographic_augmentation=True,
-            # max_brightness_delta=0.05,
-            # contrast_range=(0.95, 1.05),
             greyscale=True
     ):
 
         self.name = name
-        self.tfrecord_loc = tfrecord_loc
         self.label_cols = label_cols
-        self.initial_size = initial_size
-        self.final_size = final_size
+        self.input_size = input_size
         self.channels = channels
-        self.batch_size = batch_size
-        self.shuffle = shuffle
-        self.repeat = repeat
-        self.drop_remainder = drop_remainder
-        # self.stratify = stratify
-        # self.stratify_col = stratify_col
-        # self.stratify_probs = stratify_probs
-        # self.regression = regression
         self.greyscale = greyscale
-        self.permute_channels = not self.greyscale  # on by default, if not greyscale
-
-        # self.geometric_augmentation = geometric_augmentation  # use geometric augmentations
-        # self.max_shift = max_shift
-        # self.max_shear = max_shear
-        # self.zoom = zoom
-
-        # self.photographic_augmentation = photographic_augmentation
-        # self.max_brightness_delta = max_brightness_delta
-        # self.contrast_range = contrast_range
-
-        self.greyscale = greyscale
-
-
-    # def set_stratify_probs_from_csv(self, csv_loc):
-    #     subject_df = pd.read_csv(csv_loc)
-    #     self.stratify_probs = [1. - subject_df[self.stratify_col].mean(), subject_df[self.stratify_col].mean()]
+        self.permute_channels = not self.greyscale
 
 
     # TODO move to shared utilities
@@ -81,21 +39,21 @@ class InputConfig():
     def copy(self):
         return copy.deepcopy(self)
 
+
 # Wrapping this causes weird op error - leave it be. Issue raised w/ tf.
 # @tf.function
-def get_input(config):
+def preprocess_dataset(dataset, config):
     """
     Load tfrecord as dataset. Stratify and transform_3d images as directed. Batch with queues for Estimator input.
     Batch counts are N for k of N volunteers i.e. the total observed responses
     Args:
-        config (InputConfig): Configuration object defining how 'get_input' should function  # TODO consider active class
+        config (PreprocessingConfig): Configuration object defining how 'get_input' should function  # TODO consider active class
 
     Returns:
         (dict) of form {'x': greyscale image batch}, as Tensor of shape [batch, size, size, 1]}
         (Tensor) categorical labels for each image
     """
-    dataset = load_dataset_with_labels(config)
-    preprocessed_dataset = dataset.map(lambda x: preprocess_batch(x, config=config))
+    preprocessed_dataset = dataset.map(lambda x: preprocess_batch(x, config))
     # tf.shape is important to record the dynamic shape, rather than static shape
     # if config.greyscale:
     #     assert preprocessed_batch_images['x'].shape[3] == 1
@@ -104,54 +62,72 @@ def get_input(config):
     return preprocessed_dataset
 
 
-def load_dataset_with_labels(config):
+def preprocess_batch(batch, config):
     """
-    Get dataset images and labels from tfrecord according to instructions in config
-    Does NOT apply preprocessing e.g. augmentations or further brightness tweaks
-
-    Args:
-        config (InputConfig): instructions to load and preprocess the image and label data
-
-    Returns:
-        (tf.Tensor, tf.Tensor)
-    """
-    requested_features = {'matrix': 'string', 'id_str': 'string'}  # new - must always have id_str
-    # We only support float labels!
-    # add key-value pairs like (col: float) for each col in config.label_cols
-    # the order of config.label_cols will be the order that labels (axis=1) is indexed
-    requested_features.update(zip(config.label_cols, ['float' for col in config.label_cols]))
-    feature_spec = get_feature_spec(requested_features)
-    return get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
-
-
-def get_dataset(tfrecord_loc, feature_spec, batch_size, shuffle, repeat, drop_remainder):
-    """
-    Use feature_spec to load data from tfrecord_loc, and shuffle/batch according to args.
-    Does NOT apply any preprocessing.
+    TODO check use of e.g. dataset.map(func, num_parallel_calls=n) 
     
     Args:
-        tfrecord_loc ([type]): [description]
-        feature_spec ([type]): [description]
-        batch_size ([type]): [description]
-        shuffle ([type]): [description]
-        repeat ([type]): [description]
+        batch ([type]): [description]
+        config ([type]): [description]
     
     Returns:
         [type]: [description]
     """
+    # logging.info('Loading image size {}'.format(config.input_size))
+    batch_images = get_images_from_batch(
+        batch,
+        size=config.input_size,
+        channels=config.channels,
+        summary=True) / 255.  # set to 0->1 here, and don't later in the model
 
-    dataset = load_dataset(tfrecord_loc, feature_spec, shuffle=shuffle)
-    if shuffle:
-        dataset = dataset.shuffle(batch_size * 2)  # should be > len of each tfrecord, ideally, but that's hard
-    if repeat:
-        dataset = dataset.repeat()  # careful, don't repeat forever for eval
-    dataset = dataset.batch(batch_size, drop_remainder=drop_remainder)
-    dataset = dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)  # ensure that a batch is always ready to go
-    # warning, no longer one shot iterator
-    return dataset
+    # WARNING the /255 may cause issues if repeated again by accident, maybe move
+    # by default, simply makes the images greyscale. More augmentations on loading model.
+    augmented_images = preprocess_images(batch_images, config.input_size, config.greyscale, config.permute_channels)
+    # tf.summary.image('c_augmented', augmented_images)
+
+    if len(config.label_cols) == 0:
+        logging.warning('No labels requested, returning id_str as labels')
+        return augmented_images, batch['id_str']
+    else:
+        batch_labels = get_labels_from_batch(batch, label_cols=config.label_cols)
+        return augmented_images, batch_labels # labels are unchanged
+
+
+def preprocess_images(batch_images, input_size, greyscale, permute_channels):
+    assert len(batch_images.shape) == 4
+    assert batch_images.shape[3] == 3  # should still have 3 channels at this point
+
+    if greyscale:
+        # new channel dimension of 1
+        channel_images = tf.reduce_mean(input_tensor=batch_images, axis=3, keepdims=True)
+        assert channel_images.shape[1] == input_size
+        assert channel_images.shape[2] == input_size
+        assert channel_images.shape[3] == 1
+        # tf.summary.image('b_greyscale', channel_images)
+    else:
+        if permute_channels:
+            channel_images = tf.map_fn(permute_channels, batch_images)  # map to each image in batch
+        else:
+            channel_images = tf.identity(batch_images)
+
+    # augmentation is now done through tf.keras.layers.experimental.preprocessing for speed
+    augmented_images = tf.identity(channel_images)
+
+    return augmented_images
 
 
 def get_images_from_batch(batch, size, channels, summary=False):
+    """[summary]
+
+    Args:
+        batch ([type]): [description]
+        size ([type]): initial size of image as saved to disk/tfrecord
+        channels ([type]): [description]
+        summary (bool, optional): [description]. Defaults to False.
+
+    Returns:
+        [type]: [description]
+    """
     batch_data = tf.cast(batch['matrix'], tf.float32)  # may automatically read uint8 into float32, but let's be sure
     batch_images = tf.reshape(
         batch_data,
@@ -166,65 +142,19 @@ def get_labels_from_batch(batch, label_cols: List):
     return tf.stack([batch[col] for col in label_cols], axis=1)   # TODO batch[cols] appears not to work?
 
 
-def load_batches_without_labels(config):
-    # does not fetch id - unclear if this is important
-    feature_spec = get_feature_spec({'matrix': 'string'})
-    batch = get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
-    return get_images_from_batch(batch, config.initial_size, config.channels, summary=True)
+# def load_batches_without_labels(config):
+#     # does not fetch id - unclear if this is important
+#     feature_spec = get_feature_spec({'matrix': 'string'})
+#     batch = get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
+#     return get_images_from_batch(batch, config.input_size, config.channels, summary=True)
 
 
-def load_batches_with_id_str(config):
-    # does not fetch id - unclear if this is important
-    feature_spec = get_feature_spec({'matrix': 'string', 'id_str': 'string'})
-    batch = get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
-    return get_images_from_batch(batch, config.initial_size, config.channels, summary=True), batch['id_str']
+# def load_batches_with_id_str(config):
+#     # does not fetch id - unclear if this is important
+#     feature_spec = get_feature_spec({'matrix': 'string', 'id_str': 'string'})
+#     batch = get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
+#     return get_images_from_batch(batch, config.input_size, config.channels, summary=True), batch['id_str']
 
-
-def preprocess_batch(batch, config):
-    """
-    TODO check use of e.g. dataset.map(func, num_parallel_calls=n) 
-    
-    Args:
-        batch ([type]): [description]
-        config ([type]): [description]
-    
-    Returns:
-        [type]: [description]
-    """
-    # logging.info('Loading image size {}'.format(config.initial_size))
-    batch_images = get_images_from_batch(batch, size=config.initial_size, channels=config.channels, summary=True) / 255.  # set to 0->1 here, and don't later in the model
-    augmented_images = preprocess_images(batch_images, config)
-    # tf.summary.image('c_augmented', augmented_images)
-
-    if len(config.label_cols) == 0:
-        logging.warning('No labels requested, returning id_str as labels')
-        return augmented_images, batch['id_str']
-    else:
-        batch_labels = get_labels_from_batch(batch, label_cols=config.label_cols)
-        return augmented_images, batch_labels # labels are unchanged
-
-
-def preprocess_images(batch_images, config):
-    assert len(batch_images.shape) == 4
-    assert batch_images.shape[3] == 3  # should still have 3 channels at this point
-
-    if config.greyscale:
-        # new channel dimension of 1
-        channel_images = tf.reduce_mean(input_tensor=batch_images, axis=3, keepdims=True)
-        assert channel_images.shape[1] == config.initial_size
-        assert channel_images.shape[2] == config.initial_size
-        assert channel_images.shape[3] == 1
-        # tf.summary.image('b_greyscale', channel_images)
-    else:
-        if config.permute_channels:
-            channel_images = tf.map_fn(permute_channels, batch_images)  # map to each image in batch
-        else:
-            channel_images = tf.identity(batch_images)
-
-    # augmentation is now done through tf.keras.layers.experimental.preprocessing for speed
-    augmented_images = tf.identity(channel_images)
-
-    return augmented_images
 
 
 # def augment_images(images, input_config):
@@ -232,7 +162,7 @@ def preprocess_images(batch_images, config):
 
 #     Args:
 #         images (tf.Variable):
-#         input_config (InputConfig):
+#         input_config (PreprocessingConfig):
 
 #     Returns:
 
@@ -243,7 +173,7 @@ def preprocess_images(batch_images, config):
 #             max_shift=input_config.max_shift,
 #             max_shear=input_config.max_shear,
 #             zoom=input_config.zoom,
-#             final_size=input_config.final_size)
+#             output_size=input_config.output_size)
 
 #     if input_config.photographic_augmentation:
 #         images = photographic_augmentation(
@@ -265,7 +195,7 @@ def permute_channels(im):
     return tf.transpose(tf.random.shuffle(tf.transpose(im, perm=[2, 1, 0])), perm=[2, 1, 0])
 
 
-# def geometric_augmentation(images, max_shift, max_shear, zoom, final_size):
+# def geometric_augmentation(images, max_shift, max_shear, zoom, output_size):
 #     """
 #     Runs best if image is originally significantly larger than final target size
 #     for example: load at 256px, rotate/flip, crop to 246px, then finally resize to 64px
@@ -277,7 +207,7 @@ def permute_channels(im):
 #     Args:
 #         images ():
 #         zoom (tuple): of form {min zoom in decimals e,g, 1.0, max zoom in decimals e.g, 1.2}
-#         final_size (): resize to this after crop
+#         output_size (): resize to this after crop
 
 #     Returns:
 #         (Tensor): image rotated, flipped, cropped and (perhaps) normalized, shape (target_size, target_size, channels)
@@ -305,7 +235,7 @@ def permute_channels(im):
 #     images = tf.map_fn(
 #         lambda x: tf.image.resize(
 #             x,
-#             tf.constant([final_size, final_size], dtype=tf.int32),
+#             tf.constant([output_size, output_size], dtype=tf.int32),
 #             method=tf.image.ResizeMethod.NEAREST_NEIGHBOR  # only nearest neighbour works - otherwise gives noise
 #         ),
 #         images
@@ -470,7 +400,7 @@ def ensure_images_have_batch_dimension(images):
     return images
 
 
-# def predict_input_func(tfrecord_loc, n_galaxies, initial_size, mode='labels', label_cols=None):
+# def predict_input_func(tfrecord_loc, n_galaxies, input_size, mode='labels', label_cols=None):
 #     """Wrapper to mimic the run_estimator.py input procedure.
 #     Get subjects and labels from tfrecord, just like during training
 #     Subjects must fit in memory, as they are loaded as a single batch
@@ -483,7 +413,7 @@ def ensure_images_have_batch_dimension(images):
 #         labels: np.array of shape (batch)
 #     """
 #     raise NotImplementedError('Deprecated, check to see how/if this is useful')
-#     config = InputConfig(
+#     config = PreprocessingConfig(
 #         name='predict',
 #         tfrecord_loc=tfrecord_loc,
 #         label_cols=label_cols,
@@ -496,8 +426,8 @@ def ensure_images_have_batch_dimension(images):
 #         zoom=None,
 #         fill_mode=None,
 #         batch_size=n_galaxies,
-#         initial_size=initial_size,
-#         final_size=None,
+#         input_size=input_size,
+#         output_size=None,
 #         channels=3
 #     )
 #     # dataset = get_dataset(tfrecord_loc, feature_spec, batch_size, shuffle, repeat)

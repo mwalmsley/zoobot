@@ -21,7 +21,7 @@ from shared_astro_utils import object_utils
 
 from zoobot import label_metadata
 from zoobot.data_utils import catalog_to_tfrecord, checks
-from zoobot.estimators import input_utils
+from zoobot.estimators import preprocess
 
 
 class ShardConfig():

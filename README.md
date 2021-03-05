@@ -68,14 +68,27 @@ Now you can train a CNN using those shards. `training/training_config.py` has th
 
 There is a complete working example at `train_model.py` which you can copy and adapt.
 
+Once trained, the model can be used to make new predictions on either folders of images (png, jpeg) or TFRecords. For example:
 
+    folder_to_predict = '/media/walml/beta/decals/png_native/dr5/J000'
+    file_format = 'png'  # jpg or png supported. FITS is NOT supported (PRs welcome)
+    predict_on_images.predict(
+        schema=schema,
+        file_format=file_format,
+        folder_to_predict=folder_to_predict,
+        checkpoint_dir=checkpoint_dir,
+        save_loc=save_loc,
+        n_samples=n_samples,  # number of dropout forward passes
+        batch_size=batch_size,
+        initial_size=initial_size,
+        crop_size=crop_size,
+        final_size=final_size
+    )
 
-Making new predictions
+There is a complete working example at `make_predictions.py`.
 
 Note that in the DECaLS paper, we only used galaxies classified in GZD-5 even for questions which did not change between GZD-1/2 and GZD-5.
 It would be straightforward (and appreciated) to retrain the models using GZD-1/2 classifications as well, to improve performance.
-
-
 
 ## Fine-Tuning our Pre-Trained CNN
 
@@ -85,6 +98,17 @@ For a general introduction, see the excellent blog post at [https://blog.keras.i
 
 The CNN have been trained to solve a variety of morphology tasks (i.e. to simultaneously answer all of the Galaxy Zoo questions) and so is likely to have learned a useful general representation of galaxy morphology.
 You can benefit from this general representation by fine-tuning the CNN for your task.
+
+The general approach is:
+1. Load the pretrained model, replacing the head (output layers) to match your task
+2. Train *only* the new head, leaving the rest of the model frozen
+3. Optionally, once the new head is trained, unfreeze the rest of the model and train with a low learning rate
+
+We include some utilities to make fine-tuning easy.
+
+https://keras.io/examples/vision/image_classification_efficientnet_fine_tuning/
+
+The CNN architecture we use, EfficientNet, is a bit complicated
 
 
 The Dirichlet-Multinomial loss function is designed for Galaxy Zoo and may not be appropriate for your task. 

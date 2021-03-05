@@ -1,4 +1,7 @@
+import os
 
+import numpy as np
+from tqdm import tqdm
 
 def check_no_missing_files(locs, max_to_check=None):
     # locs_missing = [not os.path.isfile(path) for path in tqdm(locs)]

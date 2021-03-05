@@ -6,14 +6,13 @@ import  tensorflow as tf
 from zoobot.estimators import efficientnet_standard
 
 
-def EfficientNet_custom_top(schema, input_shape=None, batch_size=None, add_channels=False, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
+def define_headless_efficientnet(output_dim, input_shape=None, batch_size=None, add_channels=False, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
     # batch size arg does nothing
     # add_channels arg does nothing
 
-    output_dim = len(schema.answers)
     logging.info(f'Model output dim: {output_dim}')
     model = tf.keras.models.Sequential()
-    logging.info('Building efficientnet to expect input {}'.format(input_shape))
+    logging.info('Building efficientnet to expect input {}, after any preprocessing layers'.format(input_shape))
 
     # classes probably does nothing without include_top
     effnet = get_effnet(
@@ -27,6 +26,8 @@ def EfficientNet_custom_top(schema, input_shape=None, batch_size=None, add_chann
     model.add(effnet)
 
     model.add(tf.keras.layers.GlobalAveragePooling2D())
+    # note - no dropout on final layer
+
     # custom_top_multinomial(model, output_dim, schema, batch_size)
     # custom_top_dirichlet(model, output_dim, schema)        
 
@@ -47,7 +48,7 @@ def EfficientNet_custom_top(schema, input_shape=None, batch_size=None, add_chann
     return model
 
 
-def custom_top_dirichlet(model, output_dim, schema):
+def custom_top_dirichlet(model, output_dim):
     # model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 20. + .2))  # one params per answer, 1-20 range (mebe fractionally worse)
     model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 100. + 1.))  # one params per answer, 1-100 range
 
