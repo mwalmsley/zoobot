@@ -44,7 +44,6 @@ def predict(
     assert set(image_paths) == set(unordered_image_paths)
 
     preprocessing_config = preprocess.PreprocessingConfig(
-        name='predict',
         label_cols=[],
         input_size=initial_size,
         channels=3,

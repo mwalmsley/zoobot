@@ -82,15 +82,14 @@ if __name__ == '__main__':
     raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True)
     raw_test_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=False)
   
-    input_config = preprocess.PreprocessingConfig(
-        name='from_tfrecord',
+    preprocess_config = preprocess.PreprocessingConfig(
         label_cols=schema.label_cols,
         input_size=initial_size,
         channels=3,
         greyscale=True
     )
-    train_dataset = preprocess.preprocess_dataset(raw_train_dataset, input_config)
-    test_dataset = preprocess.preprocess_dataset(raw_test_dataset, input_config)
+    train_dataset = preprocess.preprocess_dataset(raw_train_dataset, preprocess_config)
+    test_dataset = preprocess.preprocess_dataset(raw_test_dataset, preprocess_config)
 
     model = define_model.get_model(
       output_dim=len(schema.label_cols),
@@ -117,8 +116,8 @@ if __name__ == '__main__':
     # inplace on model
     training_config.train_estimator(
       model, 
-      train_config,  # e.g. how to train epochs, patience
-      input_config,  # how to preprocess data before model (currently, barely at all)
+      train_config,  # parameters for how to train e.g. epochs, patience
+      preprocess_config,  # parameters for how to preprocess data before model e.g. greyscale
       train_dataset,
       test_dataset
     )

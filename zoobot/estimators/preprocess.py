@@ -16,14 +16,11 @@ class PreprocessingConfig():
 
     def __init__(
             self,
-            name: str,
             label_cols: List,  # use [] if no labels
             input_size: int,
             channels: int,
             greyscale=True
     ):
-
-        self.name = name
         self.label_cols = label_cols
         self.input_size = input_size
         self.channels = channels

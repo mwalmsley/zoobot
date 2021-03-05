@@ -100,23 +100,9 @@ The CNN have been trained to solve a variety of morphology tasks (i.e. to simult
 You can benefit from this general representation by fine-tuning the CNN for your task.
 
 The general approach is:
+
 1. Load the pretrained model, replacing the head (output layers) to match your task
 2. Train *only* the new head, leaving the rest of the model frozen
 3. Optionally, once the new head is trained, unfreeze the rest of the model and train with a low learning rate
 
-We include some utilities to make fine-tuning easy.
-
-https://keras.io/examples/vision/image_classification_efficientnet_fine_tuning/
-
-The CNN architecture we use, EfficientNet, is a bit complicated
-
-
-The Dirichlet-Multinomial loss function is designed for Galaxy Zoo and may not be appropriate for your task. 
-
-
-We provide pretrained CNN
-, as reported by Galaxy Zoo volunteers
-
-Th
-
-
+There is a complete working example (for 1. and 2.) at `finetune.py`.
