@@ -23,6 +23,8 @@ if __name__ == '__main__':
     
     DECALS testing:
       python train_model.py --experiment-dir ~/repos/zoobot_private/results/debug --shard-img-size 64 --train-dir ~/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/train_shards --eval-dir ~/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
+      python train_model.py --experiment-dir /raid/scratch/walml//repos/zoobot/results/debug --shard-img-size 64 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
+
 
     GZ2 testing:
       python train_model.py --experiment-dir results/debug --shard-img-size 300 --train-dir data/gz2/shards/all_featp5_facep5_sim_2p5_300/train_shards --eval-dir data/gz2/shards/all_featp5_facep5_sim_2p5_300/eval_shards --epochs 2 --batch-size 8 --resize-size 128

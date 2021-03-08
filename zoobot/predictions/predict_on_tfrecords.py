@@ -14,13 +14,14 @@ from zoobot.estimators import preprocess, define_model
 
 
 def prediction_to_row(prediction, id_str, label_cols):
+    assert len(label_cols) > 0 # use [] to load tfrecord without label cols, but need to know label cols when saving predictions
     row = {
         'id_str': id_str
     }
     for n in range(len(label_cols)):
         answer = label_cols[n]
         row[answer + '_concentration'] = json.dumps(list(prediction[n].astype(float)))
-        row[answer + '_concentration_mean'] = float(prediction[n].mean())
+        # row[answer + '_concentration_mean'] = float(prediction[n].mean())  # not meaningful, use DirichletMixture instead
     return row
 
 
@@ -28,14 +29,19 @@ def predict(label_cols, tfrecord_locs, checkpoint_dir, save_loc, n_samples, batc
 
     raw_dataset = tfrecord_datasets.get_dataset(
         tfrecord_locs,
-        label_cols=label_cols,
+        label_cols=[],
         batch_size=batch_size,
         shuffle=False,
         repeat=False,
         drop_remainder=False
     )
     id_strs_batched = [batch['id_str'] for batch in raw_dataset]
-    id_strs = [id_str.numpy().squeeze()[2:-1] for batch in id_strs_batched for id_str in batch]
+    id_strs = [id_str.numpy().decode('utf-8') for batch in id_strs_batched for id_str in batch]
+
+    # for batch in raw_dataset.take(5):
+    #     batch_data = batch['matrix']
+    #     print(batch_data.numpy().min(), batch_data.numpy().max(), batch_data.numpy().mean())
+    # exit()
 
     input_config = preprocess.PreprocessingConfig(
         label_cols=[],  # no labels
@@ -50,7 +56,8 @@ def predict(label_cols, tfrecord_locs, checkpoint_dir, save_loc, n_samples, batc
         include_top=True,
         input_size=initial_size,
         crop_size=crop_size,
-        resize_size=resize_size
+        resize_size=resize_size,
+        expect_partial=True
     )
 
     logging.info('Beginning predictions')

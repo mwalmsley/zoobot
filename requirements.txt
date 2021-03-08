@@ -21,3 +21,5 @@ statsmodels
 requests>=2.4.2  # for panoptes-client
 panoptes-client
 # also requires personal package shared_astro_utils, pip install -e ../shared-astro-utilities
+keras_applications  # for efficientnet
+tensorflow_probability==0.11

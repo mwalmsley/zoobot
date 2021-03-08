@@ -8,6 +8,7 @@ import tensorflow as tf
 
 # https://stackoverflow.com/questions/62544528/tensorflow-decodejpeg-expected-image-jpeg-png-or-gif-got-unknown-format-st?rq=1
 def load_image_file(loc, mode='png'):
+    # values will be 0-255, does not normalise. Happens in preprocessing instead.
     # specify mode explicitly to avoid graph tracing issues
     image = tf.io.read_file(loc)
     if mode == 'png':
@@ -16,7 +17,10 @@ def load_image_file(loc, mode='png'):
         image = tf.image.decode_jpeg(image)
     else:
         raise ValueError(f'Image filetype mode {mode} not recognised')
-    converted_image = tf.image.convert_image_dtype(image, tf.float32)
+    # this works but introduces some unpredictable scaling that's not clear to be
+    # converted_image = tf.image.convert_image_dtype(image, tf.float32)
+    # use a simple cast instead
+    converted_image = tf.cast(image, tf.float32)
 
     # if loc_to_label is not None:
     #     assert callable(loc_to_label)
@@ -27,13 +31,16 @@ def load_image_file(loc, mode='png'):
 
 
 def resize_image_batch_with_tf(batch, size):
+    # may cause values outside 0-255 margins
     return tf.image.resize(batch, (size, size), method=tf.image.ResizeMethod.LANCZOS3, antialias=True)
 
 
 def prepare_image_batch(batch, initial_size):
     images, id_strs = batch['matrix'], batch['id_str']  # unpack from dict
-    images = resize_image_batch_with_tf(images , size=initial_size)   # initial size = after resize from 424 but before crop/zoom
+    images = resize_image_batch_with_tf(images , size=initial_size)   # initial size = after resize from image on disk (e.g. 424 for GZ pngs) but before crop/zoom
+    images = tf.clip_by_value(images, 0., 255.)  # resizing can cause slight change in min/max
     # images = tf.reduce_mean(input_tensor=images, axis=3, keepdims=True)  # greyscale NOPE, do in preprocess preprocessing
+    
     return {'matrix': images, 'id_str': id_strs}  # pack back into dict
 
 
@@ -68,9 +75,9 @@ def get_image_dataset(image_paths, file_format, initial_size, batch_size, labels
 
     path_ds = tf.data.Dataset.from_tensor_slices([str(path) for path in image_paths])
 
-
     image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format))
     image_ds = image_ds.batch(batch_size, drop_remainder=False)
+    logging.info('Resizing images from disk size to {}'.format(initial_size))
     image_ds = image_ds.map(lambda x: prepare_image_batch(x, initial_size=initial_size))
 
     if labels is not None:
@@ -83,4 +90,11 @@ def get_image_dataset(image_paths, file_format, initial_size, batch_size, labels
     # exit()
 
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+
+    # for batch in image_ds.take(5):
+    #     batch_data = batch['matrix']
+    #     print(batch_data.numpy().min(), batch_data.numpy().max(), batch_data.numpy().mean())
+    # exit()
+
+
     return image_ds
