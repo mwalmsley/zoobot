@@ -14,6 +14,8 @@ from zoobot.data_utils import image_datasets
 from zoobot.estimators import define_model, preprocess
 from zoobot import schemas 
 
+from pathlib import Path
+
 
 def prediction_to_row(prediction, png_loc, label_cols):
     row = {
@@ -26,16 +28,31 @@ def prediction_to_row(prediction, png_loc, label_cols):
     return row
 
 
+def find_files(folder, extension):
+    return 
+
+
 def predict(
-    label_cols, file_format, folder_to_predict, checkpoint_dir, save_loc, n_samples,
-    batch_size, initial_size, crop_size, resize_size
+    label_cols, file_format, checkpoint_dir, save_loc, n_samples,
+    batch_size, initial_size, crop_size, resize_size, folder_to_predict=None, recursive=False, paths_to_predict=None
     ):
 
-    assert os.path.isdir(folder_to_predict)
-    unordered_image_paths = list(glob.glob('{}/*.{}'.format(folder_to_predict, file_format)))  # in that folder
-    # image_paths = list(glob.glob('*/*.{}'.format(file_format)))  # next folder down only, not recursive
-    # image_paths = list(glob.glob('*.{}'.format(file_format)))  # this folder only
+    # if we don't know the paths
+    # assert os.path.isdir(folder_to_predict)
+    # if recursive:  # in all subfolders, recursively
+    #     # unordered_image_paths =  [os.path.join(*x) for x in os.walk(folder_to_predict) if x[2].endswith('.{}'.format(file_format))] 
+    #     unordered_image_paths = [str(path) for path in Path(folder_to_predict).rglob('*.{}'.format(file_format))]
+    # else:
+    #     unordered_image_paths = list(glob.glob('{}/*.{}'.format(folder_to_predict, file_format)))  # only in that folder
+
+    # if we do know the paths
+    unordered_image_paths = paths_to_predict
+
     assert len(unordered_image_paths) > 0
+    print(len(unordered_image_paths))
+    print(unordered_image_paths[:3])
+    assert os.path.isfile(unordered_image_paths[0])
+    # exit()
 
     raw_image_ds = image_datasets.get_image_dataset([str(x) for x in unordered_image_paths], file_format, initial_size, batch_size)
     # order of images is not always the same as order of paths, so load paths (saved under id_str key) back out

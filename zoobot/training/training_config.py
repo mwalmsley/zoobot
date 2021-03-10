@@ -68,10 +68,10 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
     if not os.path.isdir(checkpoint_dir):
         os.mkdir(checkpoint_dir)
     # need directories into which to save the checkpoints and the final checkpoint
-    final_checkpoint_dir = os.path.join(checkpoint_dir, 'final_model')
-    if not os.path.isdir(final_checkpoint_dir):
-      os.mkdir(final_checkpoint_dir)
-    final_checkpoint_loc = os.path.join(final_checkpoint_dir, 'final')
+    # final_checkpoint_dir = os.path.join(checkpoint_dir, 'final_model')
+    # if not os.path.isdir(final_checkpoint_dir):
+    #   os.mkdir(final_checkpoint_dir)
+    # final_checkpoint_loc = os.path.join(final_checkpoint_dir, 'final')
 
     callbacks = [
         tf.keras.callbacks.TensorBoard(
@@ -96,14 +96,15 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
         )
     ] + extra_callbacks
 
-    verbose = 2
+    verbose = 1  # progress bar
+    # verbose = 2  # one line per epoch
     # https://www.tensorflow.org/tensorboard/scalars_and_keras
     fit_summary_writer = tf.summary.create_file_writer(os.path.join(train_config.log_dir, 'manual_summaries'))
     # pylint: disable=not-context-manager
     with fit_summary_writer.as_default(): 
         # pylint: enable=not-context-manager
         # for debugging
-        model.run_eagerly = True
+        # model.run_eagerly = True
         # https://www.tensorflow.org/api_docs/python/tf/keras/Model
 
         model.fit(
@@ -119,6 +120,6 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
     # to set self.model to the best model, load the latest checkpoint 
     logging.info('Loading and returning (best) model')
     model.load_weights(checkpoint_dir)  # inplace
-    model.save_weights(final_checkpoint_loc)  # copy the best checkpoint here, for easy access
+    # model.save_weights(final_checkpoint_loc)  # copy the best checkpoint here, for easy access. Not needed, only saves the best anyway.
 
     return model

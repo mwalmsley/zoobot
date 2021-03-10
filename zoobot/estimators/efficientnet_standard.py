@@ -1,4 +1,5 @@
 # Copied almost exactly from https://github.com/qubvel/efficientnet for convenience, all credit to those authors. 
+# Dropout switched to permanantly on via #97 and #364
 # Please see the license on that repository.
 # - Mike
 
@@ -93,7 +94,8 @@ def get_dropout():
     Issue:
         https://github.com/tensorflow/tensorflow/issues/30946
     """
-    class FixedDropout(custom_layers.PermaDropout):  # inherit from mine instead of layers.Dropout
+    class FixedDropout(layers.Dropout):
+    # class FixedDropout(custom_layers.PermaDropout):  # inherit from mine instead of layers.Dropout
         def _get_noise_shape(self, inputs):
             if self.noise_shape is None:
                 return self.noise_shape

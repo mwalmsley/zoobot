@@ -1,6 +1,7 @@
 import os
 import logging
 import glob
+import pandas as pd
 
 import tensorflow as tf
 
@@ -26,14 +27,14 @@ if __name__ == '__main__':
     resize_size = 224  # 224 for paper
     channels = 3
     
-    batch_size = 128  # 128 for paper, you'll need a good GPU. 8 for debugging
+    batch_size = 64  # 128 for paper, you'll need a very good GPU. 8 for debugging, 64 for RTX 2070
     n_samples = 5
 
     # TODO you'll want to replace these with your own paths
     # checkpoint_dir = '/home/walml/repos/zoobot_private/results/debug/models/final'
     # save_loc = '/home/walml/repos/zoobot_private/temp/debug_predictions.csv'
     checkpoint_dir = '/raid/scratch/walml/galaxy_zoo/models/decals_dr_train_labelled_m0/in_progress'
-    save_loc = '/raid/scratch/walml/galaxy_zoo/temp/debug_predictions.csv'
+    save_loc = '/raid/scratch/walml/galaxy_zoo/temp/decals_dr_full_eval_predictions.csv'
 
     """
     Make predictions on a folder of images (png or jpeg)
@@ -41,19 +42,21 @@ if __name__ == '__main__':
 
     # to make predictions on folders of images e.g. png:
     # folder_to_predict = '/media/walml/beta1/decals/png_native/dr5/J000'
-    folder_to_predict = '/raid/scratch/walml/galaxy_zoo/decals/png/J000'
+    folder_to_predict = '/raid/scratch/walml/galaxy_zoo/decals/png'
     file_format = 'png'  # jpg or png supported. FITS is NOT supported (PRs welcome)
     predict_on_images.predict(
         label_cols=label_cols,
         file_format=file_format,
-        folder_to_predict=folder_to_predict,
         checkpoint_dir=checkpoint_dir,
         save_loc=save_loc,
         n_samples=n_samples,  # number of dropout forward passes
         batch_size=batch_size,
         initial_size=initial_size,
         crop_size=crop_size,
-        resize_size=resize_size
+        resize_size=resize_size,
+        # folder_to_predict=folder_to_predict,
+        # recursive=True  # J000, J001, etc
+        paths_to_predict=list(pd.read_csv('data/decals_dr_full_eval_df.csv')['local_png_loc'].apply(lambda x: x.replace('/data/phys-zooniverse/chri5177/png_native/dr5', '/raid/scratch/walml/galaxy_zoo/decals/png')))
     )
     # note that this will only work well if the images are exactly equivalent to those on which the model was trained
     # for the pretrained models, these are galaxy zoo images made from decals observations

@@ -9,6 +9,10 @@ from zoobot.training import losses
 
 class CustomSequential(tf.keras.Sequential):
 
+    def __init__(self):
+        super().__init__()
+        self.step = 0
+
     def call(self, x, training):
         tf.summary.image('model_input', x, step=self.step)
         # tf.summary.image('model_input', x, step=0)
@@ -29,10 +33,7 @@ def add_preprocessing_layers(model, crop_size, resize_size):
 
     model.add(custom_layers.PermaRandomRotation(np.pi, fill_mode='reflect'))
     model.add(custom_layers.PermaRandomFlip())
-    model.add(custom_layers.PermaRandomCrop(
-        # from 256, bad to the resize up again but need more zoom...
-        crop_size, crop_size
-    ))
+    model.add(custom_layers.PermaRandomCrop(crop_size, crop_size))
     if resize:
         logging.info('Using resizing, to {}'.format(resize_size))
         model.add(tf.keras.layers.experimental.preprocessing.Resizing(
@@ -71,6 +72,7 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     # model.add(tf.keras.layers.Dense(2))
 #
     if include_top:
+        model.add(tf.keras.layers.GlobalAveragePooling2D())
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
     # efficientnet.custom_top_dirichlet_reparam(model, output_dim, schema)
 

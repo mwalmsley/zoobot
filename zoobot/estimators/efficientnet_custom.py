@@ -19,13 +19,12 @@ def define_headless_efficientnet(output_dim, input_shape=None, batch_size=None, 
         input_shape=input_shape,
         # input_tensor=tf.keras.Input(shape=input_shape, batch_size=batch_size),
         weights=None,
-        include_top=False,
+        include_top=False,  # no final three layers: pooling, dropout and dense
         classes=output_dim,
         **kwargs
     )
     model.add(effnet)
 
-    model.add(tf.keras.layers.GlobalAveragePooling2D())
     # note - no dropout on final layer
 
     # custom_top_multinomial(model, output_dim, schema, batch_size)

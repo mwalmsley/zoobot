@@ -337,17 +337,6 @@ def confidence_interval_from_cdf(x, cdf, mode_cdf, interval_width):
     return lower, upper
 
 
-
-
-
-
-
-
-
-
-
-
-
 # deprecated
 # def dirichlet_mixture(samples_for_q, expected_votes, n_samples):
 #     """[summary]
