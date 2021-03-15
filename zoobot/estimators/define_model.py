@@ -60,7 +60,6 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     shape_after_preprocessing_layers = (resize_size, resize_size, 1)
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
-        output_dim=output_dim,
         input_shape=shape_after_preprocessing_layers,
         get_effnet=efficientnet_standard.EfficientNetB0
         # further kwargs will be passed to get_effnet
@@ -72,6 +71,7 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     # model.add(tf.keras.layers.Dense(2))
 #
     if include_top:
+        assert output_dim is not None
         model.add(tf.keras.layers.GlobalAveragePooling2D())
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
     # efficientnet.custom_top_dirichlet_reparam(model, output_dim, schema)

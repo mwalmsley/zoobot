@@ -6,11 +6,29 @@ import  tensorflow as tf
 from zoobot.estimators import efficientnet_standard
 
 
-def define_headless_efficientnet(output_dim, input_shape=None, batch_size=None, add_channels=False, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
+def define_headless_efficientnet(input_shape=None, batch_size=None, add_channels=False, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
+    """
+    compile with something like:
+    
+    custom_mses = [bayesian_estimator_funcs.CustomMSEByColumn(name=q.text, start_col=start_col, end_col=end_col) for q, (start_col, end_col) in schema.named_index_groups.items()]
+    model.compile(
+        loss=loss_func,
+        optimizer=tf.keras.optimizers.Adam(),
+        metrics=custom_mses
+    )
+
+    Args:
+        input_shape ([type], optional): [description]. Defaults to None.
+        batch_size ([type], optional): [description]. Defaults to None.
+        add_channels (bool, optional): [description]. Defaults to False.
+        get_effnet ([type], optional): [description]. Defaults to efficientnet_standard.EfficientNetB0.
+
+    Returns:
+        [type]: [description]
+    """
     # batch size arg does nothing
     # add_channels arg does nothing
 
-    logging.info(f'Model output dim: {output_dim}')
     model = tf.keras.models.Sequential()
     logging.info('Building efficientnet to expect input {}, after any preprocessing layers'.format(input_shape))
 
@@ -20,15 +38,12 @@ def define_headless_efficientnet(output_dim, input_shape=None, batch_size=None, 
         # input_tensor=tf.keras.Input(shape=input_shape, batch_size=batch_size),
         weights=None,
         include_top=False,  # no final three layers: pooling, dropout and dense
-        classes=output_dim,
+        classes=None,  # headless so has no effect
         **kwargs
     )
     model.add(effnet)
 
     # note - no dropout on final layer
-
-    # custom_top_multinomial(model, output_dim, schema, batch_size)
-    # custom_top_dirichlet(model, output_dim, schema)        
 
     # will be updated by callback
     # model.step = tf.Variable(0, dtype=tf.int64, name='model_step', trainable=False)
@@ -36,13 +51,6 @@ def define_headless_efficientnet(output_dim, input_shape=None, batch_size=None, 
      # my loss only works with run_config shards, the new custom shards are vote fraction labelled
     # loss_func = lambda x, y: losses.multiquestion_loss(x, y, question_index_groups=schema.question_index_groups)
 
-    # compile with something like:
-    # custom_mses = [bayesian_estimator_funcs.CustomMSEByColumn(name=q.text, start_col=start_col, end_col=end_col) for q, (start_col, end_col) in schema.named_index_groups.items()]
-    # model.compile(
-    #     loss=loss_func,
-    #     optimizer=tf.keras.optimizers.Adam(),
-    #     metrics=custom_mses
-    # )
 
     return model
 

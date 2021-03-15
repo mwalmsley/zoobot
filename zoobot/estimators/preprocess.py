@@ -18,15 +18,20 @@ class PreprocessingConfig():
             self,
             label_cols: List,  # use [] if no labels
             input_size: int,
-            channels: int,
-            greyscale=True
+            make_greyscale: bool,
+            normalise_from_uint8: bool,
+            permute_channels=False,
+            input_channels=3,  # for png, jpg etc. Might be different if e.g. fits (not supported yet).
     ):
         self.label_cols = label_cols
         self.input_size = input_size
-        self.channels = channels
-        self.greyscale = greyscale
-        self.permute_channels = not self.greyscale
+        self.input_channels = input_channels
+        self.normalise_from_uint8 = normalise_from_uint8
+        self.make_greyscale = make_greyscale
+        self.permute_channels = permute_channels
 
+        if make_greyscale and permute_channels:
+            raise ValueError("Incompatible options - can't permute channels if there's only one!")
 
     # TODO move to shared utilities
     def asdict(self):
@@ -47,16 +52,10 @@ def preprocess_dataset(dataset, config):
         config (PreprocessingConfig): Configuration object defining how 'get_input' should function  # TODO consider active class
 
     Returns:
-        (dict) of form {'x': greyscale image batch}, as Tensor of shape [batch, size, size, 1]}
+        (dict) of form {'x': make_greyscale image batch}, as Tensor of shape [batch, size, size, 1]}
         (Tensor) categorical labels for each image
     """
-    preprocessed_dataset = dataset.map(lambda x: preprocess_batch(x, config))
-    # tf.shape is important to record the dynamic shape, rather than static shape
-    # if config.greyscale:
-    #     assert preprocessed_batch_images['x'].shape[3] == 1
-    # else:
-    #     assert preprocessed_batch_images['x'].shape[3] == 3
-    return preprocessed_dataset
+    return dataset.map(lambda x: preprocess_batch(x, config))
 
 
 def preprocess_batch(batch, config):
@@ -74,12 +73,15 @@ def preprocess_batch(batch, config):
     batch_images = get_images_from_batch(
         batch,
         size=config.input_size,
-        channels=config.channels,
-        summary=True) / 255.  # set to 0->1 here, and don't later in the model
+        channels=config.input_channels,
+        summary=True)
+
+    if config.normalise_from_uint8:
+        batch_images = batch_images / 255.
 
     # WARNING the /255 may cause issues if repeated again by accident, maybe move
-    # by default, simply makes the images greyscale. More augmentations on loading model.
-    augmented_images = preprocess_images(batch_images, config.input_size, config.greyscale, config.permute_channels)
+    # by default, simply makes the images make_greyscale. More augmentations on loading model.
+    augmented_images = preprocess_images(batch_images, config.input_size, config.make_greyscale, config.permute_channels)
     # tf.summary.image('c_augmented', augmented_images)
 
     if len(config.label_cols) == 0:
@@ -90,17 +92,17 @@ def preprocess_batch(batch, config):
         return augmented_images, batch_labels # labels are unchanged
 
 
-def preprocess_images(batch_images, input_size, greyscale, permute_channels):
+def preprocess_images(batch_images, input_size, make_greyscale, permute_channels):
     assert len(batch_images.shape) == 4
     assert batch_images.shape[3] == 3  # should still have 3 channels at this point
 
-    if greyscale:
+    if make_greyscale:
         # new channel dimension of 1
         channel_images = tf.reduce_mean(input_tensor=batch_images, axis=3, keepdims=True)
         assert channel_images.shape[1] == input_size
         assert channel_images.shape[2] == input_size
         assert channel_images.shape[3] == 1
-        # tf.summary.image('b_greyscale', channel_images)
+        # tf.summary.image('b_make_greyscale', channel_images)
     else:
         if permute_channels:
             channel_images = tf.map_fn(permute_channels, batch_images)  # map to each image in batch
@@ -143,14 +145,14 @@ def get_labels_from_batch(batch, label_cols: List):
 #     # does not fetch id - unclear if this is important
 #     feature_spec = get_feature_spec({'matrix': 'string'})
 #     batch = get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
-#     return get_images_from_batch(batch, config.input_size, config.channels, summary=True)
+#     return get_images_from_batch(batch, config.input_size, config.input_channels, summary=True)
 
 
 # def load_batches_with_id_str(config):
 #     # does not fetch id - unclear if this is important
 #     feature_spec = get_feature_spec({'matrix': 'string', 'id_str': 'string'})
 #     batch = get_dataset(config.tfrecord_loc, feature_spec, config.batch_size, config.shuffle, config.repeat, config.drop_remainder)
-#     return get_images_from_batch(batch, config.input_size, config.channels, summary=True), batch['id_str']
+#     return get_images_from_batch(batch, config.input_size, config.input_channels, summary=True), batch['id_str']
 
 
 
@@ -179,7 +181,7 @@ def get_labels_from_batch(batch, label_cols: List):
 #             contrast_range=input_config.contrast_range)
 
 #     if input_config.permute_channels:
-#         assert not input_config.greyscale
+#         assert not input_config.make_greyscale
 #         # assert tf.shape(images)[-1] > 1
 #         images = tf.map_fn(permute_channels, images)  # map to each image in batch
 

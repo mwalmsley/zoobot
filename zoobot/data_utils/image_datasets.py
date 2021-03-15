@@ -31,20 +31,20 @@ def load_image_file(loc, mode='png'):
 
 
 def resize_image_batch_with_tf(batch, size):
-    # may cause values outside 0-255 margins
+    # May cause values outside 0-255 margins
+    # May be slow. Ideally, resize the images beforehand on disk (or save as TFRecord, see make_shards.py and tfrecord_datasets.py)
     return tf.image.resize(batch, (size, size), method=tf.image.ResizeMethod.LANCZOS3, antialias=True)
 
 
-def prepare_image_batch(batch, initial_size):
+def prepare_image_batch(batch, resize_size=None):
     images, id_strs = batch['matrix'], batch['id_str']  # unpack from dict
-    images = resize_image_batch_with_tf(images , size=initial_size)   # initial size = after resize from image on disk (e.g. 424 for GZ pngs) but before crop/zoom
-    images = tf.clip_by_value(images, 0., 255.)  # resizing can cause slight change in min/max
-    # images = tf.reduce_mean(input_tensor=images, axis=3, keepdims=True)  # greyscale NOPE, do in preprocess preprocessing
-    
+    if resize_size:
+        images = resize_image_batch_with_tf(images , size=resize_size)   # initial size = after resize from image on disk (e.g. 424 for GZ pngs) but before crop/zoom
+        images = tf.clip_by_value(images, 0., 255.)  # resizing can cause slight change in min/max
     return {'matrix': images, 'id_str': id_strs}  # pack back into dict
 
 
-def get_image_dataset(image_paths, file_format, initial_size, batch_size, labels=None):
+def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, labels=None):
     """
     Load images in a folder as a tf.data dataset
     Supports jpeg (note the e) and png
@@ -53,7 +53,7 @@ def get_image_dataset(image_paths, file_format, initial_size, batch_size, labels
     Args:
         folder_to_predict ([type]): [description]
         file_format ([type]): [description]
-        initial_size ([type]): [description]
+        requested_img_size ([type]): [description]
         batch_size ([type]): [description]
         loc_to_label ([type], optional): [description]. Defaults to None.
 
@@ -77,24 +77,20 @@ def get_image_dataset(image_paths, file_format, initial_size, batch_size, labels
 
     image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format))
     image_ds = image_ds.batch(batch_size, drop_remainder=False)
-    logging.info('Resizing images from disk size to {}'.format(initial_size))
-    image_ds = image_ds.map(lambda x: prepare_image_batch(x, initial_size=initial_size))
+    # check if the image shape matches requested_img_size, and resize if not
+    test_images = [batch for batch in image_ds.take(1)][0]['matrix']
+    size_on_disk = test_images.numpy().shape[1]  # x dimension (BXYC convention)
+    if size_on_disk == requested_img_size:
+        logging.info('Image size on disk matches requested_img_size of {}, skipping resizing'.format(requested_img_size))  # x dimension of first image, first y index, first channel
+    else:
+        logging.warning('Resizing images from disk size {} to requested size {}'.format(size_on_disk, requested_img_size))
+        image_ds = image_ds.map(lambda x: prepare_image_batch(x, resize_size=requested_img_size))
 
     if labels is not None:
         label_ds = tf.data.Dataset.from_tensor_slices(labels)
         label_ds = label_ds.batch(batch_size, drop_remainder=False)
         image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label: dict(image_dict, label=label))  # now yields (image, label) tuples
 
-    # for image, label in image_ds.take(5):
-    #     print(image.shape, label.shape)
-    # exit()
-
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
-
-    # for batch in image_ds.take(5):
-    #     batch_data = batch['matrix']
-    #     print(batch_data.numpy().min(), batch_data.numpy().max(), batch_data.numpy().mean())
-    # exit()
-
 
     return image_ds

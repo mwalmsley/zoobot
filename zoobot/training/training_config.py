@@ -96,6 +96,11 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
         )
     ] + extra_callbacks
 
+    # attribute used by the callbacks to track the current step when writing to tensorboard.
+    model.step = tf.Variable(
+      0, dtype=tf.int64, name='model_step', trainable=False
+    )
+
     verbose = 1  # progress bar
     # verbose = 2  # one line per epoch
     # https://www.tensorflow.org/tensorboard/scalars_and_keras
