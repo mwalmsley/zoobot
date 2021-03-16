@@ -16,6 +16,19 @@ Zoobot documentation
 for new surveys or for new tasks like identifying tidal features or segmenting spiral arms.
 
 
+API Reference
+-------------
+
+If you are looking for information on a specific function, class or
+method, this part of the documentation is for you.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API:
+
+   autodoc/data_utils
+   autodoc/estimators
+
 Indices
 ^^^^^^^
 
