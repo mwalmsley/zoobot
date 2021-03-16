@@ -1,30 +1,30 @@
 .. Zoobot documentation master file, created by
    sphinx-quickstart on Mon Mar 15 15:03:45 2021.
 
-Zoobot documentation
+Zoobot Documentation
 ====================
+
+Guides
+------
+
+Learn how to use Zoobot. Each guide is paired with a self-contained example script.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    usage/quickstart
    usage/decals
    usage/finetuning
 
 
-for new surveys or for new tasks like identifying tidal features or segmenting spiral arms.
-
-
 API Reference
 -------------
 
-If you are looking for information on a specific function, class or
-method, this part of the documentation is for you.
+Look here for information on a specific function, class or
+method.
 
 .. toctree::
    :maxdepth: 2
-   :caption: API:
 
    autodoc/data_utils
    autodoc/estimators

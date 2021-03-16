@@ -5,10 +5,10 @@ import sys
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-from astropy.io import fits
+# from astropy.io import fits
 from tqdm import tqdm
 
-from zoobot.tfrecord import create_tfrecord, image_utils
+from zoobot.data_utils import create_tfrecord
 
 import matplotlib
 # 
@@ -23,59 +23,59 @@ def get_train_test_fraction(total_size, eval_size):
     return train_test_fraction
 
 
-# TODO refactor to make sure this aligns with downloader
-def load_decals_as_pil(subject):
-    try:
-        loc = subject['fits_loc']
-    except KeyError:
-        loc = subject['file_loc']
-        assert loc[-5:] == '.fits'
-    img = fits.getdata(loc)
+# # TODO refactor to make sure this aligns with downloader
+# def load_decals_as_pil(subject):
+#     try:
+#         loc = subject['fits_loc']
+#     except KeyError:
+#         loc = subject['file_loc']
+#         assert loc[-5:] == '.fits'
+#     img = fits.getdata(loc)
 
-    _scales = dict(
-        g=(2, 0.008),
-        r=(1, 0.014),
-        z=(0, 0.019))
+#     _scales = dict(
+#         g=(2, 0.008),
+#         r=(1, 0.014),
+#         z=(0, 0.019))
 
-    _mnmx = (-0.5, 300)
+#     _mnmx = (-0.5, 300)
 
-    rgb_img = image_utils.dr2_style_rgb(
-        (img[0, :, :], img[1, :, :], img[2, :, :]),
-        'grz',
-        mnmx=_mnmx,
-        arcsinh=1.,
-        scales=_scales,
-        desaturate=True)
+#     rgb_img = image_utils.dr2_style_rgb(
+#         (img[0, :, :], img[1, :, :], img[2, :, :]),
+#         'grz',
+#         mnmx=_mnmx,
+#         arcsinh=1.,
+#         scales=_scales,
+#         desaturate=True)
 
-    # plt.imshow(rgb_img)
-    # plt.savefig('zoobot/test_examples/rescaled_before_pil.png')
-    pil_safe_img = np.uint8(rgb_img * 255)
-    assert pil_safe_img.min() >= 0. and pil_safe_img.max() <= 255
-    return Image.fromarray(pil_safe_img, mode='RGB')
-
-
-def load_png_as_pil(subject):
-    try:
-        loc = subject['png_loc']
-    except KeyError:
-        loc = subject['file_loc']
-        assert loc[-4:] == '.png'
-    return Image.open(loc)
+#     # plt.imshow(rgb_img)
+#     # plt.savefig('zoobot/test_examples/rescaled_before_pil.png')
+#     pil_safe_img = np.uint8(rgb_img * 255)
+#     assert pil_safe_img.min() >= 0. and pil_safe_img.max() <= 255
+#     return Image.fromarray(pil_safe_img, mode='RGB')
 
 
-def get_reader(paths):
-    # find file format
-    file_format = paths[0].split('.')[-1]
-    # check for consistency
-    assert all([loc.split('.')[-1] == file_format for loc in paths])
-    # check that file paths resolve correctly
-    if not all(os.path.isfile(loc) for loc in paths):
-        raise FileNotFoundError('Check file paths: currently prefixed like {}'.format(paths[0]))
-    if file_format == 'png':
-        reader = load_png_as_pil
-    elif file_format == 'fits':
-        reader = load_decals_as_pil
-    return reader
+# def load_png_as_pil(subject):
+#     try:
+#         loc = subject['png_loc']
+#     except KeyError:
+#         loc = subject['file_loc']
+#         assert loc[-4:] == '.png'
+#     return Image.open(loc)
+
+
+# def get_reader(paths):
+#     # find file format
+#     file_format = paths[0].split('.')[-1]
+#     # check for consistency
+#     assert all([loc.split('.')[-1] == file_format for loc in paths])
+#     # check that file paths resolve correctly
+#     if not all(os.path.isfile(loc) for loc in paths):
+#         raise FileNotFoundError('Check file paths: currently prefixed like {}'.format(paths[0]))
+#     if file_format == 'png':
+#         reader = load_png_as_pil
+#     elif file_format == 'fits':
+#         reader = load_decals_as_pil
+#     return reader
 
 
 def split_df(df, train_test_fraction):
