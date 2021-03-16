@@ -34,7 +34,7 @@ The easiest way to load data into a tf.dataset is directly from images (png or j
 
 Loading images from disk is simple but slow. 
 If fast training is important, you can save those images as binary TFRecords.
-See create_shards.py for a full example.
+See :ref:`reproducing DECaLS <reproducing_decals>` for more and `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`_ for a full example.
 
 .. code-block:: python
 
@@ -135,7 +135,7 @@ Making predictions is then as easy as:
 
     predictions = model.predict(pred_dataset)
 
-See the end of ``finetune_minimal.py`` for a complete example.
+See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py>`_ for a complete example.
 
 .. To make life even easier, 
 
