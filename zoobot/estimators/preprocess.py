@@ -7,6 +7,15 @@ import pandas as pd
 import tensorflow as tf
 from skimage.transform import warp, AffineTransform, SimilarityTransform
 
+"""Does this text go anywhere?
+
+Raises:
+    ValueError: [description]
+    ValueError: [description]
+
+Returns:
+    [type]: [description]
+"""
 
 class PreprocessingConfig():
     """
@@ -361,42 +370,42 @@ def permute_channels(im):
 #     return cropped_im
 
 
-def photographic_augmentation(images, max_brightness_delta, contrast_range):
-    """
-    TODO do before or after geometric?
-    TODO add slight redshifting?
+# def photographic_augmentation(images, max_brightness_delta, contrast_range):
+#     """
+#     TODO do before or after geometric?
+#     TODO add slight redshifting?
 
-    Args:
-        images ():
-        max_brightness_delta ():
-        contrast_range ():
+#     Args:
+#         images ():
+#         max_brightness_delta ():
+#         contrast_range ():
 
-    Returns:
+#     Returns:
 
-    """
-    images = ensure_images_have_batch_dimension(images)
+#     """
+#     images = ensure_images_have_batch_dimension(images)
 
-    images = tf.map_fn(
-        lambda im: tf.image.random_brightness(im, max_delta=max_brightness_delta),
-        images)
-    images = tf.map_fn(
-        lambda im: tf.image.random_contrast(im, lower=contrast_range[0], upper=contrast_range[1]),
-        images)
+#     images = tf.map_fn(
+#         lambda im: tf.image.random_brightness(im, max_delta=max_brightness_delta),
+#         images)
+#     images = tf.map_fn(
+#         lambda im: tf.image.random_contrast(im, lower=contrast_range[0], upper=contrast_range[1]),
+#         images)
 
-    # experimental
-    # images = tf.map_fn(
-    #     lambda im: im + tf.random.normal(tf.shape(im), mean=0., stddev=.01)  # image values are 0->1 
-    # )
+#     # experimental
+#     # images = tf.map_fn(
+#     #     lambda im: im + tf.random.normal(tf.shape(im), mean=0., stddev=.01)  # image values are 0->1 
+#     # )
 
-    return images
+#     return images
 
 
-def ensure_images_have_batch_dimension(images):
-    if len(images.shape) < 3:
-        raise ValueError
-    if len(images.shape) == 3:
-        images = tf.expand_dims(images, axis=0)  # add a batch dimension
-    return images
+# def ensure_images_have_batch_dimension(images):
+#     if len(images.shape) < 3:
+#         raise ValueError
+#     if len(images.shape) == 3:
+#         images = tf.expand_dims(images, axis=0)  # add a batch dimension
+#     return images
 
 
 # def predict_input_func(tfrecord_loc, n_galaxies, input_size, mode='labels', label_cols=None):

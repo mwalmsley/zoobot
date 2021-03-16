@@ -1,2 +1,17 @@
 Sphinx
 sphinxcontrib-napoleon
+
+tensorflow >= 2.3 # or do manually to avoid messing with other installs on server
+tqdm
+pillow
+numpy
+pandas
+scipy
+scikit-image
+matplotlib
+# python-dateutil==2.8.1  # for boto3
+# boto3
+keras_applications  # for efficientnet
+tensorflow_probability >= 0.11  # 0.11 for tf 2.3, 0.14 for tf 2.4
+
+# also requires personal package shared_astro_utils, pip install -e ../shared-astro-utilities

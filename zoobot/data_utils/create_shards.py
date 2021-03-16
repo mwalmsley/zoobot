@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from shared_astro_utils import object_utils
+# from shared_astro_utils import object_utils
 
 from zoobot import label_metadata
 from zoobot.data_utils import catalog_to_tfrecord, checks
@@ -156,8 +156,8 @@ class ShardConfig():
         return True
 
 
-    def to_dict(self):
-        return object_utils.object_to_dict(self)
+    # def to_dict(self):
+    #     return object_utils.object_to_dict(self)
 
     def write(self):
         with open(self.config_save_loc, 'w+') as f:

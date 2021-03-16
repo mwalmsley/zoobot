@@ -1,18 +1,23 @@
 .. Zoobot documentation master file, created by
    sphinx-quickstart on Mon Mar 15 15:03:45 2021.
 
-Welcome to Zoobot's documentation!
-==================================
+Zoobot documentation
+====================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    usage/quickstart
+   usage/decals
+   usage/finetuning
 
 
-Indices and tables
-==================
+for new surveys or for new tasks like identifying tidal features or segmenting spiral arms.
+
+
+Indices
+^^^^^^^
 
 * :ref:`genindex`
 * :ref:`modindex`

@@ -1,4 +1,4 @@
-Hello world
+Quickstart
 ===========
 
 This is cool.
