@@ -10,9 +10,6 @@ Welcome to Zoobot's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-.. autoclass:: zoobot.test.Test
-   :members:
-
 .. automodule:: zoobot.test
    :members:
 
