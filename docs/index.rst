@@ -12,7 +12,7 @@ Learn how to use Zoobot. Each guide is paired with a self-contained example scri
 .. toctree::
    :maxdepth: 2
 
-   usage/quickstart
+   usage/overview
    usage/decals
    usage/finetuning
 

@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     """
     Load the dataset into memory using tensorflow
-    - raw_train_dataset and raw_val_dataset are the original images. If requested_imgcrop_size = int(requested_img_size is different to the image size on disk, they will be resized (which is slow). 
+    - raw_train_dataset and raw_val_dataset are the original images. If requested_img_size = int(requested_img_size is different to the image size on disk, they will be resized (which is slow). 
     - train_dataset and val_dataset are preprocessed according to your choices. Here, I normalise to [0, 1] interval and make greyscale. Augmentations are applied later.
     """
 
@@ -87,8 +87,8 @@ if __name__ == '__main__':
     logging.info('Loading pretrained model from {}'.format(pretrained_checkpoint))
     base_model = define_model.load_model(
       pretrained_checkpoint,
-      include_top=False,
-      input_size=requested_img_size,  # preprocessing above did not change size
+      include_top=False,  # do not include the head used for GZ DECaLS - we will add our own head
+      input_size=requested_img_size,  # the preprocessing above did not change size
       crop_size=crop_size,  # model augmentation layers apply a crop...
       resize_size=resize_size,  # ...and then apply a resize
       output_dim=None  # headless so no effect

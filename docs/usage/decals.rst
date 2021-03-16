@@ -1,3 +1,4 @@
+.. _reproducing_decals:
 
 Reproducing the DECaLS Classifications
 ======================================
