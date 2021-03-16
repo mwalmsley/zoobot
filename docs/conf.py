@@ -12,7 +12,8 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../zoobot'))  # currently in docs subfolder
+sys.path.insert(0, os.path.abspath('../'))  # currently in docs subfolder
+print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
