@@ -1,5 +1,7 @@
-Overview
-========
+.. _components:
+
+Components
+==========
 
 Training deep learning models involves many steps and choices.
 Zoobot aims to provide a simple function for each step, tailored to astronomers classifying galaxies.
