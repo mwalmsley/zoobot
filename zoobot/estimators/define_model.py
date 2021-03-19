@@ -10,10 +10,13 @@ from zoobot.training import losses
 class CustomSequential(tf.keras.Sequential):
 
     def __init__(self):
+        """Will this override?
+        """
         super().__init__()
         self.step = 0
 
     def call(self, x, training):
+        "How about this?"
         tf.summary.image('model_input', x, step=self.step)
         # tf.summary.image('model_input', x, step=0)
         return super().call(x, training)

@@ -46,7 +46,7 @@ if __name__ == '__main__':
         for gpu in gpus:
           tf.config.experimental.set_memory_growth(gpu, True)
 
-    # check which GPU we're using, helpful on ARC
+    # check which GPU we're using
     physical_devices = tf.config.list_physical_devices('GPU') 
     logging.info('GPUs: {}'.format(physical_devices))
 
@@ -82,12 +82,11 @@ if __name__ == '__main__':
     eval_records = [os.path.join(eval_records_dir, x) for x in os.listdir(eval_records_dir) if x.endswith('.tfrecord')]
 
     raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True)
-    raw_test_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=False)
+    raw_test_dataset = tfrecord_datasets.get_dataset(eval_records, schema.label_cols, batch_size, shuffle=False)
   
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=schema.label_cols,
         input_size=initial_size,
-        channels=3,
         greyscale=True
     )
     train_dataset = preprocess.preprocess_dataset(raw_train_dataset, preprocess_config)

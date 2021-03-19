@@ -64,14 +64,9 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
 
     if not os.path.isdir(train_config.log_dir):
         os.mkdir(train_config.log_dir)
-    checkpoint_dir = os.path.join(train_config.log_dir, 'checkpoints')
-    if not os.path.isdir(checkpoint_dir):
-        os.mkdir(checkpoint_dir)
-    # need directories into which to save the checkpoints and the final checkpoint
-    # final_checkpoint_dir = os.path.join(checkpoint_dir, 'final_model')
-    # if not os.path.isdir(final_checkpoint_dir):
-    #   os.mkdir(final_checkpoint_dir)
-    # final_checkpoint_loc = os.path.join(final_checkpoint_dir, 'final')
+
+    # will create a multi-file checkpoint like {checkpoint.index, checkpoint.data.00000-00001, ...}
+    checkpoint_name = os.path.join(train_config.log_dir, 'checkpoint')
 
     callbacks = [
         tf.keras.callbacks.TensorBoard(
@@ -83,7 +78,7 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
             profile_batch=0   # i.e. disable profiling
         ),
         tf.keras.callbacks.ModelCheckpoint(
-            filepath=checkpoint_dir,
+            filepath=checkpoint_name,
             monitor='val_loss',
             mode='min',
             save_freq=train_config.save_freq,
@@ -124,7 +119,7 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
     # note that the BEST model is saved as the latest checkpoint, but self.model is the LAST model after training completes
     # to set self.model to the best model, load the latest checkpoint 
     logging.info('Loading and returning (best) model')
-    model.load_weights(checkpoint_dir)  # inplace
+    model.load_weights(checkpoint_name)  # inplace
     # model.save_weights(final_checkpoint_loc)  # copy the best checkpoint here, for easy access. Not needed, only saves the best anyway.
 
     return model
