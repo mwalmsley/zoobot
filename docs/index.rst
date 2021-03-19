@@ -50,6 +50,7 @@ method.
 
    autodoc/data_utils
    autodoc/estimators
+   autodoc/predictions
 
 Indices
 ^^^^^^^
