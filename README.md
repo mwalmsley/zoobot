@@ -11,7 +11,7 @@ For example, you can train a new classifier like so:
 
 ```python
 model = define_model.get_model(
-    output_dim=len(schema.label_cols),
+    output_dim=len(schema.label_cols),  # schema defines the questions and answers
     input_size=initial_size, 
     crop_size=int(initial_size * 0.75),
     resize_size=resize_size
@@ -31,9 +31,9 @@ training_config.train_estimator(
 )
 ```
 
+Install with `pip install zoobot`. Zoobot requires Tensorflow >= 2.3.
 
-To get started, see the [quickstart guide]() and [API]() documentation. 
-The code is accessible to researchers with limited python and machine learning knowledge.
+To get started, see the [documentation](https://zoobot.readthedocs.io/). 
 
 I also include some working examples for you to copy and adapt: 
 

@@ -50,6 +50,7 @@ if __name__ == '__main__':
     labels = list(df['ring'].astype(int))
     logging.info('Labels: \n{}'.format(pd.value_counts(labels)))
 
+    # randomly divide into train and validation sets using sklearn
     paths_train, paths_val, labels_train, labels_val= train_test_split(paths, labels, test_size=0.2, random_state=42)
     assert set(paths_train).intersection(set(paths_val)) == set()  # check there's no train/val overlap
 
