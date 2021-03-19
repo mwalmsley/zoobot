@@ -133,6 +133,7 @@ if __name__ == '__main__':
 
     base_model.trainable = False  # freeze the headless model (no training allowed)
 
+    # I am not using test-time dropout (MC Dropout) on the head as 0.75 would be way too aggressive and reduce performance
     new_head = tf.keras.Sequential([
       layers.InputLayer(input_shape=(7,7,1280)),  # base model dim before GlobalAveragePooling (ignoring batch)
       layers.GlobalAveragePooling2D(),

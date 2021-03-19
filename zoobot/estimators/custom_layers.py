@@ -19,26 +19,22 @@ from tensorflow.keras import layers
 register = tf.keras.utils.register_keras_serializable('custom.layers')
 
 
-# @register
 class PermaDropout(layers.Dropout):
     def call(self, x, training=None):
-        return super().call(x, training=training)  # ME, force dropout on at test time
+        return super().call(x, training=True)  # ME, force dropout on at test time
 
 # class PermaRandomTranslation(layers.experimental.preprocessing.RandomTranslation):
 #     def call(self, x, training=None):
-#         return super().call(x, training=training)
+#         return super().call(x, training=True)
 
-# @register
 class PermaRandomRotation(tf.keras.layers.experimental.preprocessing.RandomRotation):
     def call(self, x, training=None):
-        return super().call(x, training=training)
+        return super().call(x, training=True)
 
-# @register
 class PermaRandomFlip(tf.keras.layers.experimental.preprocessing.RandomFlip):
     def call(self, x, training=None):
-        return super().call(x, training=training)
+        return super().call(x, training=True)
 
-# @register
 class PermaRandomCrop(tf.keras.layers.experimental.preprocessing.RandomCrop):
     def call(self, x, training=None):
-        return super().call(x, training=training)
+        return super().call(x, training=True)
