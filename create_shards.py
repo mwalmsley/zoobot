@@ -107,9 +107,6 @@ class ShardConfig():
         labelled_catalog.to_csv(self.labelled_catalog_loc)
         unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
 
-        # save train/test split into training and eval shards
-        # train_df, eval_df = catalog_to_tfrecord.split_df(labelled_catalog, train_test_fraction=train_test_fraction)
-        # temp change: everything labelled as train, everything unlabelled (just 4k) as eval
         train_df = labelled_catalog
         eval_df = unlabelled_catalog
         logging.info('\nTraining subjects: {}'.format(len(train_df)))
@@ -190,6 +187,12 @@ def load_shard_config_naive(shard_config_loc):
         shard_config_dict = json.load(f)
     return ShardConfig(**shard_config_dict)
 
+
+def get_train_test_fraction(total_size, eval_size):
+    assert eval_size < total_size
+    train_test_fraction = (total_size - int(eval_size))/total_size
+    logging.info('Train test fraction: {}'.format(train_test_fraction))
+    return train_test_fraction
 
 
 def write_catalog_to_tfrecord_shards(df: pd.DataFrame, img_size, columns_to_save, save_dir, shard_size=1000):
@@ -310,7 +313,7 @@ if __name__ == '__main__':
     logging.info('Labelled: {}, unlabelled: {}'.format(len(labelled_catalog), len(unlabelled_catalog)))
 
     # in memory for now, but will be serialized for later/logs
-    train_test_fraction = catalog_to_tfrecord.get_train_test_fraction(len(labelled_catalog), args.eval_size)
+    train_test_fraction = get_train_test_fraction(len(labelled_catalog), args.eval_size)
 
     columns_to_save = ['id_str'] + label_cols
     logging.info('Saving {} columns)'.format(columns_to_save))

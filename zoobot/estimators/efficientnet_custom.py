@@ -6,36 +6,26 @@ import  tensorflow as tf
 from zoobot.estimators import efficientnet_standard
 
 
-def define_headless_efficientnet(input_shape=None, batch_size=None, add_channels=False, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
+def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
     """
-    compile with something like:
-    
-    custom_mses = [bayesian_estimator_funcs.CustomMSEByColumn(name=q.text, start_col=start_col, end_col=end_col) for q, (start_col, end_col) in schema.named_index_groups.items()]
-    model.compile(
-        loss=loss_func,
-        optimizer=tf.keras.optimizers.Adam(),
-        metrics=custom_mses
-    )
+    Define efficientnet model to train.
+    Thin wrapper around ``get_effnet``, an efficientnet creation function from ``efficientnet_standard``, that ensures the appropriate args.
+
+    Additional keyword arguments are passed to ``get_effnet``.
 
     Args:
-        input_shape ([type], optional): [description]. Defaults to None.
-        batch_size ([type], optional): [description]. Defaults to None.
-        add_channels (bool, optional): [description]. Defaults to False.
-        get_effnet ([type], optional): [description]. Defaults to efficientnet_standard.EfficientNetB0.
-
+        input_shape (tuple, optional): Expected input shape e.g. (224, 224, 1). Defaults to None.
+        get_effnet (function, optional): Efficientnet creation function from ``efficientnet_standard``. Defaults to efficientnet_standard.EfficientNetB0.
+    
     Returns:
         [type]: [description]
     """
-    # batch size arg does nothing
-    # add_channels arg does nothing
-
     model = tf.keras.models.Sequential()
     logging.info('Building efficientnet to expect input {}, after any preprocessing layers'.format(input_shape))
 
     # classes probably does nothing without include_top
     effnet = get_effnet(
         input_shape=input_shape,
-        # input_tensor=tf.keras.Input(shape=input_shape, batch_size=batch_size),
         weights=None,
         include_top=False,  # no final three layers: pooling, dropout and dense
         classes=None,  # headless so has no effect
@@ -43,19 +33,19 @@ def define_headless_efficientnet(input_shape=None, batch_size=None, add_channels
     )
     model.add(effnet)
 
-    # note - no dropout on final layer
-
-    # will be updated by callback
-    # model.step = tf.Variable(0, dtype=tf.int64, name='model_step', trainable=False)
-
-     # my loss only works with run_config shards, the new custom shards are vote fraction labelled
-    # loss_func = lambda x, y: losses.multiquestion_loss(x, y, question_index_groups=schema.question_index_groups)
-
-
     return model
 
 
 def custom_top_dirichlet(model, output_dim):
+    """
+    Final dense layer used in GZ DECaLS (after global pooling). 
+    ``output_dim`` neurons with an activation of ``tf.nn.sigmoid(x) * 100. + 1.``, chosen to ensure 1-100 output range
+    This range is suitable for parameters of Dirichlet distribution.
+
+    Args:
+        model (tf.keras.Model): Model to which to add this dense layer
+        output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
+    """
     # model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 20. + .2))  # one params per answer, 1-20 range (mebe fractionally worse)
     model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 100. + 1.))  # one params per answer, 1-100 range
 

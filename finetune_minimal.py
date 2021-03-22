@@ -143,7 +143,6 @@ if __name__ == '__main__':
     training_config.train_estimator(
       model,
       train_config,  # e.g. how to train epochs, patience
-      preprocess_config,  # how to preprocess data before model
       train_dataset,
       val_dataset
     )

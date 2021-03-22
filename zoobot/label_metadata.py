@@ -49,6 +49,15 @@ gz2_partial_questions, gz2_partial_label_cols = schemas.extract_questions_and_la
 
 
 def get_gz2_and_decals_dependencies(question_answer_pairs):
+    """
+    Get dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
+
+    Args:
+        question_answer_pairs (dict): dict mapping questions (e.g. disk-edge-on) to list of answers (e.g. [disk-edge-on_yes, disk-edge-on_no])
+
+    Returns:
+        dict: see above
+    """
     # will need to make your own func if the dependancies change
 
     #  awkward to keep the partial version as it changes these dependencies

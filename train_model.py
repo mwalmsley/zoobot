@@ -118,7 +118,6 @@ if __name__ == '__main__':
     training_config.train_estimator(
       model, 
       train_config,  # parameters for how to train e.g. epochs, patience
-      preprocess_config,  # parameters for how to preprocess data before model e.g. greyscale
       train_dataset,
       test_dataset
     )

@@ -1,7 +1,16 @@
-Catalog to TFRecord
+.. _catalog_to_tfrecord:
+
+catalog_to_tfrecord
 ===================
 
-.. automodule:: zoobot.data_utils.catalog_to_tfrecord
-    :members:
+This module contains utilities to write galaxy catalogs (as pandas dataframes) into TFRecord files.
+These TFRecord files can be read from disk very quickly, which is useful for training ML models.
 
+.. autofunction:: zoobot.data_utils.catalog_to_tfrecord.write_catalog_to_train_test_tfrecords
 
+|
+
+.. autofunction:: zoobot.data_utils.catalog_to_tfrecord.write_image_df_to_tfrecord
+
+|
+.. autofunction:: zoobot.data_utils.catalog_to_tfrecord.row_to_serialized_example

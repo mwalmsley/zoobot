@@ -50,7 +50,10 @@ method.
 
    autodoc/data_utils
    autodoc/estimators
+   autodoc/training
    autodoc/predictions
+   autodoc/schemas
+   autodoc/label_metadata
 
 Indices
 ^^^^^^^

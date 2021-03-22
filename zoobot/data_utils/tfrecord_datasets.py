@@ -11,18 +11,19 @@ import tensorflow as tf
 
 def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, drop_remainder=False):
     """
-    Use feature_spec to load data from tfrecord_locs, and shuffle/batch according to args.
+    Use feature_spec to load data from tfrecord_locs, and optionally shuffle/batch according to args.
     Does NOT apply any preprocessing.
     
     Args:
-        tfrecord_locs ([type]): [description]
-        feature_spec ([type]): [description]
-        batch_size ([type]): [description]
-        shuffle ([type]): [description]
-        repeat ([type]): [description]
+        tfrecord_locs (list): paths to tfrecords to load.
+        label_cols (list): of features encoded in tfrecord e.g. ['smooth_votes', 'featured_votes']. 'id_str' and 'matrix' will be loaded automatically and do not need to be included.
+        batch_size (int): batch size
+        shuffle (bool): if True, shuffle the dataset
+        repeat (bool): if True, dataset will repeat indefinitely. Defaults to False.
+        drop_remainder (bool): if True, drop any galaxies that don't fit exactly into a batch e.g. galaxy 9 of a list of 9 galaxies with batch size 8. Default False.
     
     Returns:
-        [type]: [description]
+        tf.data.Dataset: yielding batches of {'matrix': , 'id_str': , label_cols[0]: , label_cols[1], ...}, optionally shuffled and cut.
     """
     feature_spec = get_feature_spec(label_cols)
 
@@ -36,30 +37,23 @@ def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, dr
     return dataset
 
 
-def get_feature_spec(label_cols):
+def load_tfrecords(tfrecord_locs, feature_spec, num_parallel_calls=tf.data.experimental.AUTOTUNE, shuffle=False):
     """
-    Get dataset images and labels from tfrecord according to instructions in config
-    Does NOT apply preprocessing e.g. augmentations or further brightness tweaks
+    Load tfrecords as tf.data.Dataset.
+    Used by get_dataset.
+
+    shuffle will randomise the order of the tfrecords. This is different (and complementary) to shuffling the batches (see get_dataset).
+    If shuffle=False and multiple tfrecords, returns examples in deterministic but not equal order 
 
     Args:
-        config (PreprocessingConfig): instructions to load and preprocess the image and label data
+        tfrecord_locs (list): paths to tfrecords to load.
+        feature_spec (dict): like {feature: tf.io spec}. See source code.
+        num_parallel_calls (int, optional): Number of parallel threads to use when loading. Defaults to tf.data.experimental.AUTOTUNE.
+        shuffle (bool, optional): If True, shuffle order in which to load TFRecords. Defaults to False.
 
     Returns:
-        (tf.Tensor, tf.Tensor)
+        tf.data.Dataset: yielding {'matrix': , 'id_str': , label_cols[0]: , label_cols[1], ...} for each galaxy in each TFRecord, optionally shuffled by TFRecord.
     """
-    requested_features = {'matrix': 'string', 'id_str': 'string'}  # new - must always have id_str
-    # We only support float labels!
-    # add key-value pairs like (col: float) for each col in config.label_cols
-    # the order of config.label_cols will be the order that labels (axis=1) is indexed
-    requested_features.update(zip(label_cols, ['float' for col in label_cols]))
-    return construct_feature_spec(requested_features)
-    
-
-
-def load_tfrecords(tfrecord_locs, feature_spec, num_parallel_calls=tf.data.experimental.AUTOTUNE, shuffle=False):
-    # here, shuffle will randomise the order of the tfrecords. This is different (and complementary) to shuffling the batches.
-    # if shuffle=False and multiple tfrecords, returns examples in deterministic but not equal order 
-
     # TODO consider num_parallel_calls = len(list)?
     # small wrapper around loading a TFRecord as a single tensor tuples
     logging.info('tfrecord.io: Loading dataset from {}'.format(tfrecord_locs))
@@ -91,6 +85,26 @@ def load_tfrecords(tfrecord_locs, feature_spec, num_parallel_calls=tf.data.exper
             # could add num_parallel_calls if desired, but let's leave for now 
         # for extra randomness, may shuffle those (1st in s1, 1st in s2, ...) subjects
         return dataset
+
+
+
+def get_feature_spec(label_cols):
+    """
+    Get dataset images and labels from tfrecord according to instructions in config
+    Does NOT apply preprocessing e.g. augmentations or further brightness tweaks
+
+    Args:
+        config (PreprocessingConfig): instructions to load and preprocess the image and label data
+
+    Returns:
+        (tf.Tensor, tf.Tensor)
+    """
+    requested_features = {'matrix': 'string', 'id_str': 'string'}  # new - must always have id_str
+    # We only support float labels!
+    # add key-value pairs like (col: float) for each col in config.label_cols
+    # the order of config.label_cols will be the order that labels (axis=1) is indexed
+    requested_features.update(zip(label_cols, ['float' for col in label_cols]))
+    return construct_feature_spec(requested_features)
 
 
 def general_parsing_function(serialized_example, features):

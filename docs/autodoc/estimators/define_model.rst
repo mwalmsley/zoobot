@@ -1,5 +1,21 @@
-Define Model
+define_model
 ===================
 
-.. automodule:: zoobot.estimators.define_model
-    :members:
+This module contains functions for defining an EfficientNet model (``get_model``),
+with or without the GZ DECaLS head, and optionally to load the weights of a pretrained model.
+
+Models are defined using functions in ``efficientnet_standard`` and ``efficientnet_custom``.
+
+.. autofunction:: zoobot.estimators.define_model.get_model
+
+|
+
+.. autofunction:: zoobot.estimators.define_model.add_augmentation_layers
+
+|
+
+.. autofunction:: zoobot.estimators.define_model.load_weights
+
+|
+
+.. autofunction:: zoobot.estimators.define_model.load_model

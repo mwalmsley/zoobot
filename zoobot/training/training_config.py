@@ -45,18 +45,22 @@ class TrainConfig():
 
     # don't decorate, this is session creation point
 
-def train_estimator(model, train_config, input_config, train_dataset, test_dataset, extra_callbacks=[]):
+def train_estimator(model, train_config, train_dataset, test_dataset, extra_callbacks=[], eager=False, verbose=1):
     """
     Train and evaluate a model.
-    Model should already be compiled with model.compile(loss, optimizer)
 
-    TODO save every n epochs 
-    TODO enable early stopping
-    TODO enable use with tf.serving
-    TODO enable logging hooks?
+    Includes tensorboard logging (to log_dir/tensorboard).
+    Includes checkpointing (named log_dir/checkpoint), with the rolling best val loss checkpoint saved.
+    Includes early stopping according to train_config.patience.
 
     Args:
-        self (RunEstimatorConfig): parameters controlling both estimator and train/test procedure
+        model (tf.keras.Model): model to train. Must already be compiled with model.compile(loss, optimizer)
+        train_config (TrainConfig): parameters controlling training procedure e.g. epochs, early stopping
+        train_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
+        test_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
+        extra_callbacks (list): any extra callbacks to use when training the model. See e.g. tf.keras.callbacks.
+        eager (bool, optional): If True, train in eager mode - slow, but helpful for debugging. Defaults to False.
+        verbose (int, optional): 1 for progress bar, useful for local training. 2 for one line per epoch, useful for scripts. Defaults to 1.
 
     Returns:
         None
@@ -96,15 +100,14 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
       0, dtype=tf.int64, name='model_step', trainable=False
     )
 
-    verbose = 1  # progress bar
-    # verbose = 2  # one line per epoch
     # https://www.tensorflow.org/tensorboard/scalars_and_keras
     fit_summary_writer = tf.summary.create_file_writer(os.path.join(train_config.log_dir, 'manual_summaries'))
     # pylint: disable=not-context-manager
     with fit_summary_writer.as_default(): 
         # pylint: enable=not-context-manager
         # for debugging
-        # model.run_eagerly = True
+        if eager:
+            model.run_eagerly = True
         # https://www.tensorflow.org/api_docs/python/tf/keras/Model
 
         model.fit(
@@ -120,6 +123,5 @@ def train_estimator(model, train_config, input_config, train_dataset, test_datas
     # to set self.model to the best model, load the latest checkpoint 
     logging.info('Loading and returning (best) model')
     model.load_weights(checkpoint_name)  # inplace
-    # model.save_weights(final_checkpoint_loc)  # copy the best checkpoint here, for easy access. Not needed, only saves the best anyway.
 
     return model

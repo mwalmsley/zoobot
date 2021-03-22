@@ -8,6 +8,19 @@ import tensorflow as tf
 
 # https://stackoverflow.com/questions/62544528/tensorflow-decodejpeg-expected-image-jpeg-png-or-gif-got-unknown-format-st?rq=1
 def load_image_file(loc, mode='png'):
+    """
+    Load an image file from disk to memory.
+
+    Args:
+        loc (str): Path to image on disk. Includes format e.g. .png.
+        mode (str, optional): Image format. Defaults to 'png'.
+
+    Raises:
+        ValueError: mode is neither png nor jpeg.
+
+    Returns:
+        dict: like {'matrix': float32 np.ndarray from 0. to 255., 'id_str': ``loc``}
+    """
     # values will be 0-255, does not normalise. Happens in preprocessing instead.
     # specify mode explicitly to avoid graph tracing issues
     image = tf.io.read_file(loc)
@@ -17,16 +30,9 @@ def load_image_file(loc, mode='png'):
         image = tf.image.decode_jpeg(image)
     else:
         raise ValueError(f'Image filetype mode {mode} not recognised')
-    # this works but introduces some unpredictable scaling that's not clear to be
-    # converted_image = tf.image.convert_image_dtype(image, tf.float32)
-    # use a simple cast instead
+
     converted_image = tf.cast(image, tf.float32)
 
-    # if loc_to_label is not None:
-    #     assert callable(loc_to_label)
-    #     label = loc_to_label(loc)
-    #     return converted_image, label
-    # else:
     return {'matrix': converted_image, 'id_str': loc}  # using the file paths as identifiers
 
 
@@ -51,17 +57,17 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     For labels, encode them in the loc (e.g. images/spirals/gal_1345.png, or images/gal_1345_spiral.png) and provide loc_to_label function to decode
 
     Args:
-        folder_to_predict ([type]): [description]
-        file_format ([type]): [description]
-        requested_img_size ([type]): [description]
-        batch_size ([type]): [description]
-        loc_to_label ([type], optional): [description]. Defaults to None.
+        image_paths (list): list of image paths to load
+        file_format (str): image format e.g. png, jpeg
+        requested_img_size (int): image dimension e.g. 256 for 256x256x3 image. Assumed square.
+        batch_size (int): batch size to use when grouping images into batches
+        labels (list or None): If not None, include labels in dataset (see Returns). Must be equal length to image_paths. Defaults to None.
 
     Raises:
-        FileNotFoundError: [description]
+        FileNotFoundError: at least one path does not match an existing file
 
     Returns:
-        [type]: [description]
+        tf.data.Dataset: yielding batches with 'matrix' key for image array, 'id_str' for the image path, and 'label' if ``labels`` was provided.
     """
     
     assert len(image_paths) > 0
@@ -87,9 +93,10 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
         image_ds = image_ds.map(lambda x: prepare_image_batch(x, resize_size=requested_img_size))
 
     if labels is not None:
+        assert len(labels) == len(image_paths)
         label_ds = tf.data.Dataset.from_tensor_slices(labels)
         label_ds = label_ds.batch(batch_size, drop_remainder=False)
-        image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label: dict(image_dict, label=label))  # now yields (image, label) tuples
+        image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label: dict(image_dict, label=label))  # now yields {'matrix': , 'id_str': , 'label': } batched dicts
 
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 

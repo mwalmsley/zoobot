@@ -14,11 +14,6 @@ from tensorflow.keras import layers
 #         return x
 
 
-# so intead we modify each layer
-
-register = tf.keras.utils.register_keras_serializable('custom.layers')
-
-
 class PermaDropout(layers.Dropout):
     def call(self, x, training=None):
         return super().call(x, training=True)  # ME, force dropout on at test time

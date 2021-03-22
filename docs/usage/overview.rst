@@ -121,7 +121,6 @@ The general steps are the same: define the model architecture, select a loss fun
     training_config.train_estimator(
     model, 
     train_config,  # parameters for how to train e.g. epochs, patience
-    preprocess_config,  # parameters for how to preprocess data
     train_dataset,
     val_dataset
     )

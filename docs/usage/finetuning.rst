@@ -112,7 +112,6 @@ Train
     training_config.train_estimator(
         model,
         train_config,  # how to train e.g. epochs, patience
-        preprocess_config,  # how to preprocess data before model
         train_dataset,
         val_dataset
     )

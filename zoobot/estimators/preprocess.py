@@ -7,21 +7,7 @@ import pandas as pd
 import tensorflow as tf
 from skimage.transform import warp, AffineTransform, SimilarityTransform
 
-"""Does this text go anywhere?
-
-Raises:
-    ValueError: [description]
-    ValueError: [description]
-
-Returns:
-    [type]: [description]
-"""
-
 class PreprocessingConfig():
-    """
-    Simple data class for common input properties
-    e.g. config.input_size, config.shuffle, etc
-    """
 
     def __init__(
             self,
@@ -32,6 +18,21 @@ class PreprocessingConfig():
             permute_channels=False,
             input_channels=3,  # for png, jpg etc. Might be different if e.g. fits (not supported yet).
     ):
+        """
+        Simple data class to define how images should be preprocessed.
+        Can then be used to easily pass those parameters around e.g. preprocess.shuffle, preprocess.make_greyscale, etc.
+
+        Args:
+            label_cols (List): list of answer strings in fixed order. Useful for loading labels.
+            input_size (int): length of image before preprocessing (assumed square) e.g. 300
+            make_greyscale (bool): if True, average over channels (last dimension). Incompatible with ``permute_channels``
+            normalise_from_uint8 (bool): if True, assume input image is 0-255 range and divide by 255.
+            permute_channels (bool, optional): If True, randomly swap channels around. Defaults to False.
+            input_channels (int, optional): Number of channels in input image (last dimension). Defaults to 3.
+
+        Raises:
+            ValueError: trying to permute channels when ``input_channels == 1``
+        """
         self.label_cols = label_cols
         self.input_size = input_size
         self.input_channels = input_channels
@@ -55,10 +56,10 @@ class PreprocessingConfig():
 # @tf.function
 def preprocess_dataset(dataset, config):
     """
-    Load tfrecord as dataset. Stratify and transform_3d images as directed. Batch with queues for Estimator input.
-    Batch counts are N for k of N volunteers i.e. the total observed responses
+    Thin wrapper applying ``preprocess_batch`` across dataset. See ``preprocess_batch`` for more.
+
     Args:
-        config (PreprocessingConfig): Configuration object defining how 'get_input' should function  # TODO consider active class
+        config (PreprocessingConfig): Configuration object defining how 'get_input' should function
 
     Returns:
         (dict) of form {'x': make_greyscale image batch}, as Tensor of shape [batch, size, size, 1]}
@@ -69,14 +70,19 @@ def preprocess_dataset(dataset, config):
 
 def preprocess_batch(batch, config):
     """
-    TODO check use of e.g. dataset.map(func, num_parallel_calls=n) 
+    Apply preprocessing to batch as directed by ``config``.
+
+    If config.normalise_from_uint8, assume images are 0-255 range and divide by 255.
+    Then apply ``preprocess_images``.
+
+    Finally, split batch into tuples of (images, labels) (if ``config.label_cols`` is not empty) or (images, id_strings) otherwise.
     
     Args:
-        batch ([type]): [description]
-        config ([type]): [description]
+        batch (dict): not quite a dict but a tf.data.Dataset batch, which can be keyed with batch['matrix'], batch['id_str'], and perhaps batch[col] for each col in ``config.label_cols``
+        config (PreprocessingConfig): Configuration object defining how 'get_input' should function
     
     Returns:
-        [type]: [description]
+        tuple: see above
     """
     # logging.info('Loading image size {}'.format(config.input_size))
     batch_images = get_images_from_batch(
@@ -102,6 +108,18 @@ def preprocess_batch(batch, config):
 
 
 def preprocess_images(batch_images, input_size, make_greyscale, permute_channels):
+    """
+    Apply basic preprocessing to a batch of images.
+
+    Args:
+        batch_images (tf.Tensor): of shape (batch_size, input_size, input_size, channels)
+        input_size (int): length of images before preprocessing (assumed square)
+        make_greyscale (bool): if True, take an average over channels.
+        permute_channels (bool): if True, randomly swap channels around.
+
+    Returns:
+        tf.Tensor: preprocessed images, with channels=1 if ``make_greyscale``.
+    """
     assert len(batch_images.shape) == 4
     assert batch_images.shape[3] == 3  # should still have 3 channels at this point
 
@@ -124,17 +142,18 @@ def preprocess_images(batch_images, input_size, make_greyscale, permute_channels
     return augmented_images
 
 
-def get_images_from_batch(batch, size, channels, summary=False):
-    """[summary]
+def get_images_from_batch(batch, size, channels):
+    """
+    Extract images from batch and ensure they are the expected size.
+    Useful to then manipulate those images.
 
     Args:
-        batch ([type]): [description]
-        size ([type]): initial size of image as saved to disk/tfrecord
-        channels ([type]): [description]
-        summary (bool, optional): [description]. Defaults to False.
+        batch (dict): tf.data.Dataset batch with images under 'matrix' key
+        size (int): length of images before preprocessing (assumed square)
+        channels (int): Number of channels in input image (last dimension).
 
     Returns:
-        [type]: [description]
+        tf.Tensor: images of shape ``(batch_size, size, size, channels)``
     """
     batch_data = tf.cast(batch['matrix'], tf.float32)  # may automatically read uint8 into float32, but let's be sure
     batch_images = tf.reshape(
@@ -147,7 +166,21 @@ def get_images_from_batch(batch, size, channels, summary=False):
 
 
 def get_labels_from_batch(batch, label_cols: List):
-    return tf.stack([batch[col] for col in label_cols], axis=1)   # TODO batch[cols] appears not to work?
+    """
+    Extract labels from batch.
+
+    Batch will have labels keyed under batch[col] for col in ``label_cols``.
+    Stack those labels into a tf.Tensor that can then be used for e.g. evaluating a model.
+    Order of labels in the tf.Tensor will match that of ``label_cols``.
+
+    Args:
+        batch (dict): tf.data.Dataset batch
+        label_cols (List): strings for each answer e.g. ['smooth-or-featured_smooth', 'smooth-or-featured_featured-or-disk', etc]
+
+    Returns:
+        tf.Tensor: labels extracted from batch, of shape (batch_size, num. answers)
+    """
+    return tf.stack([batch[col] for col in label_cols], axis=1)   # batch[cols] appears not to work
 
 
 # def load_batches_without_labels(config):
