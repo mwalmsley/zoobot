@@ -13,4 +13,5 @@ These TFRecord files can be read from disk very quickly, which is useful for tra
 .. autofunction:: zoobot.data_utils.catalog_to_tfrecord.write_image_df_to_tfrecord
 
 |
+
 .. autofunction:: zoobot.data_utils.catalog_to_tfrecord.row_to_serialized_example

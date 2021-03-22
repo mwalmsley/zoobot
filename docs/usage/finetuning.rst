@@ -42,6 +42,15 @@ For a general introduction, see `this excellent blog post <https://blog.keras.io
 Load Pretrained Model
 ---------------------
 
+Neural networks, like any statistical model, are trained by fitting their free parameters to data.
+The free parameters in neural networks are called weights.
+
+Recreating a previously trained neural network takes two steps: defining the model (how the neurons connect) and then loading the weights.
+:meth:`zoobot.estimators.define_model.load_model` does both steps for you. 
+It defines the model used for GZ DECaLS, and then loads the weights for that model.
+By passing ``include_top=False``, the final layers of the network (those used to make a prediction) will not be loaded.
+We will add our own top layers shortly.
+
 .. code-block:: 
 
     base_model = define_model.load_model(
@@ -53,6 +62,11 @@ Load Pretrained Model
         output_dim=None  # headless so no effect
     )
 
+We would like to retrain this model to work well on a new, related problem - here, classifying ring galaxies.
+We don't have enough data to retrain the whole model - GZ DECaLS required hundreds of thousands of labels.
+Instead, we will freeze the model (without any top layers) and then add our own top layers.
+We can then train only the new top layer.
+
 .. code-block:: 
 
     base_model.trainable = False  # freeze the headless model (no training allowed)
@@ -60,6 +74,17 @@ Load Pretrained Model
 
 Replace Output Layers
 ---------------------
+
+Our top layer needs to be small enough that we can train it with very little data.
+A few dense layers will do.
+
+Here, I use two Dense layers with very aggressive dropout to prevent overfitting.
+Combining several dense layers allows for nonlinear behaviour, which can be useful.
+
+The final layer is a single neuron with a sigmoid activation function.
+This will always give an output between 0 and 1, which is appropriate for binary classification.
+For multiclass classification, I might instead use 
+``layers.Dense(3, activation="softmax", name="softmax_output")``.
 
 .. code-block:: 
 
@@ -75,12 +100,7 @@ Replace Output Layers
         layers.Dense(1, activation="sigmoid", name='sigmoid_output')
     ])
 
-output should be one neuron w/ sigmoid for binary classification...
-
-layers.Dense(3, activation="softmax", name="softmax_output")  # ...or N neurons w/ softmax for N-class classification
-
-
-Stick the new head on the pretrained base model
+Now we stick the new head on top of the pretrained base model:
 
 .. code-block:: 
 
@@ -93,6 +113,13 @@ Stick the new head on the pretrained base model
 Train 
 -----------
 
+The base model remains frozen, while the head is free to train (as we never set ``new_head.trainable = False``).
+Training the overall model will therefore only affect the new head.
+
+For a binary classification problem, I am using the binary cross-entropy.
+Other types of problem will need different losses.
+I am using the adam optimizer, which is nearly always a great choice - it's very robust!
+
 .. code-block:: 
 
     model.compile(
@@ -100,6 +127,8 @@ Train
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),  # normal learning rate is okay
         metrics=['accuracy']
     )
+
+I define how I would like my model to be trained, with 80 epochs and stopping early if the validation loss does not improve after 10 consecutive epochs:
 
 .. code-block:: 
 
@@ -109,6 +138,8 @@ Train
         patience=10  # early stopping: if val loss does not improve for this many epochs in a row, end training
     )
 
+And then we train!
+
     training_config.train_estimator(
         model,
         train_config,  # how to train e.g. epochs, patience
@@ -116,4 +147,9 @@ Train
         val_dataset
     )
 
-Will save to...
+``model`` has now been fit to the training data. You can use it to make new predictions - see the full example for more.
+
+The new weights, including the new head, have been saved to log_dir/checkpoint. 
+You can load them at any time to make predictions later or continue training - just be sure to define your model, including the new head, in exactly the same way.
+
+Now go do some science!

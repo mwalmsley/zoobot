@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 
 
 def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, columns_to_save, reader, train_test_fraction=0.8):
-    """Save a galaxy catalog as a pair of train and test TFRecords, for fast loading later.
+    """
+    Save a galaxy catalog as a pair of train and test TFRecords, for fast loading later.
     Makes the train/test split and returns the corresponding train/test catalogs for convenience.
     
     Args:
@@ -43,7 +44,8 @@ def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, col
 
 
 def write_image_df_to_tfrecord(df, tfrecord_loc, img_size, columns_to_save, reader):
-    """Write a galaxy catalog to TFRecord file.
+    """
+    Write a galaxy catalog to TFRecord file.
     For example, the training catalog to the training TFRecord, to then be trained on by a model.
 
     Args:
