@@ -1,3 +1,5 @@
+.. _training_config:
+
 training_config
 ===================
 

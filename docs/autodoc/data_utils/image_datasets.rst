@@ -1,3 +1,5 @@
+.. _image_datasets:
+
 image_datasets
 ===================
 
