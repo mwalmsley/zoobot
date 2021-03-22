@@ -75,7 +75,7 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
 def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False):
     """
     Create a trainable efficientnet model.
-    First layers are galaxy-appropriate augmentation layers - see :ref:`add_augmentation_layers`.
+    First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
     Expects single channel image e.g. (300, 300, 1), likely with leading batch dimension.
 
     Optionally (by default) include the head (output layers) used for GZ DECaLS.
@@ -85,8 +85,8 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     Args:
         output_dim (int): Dimension of head dense layer. No effect when include_top=False.
         input_size (int): Length of initial image e.g. 300 (assumed square)
-        crop_size (int): Length to randomly crop image. See ``add_augmentation_layers``.
-        resize_size (int): Length to resize image. See ``add_augmentation_layers``.
+        crop_size (int): Length to randomly crop image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
+        resize_size (int): Length to resize image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.
         include_top (bool, optional): If True, include head used for GZ DECaLS: global pooling and dense layer. Defaults to True.
         expect_partial (bool, optional): If True, do not raise partial match error when loading weights (likely for optimizer state). Defaults to False.
