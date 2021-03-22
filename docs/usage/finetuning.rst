@@ -140,6 +140,8 @@ I define how I would like my model to be trained, with 80 epochs and stopping ea
 
 And then we train!
 
+.. code-block:: 
+
     training_config.train_estimator(
         model,
         train_config,  # how to train e.g. epochs, patience
