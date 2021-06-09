@@ -88,8 +88,7 @@ def preprocess_batch(batch, config):
     batch_images = get_images_from_batch(
         batch,
         size=config.input_size,
-        channels=config.input_channels,
-        summary=True)
+        channels=config.input_channels)
 
     if config.normalise_from_uint8:
         batch_images = batch_images / 255.

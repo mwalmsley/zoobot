@@ -5,6 +5,7 @@ import time
 import logging
 
 import tensorflow as tf
+import wandb
 
 from zoobot.data_utils import tfrecord_datasets
 from zoobot.training import training_config, losses
@@ -52,13 +53,17 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
-    parser.add_argument('--shard-img-size', dest='shard_img_size', type=int, default=256)
-    parser.add_argument('--resize-size', dest='resize_size', type=int, default=64)
+    parser.add_argument('--shard-img-size', dest='shard_img_size', type=int, default=300)
+    parser.add_argument('--resize-size', dest='resize_size', type=int, default=224)
     parser.add_argument('--train-dir', dest='train_records_dir', type=str)
     parser.add_argument('--eval-dir', dest='eval_records_dir', type=str)
     parser.add_argument('--epochs', dest='epochs', type=int)
     parser.add_argument('--batch-size', dest='batch_size', default=64, type=int)
+    parser.add_argument('--wandb', default=False, action='store_true')
     args = parser.parse_args()
+
+    greyscale = True
+    # greyscale = False
 
     initial_size = args.shard_img_size
     resize_size = args.resize_size  # step time prop. to resolution
@@ -87,7 +92,8 @@ if __name__ == '__main__':
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=schema.label_cols,
         input_size=initial_size,
-        greyscale=True
+        make_greyscale=greyscale,
+        normalise_from_uint8=False
     )
     train_dataset = preprocess.preprocess_dataset(raw_train_dataset, preprocess_config)
     test_dataset = preprocess.preprocess_dataset(raw_test_dataset, preprocess_config)
@@ -113,6 +119,22 @@ if __name__ == '__main__':
       epochs=epochs,
       patience=10
     )
+
+    if args.wandb:
+      this_script_dir = os.path.dirname(__file__)
+      # you need to make this file yourself, with your api key and nothing else
+      with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
+        api_key = f.readline()
+      wandb.login(key=api_key)
+      wandb.init(sync_tensorboard=True)
+      config = wandb.config
+      config.label_cols=schema.label_cols,
+      config.initial_size=initial_size
+      config.greyscale = greyscale
+      config.resize_size = resize_size
+      config.batch_size = batch_size
+      config.train_records = train_records
+      config.epochs = epochs
 
     # inplace on model
     training_config.train_estimator(

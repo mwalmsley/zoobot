@@ -45,7 +45,7 @@ def predict(image_ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, la
 
     data = [prediction_to_row(predictions[n], image_paths[n], label_cols=label_cols) for n in range(len(predictions))]
     predictions_df = pd.DataFrame(data)
-    logging.info(predictions_df)
+    # logging.info(predictions_df)
 
     predictions_df.to_csv(save_loc, index=False)
     logging.info(f'Predictions saved to {save_loc}')

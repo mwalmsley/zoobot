@@ -62,7 +62,9 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
         flip_layer = tf.keras.layers.experimental.preprocessing.RandomFlip
         crop_layer = tf.keras.layers.experimental.preprocessing.RandomCrop
 
-    model.add(rotation_layer(np.pi, fill_mode='reflect'))
+
+    # np.pi fails with tf 2.5
+    model.add(rotation_layer(0.5, fill_mode='reflect'))  # rotation range +/- 0.25 * 2pi i.e. +/- 90*.
     model.add(flip_layer())
     model.add(crop_layer(crop_size, crop_size))
     if resize:
