@@ -45,7 +45,7 @@ class TrainConfig():
 
     # don't decorate, this is session creation point
 
-def train_estimator(model, train_config, train_dataset, test_dataset, extra_callbacks=[], eager=False, verbose=1):
+def train_estimator(model, train_config, train_dataset, test_dataset, extra_callbacks=[], eager=False, verbose=2):
     """
     Train and evaluate a model.
 
@@ -75,7 +75,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
     callbacks = [
         tf.keras.callbacks.TensorBoard(
             log_dir=os.path.join(train_config.log_dir, 'tensorboard'),
-            histogram_freq=3,
+            histogram_freq=0,  # don't log all the internal histograms, possibly slow
             write_images=False,  # this actually writes the weights, terrible name
             write_graph=False,
             # profile_batch='2,10' 
@@ -107,6 +107,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
         # pylint: enable=not-context-manager
         # for debugging
         if eager:
+            logging.warning('Running in eager mode')
             model.run_eagerly = True
         # https://www.tensorflow.org/api_docs/python/tf/keras/Model
 

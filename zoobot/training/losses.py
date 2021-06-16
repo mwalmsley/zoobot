@@ -113,7 +113,7 @@ def get_multiquestion_loss(question_index_groups):
         def call(self, labels, predictions):
             return calculate_multiquestion_loss(labels, predictions, question_index_groups)
 
-    return MultiquestionLoss(reduction=tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE)
+    return MultiquestionLoss(reduction=tf.keras.losses.Reduction.SUM)  # changed from SUM_OVER_BATCH_SIZE to support multi-gpu mirrored strategy - will change by a factor of 2 once batch size increases
 
 
 def calculate_multiquestion_loss(labels, predictions, question_index_groups):

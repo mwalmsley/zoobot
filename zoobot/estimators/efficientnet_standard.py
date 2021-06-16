@@ -281,7 +281,7 @@ def EfficientNet(width_coefficient,
                                       default_size=default_resolution,
                                       min_size=32,
                                       data_format=backend.image_data_format(),
-                                      require_flatten=include_top,
+                                      require_flatten=False,  # changed from include_top in original code
                                       weights=weights)
 
     if input_tensor is None:

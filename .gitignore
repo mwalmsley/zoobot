@@ -131,3 +131,11 @@ dmypy.json
 *.csv
 
 wandb_api.txt
+
+*.pdf
+*.png
+
+settings.json
+
+personal_examples.md
+temp_gz2.ipynb

@@ -64,6 +64,10 @@ if __name__ == '__main__':
 
     greyscale = True
     # greyscale = False
+    if greyscale:
+      channels = 1
+    else:
+      channels = 3
 
     initial_size = args.shard_img_size
     resize_size = args.resize_size  # step time prop. to resolution
@@ -98,15 +102,22 @@ if __name__ == '__main__':
     train_dataset = preprocess.preprocess_dataset(raw_train_dataset, preprocess_config)
     test_dataset = preprocess.preprocess_dataset(raw_test_dataset, preprocess_config)
 
-    model = define_model.get_model(
-      output_dim=len(schema.label_cols),
-      input_size=initial_size, 
-      crop_size=int(initial_size * 0.75),
-      resize_size=resize_size
-    )
-  
-    multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
-    loss = lambda x, y: multiquestion_loss(x, y)
+    mirrored_strategy = tf.distribute.MirroredStrategy()
+
+    with mirrored_strategy.scope():
+
+      model = define_model.get_model(
+        output_dim=len(schema.label_cols),
+        input_size=initial_size, 
+        crop_size=int(initial_size * 0.75),
+        resize_size=resize_size,
+        channels=channels
+      )
+    
+      multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
+      loss = lambda x, y: multiquestion_loss(x, y)
+
+    logging.info('Replicas: {}'.format(mirrored_strategy.num_replicas_in_sync))
 
     model.compile(
         loss=loss,
