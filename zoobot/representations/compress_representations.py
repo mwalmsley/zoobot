@@ -12,6 +12,7 @@ from sklearn.decomposition import IncrementalPCA
 
 
 def create_pca_embedding(features, n_components, variance_plot_loc=None):
+    assert len(features) > 0
     pca = IncrementalPCA(n_components=n_components, batch_size=20000)
     reduced_embed = pca.fit_transform(features)
     if np.isnan(reduced_embed).any():
@@ -32,13 +33,15 @@ def main(features_cleaned_and_concat_loc, catalog_loc, name, output_dir):
 
     # made by reformat_cnn_features.py
     df = pd.read_parquet(features_cleaned_and_concat_loc)
+    print(df.iloc[0]['filename'])
 
     """join to catalog"""
-    catalog = pd.read_parquet(catalog_loc, )
+    catalog = pd.read_parquet(catalog_loc)
     catalog['filename'] = catalog['png_loc']  # will use this for first merge w/ features, then use dr8_id or galaxy_id going forwards
+    print(catalog.iloc[0]['filename'])
     df = pd.merge(df, catalog, on='filename', how='inner').reset_index(drop=True)  # applies previous filters implicitly
     df = df.sample(len(df), random_state=42).reset_index()
-
+    assert len(df) > 0
     logging.info(len(df))
 
     # # rename dr8 catalog cols
