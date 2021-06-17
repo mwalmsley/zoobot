@@ -1,6 +1,7 @@
 import glob
 import os
 import logging
+import functools
 from multiprocessing import Pool
 
 import pandas as pd
@@ -12,13 +13,14 @@ def raw_loc_to_clean_loc(raw_loc):
     return raw_loc.replace('_full_features_', '_full_cleaned_').replace('.csv', '.parquet')
 
 
-def clean_feature_csv(loc, image_format = 'png'):
+def clean_feature_csv(loc, image_format = 'png', overwrite=False):
         
     logging.info('Reformatting {}'.format(loc))
     assert '_full_features_' in loc
     assert '_full_cleaned_' not in loc
     clean_loc = raw_loc_to_clean_loc(loc)
-    if not os.path.isfile(clean_loc):
+    if overwrite or not os.path.isfile(clean_loc):
+        logging.info('Cleaning {}'.format(loc))
 
         features_df = pd.read_csv(loc)
         feature_cols = [col for col in features_df if col.startswith('feat')]
@@ -33,6 +35,9 @@ def clean_feature_csv(loc, image_format = 'png'):
 
         features_df.to_parquet(clean_loc)
 
+    else:
+        logging.info('Skipping {} - file exists and overwrite is {}'.format(loc, overwrite))
+
 
 def concat(clean_locs):
     data = []
@@ -43,7 +48,7 @@ def concat(clean_locs):
     return df
 
 
-def main(raw_search_str, clean_search_str, reformatted_parquet_loc):
+def main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=False):
         
     logging.info('Raw files: {}'.format(raw_search_str))
     logging.info('Reformatted files: {}'.format(clean_search_str))
@@ -56,13 +61,15 @@ def main(raw_search_str, clean_search_str, reformatted_parquet_loc):
     pool = Pool(processes=20)
 
     pbar = tqdm(total=len(raw_locs))
-    for _ in pool.imap_unordered(clean_feature_csv, raw_locs):
+    clean_feature_csv_partial = functools.partial(clean_feature_csv, overwrite=overwrite)  # can't use lambda with multiprocessing
+    for _ in pool.imap_unordered(clean_feature_csv_partial, raw_locs):
         pbar.update()
 
     clean_locs = glob.glob(clean_search_str)
     assert clean_locs
     df = concat(clean_locs)
     print(df.head())
+
     df.to_parquet(reformatted_parquet_loc, index=False)
 
 
@@ -75,9 +82,11 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
+    overwrite = False
+
     raw_search_str = '/share/nas/walml/repos/zoobot/data/results/dr5_color_full_features_*.csv'
     clean_search_str = raw_loc_to_clean_loc(raw_search_str)
     assert raw_search_str != clean_search_str
     reformatted_parquet_loc = os.path.join(os.path.dirname(raw_search_str), 'dr5_color_cnn_features_concat.parquet')
 
-    main(raw_search_str, clean_search_str, reformatted_parquet_loc)
+    main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=overwrite)
