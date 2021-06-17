@@ -12,6 +12,12 @@ from zoobot.predictions import predict_on_tfrecords, predict_on_images
 
 import argparse
 
+"""
+This script is the more advanced (yet more useful) version of make_predictions.py
+Use it to make predictions on large datasets
+Predictions might be GZ answers, finetuned problems, or galaxy representations (see representations/README.md)
+"""
+
 
 if __name__ == '__main__':
 
