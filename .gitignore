@@ -139,3 +139,5 @@ settings.json
 
 personal_examples.md
 temp_gz2.ipynb
+*.sh
+*.parquet
