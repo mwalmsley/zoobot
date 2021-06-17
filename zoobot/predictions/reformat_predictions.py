@@ -26,10 +26,10 @@ def clean_feature_csv(loc, image_format = 'png'):
         for col in feature_cols:
             features_df[col] = features_df[col].apply(lambda x: float(x.replace('[', '').replace(']', '')))  # extract from list e.g. [0.1456] to 0.1456
 
-        features_df['filename'] = features_df['image_loc']
+        # features_df['filename'] = features_df['image_loc']
+        # del features_df['image_loc']
 
-        del features_df['image_loc']
-        features_df['id_str'] = list(features_df['filename'].apply(lambda x: os.path.basename(x).split('.')[-2]))
+        features_df['id_str'] = list(features_df['image_loc'].apply(lambda x: os.path.basename(x).split('.')[-2]))
 
         features_df.to_parquet(clean_loc)
 
