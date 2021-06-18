@@ -62,7 +62,7 @@ if __name__ == '__main__':
     else:
         channels = 3
 
-    checkpoint_dir = 'data/pretrained_models/decals_dr_train_set_only/in_progress'  # m0 in the paper, test set not included in training
+    checkpoint_dir = 'data/pretrained_models/decals_dr_train_set_only_m0/in_progress'  # m0 in the paper, test set not included in training
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/latest_color_2xgpu/checkpoint'
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale/checkpoint'
 
