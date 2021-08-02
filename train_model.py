@@ -3,6 +3,7 @@ import os
 import argparse
 import time
 import logging
+import contextlib
 
 import tensorflow as tf
 import wandb
@@ -59,11 +60,12 @@ if __name__ == '__main__':
     parser.add_argument('--eval-dir', dest='eval_records_dir', type=str)
     parser.add_argument('--epochs', dest='epochs', type=int)
     parser.add_argument('--batch-size', dest='batch_size', default=64, type=int)
+    parser.add_argument('--distributed', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
     args = parser.parse_args()
 
-    greyscale = True
-    # greyscale = False
+    # greyscale = True
+    greyscale = False
     if greyscale:
       channels = 1
     else:
@@ -90,6 +92,16 @@ if __name__ == '__main__':
     train_records = [os.path.join(train_records_dir, x) for x in os.listdir(train_records_dir) if x.endswith('.tfrecord')]
     eval_records = [os.path.join(eval_records_dir, x) for x in os.listdir(eval_records_dir) if x.endswith('.tfrecord')]
 
+    if args.distributed:
+      logging.info('Using distributed mirrored strategy')
+      strategy = tf.distribute.MultiWorkerMirroredStrategy()
+      # strategy = tf.distribute.MirroredStrategy()
+      context_manager = strategy.scope()
+      logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
+    else:
+      logging.info('Using single GPU, not distributed')
+      context_manager = contextlib.nullcontext()  # does nothing, just a convenience for clean code
+
     raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True)
     raw_test_dataset = tfrecord_datasets.get_dataset(eval_records, schema.label_cols, batch_size, shuffle=False)
   
@@ -102,9 +114,7 @@ if __name__ == '__main__':
     train_dataset = preprocess.preprocess_dataset(raw_train_dataset, preprocess_config)
     test_dataset = preprocess.preprocess_dataset(raw_test_dataset, preprocess_config)
 
-    mirrored_strategy = tf.distribute.MirroredStrategy()
-
-    with mirrored_strategy.scope():
+    with context_manager:
 
       model = define_model.get_model(
         output_dim=len(schema.label_cols),
@@ -115,9 +125,12 @@ if __name__ == '__main__':
       )
     
       multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
-      loss = lambda x, y: multiquestion_loss(x, y)
+      # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
+      # so do it here instead
+      loss = lambda x, y: multiquestion_loss(x, y) / batch_size  
+      # loss = multiquestion_loss
 
-    logging.info('Replicas: {}'.format(mirrored_strategy.num_replicas_in_sync))
+
 
     model.compile(
         loss=loss,
@@ -152,5 +165,6 @@ if __name__ == '__main__':
       model, 
       train_config,  # parameters for how to train e.g. epochs, patience
       train_dataset,
-      test_dataset
+      test_dataset,
+      eager=False
     )

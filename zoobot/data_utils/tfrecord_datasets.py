@@ -141,7 +141,9 @@ def construct_feature_spec(expected_features: Dict) -> Dict:
 
 
 def cast_bytes_of_uint8_to_float32(some_bytes):
-    return tf.cast(tf.io.decode_raw(some_bytes, out_type=tf.uint8), tf.float32)
+    # bytes are uint of range 0-255 (i.e. pixels)
+    # floats are 0-1 by convention (and may be clipped if not)
+    return tf.cast(tf.io.decode_raw(some_bytes, out_type=tf.uint8), tf.float32) / 255.
 
 
 # def custom_feature_spec(features_requested):

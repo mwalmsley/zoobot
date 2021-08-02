@@ -18,7 +18,7 @@ class CustomSequential(tf.keras.Sequential):
     def call(self, x, training):
         "How about this?"
         tf.summary.image('model_input', x, step=self.step)
-        # tf.summary.image('model_input', x, step=0)
+        tf.summary.histogram('model_input', x, step=self.step)
         return super().call(x, training)
 
 
@@ -107,7 +107,7 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     # model = CustomSequential()  # to log the input image for debugging
     model = tf.keras.Sequential()
 
-    model.add(tf.keras.layers.Input(shape=(input_size, input_size, channels)))
+    model.add(tf.keras.layers.InputLayer(input_shape=(input_size, input_size, channels)))
 
     add_augmentation_layers(model, crop_size=crop_size,
                              resize_size=resize_size)  # inplace
@@ -122,14 +122,11 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
         # drop_connect_rate=drop_connect_rate
     )
     model.add(effnet)
-    # model.add(tf.keras.layers.Dense(16))
-    # model.add(tf.keras.layers.Dense(2))
-#
+
     if include_top:
         assert output_dim is not None
         model.add(tf.keras.layers.GlobalAveragePooling2D())
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
-    # efficientnet.custom_top_dirichlet_reparam(model, output_dim, schema)
 
     # will be updated by callback
     model.step = tf.Variable(

@@ -29,7 +29,7 @@ if __name__ == '__main__':
         for gpu in gpus:
           tf.config.experimental.set_memory_growth(gpu, True)
 
-    run_name = 'dr5_greyscale_morphology'
+    run_name = 'dr5_color_dist_morphology'
     overwrite = True
 
     """Dataframe with list of images on which to make predictions"""
@@ -56,15 +56,20 @@ if __name__ == '__main__':
     crop_size = int(initial_size * 0.75)
     resize_size = 224  # 224 for paper
 
-    greyscale = True
+    greyscale = False
     if greyscale:
         channels = 1
     else:
         channels = 3
 
-    checkpoint_dir = 'data/pretrained_models/decals_dr_train_set_only_m0/in_progress'  # m0 in the paper, test set not included in training
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/latest_color_2xgpu/checkpoint'
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale/checkpoint'
+    # checkpoint_dir = 'data/pretrained_models/decals_dr_train_set_only_m0/in_progress'  # m0 in the paper, test set not included in training
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/latest_color_2xgpu/checkpoint'  # failed
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale/checkpoint'  # failed
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale_single/checkpoint'
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_single/checkpoint'
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale_debug/checkpoint'  # worked
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_debug/checkpoint'  # worked
+    checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_dist/checkpoint' 
 
     # checkpoint_dir = 'results/finetune_advanced/full/checkpoint'  # can also use a finetuned checkpoint in just the same way
 

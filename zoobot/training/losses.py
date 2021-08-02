@@ -97,9 +97,13 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
 
 
 
-def get_multiquestion_loss(question_index_groups):
+def get_multiquestion_loss(question_index_groups, reduction=tf.keras.losses.Reduction.SUM):
     """
     Get subclass of tf.keras.losses.Loss which wraps ``calculate_multiquestion_loss`` and sums over batch.
+
+    tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE will assume the question dimension (10) is also part of the batch, and divide by an extra factor of 10
+    tf.keras.losses.Reduction.SUM_OVER_BATCH_SIZE also does not work in distributed training (as batch size is split between replicas)
+    tf.keras.losses.Reduction.SUM will simply add everything up, so divide by the global batch size externally with tf.reduce_sum
 
     Args:
         question_index_groups (list): Answer indices for each question i.e. [(question.start_index, question.end_index), ...] for all questions. Useful for slicing model predictions by question.
@@ -113,8 +117,7 @@ def get_multiquestion_loss(question_index_groups):
         def call(self, labels, predictions):
             return calculate_multiquestion_loss(labels, predictions, question_index_groups)
 
-    return MultiquestionLoss(reduction=tf.keras.losses.Reduction.SUM)  # changed from SUM_OVER_BATCH_SIZE to support multi-gpu mirrored strategy - will change by a factor of 2 once batch size increases
-
+    return MultiquestionLoss(reduction=reduction) 
 
 def calculate_multiquestion_loss(labels, predictions, question_index_groups):
     """

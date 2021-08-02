@@ -141,3 +141,4 @@ personal_examples.md
 temp_gz2.ipynb
 *.sh
 *.parquet
+*.tfrecord
