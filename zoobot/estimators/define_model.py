@@ -74,7 +74,7 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
         ))
 
 
-def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1):
+def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1, use_imagenet_weights=False):
     """
     Create a trainable efficientnet model.
     First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
@@ -107,7 +107,8 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     # model = CustomSequential()  # to log the input image for debugging
     model = tf.keras.Sequential()
 
-    model.add(tf.keras.layers.InputLayer(input_shape=(input_size, input_size, channels)))
+    input_shape = (input_size, input_size, channels)
+    model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
     add_augmentation_layers(model, crop_size=crop_size,
                              resize_size=resize_size)  # inplace
@@ -116,12 +117,15 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
         input_shape=shape_after_preprocessing_layers,
-        get_effnet=efficientnet_standard.EfficientNetB0
+        get_effnet=efficientnet_standard.EfficientNetB0,
         # further kwargs will be passed to get_effnet
+        use_imagenet_weights=use_imagenet_weights,
         # dropout_rate=dropout_rate,
         # drop_connect_rate=drop_connect_rate
     )
     model.add(effnet)
+
+    logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
 
     if include_top:
         assert output_dim is not None
