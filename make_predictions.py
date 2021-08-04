@@ -25,9 +25,11 @@ if __name__ == '__main__':
     List the images to make predictions on.
     If you like, use ``predict_on_images.paths_in_folder`` to easily list the images in a folder.
     """
-    # unordered_image_paths = df['paths']
-    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images', file_format='png', recursive=False)
     file_format = 'png'
+    # unordered_image_paths = df['paths']
+
+    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images', file_format=file_format, recursive=False)
+
 
     assert len(unordered_image_paths) > 0
     assert os.path.isfile(unordered_image_paths[0])
@@ -36,7 +38,7 @@ if __name__ == '__main__':
     Load the images as a tf.dataset, just as for training
     """
     initial_size = 300  # 300 for paper, from tfrecord or from png (png will be resized when loaded, before preprocessing)
-    batch_size = 64  # 128 for paper, you'll need a very good GPU. 8 for debugging, 64 for RTX 2070
+    batch_size = 256  # 128 for paper, you'll need a very good GPU. 8 for debugging, 64 for RTX 2070, 256 for A100
     raw_image_ds = image_datasets.get_image_dataset([str(x) for x in unordered_image_paths], file_format, initial_size, batch_size)
 
     preprocessing_config = preprocess.PreprocessingConfig(
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     resize_size = 224  # 224 for paper
     channels = 3
 
-    checkpoint_dir = 'data/pretrained_models/gz_decals_full_m0/in_progress'
+    checkpoint_dir = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
     finetuned_dir = 'results/finetune_advanced/full/checkpoint'
     base_model = define_model.load_model(
       checkpoint_dir,
@@ -104,6 +106,6 @@ if __name__ == '__main__':
     # label_cols = label_metadata.decals_label_cols  
 
 
-    save_loc = 'data/results/make_predictions_example.csv'
+    save_loc = 'data/results/make_predictions_example_aug_2021.csv'
     n_samples = 5
     predict_on_images.predict(image_ds, model, n_samples, label_cols, save_loc)

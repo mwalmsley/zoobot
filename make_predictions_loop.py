@@ -29,7 +29,7 @@ if __name__ == '__main__':
         for gpu in gpus:
           tf.config.experimental.set_memory_growth(gpu, True)
 
-    run_name = 'dr5_color_dist_morphology'
+    run_name = 'dr5_rings'
     overwrite = True
 
     """Dataframe with list of images on which to make predictions"""
@@ -56,12 +56,13 @@ if __name__ == '__main__':
     crop_size = int(initial_size * 0.75)
     resize_size = 224  # 224 for paper
 
-    greyscale = False
+    greyscale = True
     if greyscale:
         channels = 1
     else:
         channels = 3
 
+    """For predicting GZ answers - the model as trained"""
     # checkpoint_dir = 'data/pretrained_models/decals_dr_train_set_only_m0/in_progress'  # m0 in the paper, test set not included in training
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/latest_color_2xgpu/checkpoint'  # failed
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale/checkpoint'  # failed
@@ -69,24 +70,21 @@ if __name__ == '__main__':
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_single/checkpoint'
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale_debug/checkpoint'  # worked
     # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_debug/checkpoint'  # worked
-    checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_dist/checkpoint' 
+    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_dist/checkpoint' 
 
-    # checkpoint_dir = 'results/finetune_advanced/full/checkpoint'  # can also use a finetuned checkpoint in just the same way
-
-    """For predicting GZ answers - the model as trained"""
-    model = define_model.load_model(
-        checkpoint_dir,
-        include_top=True,
-        input_size=initial_size,
-        crop_size=crop_size,
-        resize_size=resize_size,
-        channels=channels,
-        output_dim=34 
-    )
-    question_answer_pairs = label_metadata.decals_pairs
-    dependencies = label_metadata.get_gz2_and_decals_dependencies(question_answer_pairs)
-    schema = schemas.Schema(question_answer_pairs, dependencies)
-    label_cols = schema.label_cols
+    # model = define_model.load_model(
+    #     checkpoint_dir,
+    #     include_top=True,
+    #     input_size=initial_size,
+    #     crop_size=crop_size,
+    #     resize_size=resize_size,
+    #     channels=channels,
+    #     output_dim=34 
+    # )
+    # question_answer_pairs = label_metadata.decals_pairs
+    # dependencies = label_metadata.get_gz2_and_decals_dependencies(question_answer_pairs)
+    # schema = schemas.Schema(question_answer_pairs, dependencies)
+    # label_cols = schema.label_cols
 
     """For saving the activations - the model with no head"""
     # base_model = define_model.load_model(
@@ -109,15 +107,49 @@ if __name__ == '__main__':
     # ])
     # label_cols = [f'feat_{x}' for x in range(1280)]
 
-    """For making predictions on a new problem with n classes"""
-    # TODO use the same model architecture you specified during finetuning
-    # label_cols = ['ring']
+    """
+    For making predictions on a new problem with n classes
+    Be sure to use the same model architecture you specified during finetuning
+    """
+    checkpoint_dir = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
+    finetuned_dir = 'results/finetune_advanced/full/checkpoint'
+    base_model = define_model.load_model(
+        checkpoint_dir,
+        include_top=False,
+        input_size=initial_size,
+        crop_size=crop_size,
+        resize_size=resize_size,
+        channels=channels,
+        output_dim=34 
+    )
+    new_head = tf.keras.Sequential([
+      tf.keras.layers.InputLayer(input_shape=(7,7,1280)),
+      tf.keras.layers.GlobalAveragePooling2D(),
+      tf.keras.layers.Dropout(0.75),
+      tf.keras.layers.Dense(64, activation='relu'),
+      tf.keras.layers.Dropout(0.75),
+      tf.keras.layers.Dense(64, activation='relu'),
+      tf.keras.layers.Dropout(0.75),
+      tf.keras.layers.Dense(1, activation="sigmoid", name='sigmoid_output')
+    ])
+    model = tf.keras.Sequential([
+      tf.keras.Input(shape=(initial_size, initial_size, 1)),
+      base_model,
+      new_head
+    ])
+    define_model.load_weights(model, finetuned_dir, expect_partial=True)
 
+    label_cols = ['ring']
+
+
+    """
+    Actually do the predictions!
+    """
     png_batch_size = 10000
     png_start_index = 0
     while png_start_index < len(png_locs):
 
-        save_loc = '/share/nas/walml/repos/zoobot/data/results/{}_{}.csv'.format(run_name, png_start_index)
+        save_loc = '/share/nas/walml/repos/zoobot/data/results/{}_{}_raw.csv'.format(run_name, png_start_index)
         if not os.path.isfile(save_loc) or overwrite:
 
             unordered_image_paths = png_locs[png_start_index:png_start_index+png_batch_size]

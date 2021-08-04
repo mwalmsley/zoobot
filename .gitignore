@@ -142,3 +142,9 @@ temp_gz2.ipynb
 *.sh
 *.parquet
 *.tfrecord
+
+# tensorboard data files
+events.out*
+*.json
+checkpoint*
+.DS_Store

@@ -10,30 +10,29 @@ from tqdm import tqdm
 """Useful to convert cnn predictions with a single forward pass and a single class (e.g. class_a: [[0.3]]) to simple floats rather than lists (e.g. class_a: 0.3)"""
 
 def raw_loc_to_clean_loc(raw_loc):
-    return raw_loc.replace('_full_features_', '_full_cleaned_').replace('.csv', '.parquet')
+    if '_full_features_' in raw_loc:  # convention for cnn features
+        return raw_loc.replace('_full_features_', '_full_cleaned_').replace('.csv', '.parquet')
+    else:
+        return raw_loc.split('.')[-2] + '_cleaned.' + raw_loc.split('.')[-1]
 
 
 def clean_feature_csv(loc, image_format = 'png', overwrite=False):
         
     logging.info('Reformatting {}'.format(loc))
-    assert '_full_features_' in loc
-    assert '_full_cleaned_' not in loc
     clean_loc = raw_loc_to_clean_loc(loc)
     if overwrite or not os.path.isfile(clean_loc):
         logging.info('Cleaning {}'.format(loc))
 
-        features_df = pd.read_csv(loc)
-        feature_cols = [col for col in features_df if col.startswith('feat')]
+        df = pd.read_csv(loc)
 
-        for col in feature_cols:
-            features_df[col] = features_df[col].apply(lambda x: float(x.replace('[', '').replace(']', '')))  # extract from list e.g. [0.1456] to 0.1456
+        cols_to_clean = [col for col in df.columns.values if col not in ['id_str', 'image_loc']]
 
-        # features_df['filename'] = features_df['image_loc']
-        # del features_df['image_loc']
+        for col in cols_to_clean:
+            df[col] = df[col].apply(lambda x: float(x.replace('[', '').replace(']', '')))  # extract from list e.g. [0.1456] to 0.1456
 
-        features_df['id_str'] = list(features_df['image_loc'].apply(lambda x: os.path.basename(x).split('.')[-2]))
+        df['id_str'] = list(df['image_loc'].apply(lambda x: os.path.basename(x).replace('.png', '')))  # assumes png format
 
-        features_df.to_parquet(clean_loc)
+        df.to_parquet(clean_loc)
 
     else:
         logging.info('Skipping {} - file exists and overwrite is {}'.format(loc, overwrite))
@@ -52,7 +51,7 @@ def main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=Fa
         
     logging.info('Raw files: {}'.format(raw_search_str))
     logging.info('Reformatted files: {}'.format(clean_search_str))
-    logging.info('Destination parquet:: {}'.format(reformatted_parquet_loc))
+    logging.info('Destination parquet: {}'.format(reformatted_parquet_loc))
 
     raw_locs = glob.glob(raw_search_str)
     assert raw_locs
@@ -68,8 +67,8 @@ def main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=Fa
     clean_locs = glob.glob(clean_search_str)
     assert clean_locs
     df = concat(clean_locs)
-    print(df.head())
 
+    print('Saving to {}'.format(reformatted_parquet_loc))
     df.to_parquet(reformatted_parquet_loc, index=False)
 
 
@@ -82,11 +81,14 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    overwrite = False
+    overwrite = True
 
-    raw_search_str = '/share/nas/walml/repos/zoobot/data/results/dr5_color_full_features_*.csv'
+    # run_name = 'dr5_color'
+    run_name = 'dr5_rings'
+
+    raw_search_str = '/share/nas/walml/repos/zoobot/data/results/{}_*_raw.csv'.format(run_name)
     clean_search_str = raw_loc_to_clean_loc(raw_search_str)
     assert raw_search_str != clean_search_str
-    reformatted_parquet_loc = os.path.join(os.path.dirname(raw_search_str), 'dr5_color_cnn_features_concat.parquet')
+    reformatted_parquet_loc = os.path.join(os.path.dirname(raw_search_str), '{}_cleaned_concat.parquet'.format(run_name))
 
     main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=overwrite)
