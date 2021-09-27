@@ -25,18 +25,21 @@ from zoobot.estimators import custom_layers
 from zoobot.datasets import rings
 
 
-def main(train_dataset_size=None, batch_size=128, max_galaxies_to_show=5000000):
+def main(train_dataset_size=None, batch_size=256, max_galaxies_to_show=5000000):
     """
-    Set up your finetuning dataset
+    finetune_minimal.py shows you how to train a new head on a frozen base model.
+    But the frozen base model will always give the same (or at least, very similar) representation for each galaxy (as it cannot train).
+    We can therefore achieve the same goal a faster way.
+
+    We have previously calculated and saved the representation for each galaxy (see zoobot/make_predictions.py)
+    We can just load these 1280-dim vectors for each galaxy and train the head model on them.
     
-    Here, I'm using galaxies tagged or not tagged as "ring" by Galaxy Zoo volunteers.
-    I've already saved a pandas dataframe with:
-    - rows of each galaxy
-    - columns of the path (path/to/img.png) and label (1 if tagged ring, 0 if not tagged ring)
+    As a dataset, I am using the 'advanced' ring dataset. 
+    This is larger than the one from finetune_minimal.py and involves some fancy footwork - see :meth:`zoobot.datasets.rings.advanced_ring_feature_dataset` for details.
     """
 
-    log_dir = 'results/finetune_frozen/fractionsv2_{}'.format(time.time())
-    train_dataset, val_dataset, test_dataset = rings.get_ring_feature_dataset(train_dataset_size=train_dataset_size)
+    log_dir = 'results/finetune_on_fixed_representation/example_{}'.format(time.time())
+    train_dataset, val_dataset, test_dataset = rings.get_advanced_ring_feature_dataset(train_dataset_size=train_dataset_size)
 
     train_dataset = train_dataset.batch(batch_size)
     val_dataset = val_dataset.batch(batch_size)
@@ -45,12 +48,9 @@ def main(train_dataset_size=None, batch_size=128, max_galaxies_to_show=5000000):
     """
     Load only the new head. There's no need for the pretrained model itself, as we're using the saved output features instead
     """
-    # note - this was (7, 7, 1280) before i.e. values prior to global average pooling. Swapped to do after GAP as that's the representation I've saved.
     model = tf.keras.Sequential([
       layers.InputLayer(input_shape=(1280)),  # base model dim before GlobalAveragePooling (ignoring batch)
-    #   layers.GlobalAveragePooling2D(),
       # TODO the following layers will likely need some experimentation to find a good combination for your problem
-    #   layers.Dropout(0.75),
       layers.Dense(64, activation='relu'),
       layers.Dropout(0.75),
       layers.Dense(64, activation='relu'),
@@ -93,9 +93,6 @@ def main(train_dataset_size=None, batch_size=128, max_galaxies_to_show=5000000):
       val_dataset
     )
 
-    predictions = model.predict(val_dataset)
-    print(predictions[:10])
-
     # evaluate performance on val set, repeating to marginalise over any test-time augmentations or dropout:
     losses = []
     accuracies = []
@@ -105,7 +102,6 @@ def main(train_dataset_size=None, batch_size=128, max_galaxies_to_show=5000000):
       accuracies.append(test_metrics[0])
     logging.info('Mean test loss: {:.3f} (var {:.4f})'.format(np.mean(losses), np.var(losses)))
     logging.info('Mean test accuracy: {:.3f} (var {:.4f})'.format(np.mean(accuracies), np.var(accuracies)))
-    # should train to a loss of around 0.54, equivalent to 75-80% accuracy on the (class-balanced) validation set
 
     results = {
       'batch_size': int(batch_size),
@@ -116,7 +112,7 @@ def main(train_dataset_size=None, batch_size=128, max_galaxies_to_show=5000000):
       'log_dir': log_dir,
       'run_name': str(os.path.basename(log_dir))
     }
-    with open('finetune_frozen_result_timestamped_{}_{}.json'.format(train_dataset_size, np.random.randint(10000)), 'w') as f:
+    with open('finetune_frozen_shuffled_result_timestamped_{}_{}.json'.format(train_dataset_size, np.random.randint(10000)), 'w') as f:
       json.dump(results, f)
 
     """
@@ -145,7 +141,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--dataset-size', dest='dataset_size', default=None, type=int,
                         help='Max labelled galaxies to use (including resampling)')
-    parser.add_argument('--batch-size', dest='batch_size', default=128, type=int,
+    parser.add_argument('--batch-size', dest='batch_size', default=256, type=int,
                         help='Batch size to use for train/val/test of model')
 
     args = parser.parse_args()
