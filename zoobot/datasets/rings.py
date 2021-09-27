@@ -10,10 +10,10 @@ from zoobot.data_utils import image_datasets
 
 
 def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_dataset_size=None, seed=1):
+    # does not apply any preprocessing
+
     file_format = 'png'
-    # TODO point to example catalog instead
     # uses automatic morphology predictions from gz decals cnn
-    # ring_catalog = pd.read_csv('data/ring_catalog_with_morph.csv', dtype={'ring': int})
     ring_catalog = pd.read_parquet('data/rare_features_dr5_with_ml_morph.parquet')
 
     # some personal path fiddling TODO point to example data instead
@@ -34,9 +34,7 @@ def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_datase
     passes_cuts = not_very_smooth & face
 
     ring_catalog = ring_catalog[passes_cuts].reset_index(drop=True)
-    # logging.info('Labels after selection cuts: \n{}'.format(pd.value_counts(ring_catalog['ring'])))
-
-    # ring_catalog['label'] = ring_catalog['ring'] == 1
+    logging.info('Labels after selection cuts: \n{}'.format(pd.value_counts(ring_catalog['ring'])))
 
     ring_catalog['label'] = get_rough_class_from_ring_fraction(ring_catalog['rare-features_ring_fraction'])
 
@@ -48,11 +46,11 @@ def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_datase
     logging.info('Resampling fraction: {}'.format(resampling_fac))
 
     train_split_index = int(len(rings) * 0.7)  # 70% train, 30% hidden (will be further split to validation and test)
-    rings_train = pd.concat([rings[:train_split_index]] * resampling_fac)  # resample (repeat) rings
+    rings_train = pd.concat([rings[:train_split_index]] * resampling_fac)  # resample (repeat) the training rings
     rings_hidden = rings[train_split_index:]  # do not resample validation, instead will select same num. of non-rings
 
-    not_rings_train = not_rings[:len(rings_train)]
-    not_rings_hidden = not_rings[len(rings_train):].sample(len(rings_hidden), replace=False, random_state=seed)
+    not_rings_train = not_rings[:len(rings_train)]  # chose exactly that many training not-rings to match
+    not_rings_hidden = not_rings[len(rings_train):].sample(len(rings_hidden), replace=False, random_state=seed)  # and chose exactly as many hidden not-rings from the remainder
 
     ring_catalog_train = pd.concat([rings_train, not_rings_train])
     ring_catalog_hidden = pd.concat([rings_hidden, not_rings_hidden.sample(len(rings_hidden), random_state=seed)])  # not crucial to resample rings to increase, just decrease non-rings (for simplicity)
@@ -81,6 +79,15 @@ def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_datase
     assert set(paths_train).intersection(set(paths_test)) == set()
     assert set(paths_val).intersection(set(paths_test)) == set()
 
+    # paths_train_cut, labels_train_cut = paths_train[:train_dataset_size], labels_train[:train_dataset_size]
+    # shuffled, so could just take the top N for one run - but for repeat runs, better to pick randomly
+    rng = np.random.default_rng()
+    indices_to_pick = rng.permutation(np.arange(len(paths_train)))[:train_dataset_size]
+    # must be pd or np to index by number, cannot be list - so temporarily convert and then back to list for consistency
+    paths_train_cut, labels_train_cut = list(pd.Series(paths_train).iloc[indices_to_pick]), list(np.array(labels_train)[indices_to_pick])
+    logging.info('Train labels after cut of {} galaxies (should be ~50/50): \n{}'.format(train_dataset_size, pd.value_counts(labels_train_cut)))
+    logging.info('Unique rings: {}'.format(len(set([path for (path, label) in zip(paths_train_cut, labels_train_cut) if label == 1]))))
+
     # iauname_file_name = 'advanced_ring_iaunames_fractions'
     # with open('data/{}_train.json'.format(iauname_file_name), 'w') as f:
     #     json.dump([os.path.basename(x).replace('.png', '') for x in paths_train], f)
@@ -90,11 +97,9 @@ def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_datase
     #     json.dump([os.path.basename(x).replace('.png', '') for x in paths_test], f)
     # exit()
 
-    # shuffled, so can just take the top N
-
     if train_dataset_size is None:
         train_dataset_size = len(paths_train)
-    raw_train_dataset = image_datasets.get_image_dataset(paths_train[:train_dataset_size], file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_train[:train_dataset_size])
+    raw_train_dataset = image_datasets.get_image_dataset(paths_train_cut, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_train_cut)
     raw_val_dataset = image_datasets.get_image_dataset(paths_val, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_val)
     raw_test_dataset = image_datasets.get_image_dataset(paths_test, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_test)
 
@@ -181,7 +186,7 @@ def get_ring_feature_dataset(train_dataset_size=None, shuffle=True, iauname_file
     initial_train_dataset_size = len([_ for _ in train_dataset])  # read into memory at once, nbd
     if dataset_size is None:
       dataset_size = initial_train_dataset_size  # may be a small rounding error up to 1 batch size
-    # train_dataset = train_dataset.take(100)
+
     train_dataset = train_dataset.take(dataset_size)
 
     logging.info('Initial train dataset size: {}'.format(initial_train_dataset_size))
@@ -194,5 +199,5 @@ if __name__ == '__main__':  # debugging only
 
     logging.basicConfig(level=logging.INFO)
 
-    # get_advanced_ring_image_dataset(batch_size=16, requested_img_size=64)
-    get_ring_feature_dataset()
+    get_advanced_ring_image_dataset(batch_size=16, requested_img_size=64, train_dataset_size=159)
+    # get_ring_feature_dataset()
