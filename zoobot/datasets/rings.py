@@ -9,10 +9,120 @@ import tensorflow as tf
 from zoobot.data_utils import image_datasets
 
 
-def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_dataset_size=None, seed=1):
-    # does not apply any preprocessing
+def get_advanced_ring_image_dataset(batch_size: int, requested_img_size: int, train_dataset_size=None, seed=1, file_format='png'):
+    """
+    Get train, val, and test tf.data.datasets containing images of ring galaxies and labels derived from GZ DECaLS volunteer votes.
+    Does not apply any preprocessing or augmentations.
 
-    file_format = 'png'
+    This is a more complicated dataset than data/example_ring_tag_catalog.csv. 
+    You may want to look at that file and zoobot/finetune_minimal.py first.
+
+    Lastly, the train dataset can optionally be made smaller (restricted).
+    I used this in a paper to test how the number of available labels changed the performance of the finetuned models.
+    Note that, because galaxies are dropped randomly and rings are not unique (see get_random_ring_catalogs),
+    the number of unique rings will drop faster than the number of (unique) non-rings).
+    You should probably quote results for the number of *unique* rings, rather than the total restricted train dataset size.
+
+    Train will have exactly balanced ring/non-rings unless restricting the train size, in which case the balance will vary slightly.
+    Val and test will have the same total number of rings and non-rings, but similarly vary slightly within each due to the random shuffle then split.
+
+    Args:
+        batch_size (int): batch size for each tf.data.dataset to use (i.e. ds.batch(batch_size))
+        requested_img_size (int): [description]
+        train_dataset_size ([type], optional): [description]. Defaults to None.
+        seed (int, optional): [description]. Defaults to 1.
+        file_format (str, optional): [description]. Defaults to 'png'.
+
+    Returns:
+        tf.data.dataset: of training galaxies, yielding (image values, labels) batched pairs.
+        tf.data.dataset: validation galaxies, as above.
+        tf.data.dataset: test galaxies, as above.
+    """
+    ring_catalog_train, ring_catalog_val, ring_catalog_test = get_random_ring_catalogs(seed=seed, train_dataset_size=train_dataset_size)
+
+    paths_train, paths_val, paths_test = list(ring_catalog_train['local_png_loc']), list(ring_catalog_val['local_png_loc']), list(ring_catalog_test['local_png_loc'])
+    labels_train, labels_val, labels_test = list(ring_catalog_train['label']), list(ring_catalog_val['label']), list(ring_catalog_test['label'])
+
+    # check that no repeated rings ended up in multiple datasets
+    assert set(paths_train).intersection(set(paths_val)) == set()
+    assert set(paths_train).intersection(set(paths_test)) == set()
+    assert set(paths_val).intersection(set(paths_test)) == set()
+
+    logging.info('Train labels after cut of {} galaxies (should be ~50/50): \n{}'.format(train_dataset_size, pd.value_counts(labels_train)))
+    logging.info('Unique train rings: {}'.format(len(set([path for (path, label) in zip(paths_train, labels_train) if label == 1]))))
+
+    if train_dataset_size is None:
+        train_dataset_size = len(paths_train)
+    raw_train_dataset = image_datasets.get_image_dataset(paths_train, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_train)
+    raw_val_dataset = image_datasets.get_image_dataset(paths_val, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_val)
+    raw_test_dataset = image_datasets.get_image_dataset(paths_test, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_test)
+
+    return raw_train_dataset, raw_val_dataset, raw_test_dataset
+
+
+def get_advanced_ring_feature_dataset(train_dataset_size=None, seed=1):
+    """
+    This is the equivalent of rings::get_advanced_ring_image_dataset but returning datasets of (features, labels) rather than (images, labels).
+    Features are the CNN internal representations saved beforehand for each galaxy.
+    They are the 1280-dimensional activations of the penultimate layer of EfficientNetB0.
+    See the morphology tools paper for more.
+
+    See rings::get_advanced_ring_image_dataset for notes on labels and on restricting the train dataset size.
+
+    Args:
+        train_dataset_size (int, optional): Max number of training galaxies. Defaults to None. See rings::get_advanced_ring_image_dataset.
+        seed (int, optional): Random seed for catalog shuffle and splits. Defaults to 1.
+
+    Returns:
+        tf.data.dataset: of training galaxies, yielding (features, label). Not batched yet (use ds.batch(batch_size)).
+        tf.data.dataset: validation galaxies, as above.
+        tf.data.dataset: test galaxies, as above.
+    """
+    # TODO move these features either into the repo or somewhere otherwise accessible (Zenodo?)
+    feature_df = pd.read_parquet('../morphology-tools/anomaly/data/cnn_features_concat.parquet')
+    assert not any(feature_df.duplicated(subset=['iauname']))
+    feature_cols = [col for col in feature_df.columns.values if 'pred' in col]
+    logging.info('Loaded {} features e.g. {}, for {} galaxies'.format(len(feature_cols), feature_cols[0], len(feature_df)))
+
+    ring_catalog_train, ring_catalog_val, ring_catalog_test = get_random_ring_catalogs(seed=seed, train_dataset_size=train_dataset_size)
+
+    train_df = pd.merge(ring_catalog_train, feature_df, on='iauname',how='inner')
+    val_df = pd.merge(ring_catalog_val, feature_df, on='iauname', how='inner')
+    test_df = pd.merge(ring_catalog_test, feature_df, on='iauname', how='inner')
+
+    train_dataset = tf.data.Dataset.from_tensor_slices((train_df[feature_cols], train_df['label']))
+    val_dataset = tf.data.Dataset.from_tensor_slices((val_df[feature_cols], val_df['label']))
+    test_dataset = tf.data.Dataset.from_tensor_slices((test_df[feature_cols], test_df['label']))
+
+    logging.info('Train size after cutting up: {}'.format(train_dataset_size))
+
+    return train_dataset, val_dataset, test_dataset
+
+
+
+def get_random_ring_catalogs(seed: int, train_dataset_size: int):
+    """
+    Get train/val/test catalogs of ring galaxies, each including 'label' (1 or 0) and 'local_png_loc' columns.
+    Split is randomised according to `seed`.
+
+    Galaxies are filtered to be not very smooth and roughly face-on using automatic vote fraction predictions (see GZ DECalS data release paper)
+    The public repo already includes only those galaxies, so this may have no effect for you.
+
+    Labels are calculated based on the GZ DECaLS "Are there any of these rare features?" "Ring" answer vote fraction.
+    See get_rough_class_from_ring_fraction.
+
+    Instead of balancing the classes by dropping most of the non-rings, I'm repeating the rings by a factor of ~5
+    This includes more information but needs some footwork to make sure that no repeated ring ends up in both the train and test sets
+    
+    Args:
+        seed (int): random seed for splitting to train/val/test
+
+    Returns:
+        pd.DataFrame: Catalog of galaxies to be used for training, including 'label' (1 or 0) and 'local_png_loc' columns
+        pd.DataFrame: As above, for validation
+        pd.DataFrame: As above, for testing
+    """
+    # TODO filter to only appropriate galaxies and columns, then include with repo
     # uses automatic morphology predictions from gz decals cnn
     ring_catalog = pd.read_parquet('data/rare_features_dr5_with_ml_morph.parquet')
 
@@ -20,15 +130,7 @@ def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_datase
     # ring_catalog['local_png_loc'] = ring_catalog['local_png_loc'].str.replace('/media/walml/beta1', '/Volumes/beta')  # local
     ring_catalog['local_png_loc'] = ring_catalog['local_png_loc'].str.replace('/media/walml/beta1/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')  # galahad
 
-    # apply selection cuts
-
-    # cuts for 200-ish non-spiral rings: good but small selection
-    # feat = ring_catalog['smooth-or-featured_featured-or-disk_fraction'] > 0.6
-    # face = ring_catalog['disk-edge-on_no_fraction'] > 0.75
-    # not_spiral = ring_catalog['has-spiral-arms_no_fraction'] > 0.5
-    # passes_cuts = feat & face & not_spiral
-
-    # cuts for 1000-ish rings that are not edge on and not super smooth (mostly wrong tags)
+    # apply selection cuts (in data/ring_votes_catalog_advanced.parquet, I only include galaxies that pass these cuts anyway)
     not_very_smooth = ring_catalog['smooth-or-featured_featured-or-disk_fraction'] > 0.25
     face = ring_catalog['disk-edge-on_no_fraction'] > 0.75
     passes_cuts = not_very_smooth & face
@@ -64,49 +166,32 @@ def get_advanced_ring_image_dataset(batch_size, requested_img_size, train_datase
     ring_catalog_val = ring_catalog_hidden[:val_split_index]
     ring_catalog_test = ring_catalog_hidden[val_split_index:]
 
-    logging.info('Train labels: \n {}'.format(pd.value_counts(ring_catalog_train['label'])))  # will be exactly balanced between rings and non-rings
-    # logging.info('Hidden labels: \n {}'.format(pd.value_counts(ring_catalog_hidden['label'])))
+    # train will initially be exactly balanced between rings and non-rings
+    logging.info('Train labels: \n {}'.format(pd.value_counts(ring_catalog_train['label'])))
+    unique_rings = len(ring_catalog_train.query('label == 1')['local_png_loc'].unique())
+    logging.info('Unique training rings: {}'.format(unique_rings))
+
+    # validation and test will be include exactly the same total number of rings/non-rings,
+    # but the random split will make each be only close-to-balanced
     logging.info('Validation labels: \n {}'.format(pd.value_counts(ring_catalog_val['label'])))
     logging.info('Test labels: \n {}'.format(pd.value_counts(ring_catalog_test['label'])))
+
+    # randomly drop train galaxies as requested by `train_dataset_size`
+    if train_dataset_size is None:  # if not requested, don't drop any
+        train_dataset_size = len(ring_catalog_train)
+    assert train_dataset_size <= len(ring_catalog_train)
+    rng = np.random.default_rng()
+    indices_to_pick = rng.permutation(np.arange(len(ring_catalog_train)))[:train_dataset_size]
+    ring_catalog_train_cut = ring_catalog_train.iloc[indices_to_pick].reset_index()
+
+    logging.info('Train labels after restriction: \n {}'.format(pd.value_counts(ring_catalog_train_cut['label'])))  
+
     # val and test will have the same total number of rings and non-rings, but a slightly different ratio within each due to random shuffle then split
     # that feels okay and realistic
-
-    paths_train, paths_val, paths_test = list(ring_catalog_train['local_png_loc']), list(ring_catalog_val['local_png_loc']), list(ring_catalog_test['local_png_loc'])
-    labels_train, labels_val, labels_test = list(ring_catalog_train['label']), list(ring_catalog_val['label']), list(ring_catalog_test['label'])
-
-    # check that no repeated rings ended up in multiple datasets
-    assert set(paths_train).intersection(set(paths_val)) == set()
-    assert set(paths_train).intersection(set(paths_test)) == set()
-    assert set(paths_val).intersection(set(paths_test)) == set()
-
-    # paths_train_cut, labels_train_cut = paths_train[:train_dataset_size], labels_train[:train_dataset_size]
-    # shuffled, so could just take the top N for one run - but for repeat runs, better to pick randomly
-    rng = np.random.default_rng()
-    indices_to_pick = rng.permutation(np.arange(len(paths_train)))[:train_dataset_size]
-    # must be pd or np to index by number, cannot be list - so temporarily convert and then back to list for consistency
-    paths_train_cut, labels_train_cut = list(pd.Series(paths_train).iloc[indices_to_pick]), list(np.array(labels_train)[indices_to_pick])
-    logging.info('Train labels after cut of {} galaxies (should be ~50/50): \n{}'.format(train_dataset_size, pd.value_counts(labels_train_cut)))
-    logging.info('Unique rings: {}'.format(len(set([path for (path, label) in zip(paths_train_cut, labels_train_cut) if label == 1]))))
-
-    # iauname_file_name = 'advanced_ring_iaunames_fractions'
-    # with open('data/{}_train.json'.format(iauname_file_name), 'w') as f:
-    #     json.dump([os.path.basename(x).replace('.png', '') for x in paths_train], f)
-    # with open('data/{}_val.json'.format(iauname_file_name), 'w') as f:
-    #     json.dump([os.path.basename(x).replace('.png', '') for x in paths_val], f)
-    # with open('data/{}_test.json'.format(iauname_file_name), 'w') as f:
-    #     json.dump([os.path.basename(x).replace('.png', '') for x in paths_test], f)
-    # exit()
-
-    if train_dataset_size is None:
-        train_dataset_size = len(paths_train)
-    raw_train_dataset = image_datasets.get_image_dataset(paths_train_cut, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_train_cut)
-    raw_val_dataset = image_datasets.get_image_dataset(paths_val, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_val)
-    raw_test_dataset = image_datasets.get_image_dataset(paths_test, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_test)
-
-    return raw_train_dataset, raw_val_dataset, raw_test_dataset
+    return ring_catalog_train_cut, ring_catalog_val, ring_catalog_test
 
 
-def get_rough_class_from_ring_fraction(fractions):
+def get_rough_class_from_ring_fraction(fractions: pd.Series):
     is_ring = fractions > 0.25
     is_not_ring = fractions < 0.05
     uncertain = (~is_ring) & (~is_not_ring)
@@ -116,88 +201,9 @@ def get_rough_class_from_ring_fraction(fractions):
     return labels
 
 
-def get_ring_feature_dataset(train_dataset_size=None, shuffle=True, iauname_file_name='advanced_ring_iaunames_fractions'):
-    feature_df = pd.read_parquet('../morphology-tools/anomaly/data/cnn_features_concat.parquet')
-    assert not any(feature_df.duplicated(subset=['iauname']))
-    feature_cols = [col for col in feature_df.columns.values if 'pred' in col]
-    logging.info('Loaded {} features e.g. {}, for {} galaxies'.format(len(feature_cols), feature_cols[0], len(feature_df)))
-
-    label_df = pd.read_parquet('data/rare_features_dr5_with_ml_morph.parquet')
-    assert not any(label_df.duplicated(subset=['iauname']))
-
-    # label_df['ring_label'] = label_df['ring'] == 1
-    label_df['label'] = get_rough_class_from_ring_fraction(label_df['rare-features_ring_fraction'])  # must match above
-    label_df = label_df[label_df['label'] != -1].reset_index()
-
-    logging.info('Loaded labels of: \n{}'.format(label_df['label'].value_counts()))
-
-    feature_label_df = pd.merge(feature_df, label_df, on='iauname', how='inner')  # 1-1 mapping
-    assert len(feature_label_df) == min(len(feature_df), len(label_df))
-    del label_df
-    del feature_df
-
-    with open('data/{}_train.json'.format(iauname_file_name), 'r') as f:
-        train_iaunames = json.load(f)
-    with open('data/{}_val.json'.format(iauname_file_name), 'r') as f:
-        val_iaunames = json.load(f)
-    with open('data/{}_test.json'.format(iauname_file_name), 'r') as f:
-        test_iaunames = json.load(f)
-
-    logging.info('Loaded {} iaunames ({} unique) for train dataset'.format(len(train_iaunames), len(set(train_iaunames))))
-    logging.info('Loaded {} iaunames ({} unique) for val dataset'.format(len(val_iaunames), len(set(val_iaunames))))
-    logging.info('Loaded {} iaunames ({} unique) for val dataset'.format(len(test_iaunames), len(set(test_iaunames))))
-
-    # must be no galaxies in both train and validation
-    # (probably a cleaner way to do this with sets)
-    assert len(set(train_iaunames).intersection(set(val_iaunames))) == 0
-    assert len(set(train_iaunames).intersection(set(test_iaunames))) == 0
-    assert len(set(val_iaunames).intersection(set(test_iaunames))) == 0
-
-    train_rows = [{'iauname': iauname, 'dataset_split': 'train'} for iauname in train_iaunames]
-    val_rows = [{'iauname': iauname, 'dataset_split': 'validation'} for iauname in val_iaunames]
-    test_rows = [{'iauname': iauname, 'dataset_split': 'test'} for iauname in test_iaunames]
-    split_df = pd.DataFrame(data=train_rows+val_rows+test_rows)
-    # assumes no other splits e.g. test dataset
-    logging.info('Labelled galaxies in each dataset: {}'.format(split_df.value_counts('dataset_split')))
-
-    # merge against split_df to copy feature_label_df many times as needed
-    df = pd.merge(split_df, feature_label_df, how='inner', on='iauname')  # many-one
-    assert len(df) == len(split_df) 
-    del feature_label_df
-
-    if shuffle:
-        logging.info('Shuffling to re-order (fixed) train and val datasets.')
-        df = df.sample(len(df))
-    else:
-        logging.warning('Not shuffling (fixed) train and val datasets. Train may be e.g. all not-ring then all ring - be careful.')
-
-    train_df = df.query('dataset_split == "train"')
-    val_df = df.query('dataset_split == "validation"')
-    test_df = df.query('dataset_split == "test"')
-    logging.info('Train labels: {}'.format(train_df.value_counts('label')))
-    logging.info('Validation labels: {}'.format(val_df.value_counts('label')))
-    logging.info('Test labels: {}'.format(test_df.value_counts('label')))
-
-    train_dataset = tf.data.Dataset.from_tensor_slices((train_df[feature_cols], train_df['label']))
-    val_dataset = tf.data.Dataset.from_tensor_slices((val_df[feature_cols], val_df['label']))
-    test_dataset = tf.data.Dataset.from_tensor_slices((test_df[feature_cols], test_df['label']))
-
-    # cut off as needed for requested train_dataset_size
-    initial_train_dataset_size = len([_ for _ in train_dataset])  # read into memory at once, nbd
-    if dataset_size is None:
-      dataset_size = initial_train_dataset_size  # may be a small rounding error up to 1 batch size
-
-    train_dataset = train_dataset.take(dataset_size)
-
-    logging.info('Initial train dataset size: {}'.format(initial_train_dataset_size))
-    logging.info('Size after cutting up: {}'.format(dataset_size))
-
-    return train_dataset, val_dataset, test_dataset
-
-
 if __name__ == '__main__':  # debugging only
 
     logging.basicConfig(level=logging.INFO)
 
-    get_advanced_ring_image_dataset(batch_size=16, requested_img_size=64, train_dataset_size=159)
-    # get_ring_feature_dataset()
+    get_advanced_ring_image_dataset(batch_size=16, requested_img_size=64, train_dataset_size=1590)
+    # get_advanced_ring_feature_dataset(train_dataset_size=159)
