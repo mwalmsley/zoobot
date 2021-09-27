@@ -45,7 +45,7 @@ if __name__ == '__main__':
     file_format = 'png'
 
     # TODO you'll want to replace this with your own data
-    df = pd.read_csv('data/example_ring_catalog.csv')
+    df = pd.read_csv('data/example_ring_catalog_basic.csv')
     paths = list(df['local_png_loc'])
     labels = list(df['ring'].astype(int))
     logging.info('Labels: \n{}'.format(pd.value_counts(labels)))
