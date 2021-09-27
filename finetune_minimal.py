@@ -180,6 +180,6 @@ if __name__ == '__main__':
     data = [{'prediction': float(prediction), 'local_png_loc': local_png_loc} for prediction, local_png_loc in zip(predictions, ordered_paths)]
     pred_df = pd.DataFrame(data=data)
   
-    example_predictions_loc = 'data/example_predictions.csv'
+    example_predictions_loc = 'results/finetune_minimal/example_predictions.csv'
     pred_df.to_csv(example_predictions_loc, index=False)
     logging.info(f'Example predictions saved to {example_predictions_loc}')
