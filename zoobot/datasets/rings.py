@@ -62,15 +62,15 @@ def get_advanced_ring_image_dataset(batch_size: int, requested_img_size: int, tr
 
 def get_advanced_ring_feature_dataset(train_dataset_size=None, seed=1):
     """
-    This is the equivalent of rings::get_advanced_ring_image_dataset but returning datasets of (features, labels) rather than (images, labels).
+    This is the equivalent of :meth:`get_advanced_ring_image_dataset` but returning datasets of (features, labels) rather than (images, labels).
     Features are the CNN internal representations saved beforehand for each galaxy.
     They are the 1280-dimensional activations of the penultimate layer of EfficientNetB0.
     See the morphology tools paper for more.
 
-    See rings::get_advanced_ring_image_dataset for notes on labels and on restricting the train dataset size.
+    See :meth:`get_advanced_ring_image_dataset` for notes on labels and on restricting the train dataset size.
 
     Args:
-        train_dataset_size (int, optional): Max number of training galaxies. Defaults to None. See rings::get_advanced_ring_image_dataset.
+        train_dataset_size (int, optional): Max number of training galaxies. Defaults to None. See :meth:`get_advanced_ring_image_dataset`.
         seed (int, optional): Random seed for catalog shuffle and splits. Defaults to 1.
 
     Returns:
@@ -109,7 +109,7 @@ def get_random_ring_catalogs(seed: int, train_dataset_size: int):
     The public repo already includes only those galaxies, so this may have no effect for you.
 
     Labels are calculated based on the GZ DECaLS "Are there any of these rare features?" "Ring" answer vote fraction.
-    See get_rough_class_from_ring_fraction.
+    See :meth:`get_rough_class_from_ring_fraction`.
 
     Instead of balancing the classes by dropping most of the non-rings, I'm repeating the rings by a factor of ~5
     This includes more information but needs some footwork to make sure that no repeated ring ends up in both the train and test sets
@@ -192,6 +192,20 @@ def get_random_ring_catalogs(seed: int, train_dataset_size: int):
 
 
 def get_rough_class_from_ring_fraction(fractions: pd.Series):
+    """
+    Bin GZ DECaLS "ring" vote fractions into binary ring labels.
+    If f > 0.25, label is 1
+    If f < 0.05, label is 0
+    If neither, label is -1
+
+    Expects a pd.Series, np.array, or similar.
+
+    Args:
+        fractions (pd.Series): GZ DECaLS "ring" vote fractions.
+
+    Returns:
+        np.array: integer ring labels of 0, 1 or -1, according to those fractions
+    """
     is_ring = fractions > 0.25
     is_not_ring = fractions < 0.05
     uncertain = (~is_ring) & (~is_not_ring)

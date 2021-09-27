@@ -49,6 +49,7 @@ method.
    :maxdepth: 2
 
    autodoc/data_utils
+   autodoc/datasets
    autodoc/estimators
    autodoc/training
    autodoc/predictions
@@ -62,8 +63,16 @@ Indices
 * :ref:`modindex`
 * :ref:`search`
 
+.. Sphinx links below
 .. https://www.sphinx-doc.org/en/master/usage/quickstart.html
 .. https://docs.readthedocs.io/en/stable/intro/getting-started-with-sphinx.html
 .. https://samnicholls.net/2016/06/15/how-to-sphinx-readthedocs/
 .. https://brendanhasz.github.io/2019/01/05/sphinx.html useful summary
-.. run (in docs)    make html   to build
+
+.. To build:
+.. install sphinx https://www.sphinx-doc.org/en/master/usage/installation.html is confusing, you can just use pip install -U sphinx
+.. run from in docs folder:    make html
+
+.. docs/autodoc contains the tree that sphinx uses to add automatic documentation
+.. it needs folders and files matching the python source
+.. you will need to add a new {folder}.rst, a new folder, and a new {file}.rst
