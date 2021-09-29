@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/en/latest/?badge=latest)
 
-Zoobot classifies galaxy morphology with deep learning. This code will let you: 
+Zoobot classifies galaxy morphology with deep learning. This code will let you:
 
 - **Reproduce** and improve the Galaxy Zoo DECaLS automated classifications
 - **Finetune** the classifier for new tasks
