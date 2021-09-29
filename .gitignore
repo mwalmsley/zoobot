@@ -138,7 +138,6 @@ wandb_api.txt
 settings.json
 
 personal_examples.md
-temp_gz2.ipynb
 *.sh
 *.parquet
 *.tfrecord
@@ -147,4 +146,8 @@ temp_gz2.ipynb
 events.out*
 *.json
 checkpoint*
+
+# mac junk
 .DS_Store
+
+.vscode

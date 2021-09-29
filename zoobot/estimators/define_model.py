@@ -10,13 +10,15 @@ from zoobot.training import losses
 class CustomSequential(tf.keras.Sequential):
 
     def __init__(self):
-        """Will this override?
-        """
         super().__init__()
         self.step = 0
 
     def call(self, x, training):
-        "How about this?"
+        """
+        Override tf.keras.Sequential to optionally save image data to tensorboard.
+        Slow but useful for debugging.
+        Not used by default (see get_model). I suggest only uncommenting when you want to debug.
+        """
         tf.summary.image('model_input', x, step=self.step)
         tf.summary.histogram('model_input', x, step=self.step)
         return super().call(x, training)
@@ -97,9 +99,6 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     Returns:
         tf.keras.Model: trainable efficientnet model including augmentations and optional head
     """
-
-    # dropout_rate = 0.3
-    # drop_connect_rate = 0.2  # gets scaled by num blocks, 0.6ish = 1
 
     logging.info('Input size {}, crop size {}, final size {}'.format(
         input_size, crop_size, resize_size))

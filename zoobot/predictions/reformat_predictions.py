@@ -7,7 +7,16 @@ from multiprocessing import Pool
 import pandas as pd
 from tqdm import tqdm
 
-"""Useful to convert cnn predictions with a single forward pass and a single class (e.g. class_a: [[0.3]]) to simple floats rather than lists (e.g. class_a: 0.3)"""
+"""
+The CNN prediction code (e.g. make_predictions.py) is designed for multiple (MC Dropout) forward passes for mutiple classes.
+Each galaxy can therefore have a num passes x num classes dimensional-prediction
+For example, [[pass_0_class_a, pass_1 class_a], [pass_0_class_b, pass_1_class_b]]
+
+This is overkill where we use a single forward pass and a single class.
+This script converts the predictions in a make_predictions.py output csv (e.g. [[0.3]]) to be a simple float (e.g. 0.3)
+
+I might remove this by having make_predictions.py etc notice when there is one class and one forward pass and do this before saving to disk TODO
+"""
 
 def raw_loc_to_clean_loc(raw_loc):
     if '_full_features_' in raw_loc:  # convention for cnn features
@@ -75,18 +84,13 @@ def main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=Fa
 
 if __name__ == '__main__':
 
-    # raw_search_str = '/media/walml/beta1/cnn_features/gz2/*_full_features_*.csv'
-    # clean_search_str = '/media/walml/beta1/cnn_features/gz2/*_cleaned_*.parquet'
-    # reformatted_parquet_loc = '/media/walml/beta1/cnn_features/gz2/cnn_features_concat.parquet'
-
     logging.basicConfig(level=logging.INFO)
 
     overwrite = True
 
-    # run_name = 'dr5_color'
     run_name = 'dr5_rings'
 
-    raw_search_str = '/share/nas/walml/repos/zoobot/data/results/{}_*_raw.csv'.format(run_name)
+    raw_search_str = 'data/results/{}_*_raw.csv'.format(run_name)
     clean_search_str = raw_loc_to_clean_loc(raw_search_str)
     assert raw_search_str != clean_search_str
     reformatted_parquet_loc = os.path.join(os.path.dirname(raw_search_str), '{}_cleaned_concat.parquet'.format(run_name))

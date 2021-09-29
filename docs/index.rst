@@ -34,8 +34,9 @@ Check out the guides below. Each includes working example scripts you can run an
    :maxdepth: 2
 
    usage/overview
-   usage/finetuning
    usage/decals
+   usage/representations
+   usage/finetuning
 
 
 

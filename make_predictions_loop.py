@@ -14,7 +14,7 @@ import argparse
 
 """
 This script is the more advanced (yet more useful) version of make_predictions.py
-Use it to make predictions on large datasets
+Use it to make predictions on large datasets.
 Predictions might be GZ answers, finetuned problems, or galaxy representations (see representations/README.md)
 """
 
@@ -29,25 +29,30 @@ if __name__ == '__main__':
         for gpu in gpus:
           tf.config.experimental.set_memory_growth(gpu, True)
 
-    run_name = 'dr5_rings'
+    run_name = 'example_rings'
     overwrite = True
 
     """Dataframe with list of images on which to make predictions"""
-    if 'dr8' in run_name:
-        df = pd.read_parquet('../download_DECaLS_images/master_file_index.parquet')
-        logging.info('Galaxies: {}'.format(len(df)))
-        df = df.query('png_loc_exists')
-        logging.info('Filtered: {}'.format(len(df)))
-    elif 'dr5' in run_name:
-        # petrotheta and png_ready cuts already applied, but no cuts on if prev. uploaded
-        df = pd.read_parquet('/share/nas/walml/dr5_nsa_v1_0_0_to_upload.parquet', columns=['iauname', 'png_loc'])
-        df['png_loc'] = df['png_loc'].apply(lambda x: os.path.join('/share/nas/walml/galaxy_zoo/decals/dr5/png', x))
-        logging.info('Galaxies: {}'.format(len(df)))
-    elif 'gz2' in run_name:
-        df = pd.read_parquet('/raid/scratch/walml/galaxy_zoo/gz2/image_master_catalog.parquet')
-        logging.info('Galaxies: {}'.format(len(df)))
-        df = df.query('png_ready')
-        logging.info('Filtered: {}'.format(len(df)))
+    if 'example' in run_name:
+        df = pd.read_parquet('data/example_ring_catalog_basic.csv')
+        df['png_loc'] = df['local_png_loc'].apply(lambda x: x)  # TODO customise your paths here
+        logging.info('Loaded {} example galaxies for predictions'.format(len(df)))
+    # Sorry, the rest of these options won't make sense unless you are Mike Walmsley
+    # elif 'dr8' in run_name:
+    #     df = pd.read_parquet('../download_DECaLS_images/master_file_index.parquet')
+    #     logging.info('Galaxies: {}'.format(len(df)))
+    #     df = df.query('png_loc_exists')
+    #     logging.info('Filtered: {}'.format(len(df)))
+    # elif 'dr5' in run_name:
+    #     # petrotheta and png_ready cuts already applied, but no cuts on if prev. uploaded
+    #     df = pd.read_parquet('/share/nas/walml/dr5_nsa_v1_0_0_to_upload.parquet', columns=['iauname', 'png_loc'])
+    #     df['png_loc'] = df['png_loc'].apply(lambda x: os.path.join('/share/nas/walml/galaxy_zoo/decals/dr5/png', x))
+    #     logging.info('Galaxies: {}'.format(len(df)))
+    # elif 'gz2' in run_name:
+    #     df = pd.read_parquet('/raid/scratch/walml/galaxy_zoo/gz2/image_master_catalog.parquet')
+    #     logging.info('Galaxies: {}'.format(len(df)))
+    #     df = df.query('png_ready')
+    #     logging.info('Filtered: {}'.format(len(df)))
 
     png_locs = list(df['png_loc'])
 
@@ -64,13 +69,6 @@ if __name__ == '__main__':
 
     """For predicting GZ answers - the model as trained"""
     # checkpoint_dir = 'data/pretrained_models/decals_dr_train_set_only_m0/in_progress'  # m0 in the paper, test set not included in training
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/latest_color_2xgpu/checkpoint'  # failed
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale/checkpoint'  # failed
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale_single/checkpoint'
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_single/checkpoint'
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/greyscale_debug/checkpoint'  # worked
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_debug/checkpoint'  # worked
-    # checkpoint_dir = '/share/nas/walml/repos/zoobot/results/color_dist/checkpoint' 
 
     # model = define_model.load_model(
     #     checkpoint_dir,
@@ -148,8 +146,9 @@ if __name__ == '__main__':
     png_batch_size = 10000
     png_start_index = 0
     while png_start_index < len(png_locs):
-
-        save_loc = '/share/nas/walml/repos/zoobot/data/results/{}_{}_raw.csv'.format(run_name, png_start_index)
+        
+        # TODO update this path as needed
+        save_loc = 'data/results/make_predictions_loop/{}_{}_raw.csv'.format(run_name, png_start_index)
         if not os.path.isfile(save_loc) or overwrite:
 
             unordered_image_paths = png_locs[png_start_index:png_start_index+png_batch_size]

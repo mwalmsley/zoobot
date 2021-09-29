@@ -17,7 +17,6 @@ from zoobot import schemas, label_metadata
 if __name__ == '__main__':
     """
     To make model for smooth/featured (also change cols below):
-      # python train_model.py --experiment-dir results/smooth_or_featured_offline --shard-img-size 128 --train-dir data/decals/shards/multilabel_master_filtered_128/train --eval-dir data/decals/shards/multilabel_master_filtered_128/eval --epochs 1000 
       python train_model.py --experiment-dir results/smooth_or_featured_offline --shard-img-size 256 --train-dir data/decals/shards/multilabel_master_filtered_256/train --eval-dir data/decals/shards/multilabel_master_filtered_256/eval --epochs 1000 --batch-size 8 --resize-size 128
 
     To make model for predictions on all cols, for appropriate galaxies only:
@@ -25,7 +24,7 @@ if __name__ == '__main__':
     
     DECALS testing:
       python train_model.py --experiment-dir ~/repos/zoobot_private/results/debug --shard-img-size 64 --train-dir ~/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/train_shards --eval-dir ~/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
-      python train_model.py --experiment-dir /raid/scratch/walml//repos/zoobot/results/debug --shard-img-size 64 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
+      python train_model.py --experiment-dir /raid/scratch/walml/repos/zoobot/results/debug --shard-img-size 64 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
 
 
     GZ2 testing:
@@ -61,11 +60,12 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', dest='epochs', type=int)
     parser.add_argument('--batch-size', dest='batch_size', default=64, type=int)
     parser.add_argument('--distributed', default=False, action='store_true')
+    parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
     args = parser.parse_args()
-
-    # greyscale = True
-    greyscale = False
+    
+    # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
+    greyscale = not args.color
     if greyscale:
       channels = 1
     else:
@@ -94,8 +94,8 @@ if __name__ == '__main__':
 
     if args.distributed:
       logging.info('Using distributed mirrored strategy')
-      strategy = tf.distribute.MultiWorkerMirroredStrategy()
-      # strategy = tf.distribute.MirroredStrategy()
+      strategy = tf.distribute.MirroredStrategy()  # one machine, one or more GPUs
+      # strategy = tf.distribute.MultiWorkerMirroredStrategy()  # one or more machines. Not tested - you'll need to set this up for your own cluster.
       context_manager = strategy.scope()
       logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
     else:
@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     if args.wandb:
       this_script_dir = os.path.dirname(__file__)
-      # you need to make this file yourself, with your api key and nothing else
+      # For weights&biases you need to make this file yourself, with your api key and nothing else
       with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
         api_key = f.readline()
       wandb.login(key=api_key)
