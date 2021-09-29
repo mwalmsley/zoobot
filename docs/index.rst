@@ -38,7 +38,7 @@ Check out the guides below. Each includes working example scripts you can run an
    usage/representations
    usage/finetuning
 
-
+We include pretrained weights, precalculated representations, example ring galaxy catalogues, and more. :ref:`See here for a guide to the data <datanotes>`.
 
 API Reference
 -------------
