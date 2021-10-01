@@ -52,16 +52,22 @@ Use it in your own code like so:
 .. code-block:: python
 
     from zoobot.training import training_config
+    from zoobot.estimators import define_model
+    from zoobot import losses
 
     model = define_model.get_model(
-      output_dim=len(schema.label_cols),
+      output_dim=len(schema.label_cols),  # see train_model.py
       input_size=initial_size, 
-      crop_size=int(initial_size * 0.75),
-      resize_size=resize_size
+      crop_size=int(initial_size * 0.75),  # small zoom
+      resize_size=resize_size,
+      channels=1  # this makes images greyscale before training (recommended)
     )
   
-    # dirichlet-multinomial log-likelihood per answer - see the paper for more
-    loss = losses.get_multiquestion_loss(schema.question_index_groups)
+    # dirichlet-multinomial log-likelihood per answer
+    # see the GZ DECaLS paper for more
+    multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
+    loss = lambda x, y: multiquestion_loss(x, y) / batch_size
+    # dividing by batch size here, instead of automatically, helps do distributed training
 
     model.compile(
         loss=loss,
@@ -77,33 +83,57 @@ Use it in your own code like so:
     training_config.train_estimator(
       model, 
       train_config,  # parameters for how to train e.g. epochs, patience
-      train_dataset,
-      test_dataset
+      train_dataset,  # tf.data.Dataset, see train_model.py
+      test_dataset,  # similarly
+      eager=True  # slow, helpful for debugging. Set False when happy.
     )
 
 
 There is a complete working example at `train_model.py <https://github.com/mwalmsley/zoobot/blob/main/train_model.py>`__ which you can copy and adapt.
+I've skipped loading the training and test datasets in the above, for clarity - see the worked example.
 
 Once trained, the model can be used to make new predictions on either folders of images (png, jpeg) or TFRecords. For example:
 
 .. code-block:: python
 
-    folder_to_predict = 'folder/with/images'
-    file_format = 'png'  # jpg or png supported. FITS is NOT supported (PRs welcome)
-    predict_on_images.predict(
-        schema=schema,
-        file_format=file_format,
-        folder_to_predict=folder_to_predict,
-        checkpoint_dir=checkpoint_dir,
-        save_loc=save_loc,
-        n_samples=n_samples,  # number of dropout forward passes
-        batch_size=batch_size,
-        initial_size=initial_size,
+    from zoobot.predictions import predict_on_images
+
+    file_format = 'png'
+    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images', file_format=file_format, recursive=False)
+    # unordered_image_paths = df['paths']   # you might instead just use a catalog
+
+    # Load the images as a tf.data.Dataset, just as for training
+    initial_size = 300  # image size the model expects, not size on disk
+    batch_size = 64
+    raw_image_ds = image_datasets.get_image_dataset([str(x) for x in unordered_image_paths], file_format, initial_size, batch_size)
+    preprocessing_config = preprocess.PreprocessingConfig(
+        label_cols=[],  # no labels are needed, we're only doing predictions
+        input_size=initial_size,
+        make_greyscale=True,
+        normalise_from_uint8=True
+    )
+    image_ds = preprocess.preprocess_dataset(raw_image_ds, preprocessing_config)
+
+    model = define_model.load_model(
+        checkpoint_loc=checkpoint_loc,  # see data/pretrained_models
+        include_top=True,  # finetuning? use False and add your own top
+        input_size=initial_size,
         crop_size=crop_size,
-        final_size=final_size
+        resize_size=resize_size,
+        expect_partial=True # hides some warnings
+    )
+
+    predict_on_images.predict(
+        image_ds=image_ds,
+        model=model,
+        n_samples=n_samples,  # number of dropout forward passes
+        label_cols=['ring'],  # used for output csv header only
+        save_loc='output/folder/ring_predictions.csv'
     )
 
 There is a complete working example at `make_predictions.py <https://github.com/mwalmsley/zoobot/blob/main/make_predictions.py>`_.
+This example shows how to make predictions on new galaxies (by default), and how to make predictions with the custom finetuned model from ``finetime_minimal.py`` (commented out).
+Check out the code to see both versions.
 
 .. note::
 
