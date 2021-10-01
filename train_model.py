@@ -158,5 +158,5 @@ if __name__ == '__main__':
       train_config,  # parameters for how to train e.g. epochs, patience
       train_dataset,
       test_dataset,
-      eager=False
+      eager=True
     )
