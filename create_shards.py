@@ -54,8 +54,6 @@ class ShardConfig():
 
         self.channels = 3  # save 3-band image to tfrecord. Augmented later by model input func.
 
-        self.db_loc = os.path.join(self.shard_dir, 'static_shard_db.db')  # record shard contents
-
         # paths for fixed tfrecords for initial training and (permanent) evaluation
         self.train_dir = os.path.join(self.shard_dir, 'train_shards') 
         self.eval_dir = os.path.join(self.shard_dir, 'eval_shards')
@@ -163,7 +161,6 @@ class ShardConfig():
         assert os.path.isdir(self.shard_dir)
         assert os.path.isdir(self.train_dir)
         assert os.path.isdir(self.eval_dir)
-        assert os.path.isfile(self.db_loc)
         assert os.path.isfile(self.labelled_catalog_loc)
         assert os.path.isfile(self.unlabelled_catalog_loc)
         return True
@@ -174,7 +171,6 @@ class ShardConfig():
             'shard_size': self.shard_size,
             'shard_dir': self.shard_dir,
             'channels': self.channels,
-            'db_loc': self.db_loc,
             'train_dir': self.train_dir,
             'eval_dir': self.eval_dir,
             'labelled_catalog_loc': self.labelled_catalog_loc,
@@ -198,8 +194,8 @@ def load_shard_config(shard_config_loc: str):
         'eval_dir',
         'labelled_catalog_loc',
         'unlabelled_catalog_loc',
-        'config_save_loc',
-        'db_loc']
+        'config_save_loc'
+    ]
     for attr in attrs:
         old_loc = getattr(shard_config, attr)
         new_loc = os.path.join(new_shard_dir, os.path.split(old_loc)[-1])
@@ -331,7 +327,7 @@ if __name__ == '__main__':
     train_test_fraction = get_train_test_fraction(len(labelled_catalog), args.eval_size)
 
     labelled_columns_to_save = ['id_str'] + label_cols
-    logging.info('Saving {} columns for labelled galaxies'.format(labelled_columns_to_save))
+    logging.info('Saving columns for labelled galaxies: \n{}'.format(labelled_columns_to_save))
 
     shard_config = ShardConfig(shard_dir=args.shard_dir, size=args.size)
 
