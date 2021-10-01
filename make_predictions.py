@@ -27,7 +27,7 @@ if __name__ == '__main__':
     file_format = 'png'
 
     # utility function to easily list the images in a folder.
-    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images', file_format=file_format, recursive=False)
+    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images/basic', file_format=file_format, recursive=False)
 
     ## or maybe you already have a list from a catalog?
     # unordered_image_paths = df['paths']
