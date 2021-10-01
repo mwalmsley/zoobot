@@ -59,8 +59,10 @@ if __name__ == '__main__':
     # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
     greyscale = not args.color
     if greyscale:
+      logging.info('Converting images to greyscale before training')
       channels = 1
     else:
+      logging.warning('Training on color images, not converting to greyscale')
       channels = 3
 
     initial_size = args.shard_img_size
