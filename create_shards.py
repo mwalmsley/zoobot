@@ -334,7 +334,8 @@ if __name__ == '__main__':
         unlabelled_catalog = unlabelled_catalog.sample(len(unlabelled_catalog))[:args.max_unlabelled]
 
     logging.info('Labelled catalog: {}'.format(len(labelled_catalog)))
-    logging.info('Unlabelled catalog: {}'.format(len(unlabelled_catalog)))
+    if unlabelled_catalog is not None:
+        logging.info('Unlabelled catalog: {}'.format(len(unlabelled_catalog)))
 
     # in memory for now, but will be serialized for later/logs
     train_test_fraction = get_train_test_fraction(len(labelled_catalog), args.eval_size)
