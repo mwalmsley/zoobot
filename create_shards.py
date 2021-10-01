@@ -16,6 +16,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import sklearn
 
 from zoobot import label_metadata
 from zoobot.data_utils import catalog_to_tfrecord, checks
@@ -100,7 +101,8 @@ class ShardConfig():
 
         # personal file manipulation, because my catalogs are old. Just make sure file_loc actually points to the files in the first place...
         labelled_catalog['file_loc'] = labelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
-        unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+        if unlabelled_catalog is not None:
+            unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
 
         assert 'id_str' in labelled_columns_to_save
 
@@ -113,17 +115,20 @@ class ShardConfig():
         # check that file paths resolve correctly
         logging.info('Example file locs: \n{}'.format(labelled_catalog['file_loc'][:3].values))
         checks.check_no_missing_files(labelled_catalog['file_loc'], max_to_check=2000)
-        checks.check_no_missing_files(unlabelled_catalog['file_loc'], max_to_check=2000)
+        if unlabelled_catalog is not None:
+            checks.check_no_missing_files(unlabelled_catalog['file_loc'], max_to_check=2000)
 
-        # assume the catalog is true, don't modify halfway through
         logging.info('\nLabelled subjects: {}'.format(len(labelled_catalog)))
         logging.info('Unlabelled subjects: {}'.format(len(unlabelled_catalog)))
         logging.info(f'Train-test fraction: {train_test_fraction}')
         labelled_catalog.to_csv(self.labelled_catalog_loc)
-        unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
+        if unlabelled_catalog is not None:
+            unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
 
-        train_df = labelled_catalog
-        eval_df = unlabelled_catalog
+
+        # save train/test split into training and eval shards
+        train_size = int(train_test_fraction * len(labelled_catalog))  # sklearn does this anyway but lets be explicit
+        train_df, eval_df = sklearn.model_selection.train_test_split(labelled_catalog, train_size=train_size)
         logging.info('\nTraining subjects: {}'.format(len(train_df)))
         logging.info('Eval subjects: {}'.format(len(eval_df)))
         if len(train_df) < len(eval_df):
@@ -141,15 +146,16 @@ class ShardConfig():
                 shard_size=self.shard_size
             )
 
-        logging.info('Writing {} unlabelled galaxies to shards (optional)'.format(len(unlabelled_catalog)))
-        columns_to_save = ['id_str']
-        write_catalog_to_tfrecord_shards(
-            unlabelled_catalog,
-            self.size,
-            columns_to_save,
-            self.shard_dir,
-            self.shard_size
-        )
+        if unlabelled_catalog is not None:
+            logging.info('Writing {} unlabelled galaxies to shards (optional)'.format(len(unlabelled_catalog)))
+            columns_to_save = ['id_str']
+            write_catalog_to_tfrecord_shards(
+                unlabelled_catalog,
+                self.size,
+                columns_to_save,
+                self.shard_dir,
+                self.shard_size
+            )
 
         assert self.ready()
 
@@ -162,7 +168,10 @@ class ShardConfig():
         assert os.path.isdir(self.train_dir)
         assert os.path.isdir(self.eval_dir)
         assert os.path.isfile(self.labelled_catalog_loc)
-        assert os.path.isfile(self.unlabelled_catalog_loc)
+        if self.unlabelled_catalog_loc is None:
+            logging.info('No unlabelled_catalog has been used')
+        else:
+            assert os.path.isfile(self.unlabelled_catalog_loc)
         return True
 
     def to_dict(self):

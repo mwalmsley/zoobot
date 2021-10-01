@@ -8,38 +8,39 @@ import tensorflow as tf
 from PIL import Image
 from astropy.io import fits
 from tqdm import tqdm
-import sklearn
+# import sklearn
 from zoobot.data_utils import create_tfrecord
 
 
-def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, columns_to_save, reader, train_test_fraction=0.8):
-    """
-    Save a galaxy catalog as a pair of train and test TFRecords, for fast loading later.
-    Makes the train/test split and returns the corresponding train/test catalogs for convenience.
+# def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, columns_to_save, reader, train_test_fraction=0.8):
+#     """
+#     Save a galaxy catalog as a pair of train and test TFRecords, for fast loading later.
+#     Makes the train/test split and returns the corresponding train/test catalogs for convenience.
+#     NOT USED in Zoobot - create_shards.py uses `<write_image_df_to_tfrecord>`__ directly - but it might be useful to you.
     
-    Args:
-        df (pandas.Dataframe): galaxy catalog, including columns_to_save columns
-        train_loc (str): path to save training tfrecord
-        test_loc (str): path to save testing tfrecord
-        img_size (int): image edge length e.g. 256 for 256x256 image. Assumed square.
-        columns_to_save (list): columns to save as features in tfrecord. e.g. ['id_str', smooth_votes', 'featured_votes'].
-        reader (function): expecting galaxy row (dictlike), returning loaded PIL image for that galaxy
-        train_test_fraction (float, optional): Defaults to 0.8.
+#     Args:
+#         df (pandas.Dataframe): galaxy catalog, including columns_to_save columns
+#         train_loc (str): path to save training tfrecord
+#         test_loc (str): path to save testing tfrecord
+#         img_size (int): image edge length e.g. 256 for 256x256 image. Assumed square.
+#         columns_to_save (list): columns to save as features in tfrecord. e.g. ['id_str', smooth_votes', 'featured_votes'].
+#         reader (function): expecting galaxy row (dictlike), returning loaded PIL image for that galaxy
+#         train_test_fraction (float, optional): Defaults to 0.8.
     
-    Returns:
-        pd.Dataframe: train portion of original catalog (``df``)
-        pd.Dataframe: test portion of original catalog (``df``)
-    """
-    train_size = int(train_test_fraction * len(df))  # sklearn does this anyway but lets be explicit
-    train_df, test_df = sklearn.model_selection.train_test_split(df, train_size=train_size)
-    assert not train_df.empty
-    assert not test_df.empty
-    train_df.to_csv(train_loc + '.csv')  # ugly but effective
-    test_df.to_csv(test_loc + '.csv')
+#     Returns:
+#         pd.Dataframe: train portion of original catalog (``df``)
+#         pd.Dataframe: test portion of original catalog (``df``)
+#     """
+#     train_size = int(train_test_fraction * len(df))  # sklearn does this anyway but lets be explicit
+#     train_df, test_df = sklearn.model_selection.train_test_split(df, train_size=train_size)
+#     assert not train_df.empty
+#     assert not test_df.empty
+#     train_df.to_csv(train_loc + '.csv')  # ugly but effective
+#     test_df.to_csv(test_loc + '.csv')
 
-    write_image_df_to_tfrecord(train_df, train_loc, img_size, columns_to_save, reader=reader)
-    write_image_df_to_tfrecord(test_df, test_loc, img_size, columns_to_save, reader=reader)
-    return train_df, test_df
+#     write_image_df_to_tfrecord(train_df, train_loc, img_size, columns_to_save, reader=reader)
+#     write_image_df_to_tfrecord(test_df, test_loc, img_size, columns_to_save, reader=reader)
+#     return train_df, test_df
 
 
 def write_image_df_to_tfrecord(df, tfrecord_loc, img_size, columns_to_save, reader):
