@@ -1,6 +1,6 @@
-.. _finetuning:
+.. _finetuning_guide:
 
-Finetuning Guide
+Finetuning
 =====================================
 
 Galaxy Zoo answers the most common morphology questions: does this galaxy have spiral arms, is it merging, etc. 
@@ -16,6 +16,12 @@ The high-level approach is:
 1. Load the trained model, replacing the head (output layers) to match your task
 2. Retrain *only* the new head, leaving the rest of the model frozen
 3. Optionally, once the new head is trained, unfreeze the rest of the model and train with a low learning rate
+
+You will likely only need a small amount of labelled images; a few hundred is a good starting point. 
+This is because Zoobot includes a classifier already trained to answer Galaxy Zoo questions for DECaLS galaxies.
+Retraining (finetuning) this model requires much less time and labels than starting from scratch.
+If you do want to start from scratch, to reproduce or improve upon the pretrained classifier, :ref:`Zoobot can do that as well <reproducing_decals>`.
+
 
 Examples
 ---------------------

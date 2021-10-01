@@ -1,14 +1,29 @@
-.. _components:
+.. _overview_components:
 
 Components
 ==========
 
 Training deep learning models involves many steps and choices.
-Zoobot aims to provide a simple function for each step, tailored to astronomers classifying galaxies.
-You can compose these functions for your own research: either reproducing/improving the DECaLS classifications or finetuning a trained classifier for your own task.
+Zoobot aims to provide a simple component for each step, tailored to astronomers classifying galaxies.
+You can compose these components together for your own research.
 
-This section explains each of the steps available. 
+This section explains each of the main components available. 
 If you just want to dive in, start with an example script like ``finetune_minimal.py``.
+
+
+- :ref:`Loading Data <overview_loading>`
+- :ref:`Preprocessing Data <overview_preprocessing>`
+- :ref:`Training <overview_training>`
+- :ref:`Predictions and Representations <overview_predictions>`
+
+.. - :ref:`Fine-tuning <overview_finetuning>`
+
+You can put these together to solve tasks.
+For example, you might replicate the GZ DECaLS classifier (loading, preprocesssing, training),
+calculate new representations on new galaxies (predictions and representations),
+and then use those representations to cluster the galaxies (with scikit-learn etc.)
+
+You can see practical guides to typical tasks under Guides on the left hand sidebar.
 
 .. _overview_loading:
 
@@ -89,6 +104,8 @@ For example, images are usually saved as 0-255 integers and should be rescaled t
 preprocess.PreprocessingConfig is essentially a dict recording your preprocessing choices.
 Re-use ``preprocess_config`` to ensure your train, validation, test and ultimately prediction data are all preprocessed the same way.
 
+.. _overview_training:
+
 Training
 --------
 
@@ -96,7 +113,7 @@ Zoobot trains the convolutional neural network `EfficientNet <https://ai.googleb
 Random augmentations (crops, flips and rotations) will be applied by the first layers of the network
 (using `tf.keras.layers.experimental.preprocessing <https://www.tensorflow.org/api_docs/python/tf/keras/layers/experimental/preprocessing>`_).
 
-The exact model and loss to use depend on if you are :ref:`reproducing DECaLS <reproducing_decals>` or :ref:`finetuning <finetuning>`. 
+The exact model and loss to use depend on if you are :ref:`reproducing DECaLS <reproducing_decals>` or :ref:`finetuning <finetuning_guide>`. 
 Click each link for a specific guide.
 
 The general steps are the same: define the model architecture, select a loss function and optimizer, configure training options, and begin training.
@@ -125,8 +142,10 @@ The general steps are the same: define the model architecture, select a loss fun
     val_dataset
     )
 
-Making Predictions
-------------------
+.. _overview_predictions:
+
+Predictions and Representations
+-------------------------------
 
 You can :ref:`load <overview_loading>`  and :ref:`preprocess <overview_preprocessing>` the prediction data just as for the training and validation data.
 
@@ -171,3 +190,8 @@ See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/ma
 ..         folder_to_predict=folder_to_predict,
 ..         recursive=True  # if you also want to search subfolders, subsubfolders, etc
 ..     )
+
+.. _overview_finetuning:
+
+Fine-tuning
+-------------------------------

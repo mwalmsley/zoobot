@@ -3,19 +3,20 @@
 Training from Scratch
 =====================
 
-This code was used to create the automated classifications for GZ DECaLS.
-It can be re-used for new Galaxy Zoo projects or as a baseline or starting point to improve on our performance.
+Zoobot was originally used to train models on GZ DECaLS. Those models predicted the published automated classifications.
+The same code could be re-used to train new models on other Galaxy Zoo projects.
+You could also extend the code (e.g. by changing the architecture, preprocessing, etc) to improve performance.
 
 .. note:: 
 
     If you just want to use the classifier, you don't need to make it from scratch.
-    We provide `pretrained weights <https://github.com/mwalmsley/zoobot/tree/main/data>`_.
-    Start from these and :ref:`finetune <finetuning>` to your problem.
+    We provide :ref:`pretrained weights and precalculated representations <datanotes>`.
+    You can even start from these and :ref:`finetune <finetuning_guide>` to your problem.
 
 You will need galaxy images and volunteer classifications.
-For GZD-5, these are available at `<https://zenodo.org/record/4196267>`_.
+For Galaxy Zoo DECaLS (GZD-5), these are available at `<https://doi.org/10.5281/zenodo.4196266>`_.
 You will also need a fairly good GPU - we used an NVIDIA V100. 
-You might get away with a worse GPU by lowering the batch size (we used 128) or the image size, but this may affect performance.
+You might get away with a worse GPU by lowering the batch size (we used 128, 64 works too) or the image size, but this may affect performance.
 
 The high-level approach to create a CNN is:
 
