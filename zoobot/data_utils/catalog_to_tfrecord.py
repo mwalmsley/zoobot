@@ -3,16 +3,13 @@ import os
 import sys
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from PIL import Image
-# from astropy.io import fits
+from astropy.io import fits
 from tqdm import tqdm
-
+import sklearn
 from zoobot.data_utils import create_tfrecord
-
-import matplotlib
-# 
-import matplotlib.pyplot as plt
 
 
 def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, columns_to_save, reader, train_test_fraction=0.8):
@@ -33,13 +30,15 @@ def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, col
         pd.Dataframe: train portion of original catalog (``df``)
         pd.Dataframe: test portion of original catalog (``df``)
     """
-    train_df, test_df = split_df(df, train_test_fraction)
+    train_size = int(train_test_fraction * len(df))  # sklearn does this anyway but lets be explicit
+    train_df, test_df = sklearn.model_selection.train_test_split(df, train_size=train_size)
+    assert not train_df.empty
+    assert not test_df.empty
     train_df.to_csv(train_loc + '.csv')  # ugly but effective
     test_df.to_csv(test_loc + '.csv')
 
-
-    write_image_df_to_tfrecord(train_df, train_loc, img_size, columns_to_save, append=False, reader=reader)
-    write_image_df_to_tfrecord(test_df, test_loc, img_size, columns_to_save, append=False, reader=reader)
+    write_image_df_to_tfrecord(train_df, train_loc, img_size, columns_to_save, reader=reader)
+    write_image_df_to_tfrecord(test_df, test_loc, img_size, columns_to_save, reader=reader)
     return train_df, test_df
 
 
@@ -95,3 +94,44 @@ def row_to_serialized_example(row, img_size, columns_to_save, reader):
         extra_data_dict.update({col: row[col]})
 
     return create_tfrecord.serialize_image_example(matrix, **extra_data_dict)
+
+
+def get_reader(paths):
+    # find file format
+    file_format = paths[0].split('.')[-1]
+    # check for consistency
+    if not all([loc.split('.')[-1] == file_format for loc in paths]):
+        raise ValueError('File formats are not all consistent (e.g. [a.png, b.fits]')
+    logging.info('Checking that all file paths resolve correctly')
+    if not all(os.path.isfile(loc) for loc in paths):
+        raise FileNotFoundError('Check file paths: currently prefixed like {}'.format(paths[0]))
+    if file_format == 'png':
+        reader = load_png_as_pil
+    elif file_format == 'fits':
+        reader = load_decals_fits_as_pil
+    return reader
+
+
+def load_png_as_pil(subject: pd.Series):
+    """
+    This was used to make the GZ DECaLS tfrecords,
+    with png files that had already been converted to human-friendly form
+    (see https://github.com/zooniverse/decals/blob/master/decals/a_download_decals/get_images/download_images_threaded.py)
+
+    Args:
+        subject (pd.Series]): galaxy (likely a row from catalogue) including 'png_loc' or 'file_loc' column.
+
+    Returns:
+        [type]: [description]
+    """
+    try:
+        loc = subject['png_loc']
+    except KeyError:
+        loc = subject['file_loc']
+        assert loc[-4:] == '.png'
+    return Image.open(loc)
+
+
+
+def load_decals_fits_as_pil(subject):
+    raise NotImplementedError('For simplicity, this is not included in Zoobot. See https://github.com/zooniverse/decals/blob/master/decals/a_download_decals/get_images/download_images_threaded.py for an example.')
