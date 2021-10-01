@@ -157,6 +157,8 @@ class ShardConfig():
                 self.shard_dir,
                 self.shard_size
             )
+        else:
+            self.unlabelled_catalog_loc = ''  # record that no unlabelled catalog was used 
 
         assert self.ready()
 
