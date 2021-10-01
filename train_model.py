@@ -17,7 +17,7 @@ from zoobot import schemas, label_metadata
 if __name__ == '__main__':
     """
     DECaLS debugging (make the shards first with create_shards.py):
-      python train_model.py --experiment-dir results/decals_debug --shard-img-size 64 --resize-size 224 --train-dir data/decals/shards/decals_debug/train_shards --eval-dir data/decals/shards/decals_debug/eval_shards --epochs 2 --batch-size 8
+      python train_model.py --experiment-dir results/decals_debug --shard-img-size 32 --resize-size 224 --train-dir data/decals/shards/decals_debug/train_shards --eval-dir data/decals/shards/decals_debug/eval_shards --epochs 2 --batch-size 8
       
     DECaLS full:
       python train_model.py --experiment-dir results/decals_debug --shard-img-size 300 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 200 --batch-size 256 --resize-size 224

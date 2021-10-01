@@ -108,7 +108,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
         # for debugging
         if eager:
             logging.warning('Running in eager mode')
-            model.run_eagerly = True
+            model.run_eagerly = False
         # https://www.tensorflow.org/api_docs/python/tf/keras/Model
 
         model.fit(

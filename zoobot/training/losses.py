@@ -73,6 +73,10 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     Returns:
         tf.constant: negative log. prob per galaxy, of shape (batch_dim).
     """
+    # if you get a dimension mismatch here like [16, 2] vs. [64, 2], for example, check --shard-img-size is correct in train_model.py.
+    # images may be being reshaped to the wrong expected size e.g. if they are saved as 32x32, but you put --shard-img-size=64,
+    # you will get image batches of shape [N/4, 64, 64, 1] and hence have the wrong number of images vs. labels (and meaningless images)
+    # so check --shard-img-size carefully!
     total_count = tf.reduce_sum(labels_for_q, axis=1)
     dist = tfp.distributions.DirichletMultinomial(total_count, concentrations_for_q, validate_args=True)
     return -dist.log_prob(labels_for_q)  # important minus sign
