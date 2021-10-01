@@ -16,25 +16,17 @@ from zoobot import schemas, label_metadata
 
 if __name__ == '__main__':
     """
-    To make model for smooth/featured (also change cols below):
-      python train_model.py --experiment-dir results/smooth_or_featured_offline --shard-img-size 256 --train-dir data/decals/shards/multilabel_master_filtered_256/train --eval-dir data/decals/shards/multilabel_master_filtered_256/eval --epochs 1000 --batch-size 8 --resize-size 128
-
-    To make model for predictions on all cols, for appropriate galaxies only:
-      python train_model.py --experiment-dir results/latest_offline_featured --shard-img-size 128 --train-dir data/decals/shards/multilabel_master_filtered_128/train --eval-dir data/decals/shards/multilabel_master_filtered_128/eval --epochs 1000 
-    
-    DECALS testing:
-      python train_model.py --experiment-dir ~/repos/zoobot_private/results/debug --shard-img-size 64 --train-dir ~/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/train_shards --eval-dir ~/repos/zoobot_private/data/decals/shards/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
-      python train_model.py --experiment-dir /raid/scratch/walml/repos/zoobot/results/debug --shard-img-size 64 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8 --resize-size 64
-
-
-    GZ2 testing:
-      python train_model.py --experiment-dir results/debug --shard-img-size 300 --train-dir data/gz2/shards/all_featp5_facep5_sim_2p5_300/train_shards --eval-dir data/gz2/shards/all_featp5_facep5_sim_2p5_300/eval_shards --epochs 2 --batch-size 8 --resize-size 128
-      python train_model.py --experiment-dir results/debug --shard-img-size 300 --train-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --eval-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --epochs 1 --batch-size 8 --resize-size 128
-      python train_model.py --experiment-dir results/debug --shard-img-size 64 --train-dir data/gz2/shards/debug_sim/train_shards --eval-dir data/gz2/shards/debug_sim/eval_shards --epochs 2 --batch-size 8 --resize-size 64
-
-    Local testing:
-      python train_model.py --experiment-dir results/debug --shard-img-size 64 --resize-size 224 --train-dir data/decals/shards/all_2p5_unfiltered_retired/train_shards --eval-dir data/decals/shards/all_2p5_unfiltered_retired/eval_shards --epochs 2 --batch-size 8
+    DECaLS debugging (make the shards first with create_shards.py):
+      python train_model.py --experiment-dir results/decals_debug --shard-img-size 64 --resize-size 224 --train-dir data/decals/shards/decals_debug/train_shards --eval-dir data/decals/shards/decals_debug/eval_shards --epochs 2 --batch-size 8
       
+    DECaLS full:
+      python train_model.py --experiment-dir results/decals_debug --shard-img-size 300 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 200 --batch-size 256 --resize-size 224
+    New features: add --distributed for multi-gpu, --wandb for weights&biases metric tracking, --color for color (does not perform better)
+
+    GZ2 debugging:
+      python train_model.py --experiment-dir results/gz2_debug --shard-img-size 300 --train-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --eval-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --epochs 1 --batch-size 8 --resize-size 128
+
+
     """
     logging.basicConfig(
       format='%(levelname)s:%(message)s',
@@ -58,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument('--train-dir', dest='train_records_dir', type=str)
     parser.add_argument('--eval-dir', dest='eval_records_dir', type=str)
     parser.add_argument('--epochs', dest='epochs', type=int)
-    parser.add_argument('--batch-size', dest='batch_size', default=64, type=int)
+    parser.add_argument('--batch-size', dest='batch_size', default=128, type=int)
     parser.add_argument('--distributed', default=False, action='store_true')
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
@@ -72,7 +64,7 @@ if __name__ == '__main__':
       channels = 3
 
     initial_size = args.shard_img_size
-    resize_size = args.resize_size  # step time prop. to resolution
+    resize_size = args.resize_size
     batch_size = args.batch_size
 
     epochs = args.epochs
@@ -102,8 +94,8 @@ if __name__ == '__main__':
       logging.info('Using single GPU, not distributed')
       context_manager = contextlib.nullcontext()  # does nothing, just a convenience for clean code
 
-    raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True)
-    raw_test_dataset = tfrecord_datasets.get_dataset(eval_records, schema.label_cols, batch_size, shuffle=False)
+    raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True, drop_remainder=True)
+    raw_test_dataset = tfrecord_datasets.get_dataset(eval_records, schema.label_cols, batch_size, shuffle=False, drop_remainder=True)
   
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=schema.label_cols,

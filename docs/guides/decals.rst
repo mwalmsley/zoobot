@@ -43,11 +43,10 @@ Make these with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main
 
     python create_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
 
-More options are available, and you may need to adjust the label columns; see `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`__.
+More options are available, and you may need to adjust the label columns; see the examples in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`__.
+I like to use these options to make very small shards for quick debugging: ``python create_shards.py --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv --shard-dir data/decals/shards/decals_debug --img-size 300 --eval-size 100 --max-labelled 500 --max-unlabelled 300 --img-size 32``.
 
-.. TODO document training_config, link
-
-Now you can train a CNN using those shards. ``training/training_config.py`` has the code to do this. 
+Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/main/training/training_config.py>`__. has the code to do this. 
 Use it in your own code like so:
 
 .. code-block:: python
