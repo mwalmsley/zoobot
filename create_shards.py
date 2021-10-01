@@ -169,7 +169,7 @@ class ShardConfig():
         assert os.path.isdir(self.train_dir)
         assert os.path.isdir(self.eval_dir)
         assert os.path.isfile(self.labelled_catalog_loc)
-        if self.unlabelled_catalog_loc is None:
+        if self.unlabelled_catalog_loc is '':
             logging.info('No unlabelled_catalog has been used')
         else:
             assert os.path.isfile(self.unlabelled_catalog_loc)
