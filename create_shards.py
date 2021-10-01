@@ -98,9 +98,9 @@ class ShardConfig():
             labelled_columns_to_save list: Save catalog cols to tfrecord, under same name. 
         """
 
-        # # personal file manipulation, because my catalogs are old. Just make sure file_loc actually points to the files in the first place...
-        # labelled_catalog['file_loc'] = labelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
-        # unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+        # personal file manipulation, because my catalogs are old. Just make sure file_loc actually points to the files in the first place...
+        labelled_catalog['file_loc'] = labelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+        unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
 
         assert 'id_str' in labelled_columns_to_save
 
@@ -277,11 +277,11 @@ if __name__ == '__main__':
     # you should have already made these catalogs for your dataset
     parser.add_argument('--labelled-catalog', dest='labelled_catalog_loc', type=str,
                     help='Path to csv catalog of previous labels and file_loc, for shards')
-    parser.add_argument('--unlabelled-catalog', dest='unlabelled_catalog_loc', type=str,
-                help='Path to csv catalog of previous labels and file_loc, for shards')
+    parser.add_argument('--unlabelled-catalog', dest='unlabelled_catalog_loc', type=str, default='',
+                help='Path to csv catalog of previous labels and file_loc, for shards. Optional - skip (recommended) if all galaxies are labelled.')
 
     parser.add_argument('--eval-size', dest='eval_size', type=int,
-        help='Split labelled galaxies into train/test, with this many test galaxies')
+        help='Split labelled galaxies into train/test, with this many test galaxies (e.g. 5000)')
 
     # Write catalog to shards (tfrecords as catalog chunks) here
     parser.add_argument('--shard-dir', dest='shard_dir', type=str,
@@ -313,7 +313,10 @@ if __name__ == '__main__':
     dtypes = dict(zip(label_cols, [float for _ in label_cols]))
     dtypes['id_str'] = str
     labelled_catalog = pd.read_csv(args.labelled_catalog_loc, dtype=dtypes)
-    unlabelled_catalog = pd.read_csv(args.unlabelled_catalog_loc, dtype=dtypes)
+    if args.unlabelled_catalog_loc is not '':
+        unlabelled_catalog = pd.read_csv(args.unlabelled_catalog_loc, dtype=dtypes)
+    else:
+        unlabelled_catalog = pd.DataFrame()  # empty dataframe, for consistency only
 
     # limit catalogs to random subsets
     if args.max_labelled:
