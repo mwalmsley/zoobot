@@ -325,15 +325,16 @@ if __name__ == '__main__':
     if args.unlabelled_catalog_loc is not '':
         unlabelled_catalog = pd.read_csv(args.unlabelled_catalog_loc, dtype=dtypes)
     else:
-        unlabelled_catalog = pd.DataFrame()  # empty dataframe, for consistency only
+        unlabelled_catalog = None
 
     # limit catalogs to random subsets
     if args.max_labelled:
         labelled_catalog = labelled_catalog.sample(len(labelled_catalog))[:args.max_labelled]
-    if args.max_unlabelled:  
+    if args.max_unlabelled and (unlabelled_catalog is not None):  
         unlabelled_catalog = unlabelled_catalog.sample(len(unlabelled_catalog))[:args.max_unlabelled]
 
-    logging.info('Labelled: {}, unlabelled: {}'.format(len(labelled_catalog), len(unlabelled_catalog)))
+    logging.info('Labelled catalog: {}'.format(len(labelled_catalog)))
+    logging.info('Unlabelled catalog: {}'.format(len(unlabelled_catalog)))
 
     # in memory for now, but will be serialized for later/logs
     train_test_fraction = get_train_test_fraction(len(labelled_catalog), args.eval_size)
