@@ -255,29 +255,20 @@ def write_catalog_to_tfrecord_shards(df: pd.DataFrame, img_size, columns_to_save
 if __name__ == '__main__':
 
     """
-    Sim shards: add simulation_context
-        # python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/decals_multiq/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/decals_multiq/unlabelled_catalog.csv --eval-size 5000 --shard-dir=data/decals/shards/decals_multiq_128_sim --img-size 128
-    
-    DECALS all:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/unlabelled_catalog.csv --eval-size 10000 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired --img-size 300
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired --max-labelled 500 --max-unlabelled=300 --img-size 32
+    Some example commands:
 
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/unlabelled_catalog.csv --eval-size 10000 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired  --img-size 300
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired --max-labelled 500 --max-unlabelled=300 --img-size 32
+    DECALS:
 
-    GZ2 sim:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/simulation_context/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_featp5_facep5_sim_256 --img-size 256
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_2p5/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_2p5/simulation_context/unlabelled_catalog.csv --eval-size 4000 --shard-dir=data/gz2/shards/all_featp5_facep5_sim_300 --img-size 300
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_2p5_arc_unfiltered/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_2p5_arc_unfiltered/simulation_context/unlabelled_catalog.csv --eval-size 15000 --shard-dir=data/gz2/shards/all_sim_2p5_unfiltered_300 --img-size 300
-        
-        $PYTHON zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_arc/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_arc/simulation_context/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_sim_2p5_unfiltered_300 --img-size 300
-    
-    GZ2 all:
+        (debugging)
+        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/decals_debug --max-labelled 500 --max-unlabelled=300 --img-size 32
+
+        (the actual commands used for gz decals: debug above, full below)
+        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2_arc/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/decals_arc_debug --max-labelled 500 --max-unlabelled=300 --img-size 32
+        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2_arc/unlabelled_catalog.csv --eval-size 10000 --shard-dir=data/decals/shards/all_2p5_unfiltered_n2  --img-size 300
+
+    GZ2:
         python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_featp5_facep5_256 --img-size 256
 
-    Testing:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/decals_multiq/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/decals_multiq/unlabelled_catalog.csv --eval-size=100 --shard-dir=data/decals/shards/debug_sim --max-labelled 500 --max-unlabelled=300 --img-size 32
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_2p5_unfiltered/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_2p5_unfiltered/simulation_context/unlabelled_catalog.csv --shard-dir=data/gz2/shards/debug_sim --eval-size 1000 --max-labelled 5000 --max-unlabelled=3000 --img-size 64
     """
 
     parser = argparse.ArgumentParser(description='Make shards')
