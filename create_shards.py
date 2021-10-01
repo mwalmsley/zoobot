@@ -16,7 +16,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import sklearn
+from sklearn.model_selection import train_test_split
 
 from zoobot import label_metadata
 from zoobot.data_utils import catalog_to_tfrecord, checks
@@ -128,7 +128,7 @@ class ShardConfig():
 
         # save train/test split into training and eval shards
         train_size = int(train_test_fraction * len(labelled_catalog))  # sklearn does this anyway but lets be explicit
-        train_df, eval_df = sklearn.model_selection.train_test_split(labelled_catalog, train_size=train_size)
+        train_df, eval_df = train_test_split(labelled_catalog, train_size=train_size)
         logging.info(f'Train-test fraction: {train_test_fraction}.')
         logging.info('\nTraining subjects: {}'.format(len(train_df)))
         logging.info('Eval subjects: {}'.format(len(eval_df)))
