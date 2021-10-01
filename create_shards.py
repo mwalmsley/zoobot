@@ -119,16 +119,17 @@ class ShardConfig():
             checks.check_no_missing_files(unlabelled_catalog['file_loc'], max_to_check=2000)
 
         logging.info('\nLabelled subjects: {}'.format(len(labelled_catalog)))
-        logging.info('Unlabelled subjects: {}'.format(len(unlabelled_catalog)))
-        logging.info(f'Train-test fraction: {train_test_fraction}')
         labelled_catalog.to_csv(self.labelled_catalog_loc)
+
         if unlabelled_catalog is not None:
+            logging.info('Unlabelled subjects: {}'.format(len(unlabelled_catalog)))
             unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
 
 
         # save train/test split into training and eval shards
         train_size = int(train_test_fraction * len(labelled_catalog))  # sklearn does this anyway but lets be explicit
         train_df, eval_df = sklearn.model_selection.train_test_split(labelled_catalog, train_size=train_size)
+        logging.info(f'Train-test fraction: {train_test_fraction}.')
         logging.info('\nTraining subjects: {}'.format(len(train_df)))
         logging.info('Eval subjects: {}'.format(len(eval_df)))
         if len(train_df) < len(eval_df):
