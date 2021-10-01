@@ -144,4 +144,5 @@ def construct_feature_spec(expected_features: Dict) -> Dict:
 def cast_bytes_of_uint8_to_float32(some_bytes):
     # bytes are uint of range 0-255 (i.e. pixels)
     # floats are 0-1 by convention (and may be clipped if not)
+    # tfrecord datasets will be saved as 0-1 floats and so do NOT need dividing again (see preprocess.py, normalise_from_uint8 should be False)
     return tf.cast(tf.io.decode_raw(some_bytes, out_type=tf.uint8), tf.float32) / 255.
