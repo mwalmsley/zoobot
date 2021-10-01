@@ -34,8 +34,12 @@ def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, dr
         dataset = dataset.repeat()  # careful, don't repeat forever for eval
 
 
-    for (galaxy, labels) in dataset.take(5):
-        print(galaxy.shape, labels.shape)
+    # for (galaxy, labels) in dataset.take(5):
+    #     print(galaxy.shape, labels.shape)
+    for element in dataset.take(5):
+        print(element)
+        print(element['matrix'].shape)
+        print(element['smooth-or-featured_smooth'])
     exit()  # error is def with batching somehow
     dataset = dataset.batch(batch_size, drop_remainder=drop_remainder)
     dataset = dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)  # ensure that a batch is always ready to go
