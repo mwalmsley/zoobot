@@ -98,9 +98,9 @@ class ShardConfig():
             labelled_columns_to_save list: Save catalog cols to tfrecord, under same name. 
         """
 
-        # personal file manipulation, because my catalogs are old. Just make sure file_loc actually points to the files in the first place...
-        labelled_catalog['file_loc'] = labelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
-        unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+        # # personal file manipulation, because my catalogs are old. Just make sure file_loc actually points to the files in the first place...
+        # labelled_catalog['file_loc'] = labelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+        # unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
 
         assert 'id_str' in labelled_columns_to_save
 
@@ -241,7 +241,7 @@ def write_catalog_to_tfrecord_shards(df: pd.DataFrame, img_size, columns_to_save
     df_shards = [df.iloc[n * shard_size:(n + 1) * shard_size] for n in range(n_shards)]
 
     logging.info(f'Writing shards to {save_dir}')
-    for shard_n, df_shard in tqdm(enumerate(df_shards), total=len(df_shards)):
+    for shard_n, df_shard in tqdm(enumerate(df_shards), total=len(df_shards), unit='shards'):
         save_loc = os.path.join(save_dir, 's{}_shard_{}.tfrecord'.format(img_size, shard_n))
         catalog_to_tfrecord.write_image_df_to_tfrecord(
             df_shard, 
