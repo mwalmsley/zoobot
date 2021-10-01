@@ -66,8 +66,9 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
         None
     """
 
-    train_galaxies, train_labels = train_dataset.take(1)
-    print(train_galaxies.shape, train_labels.shape)
+    
+    for (train_galaxies, train_labels) in train_dataset.take(5):
+        print(train_galaxies.shape, train_labels.shape)
     exit()
 
     if not os.path.isdir(train_config.log_dir):
