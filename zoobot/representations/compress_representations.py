@@ -11,14 +11,29 @@ import pandas as pd
 from sklearn.decomposition import IncrementalPCA
 
 
-def create_pca_embedding(features, n_components, variance_plot_loc=None):
+def create_pca_embedding(features: np.array, n_components: int, variance_plot_loc=None):
+    """
+    Compress galaxy representations into a lower dimensionality using Incremental PCA.
+    These compressed representations are easier and faster to work with.
+
+    Args:
+        features (np.array): galaxy representations, of shape (galaxies, feature_dimensions)
+        n_components (int): number of PCA components to use. Sets output dimension.
+        variance_plot_loc (str, optional): If not None, save plot of variance vs. PCA components here. Defaults to None.
+
+    Raises:
+        ValueError: features includes np.nan values (PCA would break)
+
+    Returns:
+        np.array: PCA-compressed representations, of shape (galaxies, pca components)
+    """
     assert len(features) > 0
     pca = IncrementalPCA(n_components=n_components, batch_size=20000)
     reduced_embed = pca.fit_transform(features)
     if np.isnan(reduced_embed).any():
         raise ValueError(f'embed is {np.isnan(reduced_embed).mean()} nan')
 
-    if variance_plot_loc:  # only need for last one
+    if variance_plot_loc:
         plt.plot(range(n_components), pca.explained_variance_ratio_)
         plt.xlabel('Nth Component')
         plt.ylabel('Explained Variance')
@@ -29,81 +44,54 @@ def create_pca_embedding(features, n_components, variance_plot_loc=None):
 
 
 
-def main(features_cleaned_and_concat_loc, catalog_loc, name, output_dir):
+def main(df: pd.DataFrame, name: str, output_dir: str, components_to_calculate=[5, 10, 30], id_col='iauname'):
+    """
+    Wrapper around :meth:`create_pca_embedding`.
+    Creates and saves several embeddings using (by default) 5, 10, and 30 PCA components.
 
-    # made by reformat_cnn_features.py
-    df = pd.read_parquet(features_cleaned_and_concat_loc)
-    df['png_loc'] = df['filename'].str.replace('/share/nas/walml/galaxy_zoo/decals/dr5/png/', '')
-
-    """join to catalog"""
-    catalog = pd.read_parquet(catalog_loc)
-    df = pd.merge(df, catalog, on='png_loc', how='inner').reset_index(drop=True)  # applies previous filters implicitly
-    df = df.sample(len(df), random_state=42).reset_index()
-    assert len(df) > 0
-    logging.info(len(df))
-
-    # # rename dr8 catalog cols
-    # df = df.rename(columns={
-    #     'weighted_radius', 'estimated_radius',  # TODO I have since improved this column, need to update
-    #     'dr8_id': 'galaxy_id'
-    # })
-
-    # rename dr5 catalog cols
-    df = df.rename(columns={
-        'petro_th50': 'estimated_radius',  # TODO I have since improved this column, need to update
-        'iauname': 'galaxy_id'
-    })
-
-    df.to_parquet(os.path.join(output_dir, '{}_full_features_and_safe_catalog.parquet'.format(name)), index=False)
-
+    Args:
+        df (pd.DataFrame): with columns of id_col (below) and feat_* (e.g. feat_0_pred, feat_1_pred, ...) recording representations for each galaxy (row)
+        name (str): Text to identify saved outputs. No effect on results.
+        output_dir (str): Directory in which to save results. No effect on results.
+        id_col (str, optional): Name of column containing unique strings identifying each galaxy. Defaults to 'iauname', matching DECaLS catalog. 'id_str' may be useful to match GZ2 catalog.
+    """
     feature_cols = [col for col in df.columns.values if col.startswith('feat')]
     
     features = df[feature_cols].values
     
-    components_to_calculate = [5, 10, 30]
     for n_components in tqdm.tqdm(components_to_calculate):
 
+        # only need to bother with the variance plot for the highest num. components
         if n_components == np.max(components_to_calculate):
-            variance_plot_loc = 'explained_variance.pdf'
+            variance_plot_loc = os.path.join(output_dir, name + '_explained_variance.pdf')
         else:
             variance_plot_loc = None
 
         embed_df = create_pca_embedding(features, n_components, variance_plot_loc=variance_plot_loc)
-        embed_df['galaxy_id'] = df['galaxy_id']
+        embed_df[id_col] = df[id_col]  # pca embedding doesn't shuffle, so can copy the id col across to new df
         embed_df.to_parquet(os.path.join(output_dir, '{}_pca{}_and_ids.parquet'.format(name, n_components)), index=False)
-    
+
 
 if __name__ == '__main__':
 
     sns.set_context('notebook')
 
-    features_cleaned_and_concat_loc = '/share/nas/walml/repos/zoobot/data/results/dr5_color_cnn_features_concat.parquet'
-    catalog_loc = '/share/nas/walml/dr5_nsa_v1_0_0_to_upload.parquet'
+    output_dir = '/Users/walml/repos/zoobot/data/results'
+    assert os.path.isdir(output_dir)
 
-    name = 'dr5_color'
-    output_dir = '/share/nas/walml/repos/zoobot/data/results'
-    
-    main(features_cleaned_and_concat_loc, catalog_loc, name=name, output_dir=output_dir)
+    name = 'decals_dr5_oct_21' 
+    # made by reformat_predictions.py
+    features_loc = '/Volumes/beta/cnn_features/decals/cnn_features_decals.parquet'  # TODO point this to your download from Zenodo
+    df = pd.read_parquet(features_loc)
+    # TODO replace second arg with your image download folder
+    df['png_loc'] = df['png_loc'].str.replace('/media/walml/beta1/decals/png_native/dr5', '/Volumes/beta/decals/png_native/dr5')  
+    id_col = 'iauname'
 
+    # name = 'gz2' 
+    # features_loc = '/Volumes/beta/cnn_features/gz2/cnn_features_gz2.parquet'  # TODO point this to your download from Zenodo
+    # df = pd.read_parquet(features_loc)
+    # # TODO replace second arg with your image download folder
+    # df['png_loc'] = df['png_loc'].str.replace('/media/walml/beta1/galaxy_zoo/gz2/png', '/Volumes/beta/galaxy_zoo/gz2/png')  
+    # id_col = 'id_str'
 
-
-
-    # catalog_loc = '/raid/scratch/walml/repos/download_DECaLS_images/working_dr8_master.parquet'
-
-    # columns=['png_loc', 'weighted_radius', 'ra', 'dec', 'dr8_id']  # dr8 catalog cols
-
-    # TODO I think this has not been correctly filtered for bad images. Run the checks again, perhaps w/ decals downloader? Or check data release approach
-    # dr5_df = pd.read_parquet('dr5_b0_full_features_and_safe_catalog.parquet')
-    # """Rename a few columns"""
-    # print(dr5_df.head())
-    # dr5_df['estimated_radius'] = dr5_df['petro_th50']
-    # dr5_df['galaxy_id'] = dr5_df['iauname']
-
-
-    # df = pd.concat([dr5_df, dr8_df], axis=0).reset_index(drop=True)  # concat rowwise, some cols will have nans - but not png_loc or feature cols
-    # important to reset index else index is not unique, would be like 0123...0123...
-
-
-    # df[not_feature_cols].to_parquet('dr5_dr8_catalog_with_radius.parquet')
-
-    # TODO rereun including ra/dec and check for duplicates/very close overlaps
+    main(df, name, output_dir, id_col=id_col)

@@ -84,7 +84,7 @@ if __name__ == '__main__':
     # schema = schemas.Schema(question_answer_pairs, dependencies)
     # label_cols = schema.label_cols
 
-    """For saving the activations - the model with no head"""
+    """For saving the activations (representations) - use the model with no head, only GlobalAveragePooling2D"""
     # base_model = define_model.load_model(
     #     checkpoint_dir,
     #     include_top=False,

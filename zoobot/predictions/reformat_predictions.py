@@ -88,11 +88,13 @@ if __name__ == '__main__':
 
     overwrite = True
 
-    run_name = 'dr5_rings'
+    run_name = 'dr5_rings'  # the text identifying each of the output prediction csv's e.g. dr5_rings_full_features_0_5000.csv, etc.
 
     raw_search_str = 'data/results/{}_*_raw.csv'.format(run_name)
-    clean_search_str = raw_loc_to_clean_loc(raw_search_str)
+    clean_search_str = raw_loc_to_clean_loc(raw_search_str)  # simply gets new name e.g. 'data/results/{}_*_clean.csv'
     assert raw_search_str != clean_search_str
+
+    # each cleaned csv will be concatenated and saved here
     reformatted_parquet_loc = os.path.join(os.path.dirname(raw_search_str), '{}_cleaned_concat.parquet'.format(run_name))
 
     main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=overwrite)
