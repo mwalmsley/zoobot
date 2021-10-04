@@ -6,7 +6,7 @@ import  tensorflow as tf
 from zoobot.estimators import efficientnet_standard
 
 
-def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_standard.EfficientNetB0, **kwargs):
+def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_standard.EfficientNetB0, use_imagenet_weights=False, **kwargs):
     """
     Define efficientnet model to train.
     Thin wrapper around ``get_effnet``, an efficientnet creation function from ``efficientnet_standard``, that ensures the appropriate args.
@@ -23,10 +23,16 @@ def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_stand
     model = tf.keras.models.Sequential()
     logging.info('Building efficientnet to expect input {}, after any preprocessing layers'.format(input_shape))
 
+
+    if use_imagenet_weights:
+        weights = 'imagenet'  # split variable names to be clear this isn't one of my checkpoints to load
+    else:
+        weights = None
+
     # classes probably does nothing without include_top
     effnet = get_effnet(
         input_shape=input_shape,
-        weights=None,
+        weights=weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
         classes=None,  # headless so has no effect
         **kwargs

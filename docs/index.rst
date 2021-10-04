@@ -4,10 +4,6 @@
 Zoobot Documentation
 ====================
 
-
-Guides
-------
-
 Zoobot makes it easy to train a state-of-the-art deep learning classifier to solve your galaxy morphology problem.
 For example, you can train a classifier to find ring galaxies in under `200 lines of code <https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py>`_.
 
@@ -17,26 +13,32 @@ For example, you can train a classifier to find ring galaxies in under `200 line
 
    *Ring galaxies found using Zoobot and 212 labelled examples.*
 
-
-You do not need to be a machine learning expert to use Zoobot. 
-Zoobot includes :ref:`components <components>` for common tasks like loading images, managing training, and making predictions.
-You simply need to assemble these together. 
-
-You will only need a small amount of labelled images; a few hundred is a good starting point. 
-This is because Zoobot includes a classifier already trained to answer Galaxy Zoo questions for DECaLS galaxies.
-Retraining (finetuning) this model requires much less time and labels than starting from scratch.
-
-If you do want to start from scratch, to reproduce or improve upon the pretrained classifier, :ref:`Zoobot can do that as well <reproducing_decals>`.
-
-Check out the guides below. Each includes working example scripts you can run and adapt.
+Zoobot is intended for three tasks: training new models, calculating representations, and applying finetuning. 
+You can find practical guides to each task below.
+Each includes working example scripts you can run and adapt.
 
 .. toctree::
    :maxdepth: 2
 
-   usage/overview
-   usage/finetuning
-   usage/decals
+   /guides/guides
 
+
+You do not need to be a machine learning expert to use Zoobot. 
+Zoobot includes :ref:`components <overview_components>` for common tasks like loading images, managing training, and making predictions.
+You simply need to assemble these together. 
+
+.. toctree::
+   :maxdepth: 2
+
+   components/overview
+
+
+Zoobot includes pretrained weights, precalculated representations, example ring galaxy catalogues, and more. See here for a guide to the data:
+
+.. toctree::
+   :maxdepth: 2
+
+   data_notes
 
 
 API Reference
@@ -48,12 +50,7 @@ method.
 .. toctree::
    :maxdepth: 2
 
-   autodoc/data_utils
-   autodoc/estimators
-   autodoc/training
-   autodoc/predictions
-   autodoc/schemas
-   autodoc/label_metadata
+   autodoc/api
 
 Indices
 ^^^^^^^
@@ -62,8 +59,16 @@ Indices
 * :ref:`modindex`
 * :ref:`search`
 
+.. Sphinx links below
 .. https://www.sphinx-doc.org/en/master/usage/quickstart.html
 .. https://docs.readthedocs.io/en/stable/intro/getting-started-with-sphinx.html
 .. https://samnicholls.net/2016/06/15/how-to-sphinx-readthedocs/
 .. https://brendanhasz.github.io/2019/01/05/sphinx.html useful summary
-.. run (in docs)    make html   to build
+
+.. To build:
+.. install sphinx https://www.sphinx-doc.org/en/master/usage/installation.html is confusing, you can just use pip install -U sphinx
+.. run from in docs folder:    make html
+
+.. docs/autodoc contains the tree that sphinx uses to add automatic documentation
+.. it needs folders and files matching the python source
+.. you will need to add a new {folder}.rst, a new folder, and a new {file}.rst

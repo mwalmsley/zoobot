@@ -131,3 +131,23 @@ dmypy.json
 *.csv
 
 wandb_api.txt
+
+*.pdf
+*.png
+
+settings.json
+
+personal_examples.md
+*.sh
+*.parquet
+*.tfrecord
+
+# tensorboard data files
+events.out*
+*.json
+checkpoint*
+
+# mac junk
+.DS_Store
+
+.vscode

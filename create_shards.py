@@ -1,8 +1,7 @@
 """
 Save catalog columns and images to tfrecord shards.
-No knowledge of oracle allowed! Similarly, no knowledge of labels allowed. 
 Allowed to assume:
-- Each catalog entry has an image under `file_loc`
+- Each catalog entry has an image under `file_loc`. Must be .png file (easy to extend to others if you need, submit a PR)
 - Each catalog entry has an identifier under `id_str`
 """
 import argparse
@@ -12,10 +11,12 @@ import logging
 import json
 import time
 import glob
+from typing import List
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
 from zoobot import label_metadata
 from zoobot.data_utils import catalog_to_tfrecord, checks
@@ -37,15 +38,14 @@ class ShardConfig():
 
     def __init__(
         self,
-        shard_dir,  # to hold a new folder, named after the shard config 
-        size,  # IMPORTANT image size
-        shard_size=4096,
-        **overflow_args  # TODO review removing this
+        shard_dir,
+        size,
+        shard_size=4096
         ):
         """
         Args:
             shard_dir (str): directory into which to save shards
-            size (int, optional): Defaults to 128. Resolution to save fits to tfrecord
+            size (int, optional): Defaults to 128. Resolution to save fits to tfrecord (i.e. width in pixels)
             final_size (int, optional): Defaults to 64. Resolution to load from tfrecord into model
             shard_size (int, optional): Defaults to 4096. Galaxies per shard.
         """
@@ -54,8 +54,6 @@ class ShardConfig():
         self.shard_dir = shard_dir
 
         self.channels = 3  # save 3-band image to tfrecord. Augmented later by model input func.
-
-        self.db_loc = os.path.join(self.shard_dir, 'static_shard_db.db')  # record shard contents
 
         # paths for fixed tfrecords for initial training and (permanent) evaluation
         self.train_dir = os.path.join(self.shard_dir, 'train_shards') 
@@ -78,15 +76,36 @@ class ShardConfig():
             if loc.endswith('.tfrecord')]
 
 
-    def prepare_shards(self, labelled_catalog, unlabelled_catalog, train_test_fraction, columns_to_save):
-        """[summary]
+    def prepare_shards(self, labelled_catalog, unlabelled_catalog, train_test_fraction, labelled_columns_to_save: List):
+        """
+        Save the images in labelled_catalog and unlabelled_catalog to tfrecord shards.
+
+        Assumes:
+        - Each catalog entry has an image under `file_loc`. Must be .png file (easy to extend to others if you need, submit a PR)
+        - Each catalog entry has an identifier under `id_str`
+
+        Will split galaxies in ``labelled_catalog`` into train and test subsets according to ``train_test_fraction``,
+        and then save to self.train_dir and self.eval_dir respectively.
+
+        Galaxies in ``unlabelled_catalog`` will be saved to self.shard_dir.
+
+        Use ``labelled_columns_to_save`` to include data alongside each image in the final tfrecords for the labelled catalog *only*.
+        Must include 'id_str', and should likely also include the columns with labels
         
         Args:
-            labelled_catalog (pd.DataFrame): labelled galaxies, including fits_loc column
-            unlabelled_catalog (pd.DataFrame): unlabelled galaxies, including fits_loc column
+            labelled_catalog (pd.DataFrame): labelled galaxies, including file_loc column
+            unlabelled_catalog (pd.DataFrame): unlabelled galaxies, including file_loc column
             train_test_fraction (float): fraction of labelled catalog to use as training data
-            columns_to_save list: Save catalog cols to tfrecord, under same name. 
+            labelled_columns_to_save list: Save catalog cols to tfrecord, under same name. 
         """
+
+        # personal file manipulation, because my catalogs are old. Just make sure file_loc actually points to the files in the first place...
+        labelled_catalog['file_loc'] = labelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+        if unlabelled_catalog is not None:
+            unlabelled_catalog['file_loc'] = unlabelled_catalog['file_loc'].str.replace('/media/walml/beta/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')
+
+        assert 'id_str' in labelled_columns_to_save
+
         if os.path.isdir(self.shard_dir):
             shutil.rmtree(self.shard_dir)  # always fresh
         os.mkdir(self.shard_dir)
@@ -94,19 +113,23 @@ class ShardConfig():
         os.mkdir(self.eval_dir)
 
         # check that file paths resolve correctly
-        print(labelled_catalog['file_loc'][:3].values)
+        logging.info('Example file locs: \n{}'.format(labelled_catalog['file_loc'][:3].values))
         checks.check_no_missing_files(labelled_catalog['file_loc'], max_to_check=2000)
-        checks.check_no_missing_files(unlabelled_catalog['file_loc'], max_to_check=2000)
+        if unlabelled_catalog is not None:
+            checks.check_no_missing_files(unlabelled_catalog['file_loc'], max_to_check=2000)
 
-        # assume the catalog is true, don't modify halfway through
         logging.info('\nLabelled subjects: {}'.format(len(labelled_catalog)))
-        logging.info('Unlabelled subjects: {}'.format(len(unlabelled_catalog)))
-        logging.info(f'Train-test fraction: {train_test_fraction}')
         labelled_catalog.to_csv(self.labelled_catalog_loc)
-        unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
 
-        train_df = labelled_catalog
-        eval_df = unlabelled_catalog
+        if unlabelled_catalog is not None:
+            logging.info('Unlabelled subjects: {}'.format(len(unlabelled_catalog)))
+            unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
+
+
+        # save train/test split into training and eval shards
+        train_size = int(train_test_fraction * len(labelled_catalog))  # sklearn does this anyway but lets be explicit
+        train_df, eval_df = train_test_split(labelled_catalog, train_size=train_size)
+        logging.info(f'Train-test fraction: {train_test_fraction}.')
         logging.info('\nTraining subjects: {}'.format(len(train_df)))
         logging.info('Eval subjects: {}'.format(len(eval_df)))
         if len(train_df) < len(eval_df):
@@ -114,26 +137,28 @@ class ShardConfig():
         train_df.to_csv(os.path.join(self.train_dir, 'train_df.csv'))
         eval_df.to_csv(os.path.join(self.eval_dir, 'eval_df.csv'))
 
-        # training and eval galaxies are labelled and should never be read by db
-        # just write them directly as shards, don't enter into db
+        logging.info('Writing {} train and {} test galaxies to shards'.format(len(train_df), len(eval_df)))
         for (df, save_dir) in [(train_df, self.train_dir), (eval_df, self.eval_dir)]:
             write_catalog_to_tfrecord_shards(
                 df,
                 img_size=self.size,
-                columns_to_save=columns_to_save,
+                columns_to_save=labelled_columns_to_save,
                 save_dir=save_dir,
                 shard_size=self.shard_size
             )
 
-        # write unlabelled galaxies to shards (optional)
-        columns_to_save = ['id_str']
-        write_catalog_to_tfrecord_shards(
-            unlabelled_catalog,
-            self.size,
-            columns_to_save,
-            self.shard_dir,
-            self.shard_size
-        )
+        if unlabelled_catalog is not None:
+            logging.info('Writing {} unlabelled galaxies to shards (optional)'.format(len(unlabelled_catalog)))
+            columns_to_save = ['id_str']
+            write_catalog_to_tfrecord_shards(
+                unlabelled_catalog,
+                self.size,
+                columns_to_save,
+                self.shard_dir,
+                self.shard_size
+            )
+        else:
+            self.unlabelled_catalog_loc = ''  # record that no unlabelled catalog was used 
 
         assert self.ready()
 
@@ -145,14 +170,25 @@ class ShardConfig():
         assert os.path.isdir(self.shard_dir)
         assert os.path.isdir(self.train_dir)
         assert os.path.isdir(self.eval_dir)
-        assert os.path.isfile(self.db_loc)
         assert os.path.isfile(self.labelled_catalog_loc)
-        assert os.path.isfile(self.unlabelled_catalog_loc)
+        if self.unlabelled_catalog_loc is '':
+            logging.info('No unlabelled_catalog has been used')
+        else:
+            assert os.path.isfile(self.unlabelled_catalog_loc)
         return True
 
-
-    # def to_dict(self):
-    #     return object_utils.object_to_dict(self)
+    def to_dict(self):
+        return {
+            'size': self.size,
+            'shard_size': self.shard_size,
+            'shard_dir': self.shard_dir,
+            'channels': self.channels,
+            'train_dir': self.train_dir,
+            'eval_dir': self.eval_dir,
+            'labelled_catalog_loc': self.labelled_catalog_loc,
+            'unlabelled_catalog_loc': self.unlabelled_catalog_loc,
+            'config_save_loc': self.config_save_loc
+        }
 
     def write(self):
         with open(self.config_save_loc, 'w+') as f:
@@ -170,8 +206,8 @@ def load_shard_config(shard_config_loc: str):
         'eval_dir',
         'labelled_catalog_loc',
         'unlabelled_catalog_loc',
-        'config_save_loc',
-        'db_loc']
+        'config_save_loc'
+    ]
     for attr in attrs:
         old_loc = getattr(shard_config, attr)
         new_loc = os.path.join(new_shard_dir, os.path.split(old_loc)[-1])
@@ -217,76 +253,59 @@ def write_catalog_to_tfrecord_shards(df: pd.DataFrame, img_size, columns_to_save
     df_shards = [df.iloc[n * shard_size:(n + 1) * shard_size] for n in range(n_shards)]
 
     logging.info(f'Writing shards to {save_dir}')
-    for shard_n, df_shard in tqdm(enumerate(df_shards), total=len(df_shards)):
+    for shard_n, df_shard in tqdm(enumerate(df_shards), total=len(df_shards), unit='shards'):
         save_loc = os.path.join(save_dir, 's{}_shard_{}.tfrecord'.format(img_size, shard_n))
         catalog_to_tfrecord.write_image_df_to_tfrecord(
             df_shard, 
             save_loc,
             img_size,
             columns_to_save,
-            reader=catalog_to_tfrecord.get_reader(df['file_loc']),
-            append=False)
+            reader=catalog_to_tfrecord.get_reader(df['file_loc'])
+        )
 
 
 
 if __name__ == '__main__':
 
     """
-    Sim shards: add simulation_context
-        # python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/decals_multiq/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/decals_multiq/unlabelled_catalog.csv --eval-size 5000 --shard-dir=data/decals/shards/decals_multiq_128_sim --img-size 128
-    
-    DECALS all:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/unlabelled_catalog.csv --eval-size 10000 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired --img-size 300
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired --max-labelled 500 --max-unlabelled=300 --img-size 32
+    Some example commands:
 
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/unlabelled_catalog.csv --eval-size 10000 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired  --img-size 300
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired_arc/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/all_2p5_unfiltered_retired --max-labelled 500 --max-unlabelled=300 --img-size 32
+    DECALS:
 
-    GZ2 sim:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/simulation_context/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_featp5_facep5_sim_256 --img-size 256
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_2p5/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_2p5/simulation_context/unlabelled_catalog.csv --eval-size 4000 --shard-dir=data/gz2/shards/all_featp5_facep5_sim_300 --img-size 300
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_2p5_arc_unfiltered/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_2p5_arc_unfiltered/simulation_context/unlabelled_catalog.csv --eval-size 15000 --shard-dir=data/gz2/shards/all_sim_2p5_unfiltered_300 --img-size 300
-        
-        $PYTHON zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_arc/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5_arc/simulation_context/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_sim_2p5_unfiltered_300 --img-size 300
-    
-    GZ2 all:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_featp5_facep5_256 --img-size 256
+        (debugging)
+        python create_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/decals_debug --max-labelled 500 --max-unlabelled=300 --img-size 32
 
-    Testing:
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/decals/prepared_catalogs/decals_multiq/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/decals_multiq/unlabelled_catalog.csv --eval-size=100 --shard-dir=data/decals/shards/debug_sim --max-labelled 500 --max-unlabelled=300 --img-size 32
-        python zoobot/active_learning/make_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_2p5_unfiltered/simulation_context/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_2p5_unfiltered/simulation_context/unlabelled_catalog.csv --shard-dir=data/gz2/shards/debug_sim --eval-size 1000 --max-labelled 5000 --max-unlabelled=3000 --img-size 64
+        (the actual commands used for gz decals: debug above, full below)
+        python create_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_retired/unlabelled_catalog.csv --eval-size 100 --shard-dir=data/decals/shards/decals_debug --max-labelled 500 --max-unlabelled=300 --img-size 32
+        python create_shards.py --labelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2_arc/labelled_catalog.csv --unlabelled-catalog=data/decals/prepared_catalogs/all_2p5_unfiltered_n2_arc/unlabelled_catalog.csv --eval-size 10000 --shard-dir=data/decals/shards/all_2p5_unfiltered_n2  --img-size 300
+
+    GZ2:
+        python create_shards.py --labelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/labelled_catalog.csv --unlabelled-catalog=data/gz2/prepared_catalogs/all_featp5_facep5/unlabelled_catalog.csv --eval-size 1000 --shard-dir=data/gz2/shards/all_featp5_facep5_256 --img-size 256
+
     """
 
-    # only responsible for making the shards. 
-    # Assumes catalogs are shuffled and have id_str, file_loc, label, total_votes columns
-
     parser = argparse.ArgumentParser(description='Make shards')
-    # to create for GZ2, see zoobot/get_catalogs/gz2
-    # to create for DECALS, see github/zooniverse/decals and apply zoobot/active_learning/make_decals_catalog to `joint_catalog_for_upload`
+
+    # you should have already made these catalogs for your dataset
     parser.add_argument('--labelled-catalog', dest='labelled_catalog_loc', type=str,
                     help='Path to csv catalog of previous labels and file_loc, for shards')
+    parser.add_argument('--unlabelled-catalog', dest='unlabelled_catalog_loc', type=str, default='',
+                help='Path to csv catalog of previous labels and file_loc, for shards. Optional - skip (recommended) if all galaxies are labelled.')
 
-    parser.add_argument('--unlabelled-catalog', dest='unlabelled_catalog_loc', type=str,
-                help='Path to csv catalog of previous labels and file_loc, for shards')
+    parser.add_argument('--eval-size', dest='eval_size', type=int,
+        help='Split labelled galaxies into train/test, with this many test galaxies (e.g. 5000)')
 
-    parser.add_argument('--eval-size', dest='eval_size', type=int)
-
-    # Write catalog to shards (tfrecords as catalog chunks) here for use in active learning
+    # Write catalog to shards (tfrecords as catalog chunks) here
     parser.add_argument('--shard-dir', dest='shard_dir', type=str,
                     help='Directory into which to place shard directory')
     parser.add_argument('--max-unlabelled', dest='max_unlabelled', type=int,
-                    help='Max galaxies (for debugging/speed')
+                    help='Max unlabelled galaxies (for debugging/speed')
     parser.add_argument('--max-labelled', dest='max_labelled', type=int,
-                    help='Max galaxies (for debugging/speed')
+                    help='Max labelled galaxies (for debugging/speed')
     parser.add_argument('--img-size', dest='size', type=int,
-                    help='Max galaxies (for debugging/speed')
+                    help='Size at which to save images (before any augmentations). 300 for DECaLS paper.')
 
     args = parser.parse_args()
-
-    # label_cols = label_metadata.decals_partial_label_cols
-    label_cols = label_metadata.decals_label_cols
-    # label_cols = label_metadata.gz2_partial_label_cols
-    # label_cols = label_metadata.gz2_label_cols
 
     # log_loc = 'make_shards_{}.log'.format(time.time())
     logging.basicConfig(
@@ -296,25 +315,36 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
+    logging.info('Using GZ DECaLS label schema by default - see create_shards.py for more options, or to add your own')
+    # label_cols = label_metadata.decals_partial_label_cols
+    label_cols = label_metadata.decals_label_cols
+    # label_cols = label_metadata.gz2_partial_label_cols
+    # label_cols = label_metadata.gz2_label_cols
+
     # labels will always be floats, int conversion confuses tf.data
     dtypes = dict(zip(label_cols, [float for _ in label_cols]))
     dtypes['id_str'] = str
     labelled_catalog = pd.read_csv(args.labelled_catalog_loc, dtype=dtypes)
-    unlabelled_catalog = pd.read_csv(args.unlabelled_catalog_loc, dtype=dtypes)
+    if args.unlabelled_catalog_loc is not '':
+        unlabelled_catalog = pd.read_csv(args.unlabelled_catalog_loc, dtype=dtypes)
+    else:
+        unlabelled_catalog = None
 
     # limit catalogs to random subsets
     if args.max_labelled:
         labelled_catalog = labelled_catalog.sample(len(labelled_catalog))[:args.max_labelled]
-    if args.max_unlabelled:  
+    if args.max_unlabelled and (unlabelled_catalog is not None):  
         unlabelled_catalog = unlabelled_catalog.sample(len(unlabelled_catalog))[:args.max_unlabelled]
 
-    logging.info('Labelled: {}, unlabelled: {}'.format(len(labelled_catalog), len(unlabelled_catalog)))
+    logging.info('Labelled catalog: {}'.format(len(labelled_catalog)))
+    if unlabelled_catalog is not None:
+        logging.info('Unlabelled catalog: {}'.format(len(unlabelled_catalog)))
 
     # in memory for now, but will be serialized for later/logs
     train_test_fraction = get_train_test_fraction(len(labelled_catalog), args.eval_size)
 
-    columns_to_save = ['id_str'] + label_cols
-    logging.info('Saving {} columns)'.format(columns_to_save))
+    labelled_columns_to_save = ['id_str'] + label_cols
+    logging.info('Saving columns for labelled galaxies: \n{}'.format(labelled_columns_to_save))
 
     shard_config = ShardConfig(shard_dir=args.shard_dir, size=args.size)
 
@@ -322,11 +352,5 @@ if __name__ == '__main__':
         labelled_catalog,
         unlabelled_catalog,
         train_test_fraction=train_test_fraction,
-        columns_to_save=columns_to_save
+        labelled_columns_to_save=labelled_columns_to_save
     )
-    
-    # finally, tidy up by moving the log into the shard directory
-    # could not be create here because shard directory did not exist at start of script
-    # repo = git.Repo(search_parent_directories=True)
-    # sha = repo.head.object.hexsha
-    # shutil.move(log_loc, os.path.join(args.shard_dir, '{}.log'.format(sha)))

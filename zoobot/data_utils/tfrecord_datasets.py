@@ -32,6 +32,7 @@ def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, dr
         dataset = dataset.shuffle(batch_size * 2)  # should be > len of each tfrecord, ideally, but that's hard
     if repeat:
         dataset = dataset.repeat()  # careful, don't repeat forever for eval
+
     dataset = dataset.batch(batch_size, drop_remainder=drop_remainder)
     dataset = dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)  # ensure that a batch is always ready to go
     return dataset
@@ -141,19 +142,7 @@ def construct_feature_spec(expected_features: Dict) -> Dict:
 
 
 def cast_bytes_of_uint8_to_float32(some_bytes):
-    return tf.cast(tf.io.decode_raw(some_bytes, out_type=tf.uint8), tf.float32)
-
-
-# def custom_feature_spec(features_requested):
-#     # TODO properly, with error checking
-#     features = {}
-#     if 'matrix' in features_requested:
-#         features["matrix"] = tf.io.FixedLenFeature([], tf.string)
-#     if 'label' in features_requested:
-#         features["label"] = tf.io.FixedLenFeature([], tf.int64)
-#     if 'total_votes' or 'count' in features_requested:
-#         features["total_votes"] = tf.io.FixedLenFeature([], tf.int64)
-#     if 'id_str' in features_requested:
-#         features["id_str"] = tf.io.FixedLenFeature([], tf.string)
-#     return features
-
+    # bytes are uint of range 0-255 (i.e. pixels)
+    # floats are 0-1 by convention (and may be clipped if not)
+    # tfrecord datasets will be saved as 0-1 floats and so do NOT need dividing again (see preprocess.py, normalise_from_uint8 should be False)
+    return tf.cast(tf.io.decode_raw(some_bytes, out_type=tf.uint8), tf.float32) / 255.

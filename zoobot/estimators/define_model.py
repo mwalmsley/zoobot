@@ -10,15 +10,17 @@ from zoobot.training import losses
 class CustomSequential(tf.keras.Sequential):
 
     def __init__(self):
-        """Will this override?
-        """
         super().__init__()
         self.step = 0
 
     def call(self, x, training):
-        "How about this?"
+        """
+        Override tf.keras.Sequential to optionally save image data to tensorboard.
+        Slow but useful for debugging.
+        Not used by default (see get_model). I suggest only uncommenting when you want to debug.
+        """
         tf.summary.image('model_input', x, step=self.step)
-        # tf.summary.image('model_input', x, step=0)
+        tf.summary.histogram('model_input', x, step=self.step)
         return super().call(x, training)
 
 
@@ -74,7 +76,7 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
         ))
 
 
-def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False):
+def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1, use_imagenet_weights=False):
     """
     Create a trainable efficientnet model.
     First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
@@ -92,13 +94,11 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.
         include_top (bool, optional): If True, include head used for GZ DECaLS: global pooling and dense layer. Defaults to True.
         expect_partial (bool, optional): If True, do not raise partial match error when loading weights (likely for optimizer state). Defaults to False.
+        channels (int, default 1): Number of channels i.e. C in NHWC-dimension inputs. 
 
     Returns:
         tf.keras.Model: trainable efficientnet model including augmentations and optional head
     """
-
-    # dropout_rate = 0.3
-    # drop_connect_rate = 0.2  # gets scaled by num blocks, 0.6ish = 1
 
     logging.info('Input size {}, crop size {}, final size {}'.format(
         input_size, crop_size, resize_size))
@@ -106,29 +106,30 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     # model = CustomSequential()  # to log the input image for debugging
     model = tf.keras.Sequential()
 
-    model.add(tf.keras.layers.Input(shape=(input_size, input_size, 1)))
+    input_shape = (input_size, input_size, channels)
+    model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
     add_augmentation_layers(model, crop_size=crop_size,
                              resize_size=resize_size)  # inplace
 
-    shape_after_preprocessing_layers = (resize_size, resize_size, 1)
+    shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
         input_shape=shape_after_preprocessing_layers,
-        get_effnet=efficientnet_standard.EfficientNetB0
+        get_effnet=efficientnet_standard.EfficientNetB0,
         # further kwargs will be passed to get_effnet
+        use_imagenet_weights=use_imagenet_weights,
         # dropout_rate=dropout_rate,
         # drop_connect_rate=drop_connect_rate
     )
     model.add(effnet)
-    # model.add(tf.keras.layers.Dense(16))
-    # model.add(tf.keras.layers.Dense(2))
-#
+
+    logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
+
     if include_top:
         assert output_dim is not None
         model.add(tf.keras.layers.GlobalAveragePooling2D())
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
-    # efficientnet.custom_top_dirichlet_reparam(model, output_dim, schema)
 
     # will be updated by callback
     model.step = tf.Variable(
@@ -159,7 +160,7 @@ def load_weights(model, checkpoint_loc, expect_partial=False):
         load_status.expect_partial()
 
 
-def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False):
+def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False, channels=1):
     """    
     Utility wrapper for the common task of defining the GZ DECaLS model and then loading a pretrained checkpoint.
     resize_size must match the pretrained model used.
@@ -184,7 +185,8 @@ def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, 
         input_size=input_size,
         crop_size=crop_size,
         resize_size=resize_size,
-        include_top=include_top
+        include_top=include_top,
+        channels=channels
     )
     load_weights(model, checkpoint_loc, expect_partial=expect_partial)
     return model

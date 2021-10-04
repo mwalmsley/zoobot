@@ -59,7 +59,7 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     Args:
         image_paths (list): list of image paths to load
         file_format (str): image format e.g. png, jpeg
-        requested_img_size (int): image dimension e.g. 256 for 256x256x3 image. Assumed square.
+        requested_img_size (int): e.g. 256 for 256x256x3 image. Assumed square. Will resize if size on disk != this.
         batch_size (int): batch size to use when grouping images into batches
         labels (list or None): If not None, include labels in dataset (see Returns). Must be equal length to image_paths. Defaults to None.
 
@@ -72,7 +72,7 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     
     assert len(image_paths) > 0
     assert isinstance(image_paths[0], str)
-    logging.info('Images to predict on: {}'.format(len(image_paths)))
+    logging.info('Images paths to load as dataset: {}'.format(len(image_paths)))
 
     # check they exist
     missing_paths = [path for path in image_paths if not os.path.isfile(path)]

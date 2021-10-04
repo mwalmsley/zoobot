@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/en/latest/?badge=latest)
 
-Zoobot classifies galaxy morphology with deep learning. This code will let you: 
+Zoobot classifies galaxy morphology with deep learning. This code will let you:
 
 - **Reproduce** and improve the Galaxy Zoo DECaLS automated classifications
 - **Finetune** the classifier for new tasks
@@ -30,20 +30,27 @@ training_config.train_estimator(
 )
 ```
 
-Install with `pip install zoobot`. Zoobot requires Tensorflow >= 2.3.
+Install using git and pip:
+    git clone git@github.com:mwalmsley/zoobot.git
+    pip install -r zoobot/requirements.txt (virtual env or conda highly recommended)
+    pip install -e zoobot
+The `main` branch is for stable-ish releases. The `dev` branch includes the shiniest features but may change at any time.
 
-To get started, see the [documentation](https://zoobot.readthedocs.io/). 
+To get started, see the [documentation](https://zoobot.readthedocs.io/).
 
-I also include some working examples for you to copy and adapt: 
+I also include some working examples for you to copy and adapt:
 
 - [train_model.py](https://github.com/mwalmsley/zoobot/blob/main/train_model.py)
 - [make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/make_predictions.py)
 - [finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py)
 - [finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_advanced.py)
 
+Latest cool features on dev branch (June 2021):
+
+- Multi-GPU distributed training
+- Support for Weights and Biases (wandb)
+- Worked examples for custom representations
 
 Contributions are welcome and will be credited in any future work.
 
-
 If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414).
-
