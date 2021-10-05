@@ -279,7 +279,7 @@ def evaluate_performance(model, test_dataset, run_name, log_dir, batch_size, tra
     for _ in range(5):
       test_metrics = model.evaluate(test_dataset.repeat(3), verbose=0)
       losses.append(test_metrics[0])
-      accuracies.append(test_metrics[0])
+      accuracies.append(test_metrics[1])
     logging.info('Mean test loss: {:.3f} (var {:.4f})'.format(np.mean(losses), np.var(losses)))
     logging.info('Mean test accuracy: {:.3f} (var {:.4f})'.format(np.mean(accuracies), np.var(accuracies)))
 
