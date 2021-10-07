@@ -54,6 +54,9 @@ if __name__ == '__main__':
     parser.add_argument('--distributed', default=False, action='store_true')
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
+    parser.add_argument('--eager', default=False, action='store_true',
+        help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'
+    )
     args = parser.parse_args()
     
     # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
@@ -160,5 +163,5 @@ if __name__ == '__main__':
       train_config,  # parameters for how to train e.g. epochs, patience
       train_dataset,
       test_dataset,
-      eager=True
+      eager=args.eager  # set this True (or use --eager) for easier debugging, but slower training
     )
