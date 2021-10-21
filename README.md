@@ -31,9 +31,16 @@ training_config.train_estimator(
 ```
 
 Install using git and pip:
+
+    # I recommend using a virtual environment, see below
     git clone git@github.com:mwalmsley/zoobot.git
-    pip install -r zoobot/requirements.txt (virtual env or conda highly recommended)
+    pip install -r zoobot/requirements.txt
     pip install -e zoobot
+
+I recommend installing in a virtual environment like anaconda.  For example, `conda create --name zoobot python=3.7`, then `conda activate zoobot`.
+Do not install directly with anaconda itself (e.g. `conda install tensorflow`). Anaconda currently installs tensorflow 2.0.0, which is too old for the latest features used here.
+Use pip instead, as above.
+
 The `main` branch is for stable-ish releases. The `dev` branch includes the shiniest features but may change at any time.
 
 To get started, see the [documentation](https://zoobot.readthedocs.io/).
