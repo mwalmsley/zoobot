@@ -30,6 +30,8 @@ training_config.train_estimator(
 )
 ```
 
+You can finetune Zoobot with a free GPU using this [Google Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing). To install locally, keep reading.
+
 Install using git and pip:
 
     # I recommend using a virtual environment, see below
@@ -52,11 +54,12 @@ I also include some working examples for you to copy and adapt:
 - [finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py)
 - [finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_advanced.py)
 
-Latest cool features on dev branch (June 2021):
+Latest features:
 
 - Multi-GPU distributed training
 - Support for Weights and Biases (wandb)
 - Worked examples for custom representations
+- [Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing) for GZ predictions and fine-tuning
 
 Contributions are welcome and will be credited in any future work.
 
