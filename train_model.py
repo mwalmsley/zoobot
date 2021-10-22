@@ -55,8 +55,9 @@ if __name__ == '__main__':
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
-        help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'
-    )
+        help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
+    parser.add_argument('--no-test=augment', dest='no_test_augment', default=False, action='store_true'),
+    parser.add_argument('--dropout-rate', dest='dropout_rate', default=0.2, type=float)
     args = parser.parse_args()
     
     # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
@@ -67,6 +68,8 @@ if __name__ == '__main__':
     else:
       logging.warning('Training on color images, not converting to greyscale')
       channels = 3
+
+    always_augment = not args.no_test_augment,  # if no_test_augment, then *don't* use test-time augmentations
 
     initial_size = args.shard_img_size
     resize_size = args.resize_size
@@ -118,7 +121,9 @@ if __name__ == '__main__':
         input_size=initial_size, 
         crop_size=int(initial_size * 0.75),
         resize_size=resize_size,
-        channels=channels
+        channels=channels,
+        always_augment=always_augment,
+        dropout_rate=args.dropout_rate
       )
     
       multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
@@ -156,6 +161,8 @@ if __name__ == '__main__':
       config.batch_size = batch_size
       config.train_records = train_records
       config.epochs = epochs
+      config.always_augment = always_augment
+      config.dropout_rate = args.dropout_rate
 
     # inplace on model
     training_config.train_estimator(
