@@ -76,7 +76,7 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
         ))
 
 
-def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1, use_imagenet_weights=False, always_augment=False):
+def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1, use_imagenet_weights=False, always_augment=True, dropout_rate=0.2):
     """
     Create a trainable efficientnet model.
     First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
@@ -122,8 +122,6 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
         get_effnet=efficientnet_standard.EfficientNetB0,
         # further kwargs will be passed to get_effnet
         use_imagenet_weights=use_imagenet_weights,
-        # dropout_rate=dropout_rate,
-        # drop_connect_rate=drop_connect_rate
     )
     model.add(effnet)
 
@@ -132,7 +130,7 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     if include_top:
         assert output_dim is not None
         model.add(tf.keras.layers.GlobalAveragePooling2D())
-        model.add(custom_layers.PermaDropout(0.2, name='top_dropout'))
+        model.add(custom_layers.PermaDropout(dropout_rate, name='top_dropout'))
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
 
     # will be updated by callback
@@ -164,7 +162,7 @@ def load_weights(model, checkpoint_loc, expect_partial=False):
         load_status.expect_partial()
 
 
-def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False, channels=1):
+def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False, channels=1, always_augment=True, dropout_rate=0.2):
     """    
     Utility wrapper for the common task of defining the GZ DECaLS model and then loading a pretrained checkpoint.
     resize_size must match the pretrained model used.
@@ -190,7 +188,9 @@ def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, 
         crop_size=crop_size,
         resize_size=resize_size,
         include_top=include_top,
-        channels=channels
+        channels=channels,
+        always_augment=always_augment,
+        dropout_rate=dropout_rate
     )
     load_weights(model, checkpoint_loc, expect_partial=expect_partial)
     return model

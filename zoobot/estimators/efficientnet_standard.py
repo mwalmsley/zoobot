@@ -392,13 +392,17 @@ def EfficientNet(width_coefficient,
                       name='top_conv')(x)
     x = layers.BatchNormalization(axis=bn_axis, name='top_bn')(x)
     x = layers.Activation(activation, name='top_activation')(x)
-    if include_top:
+    if include_top:  
+        # this is NEVER true with Zoobot. 
+        # `define_model.get_model(include_top=True)` will build my own top, not this. 
+        # Left for comparison only!
+
         x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
         if dropout_rate and dropout_rate > 0:
-            # x = layers.Dropout(dropout_rate, name='top_dropout')(x)
-            # use constantly-on dropout instead
+            x = layers.Dropout(dropout_rate, name='top_dropout')(x)
+            # I use constantly-on dropout instead
             # top layer dropout needs to be high to do anything much
-            x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)  
+            # x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)  
         x = layers.Dense(classes,
                          activation='softmax',
                          kernel_initializer=DENSE_KERNEL_INITIALIZER,
