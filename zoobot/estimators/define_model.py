@@ -76,7 +76,7 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
         ))
 
 
-def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1, use_imagenet_weights=False):
+def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, include_top=True, expect_partial=False, channels=1, use_imagenet_weights=False, always_augment=False):
     """
     Create a trainable efficientnet model.
     First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
@@ -109,8 +109,11 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     input_shape = (input_size, input_size, channels)
     model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
-    add_augmentation_layers(model, crop_size=crop_size,
-                             resize_size=resize_size)  # inplace
+    add_augmentation_layers(
+        model,
+        crop_size=crop_size,
+        resize_size=resize_size,
+        always_augment=always_augment)  # inplace
 
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
@@ -129,6 +132,7 @@ def get_model(output_dim, input_size, crop_size, resize_size, weights_loc=None, 
     if include_top:
         assert output_dim is not None
         model.add(tf.keras.layers.GlobalAveragePooling2D())
+        model.add(custom_layers.PermaDropout(0.2, name='top_dropout'))
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
 
     # will be updated by callback

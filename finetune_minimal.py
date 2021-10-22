@@ -177,7 +177,7 @@ if __name__ == '__main__':
 
     predictions = model.predict(pred_dataset)
 
-    data = [{'prediction': float(prediction), 'local_png_loc': local_png_loc} for prediction, local_png_loc in zip(predictions, ordered_paths)]
+    data = [{'prediction': float(prediction), 'image_loc': local_png_loc} for prediction, local_png_loc in zip(predictions, ordered_paths)]
     pred_df = pd.DataFrame(data=data)
   
     example_predictions_loc = 'results/finetune_minimal/example_predictions.csv'

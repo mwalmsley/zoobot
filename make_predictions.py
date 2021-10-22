@@ -5,7 +5,7 @@ import pandas as pd
 
 import tensorflow as tf
 
-from zoobot import label_metadata, schemas
+from zoobot import label_metadata
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import define_model, preprocess
 from zoobot.predictions import predict_on_tfrecords, predict_on_images
