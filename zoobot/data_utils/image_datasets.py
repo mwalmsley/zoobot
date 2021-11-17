@@ -1,8 +1,7 @@
 import os
 import logging
 
-from pathlib import Path
-
+import pandas as pd
 import tensorflow as tf
 
 
@@ -94,9 +93,24 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
 
     if labels is not None:
         assert len(labels) == len(image_paths)
-        label_ds = tf.data.Dataset.from_tensor_slices(labels)
+
+        if isinstance(labels[0], dict):
+            # assume list of dicts, each representing one datapoint e.g. [{'feat_a': 1, 'feat_b': 2}, {'feat_a': 12, 'feat_b': 42}]
+            # reshape to columnlike dict e.g. {'feat_a': [1, 12], 'feat_b: [2, 42]} because that's what tf supports
+            label_ds = tf.data.Dataset.from_tensor_slices(pd.DataFrame.from_dict(labels).to_dict(orient="list"))
+        else:
+            # make it a dict anyway for consistency, keyed by 'label' instead of e.g. 'feat_a', 'feat_b'
+            label_ds = tf.data.Dataset.from_tensor_slices({'label': labels})
+
         label_ds = label_ds.batch(batch_size, drop_remainder=False)
-        image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label: dict(image_dict, label=label))  # now yields {'matrix': , 'id_str': , 'label': } batched dicts
+
+        print(list(label_ds.take(1)))  
+
+        # label_dict is {'label': (256)} or {'feat_a': (256), 'feat_b': (256)}
+        # image_dict is {'id_str': some_id 'matrix': (image)}
+        # merge the two dicts to create {'id_str': ..., 'matrix': ..., 'feat_a': ..., 'feat_b': ...}
+        image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label_dict: {**image_dict, **label_dict}
+)  # now yields {'matrix': , 'id_str': , 'label': } batched dicts
 
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
