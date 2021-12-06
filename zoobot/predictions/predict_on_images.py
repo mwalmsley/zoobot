@@ -5,19 +5,12 @@ import logging
 import time
 import datetime
 from typing import List
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-
-from zoobot import label_metadata
-from zoobot.data_utils import image_datasets
-from zoobot.estimators import define_model, preprocess
-from zoobot import schemas 
-
-from pathlib import Path
-
-
+import h5py
 
 
 def predict(image_ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_cols: List, save_loc: str):
@@ -28,7 +21,7 @@ def predict(image_ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, la
         image_ds (tf.data.Dataset): image dataset yielding batches of (images, paths)
         model (tf.keras.Model): [description]
         n_samples (int): number of repeat predictions. Useful to marginalise over augmentations or MC Dropout.
-        label_cols (list): Semantic labels for final model output dimension (e.g. ["smooth", "bar", "merger"]). Only used for output csv headers.
+        label_cols (list): Semantic labels for final model output dimension (e.g. ["smooth", "bar", "merger"]). Only used for output csv/hdf5 notes.
         save_loc (str): path to save csv of predictions.
     """
 
@@ -43,16 +36,38 @@ def predict(image_ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, la
     predictions = np.stack([model.predict(image_ds) for n in range(n_samples)], axis=-1)
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
-    data = [prediction_to_row(predictions[n], image_paths[n], label_cols=label_cols) for n in range(len(predictions))]
-    predictions_df = pd.DataFrame(data)
-    # logging.info(predictions_df)
+    if save_loc.endswith('.csv'):      # save as pandas df
+        predictions_to_csv(predictions, image_paths, label_cols, save_loc)
+    elif save_loc.endswith('.hdf5'):
+        predictions_to_hdf5(predictions, image_paths, label_cols, save_loc)
+    else:
+        logging.warning('Save format of {} not recognised - assuming csv'.format(save_loc))
+        predictions_to_csv(predictions, image_paths, label_cols, save_loc)
 
-    predictions_df.to_csv(save_loc, index=False)
     logging.info(f'Predictions saved to {save_loc}')
 
     end = datetime.datetime.fromtimestamp(time.time())
     logging.info('Completed at: {}'.format(end.strftime('%Y-%m-%d %H:%M:%S')))
     logging.info('Time elapsed: {}'.format(end - start))
+
+
+def predictions_to_hdf5(predictions, image_paths, label_cols, save_loc):
+    assert save_loc.endswith('.hdf5')
+    with h5py.File(save_loc, "w") as f:
+        f.create_dataset(name='predictions', data=predictions)
+        # https://docs.h5py.org/en/stable/special.html#h5py.string_dtype
+        dt = h5py.string_dtype(encoding='utf-8')
+        # predictions_dset.attrs['label_cols'] = label_cols  # would be more conventional but is a little awkward
+        f.create_dataset(name='image_paths', data=image_paths, dtype=dt)
+        f.create_dataset(name='label_cols', data=label_cols, dtype=dt)
+
+
+def predictions_to_csv(predictions, image_paths, label_cols, save_loc):
+    assert save_loc.endswith('.csv')
+    data = [prediction_to_row(predictions[n], image_paths[n], label_cols=label_cols) for n in range(len(predictions))]
+    predictions_df = pd.DataFrame(data)
+    # logging.info(predictions_df)
+    predictions_df.to_csv(save_loc, index=False)
 
 
 def prediction_to_row(prediction: np.ndarray, image_loc: str, label_cols: List):
