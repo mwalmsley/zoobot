@@ -3,8 +3,6 @@ import logging
 import tensorflow as tf
 from tensorflow.keras import layers
 
-from zoobot.estimators import define_model
-
 
 def freeze_model(model):
     # Freeze the pretrained weights
@@ -38,7 +36,7 @@ def unfreeze_model(model, unfreeze_names=['block7', 'top'], unfreeze_all=False):
                 # https://www.tensorflow.org/api_docs/python/tf/keras/layers/BatchNormalization?version=stable#note_that_2
                 # this will also switch layer to inference mode from tf2, no need to separately pass training=False
         else:
-            logging.warning('Layer {} not recognised - freezing by default'.format(layer))
+            logging.warning('Layer {} ({}) not in unfreeze list - freezing by default'.format(layer.name, layer))
             layer.trainable = False  # not a recursive call, and not with a name to unfreeze
 
     # model will be trainable next time it is compiled

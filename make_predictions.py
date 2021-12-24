@@ -102,7 +102,7 @@ if __name__ == '__main__':
     #   tf.keras.layers.Dense(1, activation="sigmoid", name='sigmoid_output')
     # ])
     # model = tf.keras.Sequential([
-    #   tf.keras.Input(shape=(initial_size, initial_size, 1)),
+    #   tf.keras.layers.InputLayer(input_shape=(initial_size, initial_size, 1)),
     #   base_model,
     #   new_head
     # ])
@@ -110,6 +110,7 @@ if __name__ == '__main__':
 
     # label_cols = ['ring']
 
-    save_loc = 'data/results/make_predictions_example.csv'
+    # save_loc = 'data/results/make_predictions_example.csv'
+    save_loc = 'data/results/make_predictions_example.hdf5'
     n_samples = 5
     predict_on_images.predict(image_ds, model, n_samples, label_cols, save_loc)

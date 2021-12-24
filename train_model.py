@@ -152,6 +152,7 @@ if __name__ == '__main__':
       with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
         api_key = f.readline()
       wandb.login(key=api_key)
+      wandb.tensorboard.patch(root_logdir=save_dir)
       wandb.init(sync_tensorboard=True)
       config = wandb.config
       config.label_cols=schema.label_cols,

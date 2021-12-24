@@ -60,7 +60,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
         test_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
         extra_callbacks (list): any extra callbacks to use when training the model. See e.g. tf.keras.callbacks.
         eager (bool, optional): If True, train in eager mode - slow, but helpful for debugging. Defaults to False.
-        verbose (int, optional): 1 for progress bar, useful for local training. 2 for one line per epoch, useful for scripts. Defaults to 1.
+        verbose (int, optional): 1 for progress bar, useful for local training. 2 for one line per epoch, useful for scripts. Defaults to 2.
 
     Returns:
         None
@@ -108,7 +108,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
         # for debugging
         if eager:
             logging.warning('Running in eager mode')
-            model.run_eagerly = False
+            model.run_eagerly = True
         # https://www.tensorflow.org/api_docs/python/tf/keras/Model
 
         model.fit(

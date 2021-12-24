@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # stick the new head on the pretrained base model
     model = tf.keras.Sequential([
-      tf.keras.Input(shape=(requested_img_size, requested_img_size, 1)),
+      tf.keras.layers.InputLayer(shape=(requested_img_size, requested_img_size, 1)),
       base_model,
       new_head
     ])

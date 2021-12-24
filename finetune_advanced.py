@@ -2,27 +2,18 @@
 
 import os
 import logging
-import glob
-import random
 import argparse
 import time
 import json
 
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras import layers, regularizers
-import pandas as pd
-from sklearn.model_selection import train_test_split
+from tensorflow.keras import layers
 
-from zoobot import label_metadata, schemas
-from zoobot.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.estimators import preprocess, define_model
 from zoobot.training import training_config
 from zoobot.transfer_learning import utils
-from zoobot.estimators import custom_layers
 from zoobot.datasets import rings
-
-
 
     
 def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_show=5000000, greyscale=True):
@@ -54,11 +45,10 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
 
     """
 
-    logging.warning('Using imagenet so setting greyscale = False')
-    greyscale = False
     if greyscale:
       channels = 1
     else:
+      logging.warning('greyscale = False, hopefully you expect to use imagenet or a color-trained model')
       channels = 3
       logging.warning('Using color images, channels=3')
 
@@ -100,8 +90,8 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     crop_size = int(requested_img_size * 0.75)  # implies cropping the 300 pixel images to 225 pixels. However, the code will ignore this and crop directly to resize_size (below) as they are very similar
     resize_size = 224  # code will skip resizing and crop straight to 224. Don't change - must be 224 for both DECaLS and ImageNet
 
-    run_name = 'example_run_{}'.format(time.time())
-    log_dir = os.path.join('results/examples', run_name)
+    run_name = 'finetune_review_spiral_all_{}'.format(time.time())  # scratch was very likely trained in colour
+    log_dir = os.path.join('results/finetune_review', run_name)
     log_dir_head = os.path.join(log_dir, 'head_only')
     for d in [log_dir, log_dir_head]:
       if not os.path.isdir(d):
@@ -114,7 +104,12 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     """Pick a base model"""
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
-    pretrained_checkpoint = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
+    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
+    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_train_set_only_replicated/checkpoint'  # I think this is the latest gz-decals-classifiers replication
+    # pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
+    # pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
+    # pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_bulge_size_only/checkpoint'
+    pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_spiral_yn_only/checkpoint'
 
     base_model = get_headless_model(
       pretrained_checkpoint,
@@ -122,10 +117,11 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
       crop_size,
       resize_size,
       channels,  # careful, 1 for decals checkpoint or 3 for imagenet checkpoint
+      expect_partial=True
     ) 
     base_model.trainable = False # freeze the headless model (no training allowed)
 
-    ## OR get base model from pretrained *ImageNet* checkpoint (includes augmentations)
+    # # OR get base model from pretrained *ImageNet* checkpoint (includes augmentations)
     # base_model = define_model.get_model(
     #   output_dim=None,
     #   input_size=requested_img_size,
@@ -138,7 +134,7 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     # )
     # base_model.trainable = False  # freeze the headless model (no training allowed)
 
-    ## OR create a blank base model from scratch (it will need training)
+    # # OR create a blank base model from scratch (it will need training)
     # base_model = define_model.get_model(
     #   output_dim=None,
     #   input_size=requested_img_size,
@@ -146,7 +142,8 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     #   resize_size=resize_size,
     #   weights_loc=None,
     #   include_top=False,
-    #   channels=channels
+    #   channels=channels,
+    #   use_imagenet_weights=False
     # )
     # base_model.trainable = True
 
@@ -168,7 +165,7 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
 
     # stick the new head on the pretrained base model
     model = tf.keras.Sequential([
-      tf.keras.Input(shape=(requested_img_size, requested_img_size, channels)),
+      tf.keras.layers.InputLayer(input_shape=(requested_img_size, requested_img_size, channels)),
       base_model,
       new_head
     ])
@@ -178,6 +175,7 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
 
     epochs = max(int(max_galaxies_to_show / train_dataset_size), 1)
     patience = min(max(10, int(epochs/6)), 30)  # between 5 and 30 epochs, sliding depending on num. epochs (TODO may just set at 30, we'll see)
+    # patience = 1  # TODO
     logging.info('Epochs: {}'.format(epochs))
     logging.info('Early stopping patience: {}'.format(patience))
 
@@ -202,7 +200,7 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     )
 
     evaluate_performance(
-      model=model,test_dataset=test_dataset,run_name=run_name + '_transfer',log_dir=log_dir, batch_size=batch_size, train_dataset_size=train_dataset_size
+      model=model,test_dataset=test_dataset, run_name=run_name + '_transfer', log_dir=log_dir, batch_size=batch_size, train_dataset_size=train_dataset_size
     )
 
     """
@@ -222,9 +220,9 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     # or more...
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7'])
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6'])
-    utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6', 'block5'])
+    # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6', 'block5'])  # this is "finetune_review_run_", I just didn't rename it 
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6', 'block5', 'block4'])
-    # utils.unfreeze_model(model, unfreeze_names=[], unfreeze_all=True)
+    utils.unfreeze_model(model, unfreeze_names=[], unfreeze_all=True)
     # note that the number of free parameters increases very quickly!
 
     logging.info('Recompiling with lower learning rate and trainable upper layers')
@@ -253,12 +251,12 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     logging.info('Finetuning complete')
 
     evaluate_performance(
-      model=model,test_dataset=test_dataset,run_name=run_name + '_finetuned',log_dir=log_dir,batch_size=batch_size, train_dataset_size=train_dataset_size
+      model=model, test_dataset=test_dataset,run_name=run_name + '_finetuned',log_dir=log_dir,batch_size=batch_size, train_dataset_size=train_dataset_size
     )
 
   
 
-def get_headless_model(pretrained_checkpoint, requested_img_size, crop_size, resize_size, channels):
+def get_headless_model(pretrained_checkpoint, requested_img_size, crop_size, resize_size, channels, expect_partial=False):
   # get headless model (inc. augmentations)
   logging.info('Loading pretrained model from {}'.format(pretrained_checkpoint))
   return define_model.load_model(
@@ -268,7 +266,8 @@ def get_headless_model(pretrained_checkpoint, requested_img_size, crop_size, res
     crop_size=crop_size,  # model augmentation layers apply a crop...
     resize_size=resize_size,  # ...and then apply a resize
     output_dim=None , # headless so no effect
-    channels=channels
+    channels=channels,
+    expect_partial=expect_partial
   )
 
 
@@ -283,16 +282,27 @@ def evaluate_performance(model, test_dataset, run_name, log_dir, batch_size, tra
     logging.info('Mean test loss: {:.3f} (var {:.4f})'.format(np.mean(losses), np.var(losses)))
     logging.info('Mean test accuracy: {:.3f} (var {:.4f})'.format(np.mean(accuracies), np.var(accuracies)))
 
+    predictions = model.predict(test_dataset).astype(float).squeeze()  # only works for 1D prediction array
+    logging.info(predictions)
+    labels = np.concatenate([label_batch.numpy().astype(float) for _, label_batch in test_dataset]).squeeze()
+    logging.info(labels)
     results = {
       'batch_size': int(batch_size),
       'mean_loss': float(np.mean(losses)),
       'mean_acc': float(np.mean(accuracies)),
+      'predictions': predictions.tolist(),
+      'labels': labels.tolist(),
       'train_dataset_size': int(train_dataset_size),
       'log_dir': log_dir,
       'run_name': str(os.path.basename(log_dir))
     }
-    with open('{}_result_timestamped_{}_{}.json'.format(run_name, train_dataset_size, np.random.randint(10000)), 'w') as f:
+    json_name = '{}_result_timestamped_{}_{}.json'.format(run_name, train_dataset_size, np.random.randint(10000))
+    json_loc = os.path.join(log_dir, json_name)
+
+    with open(json_loc, 'w') as f:
       json.dump(results, f)
+
+    logging.info(f'Results saved to {json_loc}')
 
 
 if __name__ == '__main__':
@@ -310,7 +320,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', dest='batch_size', default=256, type=int,
                         help='Batch size to use for train/val/test of model')
     parser.add_argument('--img-size', dest='requested_img_size', default=300, type=int,
-                        help='Image size before conv layers i.e. after loading (from 424, by default) and cropping.')
+                        help='Image size before conv layers i.e. after loading (from 424, by default) and cropping (to 300, by default).')
 
     args = parser.parse_args()
 

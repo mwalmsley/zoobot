@@ -27,6 +27,53 @@ decals_partial_pairs = {
 decals_partial_questions, decals_partial_label_cols = schemas.extract_questions_and_label_cols(decals_partial_pairs)
 
 
+
+# the schema is slightly different for dr1/2 vs dr5+
+# merging answers were changed completely
+# bulge sizes were changed from 3 to 5
+# bar was changed from yes/no to strong/weak/none
+# spiral had 'cant tell' added
+# TODO had distribution shifts despite the question not being changed (likely due to new icons on the website)
+# the schema below is for training on dr1/2 only (not dr5+)
+decals_dr12_pairs = {
+    'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
+    'disk-edge-on': ['_yes', '_no'],
+    'has-spiral-arms': ['_yes', '_no'],
+    'bar-dr12': ['_yes', '_no'],
+    'bulge-size-dr12': ['_dominant', '_obvious', '_none'],
+    'how-rounded-dr12': ['_completely', '_in-between', '_cigar-shaped'],  # completely was renamed to round
+    'edge-on-bulge': ['_boxy', '_none', '_rounded'],
+    'spiral-winding': ['_tight', '_medium', '_loose'],
+    'spiral-arm-count-dr12': ['_1', '_2', '_3', '_4', '_more-than-4'],
+    'merging-dr12': ['_neither', '_tidal-debris', '_both', '_merger']
+}
+decals_dr12_questions, decals_dr12_label_cols = schemas.extract_questions_and_label_cols(decals_dr12_pairs)
+
+
+# I think performance should be best when training on *both*
+# I made a joint dr1/2/5/8 catalog with columns drawn from all campaigns and shared where possible (dr5 and dr8 line up perfectly once a few dr5 w/ the old merger q are dropped)
+decals_all_campaigns_pairs = {
+    'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
+    'disk-edge-on': ['_yes', '_no'],
+    'has-spiral-arms': ['_yes', '_no'],
+    'bar': ['_strong', '_weak', '_no'],
+    'bulge-size': ['_dominant', '_large', '_moderate', '_small', '_none'],
+    'how-rounded': ['_round', '_in-between', '_cigar-shaped'],
+    'edge-on-bulge': ['_boxy', '_none', '_rounded'],
+    'spiral-winding': ['_tight', '_medium', '_loose'],
+    'spiral-arm-count': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell'],
+    'merging': ['_none', '_minor-disturbance', '_major-disturbance', '_merger'],
+    # and the dr1/2 versions which changed, separately
+    'bar-dr12': ['_yes', '_no'],
+    'bulge-size-dr12': ['_dominant', '_obvious', '_none'],
+    'how-rounded-dr12': ['_completely', '_in-between', '_cigar-shaped'],
+    'spiral-arm-count-dr12': ['_1', '_2', '_3', '_4', '_more-than-4'],
+    'merging-dr12': ['_neither', '_tidal-debris', '_both', '_merger']
+}
+decals_all_campaigns_questions, decals_all_campaigns_label_cols = schemas.extract_questions_and_label_cols(decals_all_campaigns_pairs)
+
+
+
 gz2_pairs = {
     'smooth-or-featured': ['_smooth', '_featured-or-disk'],
     'disk-edge-on': ['_yes', '_no'],
@@ -80,7 +127,11 @@ def get_gz2_and_decals_dependencies(question_answer_pairs):
         'spiral-winding': 'has-spiral-arms_yes',
         'spiral-count': 'has-spiral-arms_yes',
         'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
-        'merging': None
+        'merging': None,
+        # and the dr12 pairs (it's okay to include these in the dict, they'll simply be ignored if not keyed)
+        'bar-dr12': featured_branch_answer,
+        'bulge-size-dr12': featured_branch_answer,
+        'merging-dr12': None
     }
     return dependencies
 

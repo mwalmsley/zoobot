@@ -99,7 +99,7 @@ if __name__ == '__main__':
     #     tf.keras.layers.GlobalAveragePooling2D()
     # ])
     # model = tf.keras.Sequential([
-    #     tf.keras.Input(shape=(initial_size, initial_size, channels)),
+    #     tf.keras.layers.InputLayer(input_shape=(initial_size, initial_size, channels)),
     #     base_model,
     #     new_head
     # ])
@@ -131,7 +131,7 @@ if __name__ == '__main__':
       tf.keras.layers.Dense(1, activation="sigmoid", name='sigmoid_output')
     ])
     model = tf.keras.Sequential([
-      tf.keras.Input(shape=(initial_size, initial_size, 1)),
+      tf.keras.layers.InputLayer(input_shape=(initial_size, initial_size, 1)),
       base_model,
       new_head
     ])
