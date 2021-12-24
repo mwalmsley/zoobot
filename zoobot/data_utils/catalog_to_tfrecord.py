@@ -129,11 +129,11 @@ def load_png_as_pil(subject: pd.Series):
     Returns:
         [type]: [description]
     """
-    try:
-        loc = subject['png_loc']
-    except KeyError:
-        loc = subject['file_loc']
-        assert loc[-4:] == '.png'
+    # try:
+    #     loc = subject['png_loc']
+    # except KeyError:
+    loc = subject['file_loc']
+    assert loc[-4:] == '.png'
     return Image.open(loc)
 
 
