@@ -116,7 +116,10 @@ def set_dependencies(questions, dependencies):
     for question in questions:
         prev_answer_text = dependencies[question.text]
         if prev_answer_text is not None:
-            prev_answer = [a for q in questions for a in q.answers if a.text == prev_answer_text][0]  # will be exactly one match
+            try:
+                prev_answer = [a for q in questions for a in q.answers if a.text == prev_answer_text][0]  # look through every answer, find those with the same text as "prev answer text" - will be exactly one match
+            except IndexError:
+                raise ValueError(f'{prev_answer_text} not found in dependencies')
             prev_answer._next_question = question
             question._asked_after = prev_answer
 

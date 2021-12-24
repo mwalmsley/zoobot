@@ -120,20 +120,19 @@ def get_gz2_and_decals_dependencies(question_answer_pairs):
         'has-spiral-arms': featured_branch_answer,
         'bar': featured_branch_answer,
         'bulge-size': featured_branch_answer,
-        'something-odd': None,  # always asked
         'how-rounded': 'smooth-or-featured_smooth',
         'bulge-shape': 'disk-edge-on_yes',
         'edge-on-bulge': 'disk-edge-on_yes',
         'spiral-winding': 'has-spiral-arms_yes',
-        'spiral-count': 'has-spiral-arms_yes',
         'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
         'merging': None,
+        # 'something-odd': None,  # always asked
         # and the dr12 pairs (it's okay to include these in the dict, they'll simply be ignored if not keyed)
         'bar-dr12': featured_branch_answer,
         'bulge-size-dr12': featured_branch_answer,
-        'merging-dr12': None,
         'how-rounded-dr12': 'smooth-or-featured_smooth',
-        'spiral-arm-count-dr12': 'has-spiral-arms'
+        'spiral-arm-count-dr12': 'has-spiral-arms_yes',
+        'merging-dr12': None
     }
     return dependencies
 
