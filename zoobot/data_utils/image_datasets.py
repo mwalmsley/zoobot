@@ -53,7 +53,6 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     """
     Load images in a folder as a tf.data dataset
     Supports jpeg (note the e) and png
-    For labels, encode them in the loc (e.g. images/spirals/gal_1345.png, or images/gal_1345_spiral.png) and provide loc_to_label function to decode
 
     Args:
         image_paths (list): list of image paths to load
@@ -109,8 +108,8 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
         # label_dict is {'label': (256)} or {'feat_a': (256), 'feat_b': (256)}
         # image_dict is {'id_str': some_id 'matrix': (image)}
         # merge the two dicts to create {'id_str': ..., 'matrix': ..., 'feat_a': ..., 'feat_b': ...}
-        image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label_dict: {**image_dict, **label_dict}
-)  # now yields {'matrix': , 'id_str': , 'label': } batched dicts
+        image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label_dict: {**image_dict, **label_dict})
+        # now yields {'matrix': , 'id_str': , 'label': } batched dicts
 
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 

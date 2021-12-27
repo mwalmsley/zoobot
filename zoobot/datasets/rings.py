@@ -140,6 +140,9 @@ def get_random_ring_catalogs(seed: int, train_dataset_size: int):
 
     ring_catalog['label'] = get_rough_class_from_ring_fraction(ring_catalog['rare-features_ring_fraction'])
 
+    # new for review - fix previous possible error where possible positive ring examples in train set vs hidden set were not randomised?
+    ring_catalog = ring_catalog.sample(len(ring_catalog), random_state=seed).reset_index(drop=True)
+
     rings = ring_catalog.query('label == 1')
     not_rings = ring_catalog.query('label == 0')
     logging.info('Rings: {}, Not Rings: {}'.format(len(rings), len(not_rings)))
@@ -181,10 +184,21 @@ def get_random_ring_catalogs(seed: int, train_dataset_size: int):
         train_dataset_size = len(ring_catalog_train)
     assert train_dataset_size <= len(ring_catalog_train)
     rng = np.random.default_rng()
-    indices_to_pick = rng.permutation(np.arange(len(ring_catalog_train)))[:train_dataset_size]
-    ring_catalog_train_cut = ring_catalog_train.iloc[indices_to_pick].reset_index()
+    train_indices_to_pick = rng.permutation(np.arange(len(ring_catalog_train)))[:train_dataset_size]
+    ring_catalog_train_cut = ring_catalog_train.iloc[train_indices_to_pick].reset_index()
 
-    logging.info('Train labels after restriction: \n {}'.format(pd.value_counts(ring_catalog_train_cut['label'])))  
+    # new for review - do the same for validation dataset, as in practice we would also have less val data (to decide early stopping etc)
+    # CANCEL - makes low data regime impossible for early stopping
+    # (test will keep all galaxies, imagining a fixed number of new observations on which we want to perform well)
+    # val_fraction_to_keep = train_dataset_size / len(ring_catalog_train)
+    # val_dataset_size = max(1, int(len(ring_catalog_val) * val_fraction_to_keep))
+    # val_indices_to_pick = rng.permutation(np.arange(len(ring_catalog_val)))[:val_dataset_size]
+    # ring_catalog_val_cut = ring_catalog_train.iloc[val_indices_to_pick].reset_index()
+    # logging.info('Val. fraction to keep: {}'.format(val_fraction_to_keep))
+    # logging.info('Val. dataset size: {}'.format(val_dataset_size))
+
+    logging.info('Train labels after restriction: \n {}'.format(pd.value_counts(ring_catalog_train_cut['label'])))
+    # logging.info('Val labels after restriction: \n {}'.format(pd.value_counts(ring_catalog_val_cut['label'])))  
 
     # val and test will have the same total number of rings and non-rings, but a slightly different ratio within each due to random shuffle then split
     # that feels okay and realistic

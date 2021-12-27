@@ -8,7 +8,7 @@ from tqdm import tqdm
 from zoobot import label_metadata, schemas
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import define_model, preprocess
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 
 import argparse
 
@@ -182,6 +182,6 @@ if __name__ == '__main__':
             For example, below is how to load the model in finetune_minimal.py.
             """
             n_samples = 1
-            predict_on_images.predict(image_ds, model, n_samples, label_cols, save_loc)
+            predict_on_dataset.predict(image_ds, model, n_samples, label_cols, save_loc)
 
         png_start_index += png_batch_size

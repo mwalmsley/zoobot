@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from zoobot import label_metadata, schemas
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 from zoobot.training import training_config
 from zoobot.transfer_learning import utils
 from zoobot.estimators import custom_layers

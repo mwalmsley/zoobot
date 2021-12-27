@@ -1,16 +1,34 @@
-# import os
-# import glob
 # import json
 # import logging
+# from typing import List
 
 # import numpy as np
 # import pandas as pd
 # import tensorflow as tf
 
-# from zoobot import label_metadata
-# from zoobot.data_utils import tfrecord_datasets
-# from zoobot.training import losses, training_config
-# from zoobot.estimators import preprocess, define_model
+
+# def predict(tfrecord_ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_cols: List, save_loc: str):
+
+#     logging.info('Reading id_str from records')
+#     id_strs = []
+#     for _, id_str_batch in tfrecord_ds:
+#         id_strs += id_str_batch
+#     logging.info(id_strs)
+
+#     logging.info('Beginning predictions')
+#     # predictions must fit in memory
+#     predictions = np.stack([model.predict(tfrecord_ds) for n in range(n_samples)], axis=-1)
+#     logging.info('Predictions complete - {}'.format(predictions.shape))
+
+#     data = [prediction_to_row(predictions[n], id_strs[n], label_cols) for n in range(len(predictions))]
+#     predictions_df = pd.DataFrame(data)
+
+#     predictions_df.to_csv(save_loc, index=False)
+#     logging.info(f'Predictions saved to {save_loc}')
+
+#     end = datetime.datetime.fromtimestamp(time.time())
+#     logging.info('Completed at: {}'.format(end.strftime('%Y-%m-%d %H:%M:%S')))
+#     logging.info('Time elapsed: {}'.format(end - start))
 
 
 # def prediction_to_row(prediction, id_str, label_cols):
@@ -25,43 +43,4 @@
 #     return row
 
 
-# def predict(label_cols, tfrecord_locs, checkpoint_dir, save_loc, n_samples, batch_size, initial_size, crop_size, resize_size, channels=3):
-
-#     raw_dataset = tfrecord_datasets.get_dataset(
-#         tfrecord_locs,
-#         label_cols=[],
-#         batch_size=batch_size,
-#         shuffle=False,
-#         repeat=False,
-#         drop_remainder=False
-#     )
-#     id_strs_batched = [batch['id_str'] for batch in raw_dataset]
-#     id_strs = [id_str.numpy().decode('utf-8') for batch in id_strs_batched for id_str in batch]
-
-#     input_config = preprocess.PreprocessingConfig(
-#         label_cols=[],  # no labels
-#         input_size=initial_size,
-#         greyscale=True,
-#         channels=3
-#     )
-#     dataset = preprocess.preprocess_dataset(raw_dataset, input_config)
-
-#     model = define_model.load_model(
-#         checkpoint_dir=checkpoint_dir,
-#         include_top=True,
-#         input_size=initial_size,
-#         crop_size=crop_size,
-#         resize_size=resize_size,
-#         expect_partial=True
-#     )
-
-#     logging.info('Beginning predictions')
-#     # predictions must fit in memory
-#     predictions = np.stack([model.predict(dataset) for n in range(n_samples)], axis=-1)
-#     logging.info('Predictions complete - {}'.format(predictions.shape))
-
-#     data = [prediction_to_row(predictions[n], id_strs[n], label_cols) for n in range(len(predictions))]
-#     predictions_df = pd.DataFrame(data)
-
-#     predictions_df.to_csv(save_loc, index=False)
-#     logging.info(f'Predictions saved to {save_loc}')
+"""Now refactored into predict_on_dataset (both images and tfrecord - any dataset)"""

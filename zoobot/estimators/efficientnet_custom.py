@@ -79,7 +79,7 @@ def custom_top_dirichlet(model, output_dim):
 #         ))  # one m per answer, one s per question
 
 #     # keras functional model, split architecture
-#     x = tf.keras.Input(shape=dense_units)  # not including batch in shape, but still has (unknown) batch dim
+#     x = tf.keras.layers.InputLayer(input_shape=dense_units)  # not including batch in shape, but still has (unknown) batch dim
 #     # not really a for loop, just constructing the graph
 #     n_answers = len(schema.answers)
 #     alpha_list = []
