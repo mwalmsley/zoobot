@@ -49,6 +49,33 @@ decals_dr12_pairs = {
 }
 decals_dr12_questions, decals_dr12_label_cols = schemas.extract_questions_and_label_cols(decals_dr12_pairs)
 
+decals_dr12_only_pairs = {
+    'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
+    'disk-edge-on': ['_yes', '_no'],
+    'has-spiral-arms': ['_yes', '_no'],
+    'bar': ['_yes', '_no'],
+    'bulge-size': ['_dominant', '_obvious', '_none'],
+    'how-rounded': ['_completely', '_in-between', '_cigar-shaped'],  # completely was renamed to round
+    'edge-on-bulge': ['_boxy', '_none', '_rounded'],
+    'spiral-winding': ['_tight', '_medium', '_loose'],
+    'spiral-arm-count': ['_1', '_2', '_3', '_4', '_more-than-4'],
+    'merging': ['_neither', '_tidal-debris', '_both', '_merger']
+}
+decals_dr12_only_questions, decals_dr12_only_label_cols = schemas.extract_questions_and_label_cols(decals_dr12_only_pairs)
+
+decals_dr12_ortho_pairs = {
+    'smooth-or-featured-dr12': ['_smooth', '_featured-or-disk', '_artifact'],
+    'disk-edge-on-dr12': ['_yes', '_no'],
+    'has-spiral-arms-dr12': ['_yes', '_no'],
+    'bar-dr12': ['_yes', '_no'],
+    'bulge-size-dr12': ['_dominant', '_obvious', '_none'],
+    'how-rounded-dr12': ['_completely', '_in-between', '_cigar-shaped'],  # completely was renamed to round
+    'edge-on-bulge-dr12': ['_boxy', '_none', '_rounded'],
+    'spiral-winding-dr12': ['_tight', '_medium', '_loose'],
+    'spiral-arm-count-dr12': ['_1', '_2', '_3', '_4', '_more-than-4'],
+    'merging-dr12': ['_neither', '_tidal-debris', '_both', '_merger']
+}
+decals_dr12_ortho_questions, decals_dr12_ortho_label_cols = schemas.extract_questions_and_label_cols(decals_dr12_ortho_pairs)
 
 # I think performance should be best when training on *both*
 # I made a joint dr1/2/5/8 catalog with columns drawn from all campaigns and shared where possible (dr5 and dr8 line up perfectly once a few dr5 w/ the old merger q are dropped)
@@ -72,6 +99,10 @@ decals_all_campaigns_pairs = {
 }
 decals_all_campaigns_questions, decals_all_campaigns_label_cols = schemas.extract_questions_and_label_cols(decals_all_campaigns_pairs)
 
+decals_all_campaigns_ortho_pairs = {}
+decals_all_campaigns_ortho_pairs.update(decals_dr12_ortho_pairs)
+decals_all_campaigns_ortho_pairs.update(decals_pairs)
+decals_all_campaigns_ortho_questions, decals_all_campaigns_ortho_label_cols = schemas.extract_questions_and_label_cols(decals_all_campaigns_ortho_pairs)
 
 
 gz2_pairs = {
