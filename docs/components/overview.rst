@@ -162,7 +162,7 @@ See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/ma
 .. .. code-block:: 
 
 ..     file_format = 'png'  # jpg or png supported. FITS is NOT supported (PRs welcome)
-..     predict_on_images.predict(
+..     predict_on_dataset.predict(
 ..         label_cols=label_cols,
 ..         file_format=file_format,
 ..         checkpoint_dir=checkpoint_dir,
@@ -177,7 +177,7 @@ See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/ma
 
 .. .. code-block:: 
 
-..     predict_on_images.predict(
+..     predict_on_dataset.predict(
 ..         label_cols=label_cols,
 ..         file_format=file_format,
 ..         checkpoint_dir=checkpoint_dir,
