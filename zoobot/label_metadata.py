@@ -152,7 +152,7 @@ def get_gz2_and_decals_dependencies(question_answer_pairs):
         'bar': featured_branch_answer,
         'bulge-size': featured_branch_answer,
         'how-rounded': 'smooth-or-featured_smooth',
-        'bulge-shape': 'disk-edge-on_yes',
+        'bulge-shape': 'disk-edge-on_yes',  # gz2 only
         'edge-on-bulge': 'disk-edge-on_yes',
         'spiral-winding': 'has-spiral-arms_yes',
         'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
@@ -163,6 +163,45 @@ def get_gz2_and_decals_dependencies(question_answer_pairs):
         'bulge-size-dr12': featured_branch_answer,
         'how-rounded-dr12': 'smooth-or-featured_smooth',
         'spiral-arm-count-dr12': 'has-spiral-arms_yes',
+        'merging-dr12': None
+    }
+    return dependencies
+
+
+def get_decals_ortho_dependencies(question_answer_pairs):
+    """
+    Get dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
+
+    Args:
+        question_answer_pairs (dict): dict mapping questions (e.g. disk-edge-on) to list of answers (e.g. [disk-edge-on_yes, disk-edge-on_no])
+
+    Returns:
+        dict: see above
+    """
+
+    # luckily, these are the same in GZ2 and decals, just only some questions are asked
+    dependencies = {
+        # dr5/8
+        'smooth-or-featured': None,  # always asked
+        'disk-edge-on': 'smooth-or-featured_featured-or-disk',
+        'has-spiral-arms': 'disk-edge-on_no',
+        'bar': 'disk-edge-on_no',
+        'bulge-size': 'disk-edge-on_no',
+        'bulge-shape': 'disk-edge-on_yes',
+        'edge-on-bulge': 'disk-edge-on_yes',
+        'spiral-winding': 'has-spiral-arms_yes',
+        'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
+        'merging': None,
+        # and the dr12 pairs
+        'smooth-or-featured-dr12': None,
+        'disk-edge-on-dr12': 'smooth-or-featured-dr12_featured-or-disk',
+        'has-spiral-arms-dr12': 'disk-edge-on-dr12_no',
+        'bar-dr12': 'disk-edge-on-dr12_no',
+        'bulge-size-dr12': 'disk-edge-on-dr12_no',
+        'how-rounded-dr12': 'smooth-or-featured-dr12_smooth',
+        'edge-on-bulge-dr12': 'disk-edge-on-dr12_yes',
+        'spiral-winding-dr12': 'has-spiral-arms-dr12_yes',
+        'spiral-arm-count-dr12': 'has-spiral-arms-dr12_yes',
         'merging-dr12': None
     }
     return dependencies
