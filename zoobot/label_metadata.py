@@ -187,7 +187,7 @@ def get_decals_ortho_dependencies(question_answer_pairs):
         'has-spiral-arms': 'disk-edge-on_no',
         'bar': 'disk-edge-on_no',
         'bulge-size': 'disk-edge-on_no',
-        'bulge-shape': 'disk-edge-on_yes',
+        'how-rounded': 'smooth-or-featured_smooth',
         'edge-on-bulge': 'disk-edge-on_yes',
         'spiral-winding': 'has-spiral-arms_yes',
         'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
