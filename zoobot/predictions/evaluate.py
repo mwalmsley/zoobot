@@ -13,6 +13,7 @@ import pandas as pd
 from sklearn import metrics
 import h5py
 # from sklearn.metrics import confusion_matrix, plot_confusion_matrix, roc_curve, mean_squared_error, mean_absolute_error
+import tensorflow as tf
 
 from zoobot import label_metadata, schemas
 from zoobot.training import losses
@@ -40,35 +41,36 @@ def match_predictions_to_catalog(predictions_hdf5_locs: List, catalog, save_loc=
     prediction_metadata = {'id_str': [p for metadata in prediction_metadata for p in metadata['id_str']]}
     print(len(prediction_metadata['id_str']), len(concentrations))
 
-    prediction_df = pd.DataFrame(data=prediction_metadata)
-    # print(prediction_df.head())
-    # prediction_df['local_png_loc'] = prediction_df['image_paths'].str.replace('/share/nas/walml/galaxy_zoo/decals/dr5/png', '/Volumes/beta/decals/png_native/dr5')
+    galaxy_id_df = pd.DataFrame(data=prediction_metadata)
+    # print(galaxy_id_df.head())
+    # galaxy_id_df['local_png_loc'] = galaxy_id_df['image_paths'].str.replace('/share/nas/walml/galaxy_zoo/decals/dr5/png', '/Volumes/beta/decals/png_native/dr5')
 
-    # print(prediction_df['local_png_loc'].value_counts())
+    # print(galaxy_id_df['local_png_loc'].value_counts())
 
-    assert not any(prediction_df.duplicated(subset=['id_str']))
+    assert not any(galaxy_id_df.duplicated(subset=['id_str']))
     assert not any(catalog.duplicated(subset=['id_str']))
 
     # which concentrations are safely in the catalog?
     catalog_locs = set(catalog['id_str'])
-    # prediction_locs = set(prediction_df['id_str'])
+    # prediction_locs = set(galaxy_id_df['id_str'])
 
-    print(prediction_df['id_str'][0])
+    print(galaxy_id_df['id_str'][0])
     print(catalog['id_str'][0])
 
-    loc_is_in_catalog = prediction_df['id_str'].isin(catalog_locs) 
-    prediction_df = prediction_df[loc_is_in_catalog].reset_index(drop=True)  # now safe to left join on catalog
+    loc_is_in_catalog = galaxy_id_df['id_str'].isin(catalog_locs) 
+    galaxy_id_df = galaxy_id_df[loc_is_in_catalog].reset_index(drop=True)  # now safe to left join on catalog
     concentrations_in_catalog = concentrations[loc_is_in_catalog]  # drop the concentrations corresponding to the dropped rows (galaxies with preds not in the catalog)
 
-    df = pd.merge(prediction_df, catalog, how='left', on='id_str')  # will not change the prediction_df index so will still match the prediction_in_catalog index
-    print('Test predictions: {}'.format(len(df)))
-    assert len(prediction_df) == len(df)
-    assert len(df) > 0
+    # join catalog labels to df of galaxy ids to create label_df
+    label_df = pd.merge(galaxy_id_df, catalog, how='left', on='id_str')  # will not change the galaxy_id_df index so will still match the prediction_in_catalog index
+    print('Test predictions: {}'.format(len(label_df)))
+    assert len(galaxy_id_df) == len(label_df)
+    assert len(label_df) > 0
 
     if save_loc:
-        df.to_parquet(save_loc, index=False)
+        label_df.to_parquet(save_loc, index=False)
 
-    return df, concentrations_in_catalog
+    return label_df, concentrations_in_catalog
 
 
 """Plotting"""
@@ -95,13 +97,13 @@ def show_galaxies(df, scale=3, nrows=6, ncols=6):
                 ax.text(35, 100, 'arms: V={:.2f}, ML={:.2f}'.format(galaxy['has-spiral-arms_yes_true_fraction'], galaxy['has-spiral-arms_yes_predicted_fraction']), fontsize=12, color='r')
 
 
-            # ax.text(35, 50, 'Vol: 2={:.2f}, ?={:.2f}'.format(galaxy['spiral-arm-count_2_fraction'], galaxy['spiral-arm-count_cant-tell_fraction']), fontsize=12, color='r')
-            # ax.text(35, 100, 'ML: 2={:.2f}, ?={:.2f}'.format(galaxy['spiral-arm-count_2_ml_fraction'], galaxy['spiral-arm-count_cant-tell_ml_fraction']), fontsize=12, color='r')
-#             ax.text(10, 50, r'$\rho = {:.2f}$, Var ${:.3f}$'.format(galaxy['median_prediction'], 3*galaxy['predictions_var']), fontsize=12, color='r')
-#             ax.text(10, 80, '$L = {:.2f}$'.format(galaxy['bcnn_likelihood']), fontsize=12, color='r')
+                # ax.text(35, 50, 'Vol: 2={:.2f}, ?={:.2f}'.format(galaxy['spiral-arm-count_2_fraction'], galaxy['spiral-arm-count_cant-tell_fraction']), fontsize=12, color='r')
+                # ax.text(35, 100, 'ML: 2={:.2f}, ?={:.2f}'.format(galaxy['spiral-arm-count_2_ml_fraction'], galaxy['spiral-arm-count_cant-tell_ml_fraction']), fontsize=12, color='r')
+    #             ax.text(10, 50, r'$\rho = {:.2f}$, Var ${:.3f}$'.format(galaxy['median_prediction'], 3*galaxy['predictions_var']), fontsize=12, color='r')
+    #             ax.text(10, 80, '$L = {:.2f}$'.format(galaxy['bcnn_likelihood']), fontsize=12, color='r')
             ax.axis('off')
             galaxy_n += 1
-#     print('Mean L: {:.2f}'.format(df[:nrows * ncols]['bcnn_likelihood'].mean()))
+    #     print('Mean L: {:.2f}'.format(df[:nrows * ncols]['bcnn_likelihood'].mean()))
     fig = plt.gcf()
     fig.tight_layout()
     return fig
@@ -117,13 +119,13 @@ def clean_text(text):
 
 
 def filter_to_sensible(label_df, predictions, question, schema):
-#     if prev_a is not None:
-#         prev_q = prev_a.question
-#         prev_q_cols = [answer.text + '_fraction' for answer in prev_q.answers]
-#         is_sensible = (label_df[prev_a.text + '_fraction'] / label_df[prev_q_cols].sum(axis=1)) > 0.5
-#         valid_labels, valid_predictions = label_df[is_sensible], predicted_fractions[is_sensible]
-#     else:
-#         valid_labels, valid_predictions = label_df, predicted_fractions
+    #     if prev_a is not None:
+    #         prev_q = prev_a.question
+    #         prev_q_cols = [answer.text + '_fraction' for answer in prev_q.answers]
+    #         is_sensible = (label_df[prev_a.text + '_fraction'] / label_df[prev_q_cols].sum(axis=1)) > 0.5
+    #         valid_labels, valid_predictions = label_df[is_sensible], predicted_fractions[is_sensible]
+    #     else:
+    #         valid_labels, valid_predictions = label_df, predicted_fractions
     retirement = 1
     expected_votes = vote_stats.get_expected_votes_human(label_df, question, retirement, schema, round_votes=False)
     if not isinstance(expected_votes, np.ndarray):
@@ -143,20 +145,22 @@ def get_binary_responses(question, label_df, predicted_fractions, schema):
     return y_true, y_pred
 
 def print_metrics(question, label_df, predicted_fractions, schema):
+
     y_true, y_pred = get_binary_responses(question, label_df, predicted_fractions, schema)
-#     print(pd.value_counts(y_pred))
-#     average = 'micro'
+    #     print(pd.value_counts(y_pred))
+
+    #     average = 'micro'
     average = 'weighted'
     
     # human
-#     print('Acc: {:.4f}, Precision: {:.4f}, Recall: {:.4f}, F1: {:.4f} <- {}'.format(
-#         sklearn.metrics.accuracy_score(y_true, y_pred),
-#         sklearn.metrics.precision_score(y_true, y_pred, average=average),
-#         sklearn.metrics.recall_score(y_true, y_pred, average=average),
-#         sklearn.metrics.f1_score(y_true, y_pred, average=average),
-#         question.text
-#     ))
-    # latex
+    #     print('Acc: {:.4f}, Precision: {:.4f}, Recall: {:.4f}, F1: {:.4f} <- {}'.format(
+    #         sklearn.metrics.accuracy_score(y_true, y_pred),
+    #         sklearn.metrics.precision_score(y_true, y_pred, average=average),
+    #         sklearn.metrics.recall_score(y_true, y_pred, average=average),
+    #         sklearn.metrics.f1_score(y_true, y_pred, average=average),
+    #         question.text
+    #     ))
+        # latex
     print('{} & {} & {:.4f} & {:.4f} & {:.4f} & {:.4f} \\\\'.format(
         question.text.replace('-', ' ').replace('_', ' ').title(),
         len(y_true),
@@ -164,9 +168,8 @@ def print_metrics(question, label_df, predicted_fractions, schema):
         metrics.precision_score(y_true, y_pred, average=average),
         metrics.recall_score(y_true, y_pred, average=average),
         metrics.f1_score(y_true, y_pred, average=average)
-))
+    ))
 
-    
 def show_confusion_matrix(question, label_df, predicted_fractions, ax=None, blank_yticks=False, add_title=False, normalize=False):
     y_true, y_pred = get_binary_responses(question, label_df, predicted_fractions, schema)
     
@@ -197,8 +200,8 @@ def show_confusion_matrix(question, label_df, predicted_fractions, ax=None, blan
         ax.set_title(clean_text(question.text))
 
     if blank_yticks:
-#         yticklabels = ['' for _ in ticklabels]
-        yticklabels = [''.join([' '] * len(s)) for s in ticklabels]
+    #         yticklabels = ['' for _ in ticklabels]
+            yticklabels = [''.join([' '] * len(s)) for s in ticklabels]
     else:
         yticklabels = ticklabels
 
@@ -215,17 +218,15 @@ def show_confusion_matrix(question, label_df, predicted_fractions, ax=None, blan
         yticklabels=yticklabels,
         cbar=False,
 #         annot_kws={"size": 14},
-        ax=ax,
-        square=True,
-        robust=True
-    )
+    ax=ax,
+    square=True,
+    robust=True
+)
 
 
 def confusion_matrices_split_by_confidence(retired, predicted_fractions, schema, save_dir, normalize=False):
     for question in schema.questions:
-        print(question.text)
         
-
         fig = plt.figure(constrained_layout=True, figsize=(10.5, 5))
         gs = fig.add_gridspec(8, 10)
 
@@ -264,7 +265,85 @@ def confusion_matrices_split_by_confidence(retired, predicted_fractions, schema,
         plt.savefig(f'{save_dir}/cm_decals_dr_full_ensemble_paired_{norm_text}_{question.text}.png')
         # plt.clf()  
         plt.close()
-        
+
+
+def get_validation_loss(label_df, concentrations, schema, batch_size=512, save_loc=None):
+
+    answers = [a.text for a in schema.answers]
+    labels = label_df[answers].values
+
+    multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
+    loss = lambda x, y: multiquestion_loss(x, y) / batch_size  
+
+    tf_labels = tf.constant(labels.astype(np.float32))
+    tf_preds = tf.constant(concentrations.astype(np.float32).squeeze())[:, :, 0]  # TODO just picking first dropout pass for now
+    tf_labels.shape, tf_preds.shape
+
+    loss = losses.calculate_multiquestion_loss(tf_labels, tf_preds, schema.question_index_groups).numpy()  # this version doesn't reduce
+
+    mean_loss_by_q = loss.mean(axis=0)
+    rows = [{'question': question.text, 'mean_loss': l} for question, l in zip(schema.questions, mean_loss_by_q)]
+    
+    loss_by_q_df = pd.DataFrame(data=rows)
+
+    if save_loc:
+        loss_by_q_df.to_csv(save_loc, index=False)
+
+    return loss, loss_by_q_df
+
+
+def get_regression_errors(retired, predicted_fractions, schema, df_save_loc=None, fig_save_loc=None):
+
+    errors = []
+    min_total_votes = 20
+    for question_n, question in enumerate(schema.questions):
+        # print(question)
+        # WARNING TODO
+        if 'dr12' not in question.text:
+            for answer in question.answers:
+                print(question.text, answer.text)
+                valid_labels, valid_predictions = filter_to_sensible(retired, predicted_fractions, question, schema)  # df, np.array
+                valid_labels.reset_index()
+                enough_votes = valid_labels[question.text + '_total-votes'] >= min_total_votes  # not quite the same as filter_to_sensible
+                y_true = valid_labels.loc[enough_votes, answer.text + '_fraction']
+                y_pred = valid_predictions[enough_votes, answer.index]
+                assert not pd.isna(y_true).any()
+                assert not pd.isna(y_pred).any()
+                absolute = metrics.mean_absolute_error(y_true, y_pred)
+                mse = metrics.mean_squared_error(y_true, y_pred)
+                errors.append({'answer': answer.text, 'rmse': np.sqrt(mse), 'mean_absolute_error': absolute, 'question_n': question_n})
+
+    regression_errors = pd.DataFrame(errors)
+
+    if df_save_loc:
+        regression_errors.to_csv(df_save_loc, index=False)
+
+    if fig_save_loc:
+        sns.set_style('whitegrid', {'axes.edgecolor': '0.2'})
+        sns.set_context('notebook')
+        # sns.set_palette(repeating_palette)
+        fig, ax = plt.subplots(figsize=(6, 8))
+        sns.barplot(data=regression_errors, y='answer', x='mean_absolute_error', ax=ax)
+        plt.xlabel('Vote Fraction Mean Deviation')
+        plt.ylabel('')
+        fig.tight_layout()
+        plt.savefig(fig_save_loc)
+
+    return regression_errors
+
+
+def regression_scatterplot(retired, predicted_fractions, answer_text, schema):
+
+    # question = schema.get_question('has-spiral-arms')
+    answer = schema.get_answer(answer_text)
+    question = answer.question
+    # answer = question.answers[0]
+    valid_labels, valid_predictions = filter_to_sensible(retired, predicted_fractions, question, schema)
+    sns.scatterplot(valid_labels[answer.text + '_fraction'], valid_predictions[:, answer.index], alpha=.1)
+
+
+
+
 
 if __name__ == '__main__':
 
@@ -295,6 +374,11 @@ if __name__ == '__main__':
     # predictions_hdf5_locs = [f'/home/walml/repos/gz-decals-classifiers/results/all_campaigns_{shards}_pretrained_{model}.hdf5']
 
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
+    # temporarily remove DR8 while that trains
+    for q, answers in question_answer_pairs.copy().items():
+        if 'dr8' in q:
+            del question_answer_pairs[q]
+
     dependencies = label_metadata.get_decals_ortho_dependencies(question_answer_pairs)
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
@@ -326,49 +410,47 @@ if __name__ == '__main__':
         os.mkdir(save_dir)
     
 
-    all_preds, all_concentrations = match_predictions_to_catalog(predictions_hdf5_locs, catalog, save_loc=None)
-
-
-    # load hdf5 predictions
-
-
-    print(len(all_preds))
+    all_labels, all_concentrations = match_predictions_to_catalog(predictions_hdf5_locs, catalog, save_loc=None)
+    print(len(all_labels))
     print(len(all_concentrations))
-    print(all_preds.head())
+    # print(all_labels.head())
 
-    is_retired = all_preds['smooth-or-featured_total-votes'] > 34
-    retired_preds = all_preds[is_retired]
+    is_retired = all_labels['smooth-or-featured_total-votes'] > 34
+    retired_labels = all_labels[is_retired]
     retired_concentrations = all_concentrations[is_retired]
 
-    print(retired_preds.columns.values)
+    print(retired_labels.columns.values)
     print(retired_concentrations.shape)
-    # exit()
 
     predicted_fractions = dirichlet_stats.dirichlet_prob_of_answers(retired_concentrations, schema, temperature=None)
 
     print('Question & Count & Accuracy & Precision & Recall & F1 \\')  # need to add second slash back manually
     print('\hline \hline')
     for question in schema.questions:
-        print_metrics(question, retired_preds, predicted_fractions, schema)
-        # plt.savefig(f'/home/walml/repos/gz-decals-classifiers/results/campaign_comparison/{run_name}/mean_cm_decals_n2_m0_allq_' + question.text + '.png')
-
-    # for question in schema.questions:
-    #     fig = show_confusion_matrix(question, retired_preds, predicted_fractions)
-    #     plt.tight_layout()
+        print_metrics(question, retired_labels, predicted_fractions, schema)
 
     print(r'Question & Count & Accuracy & Precision & Recall & F1 \\')
     print('\hline \hline')
     for question in schema.questions:
-    #     if len(question.answers) == 2:
-    #         answer = question.answers[0]
-        answers = question.answers
-        fractions = np.array([retired_preds[answer.text + '_fraction'] for answer in answers])
-        high_confidence = np.any(fractions > 0.8, axis=0)
-        print_metrics(question, retired_preds[high_confidence], predicted_fractions[high_confidence], schema)
-        
-    #     fig = show_confusion_matrix(question, retired_preds[high_confidence], predicted_fractions[high_confidence])
-    #     plt.tight_layout()
-    #     # plt.savefig('/home/walml/repos/zoobot/results/temp/thesis_cm_decals_dr_full_ensemble_allq_highconf_' + question.text + '.png')
-    # #     plt.clf()  # comment to view, uncomment to save without interfering with each other
 
-    confusion_matrices_split_by_confidence(retired_preds, predicted_fractions, schema, save_dir, normalize=normalize_cm_matrices)
+        answers = question.answers
+        fractions = np.array([retired_labels[answer.text + '_fraction'] for answer in answers])
+        high_confidence = np.any(fractions > 0.8, axis=0)
+        print_metrics(question, retired_labels[high_confidence], predicted_fractions[high_confidence], schema)
+
+    # confusion_matrices_split_by_confidence(retired_labels, predicted_fractions, schema, save_dir, normalize=normalize_cm_matrices)
+
+    # unlike cm and regression, does not only include retired (i.e. high N) galaxies
+    val_loss, loss_by_q_df = get_validation_loss(all_labels, all_concentrations, schema=schema, save_loc=os.path.join(save_dir, 'val_loss_by_q.csv'))
+    print(val_loss.shape)
+    print(loss_by_q_df)
+
+    print(val_loss.sum())  # 137300.42 for dr5 only, 133340.14 for dr12 also
+
+    get_regression_errors(
+        retired=retired_labels,
+        predicted_fractions=predicted_fractions,
+        schema=schema,
+        df_save_loc=os.path.join(save_dir, 'regression_errors.csv'),
+        fig_save_loc=os.path.join(save_dir, 'regression_errors_bar_plot.pdf')
+    )
