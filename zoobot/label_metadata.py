@@ -3,6 +3,16 @@ from zoobot import schemas
 # use these by importing them in another script e.g.
 # from zoobot.label_metadata import decals_label_cols 
 
+# subset of questions, useful for development/debugging
+decals_partial_pairs = {
+    'smooth-or-featured': ['_smooth', '_featured-or-disk'],
+    'has-spiral-arms': ['_yes', '_no'],
+    'bar': ['_strong', '_weak', '_no'],
+    'bulge-size': ['_dominant', '_large', '_moderate', '_small', '_none']
+}
+decals_partial_questions, decals_partial_label_cols = schemas.extract_questions_and_label_cols(decals_partial_pairs)
+
+# dr5, implicitly
 decals_pairs = {
     'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
     'disk-edge-on': ['_yes', '_no'],
@@ -17,16 +27,17 @@ decals_pairs = {
 }
 decals_questions, decals_label_cols = schemas.extract_questions_and_label_cols(decals_pairs)
 
-# subset of questions, useful for development/debugging
-decals_partial_pairs = {
-    'smooth-or-featured': ['_smooth', '_featured-or-disk'],
-    'has-spiral-arms': ['_yes', '_no'],
-    'bar': ['_strong', '_weak', '_no'],
-    'bulge-size': ['_dominant', '_large', '_moderate', '_small', '_none']
-}
-decals_partial_questions, decals_partial_label_cols = schemas.extract_questions_and_label_cols(decals_partial_pairs)
+# exactly the same for dr8. The "ortho" versions avoid mixing votes from different campaigns anyway, by adding -drX to each question
+decals_dr8_ortho_pairs = decals_pairs.copy()
+for question, answers in decals_dr8_ortho_pairs.copy().items(): # avoid modifying while looping
+    decals_dr8_ortho_pairs[question + '-dr8'] = answers
+    del decals_dr8_ortho_pairs[question]  # delete the old ones
 
 
+decals_dr8_only_pairs = decals_pairs.copy()
+decals_dr8_only_label_cols = decals_label_cols.copy()
+decals_dr8_only_questions = decals_questions.copy()
+decals_dr8_ortho_questions, decals_dr8_ortho_label_cols = schemas.extract_questions_and_label_cols(decals_dr8_ortho_pairs)
 
 # the schema is slightly different for dr1/2 vs dr5+
 # merging answers were changed completely
@@ -102,6 +113,7 @@ decals_all_campaigns_questions, decals_all_campaigns_label_cols = schemas.extrac
 decals_all_campaigns_ortho_pairs = {}
 decals_all_campaigns_ortho_pairs.update(decals_dr12_ortho_pairs)
 decals_all_campaigns_ortho_pairs.update(decals_pairs)
+decals_all_campaigns_ortho_pairs.update(decals_dr8_ortho_pairs)
 decals_all_campaigns_ortho_questions, decals_all_campaigns_ortho_label_cols = schemas.extract_questions_and_label_cols(decals_all_campaigns_ortho_pairs)
 
 
@@ -168,7 +180,7 @@ def get_gz2_and_decals_dependencies(question_answer_pairs):
     return dependencies
 
 
-def get_decals_ortho_dependencies(question_answer_pairs):
+def get_decals_ortho_dependencies(question_answer_pairs):  # TODO remove arg
     """
     Get dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
 
@@ -181,7 +193,7 @@ def get_decals_ortho_dependencies(question_answer_pairs):
 
     # luckily, these are the same in GZ2 and decals, just only some questions are asked
     dependencies = {
-        # dr5/8
+        # dr5
         'smooth-or-featured': None,  # always asked
         'disk-edge-on': 'smooth-or-featured_featured-or-disk',
         'has-spiral-arms': 'disk-edge-on_no',
@@ -192,6 +204,17 @@ def get_decals_ortho_dependencies(question_answer_pairs):
         'spiral-winding': 'has-spiral-arms_yes',
         'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
         'merging': None,
+        # dr8 is identical, just with -dr8
+        'smooth-or-featured-dr8': None,
+        'disk-edge-on-dr8': 'smooth-or-featured-dr8_featured-or-disk',
+        'has-spiral-arms-dr8': 'disk-edge-on-dr8_no',
+        'bar-dr8': 'disk-edge-on-dr8_no',
+        'bulge-size-dr8': 'disk-edge-on-dr8_no',
+        'how-rounded-dr8': 'smooth-or-featured-dr8_smooth',
+        'edge-on-bulge-dr8': 'disk-edge-on-dr8_yes',
+        'spiral-winding-dr8': 'has-spiral-arms-dr8_yes',
+        'spiral-arm-count-dr8': 'has-spiral-arms-dr8_yes',
+        'merging-dr8': None,
         # and the dr12 pairs
         'smooth-or-featured-dr12': None,
         'disk-edge-on-dr12': 'smooth-or-featured-dr12_featured-or-disk',
