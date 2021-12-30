@@ -104,7 +104,7 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # now mix back together
     # indices and updates are both shape (<=N, 1)
     # so output shape must also be (N, 1) i.e. rank 1
-    output_shape = tf.Tensor((tf.size(total_count), 1), dtype=tf.int64)  # tf.size okay here as size=len for total_counts
+    output_shape = tf.convert_to_tensor(value=(tf.size(total_count), 1), dtype=tf.int64)  # tf.size okay here as size=len for total_counts
     return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
 
 
