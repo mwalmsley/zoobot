@@ -91,6 +91,8 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # indices_with_zero_counts = tf.where(tf.math.equal(total_count, 0))
     indices_with_nonzero_counts = tf.where(tf.math.logical_not(tf.math.equal(total_count, 0)))
     
+    # may potentially need to deal with the situation where there are 0 valid indices?
+
     total_counts_with_nonzero_counts = tf.gather(total_count, indices_with_nonzero_counts)
     labels_with_nonzero_counts = tf.gather(labels_for_q, indices_with_nonzero_counts)
     concentrations_with_nonzero_counts = tf.gather(concentrations_for_q, indices_with_nonzero_counts)
@@ -100,7 +102,10 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
 
     # now mix back together
-    return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=tf.cast(tf.shape(total_count), tf.int64))
+    # indices and updates are both shape (<=N, 1)
+    # so output shape must also be (N, 1) i.e. rank 1
+    output_shape = tf.Tensor((tf.size(total_count), 1), dtype=tf.int64)  # tf.size okay here as size=len for total_counts
+    return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
 
 
 
