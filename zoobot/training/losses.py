@@ -100,7 +100,7 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
 
     # now mix back together
-    return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=tf.shape(total_count))
+    return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=tf.cast(tf.shape(total_count), tf.int64))
 
 
 
