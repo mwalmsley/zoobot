@@ -78,6 +78,16 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # you will get image batches of shape [N/4, 64, 64, 1] and hence have the wrong number of images vs. labels (and meaningless images)
     # so check --shard-img-size carefully!
     total_count = tf.reduce_sum(labels_for_q, axis=1)
-    dist = tfp.distributions.DirichletMultinomial(total_count, concentrations_for_q, validate_args=True)
-    return -dist.log_prob(labels_for_q)  # important minus sign
+
+    return tf.where(
+        tf.math.equal(total_count, 0),  # if total_count is 0 (i.e. no votes)
+        tf.constant(0.),  # prob is 1 and (neg) log prob is 0, with no gradients attached. broadcasts
+        get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)  # else, calculate neg log prob
+    )
+    # slightly inefficient as get_dirichlet_neg_log_prob forward pass done for all, but avoids gradients (hopefully?)
+    # https://www.tensorflow.org/api_docs/python/tf/where
+
+def get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q):
+        dist = tfp.distributions.DirichletMultinomial(total_count, concentrations_for_q, validate_args=True)
+        return -dist.log_prob(labels_for_q)  # important minus sign
 
