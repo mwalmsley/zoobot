@@ -469,9 +469,10 @@ def EfficientNetB3(include_top=True,
                    pooling=None,
                    classes=1000,
                    dropout_rate=0.3,  # added here  as it has an explicit default
+                   input_size=300,  # 300 by paper design, convenient/hacky to change
                    **kwargs):
     return EfficientNet(
-        1.2, 1.4, 300, dropout_rate,
+        1.2, 1.4, input_size, dropout_rate,
         model_name='efficientnet-b3',
         include_top=include_top, weights=weights,
         input_tensor=input_tensor, input_shape=input_shape,
