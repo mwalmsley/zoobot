@@ -142,7 +142,7 @@ class ShardConfig():
         test_df.to_csv(os.path.join(self.test_dir, 'test_df.csv'))
 
         logging.info('Writing {} train, {} val, and {} test galaxies to shards'.format(len(train_df), len(val_df), len(test_df)))
-        for (df, save_dir) in [(train_df, self.train_dir), (val_df, self.val_dir, test_df, self.test_dir)]:
+        for (df, save_dir) in [(train_df, self.train_dir), (val_df, self.val_dir), (test_df, self.test_dir)]:
             write_catalog_to_tfrecord_shards(
                 df,
                 img_size=self.size,
