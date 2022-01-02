@@ -230,7 +230,7 @@ def get_decals_ortho_dependencies(question_answer_pairs):  # TODO remove arg
         'edge-on-bulge-dr5': 'disk-edge-on-dr5_yes',
         'spiral-winding-dr5': 'has-spiral-arms-dr5_yes',
         'spiral-arm-count-dr5': 'has-spiral-arms-dr5_yes', # bad naming...
-        'merging': None,
+        'merging-dr5': None,
         # dr8 is identical to dr5, just with -dr8
         'smooth-or-featured-dr8': None,
         'disk-edge-on-dr8': 'smooth-or-featured-dr8_featured-or-disk',
