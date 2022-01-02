@@ -79,33 +79,36 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # so check --shard-img-size carefully!
     total_count = tf.reduce_sum(labels_for_q, axis=1)
 
-    # return tf.where(
-    #     tf.math.equal(total_count, 0),  # if total_count is 0 (i.e. no votes)
-    #     tf.constant(0.),  # prob is 1 and (neg) log prob is 0, with no gradients attached. broadcasts
-    #     get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)  # else, calculate neg log prob
-    # )
-    # # slightly inefficient as get_dirichlet_neg_log_prob forward pass done for all, but avoids gradients
-    # # https://www.tensorflow.org/api_docs/python/tf/where
-    # works great, but about 50% slower than optimal
+    return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
 
-    # indices_with_zero_counts = tf.where(tf.math.equal(total_count, 0))
-    indices_with_nonzero_counts = tf.where(tf.math.logical_not(tf.math.equal(total_count, 0)))
+
+    # # return tf.where(
+    # #     tf.math.equal(total_count, 0),  # if total_count is 0 (i.e. no votes)
+    # #     tf.constant(0.),  # prob is 1 and (neg) log prob is 0, with no gradients attached. broadcasts
+    # #     get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)  # else, calculate neg log prob
+    # # )
+    # # # slightly inefficient as get_dirichlet_neg_log_prob forward pass done for all, but avoids gradients
+    # # # https://www.tensorflow.org/api_docs/python/tf/where
+    # # works great, but about 50% slower than optimal
+
+    # # indices_with_zero_counts = tf.where(tf.math.equal(total_count, 0))
+    # indices_with_nonzero_counts = tf.where(tf.math.logical_not(tf.math.equal(total_count, 0)))
     
-    # may potentially need to deal with the situation where there are 0 valid indices?
+    # # may potentially need to deal with the situation where there are 0 valid indices?
 
-    total_counts_with_nonzero_counts = tf.gather(total_count, indices_with_nonzero_counts)
-    labels_with_nonzero_counts = tf.gather(labels_for_q, indices_with_nonzero_counts)
-    concentrations_with_nonzero_counts = tf.gather(concentrations_for_q, indices_with_nonzero_counts)
-    neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(labels_with_nonzero_counts, total_counts_with_nonzero_counts, concentrations_with_nonzero_counts)
+    # total_counts_with_nonzero_counts = tf.gather(total_count, indices_with_nonzero_counts)
+    # labels_with_nonzero_counts = tf.gather(labels_for_q, indices_with_nonzero_counts)
+    # concentrations_with_nonzero_counts = tf.gather(concentrations_for_q, indices_with_nonzero_counts)
+    # neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(labels_with_nonzero_counts, total_counts_with_nonzero_counts, concentrations_with_nonzero_counts)
 
-    # not needed, scatter_nd has 0 where no value is placed
-    # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
+    # # not needed, scatter_nd has 0 where no value is placed
+    # # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
 
-    # now mix back together
-    # indices and updates are both shape (<=N, 1)
-    # so output shape must also be (N, 1) i.e. rank 1
-    output_shape = tf.convert_to_tensor(value=(tf.size(total_count), 1), dtype=tf.int64)  # tf.size okay here as size=len for total_counts
-    return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
+    # # now mix back together
+    # # indices and updates are both shape (<=N, 1)
+    # # so output shape must also be (N, 1) i.e. rank 1
+    # output_shape = tf.convert_to_tensor(value=(tf.size(total_count), 1), dtype=tf.int64)  # tf.size okay here as size=len for total_counts
+    # return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
 
 
 
