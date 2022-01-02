@@ -1,6 +1,7 @@
 import logging
-
 from typing import List
+
+import numpy as np
 
 class Question():
 
@@ -229,6 +230,8 @@ class Schema():
         # prob(answer) = p(that answer|that q asked) * p(answer before that q)
         answer = self.get_answer(answer_text)
         p_answer_given_question = prob_of_answers[:, answer.index]
+        if all(np.isnan(p_answer_given_question)):
+            logging.warning(f'All p_answer_given_question for {answer_text} ({answer.index}) are nan i.e. all fractions are nan - check that labels for this question are appropriate')
 
         question = answer.question
         prev_answer = question.asked_after

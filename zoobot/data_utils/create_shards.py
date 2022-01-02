@@ -53,7 +53,8 @@ class ShardConfig():
 
         # paths for fixed tfrecords for initial training and (permanent) evaluation
         self.train_dir = os.path.join(self.shard_dir, 'train_shards') 
-        self.eval_dir = os.path.join(self.shard_dir, 'eval_shards')
+        self.val_dir = os.path.join(self.shard_dir, 'val_shards')
+        self.test_dir = os.path.join(self.shard_dir, 'test_shards')
 
         # paths for catalogs. Used to look up .png locations during active learning.
         self.labelled_catalog_loc = os.path.join(self.shard_dir, 'labelled_catalog.csv')
@@ -67,12 +68,17 @@ class ShardConfig():
             if loc.endswith('.tfrecord')]
 
 
-    def eval_tfrecord_locs(self):
-        return [os.path.join(self.eval_dir, loc) for loc in os.listdir(self.eval_dir)
+    def val_tfrecord_locs(self):
+        return [os.path.join(self.val_dir, loc) for loc in os.listdir(self.val_dir)
+            if loc.endswith('.tfrecord')]
+
+    
+    def test_tfrecord_locs(self):
+        return [os.path.join(self.test_dir, loc) for loc in os.listdir(self.test_dir)
             if loc.endswith('.tfrecord')]
 
 
-    def prepare_shards(self, labelled_catalog, unlabelled_catalog, train_test_fraction, labelled_columns_to_save: List):
+    def prepare_shards(self, labelled_catalog: pd.DataFrame, unlabelled_catalog: pd.DataFrame, labelled_columns_to_save: List,  val_fraction=0.1, test_fraction=0.2):
         """
         Save the images in labelled_catalog and unlabelled_catalog to tfrecord shards.
 
@@ -106,7 +112,8 @@ class ShardConfig():
             shutil.rmtree(self.shard_dir)  # always fresh
         os.mkdir(self.shard_dir)
         os.mkdir(self.train_dir)
-        os.mkdir(self.eval_dir)
+        os.mkdir(self.val_dir)
+        os.mkdir(self.test_dir)
 
         # check that file paths resolve correctly
         logging.info('Example file locs: \n{}'.format(labelled_catalog['file_loc'][:3].values))
@@ -121,20 +128,21 @@ class ShardConfig():
             logging.info('Unlabelled subjects: {}'.format(len(unlabelled_catalog)))
             unlabelled_catalog.to_csv(self.unlabelled_catalog_loc)
 
+        logging.info('Val fraction: {:.3f}. Test fraction: {:.3f}'.format(val_fraction, test_fraction))
+        train_df, hidden_df = train_test_split(labelled_catalog, test_size=val_fraction + test_fraction)  # sklearn understands test size float as a fraction
+        val_df, test_df = train_test_split(hidden_df, test_size=test_fraction / (val_fraction + test_fraction))  # both fractions of full catalog, now taking a slice of a slice
 
-        # save train/test split into training and eval shards
-        train_size = int(train_test_fraction * len(labelled_catalog))  # sklearn does this anyway but lets be explicit
-        train_df, eval_df = train_test_split(labelled_catalog, train_size=train_size)
-        logging.info(f'Train-test fraction: {train_test_fraction}.')
         logging.info('\nTraining subjects: {}'.format(len(train_df)))
-        logging.info('Eval subjects: {}'.format(len(eval_df)))
-        if len(train_df) < len(eval_df):
-            print('More eval subjects than training subjects - is this intended?')
+        logging.info('Val subjects: {}'.format(len(val_df)))
+        logging.info('Test subjects: {}'.format(len(test_df)))
+        if len(train_df) < len(val_df):
+            logging.warning('More val subjects than training subjects - is this intended?')
         train_df.to_csv(os.path.join(self.train_dir, 'train_df.csv'))
-        eval_df.to_csv(os.path.join(self.eval_dir, 'eval_df.csv'))
+        val_df.to_csv(os.path.join(self.val_dir, 'val_df.csv'))
+        test_df.to_csv(os.path.join(self.test_dir, 'test_df.csv'))
 
-        logging.info('Writing {} train and {} test galaxies to shards'.format(len(train_df), len(eval_df)))
-        for (df, save_dir) in [(train_df, self.train_dir), (eval_df, self.eval_dir)]:
+        logging.info('Writing {} train, {} val, and {} test galaxies to shards'.format(len(train_df), len(val_df), len(test_df)))
+        for (df, save_dir) in [(train_df, self.train_dir), (val_df, self.val_dir, test_df, self.test_dir)]:
             write_catalog_to_tfrecord_shards(
                 df,
                 img_size=self.size,
@@ -165,7 +173,8 @@ class ShardConfig():
     def ready(self):
         assert os.path.isdir(self.shard_dir)
         assert os.path.isdir(self.train_dir)
-        assert os.path.isdir(self.eval_dir)
+        assert os.path.isdir(self.val_dir)
+        assert os.path.isdir(self.test_dir)
         assert os.path.isfile(self.labelled_catalog_loc)
         if self.unlabelled_catalog_loc is '':
             logging.info('No unlabelled_catalog has been used')
@@ -180,7 +189,8 @@ class ShardConfig():
             'shard_dir': self.shard_dir,
             'channels': self.channels,
             'train_dir': self.train_dir,
-            'eval_dir': self.eval_dir,
+            'val_dir': self.val_dir,
+            'test_dir': self.test_dir,
             'labelled_catalog_loc': self.labelled_catalog_loc,
             'unlabelled_catalog_loc': self.unlabelled_catalog_loc,
             'config_save_loc': self.config_save_loc
@@ -199,7 +209,8 @@ def load_shard_config(shard_config_loc: str):
     shard_config.shard_dir = new_shard_dir
     attrs = [
         'train_dir',
-        'eval_dir',
+        'val_dir',
+        'test_dir',
         'labelled_catalog_loc',
         'unlabelled_catalog_loc',
         'config_save_loc'

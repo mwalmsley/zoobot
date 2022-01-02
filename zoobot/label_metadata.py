@@ -27,10 +27,25 @@ decals_pairs = {
 }
 decals_questions, decals_label_cols = schemas.extract_questions_and_label_cols(decals_pairs)
 
-# exactly the same for dr8. The "ortho" versions avoid mixing votes from different campaigns anyway, by adding -drX to each question
-decals_dr8_ortho_pairs = decals_pairs.copy()
+# The "ortho" versions avoid mixing votes from different campaigns
+decals_dr5_ortho_pairs = {
+    'smooth-or-featured-dr5': ['_smooth', '_featured-or-disk', '_artifact'],
+    'disk-edge-on-dr5': ['_yes', '_no'],
+    'has-spiral-arms-dr5': ['_yes', '_no'],
+    'bar-dr5': ['_strong', '_weak', '_no'],
+    'bulge-size-dr5': ['_dominant', '_large', '_moderate', '_small', '_none'],
+    'how-rounded-dr5': ['_round', '_in-between', '_cigar-shaped'],
+    'edge-on-bulge-dr5': ['_boxy', '_none', '_rounded'],
+    'spiral-winding-dr5': ['_tight', '_medium', '_loose'],
+    'spiral-arm-count-dr5': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell'],
+    'merging-dr5': ['_none', '_minor-disturbance', '_major-disturbance', '_merger']
+}
+decals_dr5_ortho_questions, decals_dr5_ortho_label_cols = schemas.extract_questions_and_label_cols(decals_dr5_ortho_pairs)
+
+# exactly the same for dr8. 
+decals_dr8_ortho_pairs = decals_dr5_ortho_pairs.copy()
 for question, answers in decals_dr8_ortho_pairs.copy().items(): # avoid modifying while looping
-    decals_dr8_ortho_pairs[question + '-dr8'] = answers
+    decals_dr8_ortho_pairs[question.replace('-dr5', '-dr8')] = answers
     del decals_dr8_ortho_pairs[question]  # delete the old ones
 
 
@@ -110,9 +125,10 @@ decals_all_campaigns_pairs = {
 }
 decals_all_campaigns_questions, decals_all_campaigns_label_cols = schemas.extract_questions_and_label_cols(decals_all_campaigns_pairs)
 
+# very useful
 decals_all_campaigns_ortho_pairs = {}
 decals_all_campaigns_ortho_pairs.update(decals_dr12_ortho_pairs)
-decals_all_campaigns_ortho_pairs.update(decals_pairs)
+decals_all_campaigns_ortho_pairs.update(decals_dr5_ortho_pairs)
 decals_all_campaigns_ortho_pairs.update(decals_dr8_ortho_pairs)
 decals_all_campaigns_ortho_questions, decals_all_campaigns_ortho_label_cols = schemas.extract_questions_and_label_cols(decals_all_campaigns_ortho_pairs)
 
@@ -193,18 +209,29 @@ def get_decals_ortho_dependencies(question_answer_pairs):  # TODO remove arg
 
     # luckily, these are the same in GZ2 and decals, just only some questions are asked
     dependencies = {
+        # dr12
+        'smooth-or-featured-dr12': None,
+        'disk-edge-on-dr12': 'smooth-or-featured-dr12_featured-or-disk',
+        'has-spiral-arms-dr12': 'disk-edge-on-dr12_no',
+        'bar-dr12': 'disk-edge-on-dr12_no',
+        'bulge-size-dr12': 'disk-edge-on-dr12_no',
+        'how-rounded-dr12': 'smooth-or-featured-dr12_smooth',
+        'edge-on-bulge-dr12': 'disk-edge-on-dr12_yes',
+        'spiral-winding-dr12': 'has-spiral-arms-dr12_yes',
+        'spiral-arm-count-dr12': 'has-spiral-arms-dr12_yes',
+        'merging-dr12': None,
         # dr5
-        'smooth-or-featured': None,  # always asked
-        'disk-edge-on': 'smooth-or-featured_featured-or-disk',
-        'has-spiral-arms': 'disk-edge-on_no',
-        'bar': 'disk-edge-on_no',
-        'bulge-size': 'disk-edge-on_no',
-        'how-rounded': 'smooth-or-featured_smooth',
-        'edge-on-bulge': 'disk-edge-on_yes',
-        'spiral-winding': 'has-spiral-arms_yes',
-        'spiral-arm-count': 'has-spiral-arms_yes', # bad naming...
+        'smooth-or-featured-dr5': None,  # always asked
+        'disk-edge-on-dr5': 'smooth-or-featured-dr5_featured-or-disk',
+        'has-spiral-arms-dr5': 'disk-edge-on-dr5_no',
+        'bar-dr5': 'disk-edge-on-dr5_no',
+        'bulge-size-dr5': 'disk-edge-on-dr5_no',
+        'how-rounded-dr5': 'smooth-or-featured-dr5_smooth',
+        'edge-on-bulge-dr5': 'disk-edge-on-dr5_yes',
+        'spiral-winding-dr5': 'has-spiral-arms-dr5_yes',
+        'spiral-arm-count-dr5': 'has-spiral-arms-dr5_yes', # bad naming...
         'merging': None,
-        # dr8 is identical, just with -dr8
+        # dr8 is identical to dr5, just with -dr8
         'smooth-or-featured-dr8': None,
         'disk-edge-on-dr8': 'smooth-or-featured-dr8_featured-or-disk',
         'has-spiral-arms-dr8': 'disk-edge-on-dr8_no',
@@ -215,17 +242,6 @@ def get_decals_ortho_dependencies(question_answer_pairs):  # TODO remove arg
         'spiral-winding-dr8': 'has-spiral-arms-dr8_yes',
         'spiral-arm-count-dr8': 'has-spiral-arms-dr8_yes',
         'merging-dr8': None,
-        # and the dr12 pairs
-        'smooth-or-featured-dr12': None,
-        'disk-edge-on-dr12': 'smooth-or-featured-dr12_featured-or-disk',
-        'has-spiral-arms-dr12': 'disk-edge-on-dr12_no',
-        'bar-dr12': 'disk-edge-on-dr12_no',
-        'bulge-size-dr12': 'disk-edge-on-dr12_no',
-        'how-rounded-dr12': 'smooth-or-featured-dr12_smooth',
-        'edge-on-bulge-dr12': 'disk-edge-on-dr12_yes',
-        'spiral-winding-dr12': 'has-spiral-arms-dr12_yes',
-        'spiral-arm-count-dr12': 'has-spiral-arms-dr12_yes',
-        'merging-dr12': None
     }
     return dependencies
 
