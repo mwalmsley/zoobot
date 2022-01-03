@@ -135,7 +135,7 @@ class Schema():
             question_answer_pairs (dict): e.g. {'smooth-or-featured: ['_smooth, _featured-or-disk, ...], ...}
             dependencies (dict): dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
         """
-        logging.info(f'Q/A pairs: {question_answer_pairs}')
+        logging.debug(f'Q/A pairs: {question_answer_pairs}')
         self.question_answer_pairs = question_answer_pairs
         _, self.label_cols = extract_questions_and_label_cols(question_answer_pairs)
         self.dependencies = dependencies

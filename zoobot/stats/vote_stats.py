@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 from zoobot.stats import dirichlet_stats
 
@@ -17,14 +18,18 @@ def get_expected_votes_ml(samples, q, retirement, schema, round_votes):
         return expected_votes
 
 
-def get_expected_votes_human(label_df, q, retirement, schema, round_votes):
+def get_expected_votes_human(label_df, q, base_q_votes: int, schema, round_votes):
+    
     prob_of_answers = label_df[[a + '_fraction' for a in schema.label_cols]].values
+    # some will be nan as fractions are often nan (as 0 of 0)
+
     prev_q = q.asked_after
     if prev_q is None:
-        expected_votes = tf.ones(len(label_df)) * retirement
+        expected_votes = tf.ones(len(label_df)) * base_q_votes
     else:
         joint_p_of_asked = schema.joint_p(prob_of_answers, prev_q.text)  # prob of getting the answer needed to ask this question
-        expected_votes = joint_p_of_asked * retirement
+        # for humans, its just base_q_votes * the product of all the fractions leading to that q
+        expected_votes = joint_p_of_asked * base_q_votes
     if round_votes:
         return tf.round(expected_votes)
     else:
