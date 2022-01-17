@@ -49,7 +49,7 @@ def prepare_image_batch(batch, resize_size=None):
     return {'matrix': images, 'id_str': id_strs}  # pack back into dict
 
 
-def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, labels=None):
+def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, labels=None, check_valid_paths=True):
     """
     Load images in a folder as a tf.data dataset
     Supports jpeg (note the e) and png
@@ -72,11 +72,15 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     assert isinstance(image_paths[0], str)
     logging.info('Images paths to load as dataset: {}'.format(len(image_paths)))
 
-    # check they exist
-    missing_paths = [path for path in image_paths if not os.path.isfile(path)]
-    if missing_paths:
-        raise FileNotFoundError(f'Missing {len(missing_paths)} images e.g. {missing_paths[0]}')
+    if check_valid_paths:
+        missing_paths = [path for path in image_paths if not os.path.isfile(path)]
+        if missing_paths:
+            raise FileNotFoundError(f'Missing {len(missing_paths)} images e.g. {missing_paths[0]}')
+        logging.info('All paths exist')
+    else:
+        logging.warning('Skipping valid path check')
 
+    # will load full dataset into memory, possibly?
     path_ds = tf.data.Dataset.from_tensor_slices([str(path) for path in image_paths])
 
     image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format))

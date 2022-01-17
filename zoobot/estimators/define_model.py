@@ -4,7 +4,6 @@ import numpy as np
 import tensorflow as tf
 
 from zoobot.estimators import efficientnet_standard, efficientnet_custom, custom_layers
-from zoobot.training import losses
 
 
 class CustomSequential(tf.keras.Sequential):
