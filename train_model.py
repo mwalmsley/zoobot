@@ -102,8 +102,8 @@ if __name__ == '__main__':
       logging.info('Using single GPU, not distributed')
       context_manager = contextlib.nullcontext()  # does nothing, just a convenience for clean code
 
-    raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True, drop_remainder=True)
-    raw_test_dataset = tfrecord_datasets.get_dataset(eval_records, schema.label_cols, batch_size, shuffle=False, drop_remainder=True)
+    raw_train_dataset = tfrecord_datasets.get_tfrecord_dataset(train_records, schema.label_cols, batch_size, shuffle=True, drop_remainder=True)
+    raw_test_dataset = tfrecord_datasets.get_tfrecord_dataset(eval_records, schema.label_cols, batch_size, shuffle=False, drop_remainder=True)
   
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=schema.label_cols,
@@ -131,8 +131,6 @@ if __name__ == '__main__':
       # so do it here instead
       loss = lambda x, y: multiquestion_loss(x, y) / batch_size  
       # loss = multiquestion_loss
-
-
 
     model.compile(
         loss=loss,
