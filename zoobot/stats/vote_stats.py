@@ -4,12 +4,12 @@ import numpy as np
 from zoobot.stats import dirichlet_stats
 
 
-def get_expected_votes_ml(samples, question, votes_for_base_question: int, schema, round_votes):
+def get_expected_votes_ml(concentrations, question, votes_for_base_question: int, schema, round_votes):
             # (send all concentrations not per-question concentrations, they are all potentially relevant)
-    prob_of_answers = dirichlet_stats.dirichlet_prob_of_answers(samples, schema)  # mean over both models. Prob given q is asked!
+    prob_of_answers = dirichlet_stats.dirichlet_prob_of_answers(concentrations, schema)  # mean over both models. Prob given q is asked!
     prev_q = question.asked_after
     if prev_q is None:
-        expected_votes = tf.ones(len(samples)) * votes_for_base_question
+        expected_votes = tf.ones(len(concentrations)) * votes_for_base_question
     else:
         joint_p_of_asked = schema.joint_p(prob_of_answers, prev_q.text)  # prob of getting the answer needed to ask this question
         expected_votes = joint_p_of_asked * votes_for_base_question

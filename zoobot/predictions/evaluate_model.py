@@ -36,7 +36,7 @@ def load_hdf5s(hdf5_locs):
             these_prediction_metadata = {
                 'id_str': f[id_col].asstr()[:],
                 'hdf5_loc': [os.path.basename(loc) for _ in these_concentrations]
-            }
+        }
             concentrations.append(these_concentrations)
             prediction_metadata.append(these_prediction_metadata)
 
@@ -290,7 +290,7 @@ def show_confusion_matrix(question, label_df, predicted_fractions, schema, ax=No
 )
 
 
-def confusion_matrices_split_by_confidence(retired, predicted_fractions, schema, save_dir, cm_name='cm_decals_dr_full_ensemble_paired', normalize=False):
+def confusion_matrices_split_by_confidence(retired: pd.DataFrame, predicted_fractions: np.ndarray, schema: schemas.Schema, save_dir: str, cm_name='cm_decals_dr_full_ensemble_paired', normalize=False):
     for question in schema.questions:
         
         fig = plt.figure(constrained_layout=True, figsize=(10.5, 5))
