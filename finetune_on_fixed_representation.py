@@ -130,7 +130,7 @@ def main(train_dataset_size=None, batch_size=256, max_galaxies_to_show=5000000):
 if __name__ == '__main__':
 
     # configure logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:

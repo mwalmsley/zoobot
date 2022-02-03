@@ -231,7 +231,7 @@ def get_rough_class_from_ring_fraction(fractions: pd.Series):
 
 if __name__ == '__main__':  # debugging only
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
     get_advanced_ring_image_dataset(batch_size=16, requested_img_size=64, train_dataset_size=1590)
     # get_advanced_ring_feature_dataset(train_dataset_size=159)

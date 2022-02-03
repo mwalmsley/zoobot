@@ -84,7 +84,7 @@ def main(raw_search_str, clean_search_str, reformatted_parquet_loc, overwrite=Fa
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
     overwrite = True
 

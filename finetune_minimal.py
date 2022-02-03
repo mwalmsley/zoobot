@@ -24,7 +24,7 @@ from zoobot.estimators import custom_layers
 if __name__ == '__main__':
 
     # configure logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
