@@ -56,7 +56,11 @@ if __name__ == '__main__':
     parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
         help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
-    parser.add_argument('--no-test=augment', dest='no_test_augment', default=False, action='store_true'),
+    parser.add_argument('--test-time-augs', dest='always_augment', default=False, action='store_true',
+        help='Zoobot includes keras.preprocessing augmentation layers. \
+        These only augment (rotate/flip/etc) at train time by default. \
+        They can be enabled at test time as well, which gives better uncertainties (by increasing variance between forward passes) \
+        but may be unexpected and mess with e.g. GradCAM techniques.'),
     parser.add_argument('--dropout-rate', dest='dropout_rate', default=0.2, type=float)
     args = parser.parse_args()
     
@@ -69,11 +73,10 @@ if __name__ == '__main__':
       logging.warning('Training on color images, not converting to greyscale')
       channels = 3
 
-    always_augment = not args.no_test_augment,  # if no_test_augment, then *don't* use test-time augmentations
-
     initial_size = args.shard_img_size
     resize_size = args.resize_size
     batch_size = args.batch_size
+    always_augment = not args.always_augment
 
     epochs = args.epochs
     train_records_dir = args.train_records_dir

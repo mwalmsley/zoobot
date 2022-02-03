@@ -90,8 +90,8 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     crop_size = int(requested_img_size * 0.75)  # implies cropping the 300 pixel images to 225 pixels. However, the code will ignore this and crop directly to resize_size (below) as they are very similar
     resize_size = 224  # code will skip resizing and crop straight to 224. Don't change - must be 224 for both DECaLS and ImageNet
 
-    run_name = 'finetune_review_spiral_all_{}'.format(time.time())  # scratch was very likely trained in colour
-    log_dir = os.path.join('results/finetune_review', run_name)
+    run_name = 'example_run_{}'.format(time.time())  # scratch was very likely trained in colour
+    log_dir = os.path.join('results/example_run', run_name)
     log_dir_head = os.path.join(log_dir, 'head_only')
     for d in [log_dir, log_dir_head]:
       if not os.path.isdir(d):
@@ -104,12 +104,13 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     """Pick a base model"""
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
-    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
-    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_train_set_only_replicated/checkpoint'  # I think this is the latest gz-decals-classifiers replication
-    # pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
-    # pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
-    # pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_bulge_size_only/checkpoint'
-    pretrained_checkpoint = '/share/nas/walml/repos/gz-decals-classifiers/results/replicated_train_only_spiral_yn_only/checkpoint'
+    pretrained_checkpoint = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
+    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_train_set_only_replicated/checkpoint'
+    ## a few other checkpoints used in the representations paper, trained on single questions - happy to share on request, but lower performance than the above
+    # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
+    # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
+    # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bulge_size_only/checkpoint'
+    # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_spiral_yn_only/checkpoint'
 
     base_model = get_headless_model(
       pretrained_checkpoint,
@@ -216,13 +217,13 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     
     logging.info('Unfreezing layers')
     # you can unfreeze layers like so:
-    # utils.unfreeze_model(model, unfreeze_names=['top'])
+    utils.unfreeze_model(model, unfreeze_names=['top'])
     # or more...
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7'])
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6'])
-    # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6', 'block5'])  # this is "finetune_review_run_", I just didn't rename it 
+    # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6', 'block5'])
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6', 'block5', 'block4'])
-    utils.unfreeze_model(model, unfreeze_names=[], unfreeze_all=True)
+    # utils.unfreeze_model(model, unfreeze_names=[], unfreeze_all=True)
     # note that the number of free parameters increases very quickly!
 
     logging.info('Recompiling with lower learning rate and trainable upper layers')
