@@ -57,8 +57,6 @@ if __name__ == '__main__':
     always_augment = not args.always_augment
 
     epochs = args.epochs
-    train_records_dir = args.train_records_dir
-    eval_records_dir = args.eval_records_dir
     save_dir = args.save_dir
 
     assert save_dir is not None
@@ -81,5 +79,5 @@ if __name__ == '__main__':
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
 
-    trainer = pl.Trainer(accelerator="gpu", epochs=10)
+    trainer = pl.Trainer(accelerator="gpu", epochs=epochs)
     trainer.fit(model, datamodule, enable_checkpointing=True, default_root_dir=save_dir)
