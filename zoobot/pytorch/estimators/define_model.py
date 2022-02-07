@@ -181,7 +181,7 @@ def get_model(
     # if weights_loc:
     #     load_weights(model, weights_loc, expect_partial=expect_partial)
 
-    model = nn.Sequential(modules_to_use)
+    model = nn.Sequential(*modules_to_use)
 
     return model
 
