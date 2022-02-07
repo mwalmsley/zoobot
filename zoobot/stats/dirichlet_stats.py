@@ -318,24 +318,24 @@ class DirichletMultinomialEqualMixture(EqualMixture):
 #     return votes_this_answer, np.array(all_probs)
 
 
-# def load_all_concentrations(df, concentration_cols):
-#     temp = []
-#     for col in concentration_cols:
-#         temp.append(np.stack(df[col].apply(json.loads).values, axis=0))
-#     return np.stack(temp, axis=2).transpose(0, 2, 1)
+def load_all_concentrations(df, concentration_cols):
+    temp = []
+    for col in concentration_cols:
+        temp.append(np.stack(df[col].apply(json.loads).values, axis=0))
+    return np.stack(temp, axis=2).transpose(0, 2, 1)
 
 
-# def dirichlet_prob_of_answers(samples, schema, temperature=None):
-#     # badly named vs posteriors, actually gives predicted vote fractions of answers...
-#     # mean probability (including dropout) of an answer being given. 
-#     # samples has (batch, answer, dropout) shape
-#     p_of_answers = []
-#     for q in schema.questions:
-#         samples_by_q = samples[:, q.start_index:q.end_index+1, :]
-#         p_of_answers.append(DirichletMultinomialEqualMixture(total_votes=1, concentrations=samples_by_q).mean().numpy())
+def dirichlet_prob_of_answers(concentrations, schema, temperature=None):
+    # badly named vs posteriors, actually gives predicted vote fractions of answers...
+    # mean probability (including dropout) of an answer being given. 
+    # concentrations has (batch, answer, dropout) shape
+    p_of_answers = []
+    for q in schema.questions:
+        concentrations_by_q = concentrations[:, q.start_index:q.end_index+1, :]
+        p_of_answers.append(DirichletMultinomialEqualMixture(total_votes=1, concentrations=concentrations_by_q).mean().numpy())
 
-#     p_of_answers = np.concatenate(p_of_answers, axis=1)
-#     return p_of_answers
+    p_of_answers = np.concatenate(p_of_answers, axis=1)
+    return p_of_answers
 
 
 

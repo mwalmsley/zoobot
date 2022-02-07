@@ -9,17 +9,20 @@ import tensorflow as tf
 
 
 
-def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, drop_remainder=False):
+def get_tfrecord_dataset(tfrecord_locs, label_cols, batch_size, shuffle, drop_remainder=False):
     """
     Use feature_spec to load data from tfrecord_locs, and optionally shuffle/batch according to args.
     Does NOT apply any preprocessing.
+
+    Minor differences from image_datasets.get_image_dataset:
+    - Includes `shuffle' option, because shuffling is best done when loading the tfrecords as we can interleave from different records (rather than later, after loading)
+    - Labels are expected to already be encoded in the tfrecords (keyed by `label_cols'), hence no `labels' argument
     
     Args:
         tfrecord_locs (list): paths to tfrecords to load.
         label_cols (list): of features encoded in tfrecord e.g. ['smooth_votes', 'featured_votes']. 'id_str' and 'matrix' will be loaded automatically and do not need to be included.
         batch_size (int): batch size
         shuffle (bool): if True, shuffle the dataset
-        repeat (bool): if True, dataset will repeat indefinitely. Defaults to False.
         drop_remainder (bool): if True, drop any galaxies that don't fit exactly into a batch e.g. galaxy 9 of a list of 9 galaxies with batch size 8. Default False.
     
     Returns:
@@ -28,11 +31,6 @@ def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, dr
     feature_spec = get_feature_spec(label_cols)
 
     dataset = load_tfrecords(tfrecord_locs, feature_spec, shuffle=shuffle)
-    if shuffle:
-        dataset = dataset.shuffle(batch_size * 2)  # should be > len of each tfrecord, ideally, but that's hard
-    if repeat:
-        dataset = dataset.repeat()  # careful, don't repeat forever for eval
-
     dataset = dataset.batch(batch_size, drop_remainder=drop_remainder)
     dataset = dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)  # ensure that a batch is always ready to go
     return dataset
@@ -41,9 +39,9 @@ def get_dataset(tfrecord_locs, label_cols, batch_size, shuffle, repeat=False, dr
 def load_tfrecords(tfrecord_locs, feature_spec, num_parallel_calls=tf.data.experimental.AUTOTUNE, shuffle=False):
     """
     Load tfrecords as tf.data.Dataset.
-    Used by get_dataset.
+    Used by get_tfrecord_dataset.
 
-    shuffle will randomise the order of the tfrecords. This is different (and complementary) to shuffling the batches (see get_dataset).
+    shuffle will randomise the order of the tfrecords. This is different (and complementary) to shuffling the batches (see get_tfrecord_dataset).
     If shuffle=False and multiple tfrecords, returns examples in deterministic but not equal order 
 
     Args:
@@ -83,10 +81,9 @@ def load_tfrecords(tfrecord_locs, feature_spec, num_parallel_calls=tf.data.exper
             num_parallel_calls=num_parallel_calls,
             deterministic=True
         )
-            # could add num_parallel_calls if desired, but let's leave for now 
+        # could add num_parallel_calls if desired, but let's leave for now 
         # for extra randomness, may shuffle those (1st in s1, 1st in s2, ...) subjects
         return dataset
-
 
 
 def get_feature_spec(label_cols):

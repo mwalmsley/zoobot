@@ -18,7 +18,7 @@ from sklearn.model_selection import train_test_split
 from zoobot import label_metadata, schemas
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 from zoobot.training import training_config
 from zoobot.transfer_learning import utils
 from zoobot.estimators import custom_layers
@@ -130,7 +130,7 @@ def main(train_dataset_size=None, batch_size=256, max_galaxies_to_show=5000000):
 if __name__ == '__main__':
 
     # configure logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:

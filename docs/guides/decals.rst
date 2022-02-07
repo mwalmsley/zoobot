@@ -96,10 +96,10 @@ Once trained, the model can be used to make new predictions on either folders of
 
 .. code-block:: python
 
-    from zoobot.predictions import predict_on_images
+    from zoobot.predictions import predict_on_dataset
 
     file_format = 'png'
-    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images', file_format=file_format, recursive=False)
+    unordered_image_paths = predict_on_dataset.paths_in_folder('data/example_images', file_format=file_format, recursive=False)
     # unordered_image_paths = df['paths']   # you might instead just use a catalog
 
     # Load the images as a tf.data.Dataset, just as for training
@@ -123,7 +123,7 @@ Once trained, the model can be used to make new predictions on either folders of
         expect_partial=True # hides some warnings
     )
 
-    predict_on_images.predict(
+    predict_on_dataset.predict(
         image_ds=image_ds,
         model=model,
         n_samples=n_samples,  # number of dropout forward passes

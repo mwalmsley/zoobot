@@ -1,6 +1,7 @@
 import logging
-
 from typing import List
+
+import numpy as np
 
 class Question():
 
@@ -116,7 +117,10 @@ def set_dependencies(questions, dependencies):
     for question in questions:
         prev_answer_text = dependencies[question.text]
         if prev_answer_text is not None:
-            prev_answer = [a for q in questions for a in q.answers if a.text == prev_answer_text][0]  # will be exactly one match
+            try:
+                prev_answer = [a for q in questions for a in q.answers if a.text == prev_answer_text][0]  # look through every answer, find those with the same text as "prev answer text" - will be exactly one match
+            except IndexError:
+                raise ValueError(f'{prev_answer_text} not found in dependencies')
             prev_answer._next_question = question
             question._asked_after = prev_answer
 
@@ -131,7 +135,7 @@ class Schema():
             question_answer_pairs (dict): e.g. {'smooth-or-featured: ['_smooth, _featured-or-disk, ...], ...}
             dependencies (dict): dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
         """
-        logging.info(f'Q/A pairs: {question_answer_pairs}')
+        logging.debug(f'Q/A pairs: {question_answer_pairs}')
         self.question_answer_pairs = question_answer_pairs
         _, self.label_cols = extract_questions_and_label_cols(question_answer_pairs)
         self.dependencies = dependencies
@@ -226,6 +230,8 @@ class Schema():
         # prob(answer) = p(that answer|that q asked) * p(answer before that q)
         answer = self.get_answer(answer_text)
         p_answer_given_question = prob_of_answers[:, answer.index]
+        if all(np.isnan(p_answer_given_question)):
+            logging.warning(f'All p_answer_given_question for {answer_text} ({answer.index}) are nan i.e. all fractions are nan - check that labels for this question are appropriate')
 
         question = answer.question
         prev_answer = question.asked_after

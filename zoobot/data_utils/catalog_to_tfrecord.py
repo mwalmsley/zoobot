@@ -110,6 +110,10 @@ def get_reader(paths):
         reader = load_png_as_pil
     elif file_format == 'fits':
         reader = load_decals_fits_as_pil
+    elif file_format == 'jpeg' or file_format == 'jpg':
+        reader = load_jpeg_as_pil
+    else:
+        raise ValueError(f'File format {file_format} has no reader implemented - you might have to make your own')
     return reader
 
 
@@ -125,12 +129,30 @@ def load_png_as_pil(subject: pd.Series):
     Returns:
         [type]: [description]
     """
-    try:
-        loc = subject['png_loc']
-    except KeyError:
-        loc = subject['file_loc']
-        assert loc[-4:] == '.png'
+    # try:
+    #     loc = subject['png_loc']
+    # except KeyError:
+    loc = subject['file_loc']
+    assert loc[-4:] == '.png'
     return Image.open(loc)
+
+
+def load_jpeg_as_pil(subject: pd.Series):
+    """
+    This was used to make the GZ DECaLS tfrecords,
+    with png files that had already been converted to human-friendly form
+    (see https://github.com/zooniverse/decals/blob/master/decals/a_download_decals/get_images/download_images_threaded.py)
+
+    Args:
+        subject (pd.Series]): galaxy (likely a row from catalogue) including 'png_loc' or 'file_loc' column.
+
+    Returns:
+        [type]: [description]
+    """
+    loc = subject['file_loc']
+    assert loc[-4:] == '.jpg' or loc[-5:] == '.jpeg'
+    return Image.open(loc)
+
 
 
 

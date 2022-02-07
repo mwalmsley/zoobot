@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from zoobot import label_metadata, schemas
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 from zoobot.training import training_config
 from zoobot.transfer_learning import utils
 from zoobot.estimators import custom_layers
@@ -24,7 +24,7 @@ from zoobot.estimators import custom_layers
 if __name__ == '__main__':
 
     # configure logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     # stick the new head on the pretrained base model
     model = tf.keras.Sequential([
-      tf.keras.Input(shape=(requested_img_size, requested_img_size, 1)),
+      tf.keras.layers.InputLayer(shape=(requested_img_size, requested_img_size, 1)),
       base_model,
       new_head
     ])
@@ -177,7 +177,7 @@ if __name__ == '__main__':
 
     predictions = model.predict(pred_dataset)
 
-    data = [{'prediction': float(prediction), 'local_png_loc': local_png_loc} for prediction, local_png_loc in zip(predictions, ordered_paths)]
+    data = [{'prediction': float(prediction), 'image_loc': local_png_loc} for prediction, local_png_loc in zip(predictions, ordered_paths)]
     pred_df = pd.DataFrame(data=data)
   
     example_predictions_loc = 'results/finetune_minimal/example_predictions.csv'

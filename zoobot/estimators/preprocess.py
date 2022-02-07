@@ -2,10 +2,8 @@ import copy
 from typing import List
 import logging
 
-import numpy as np
-import pandas as pd
 import tensorflow as tf
-from skimage.transform import warp, AffineTransform, SimilarityTransform
+# from skimage.transform import warp, AffineTransform, SimilarityTransform
 
 class PreprocessingConfig():
 

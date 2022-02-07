@@ -55,8 +55,13 @@ if __name__ == '__main__':
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
-        help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'
-    )
+        help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
+    parser.add_argument('--test-time-augs', dest='always_augment', default=False, action='store_true',
+        help='Zoobot includes keras.preprocessing augmentation layers. \
+        These only augment (rotate/flip/etc) at train time by default. \
+        They can be enabled at test time as well, which gives better uncertainties (by increasing variance between forward passes) \
+        but may be unexpected and mess with e.g. GradCAM techniques.'),
+    parser.add_argument('--dropout-rate', dest='dropout_rate', default=0.2, type=float)
     args = parser.parse_args()
     
     # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
@@ -71,6 +76,7 @@ if __name__ == '__main__':
     initial_size = args.shard_img_size
     resize_size = args.resize_size
     batch_size = args.batch_size
+    always_augment = not args.always_augment
 
     epochs = args.epochs
     train_records_dir = args.train_records_dir
@@ -99,8 +105,8 @@ if __name__ == '__main__':
       logging.info('Using single GPU, not distributed')
       context_manager = contextlib.nullcontext()  # does nothing, just a convenience for clean code
 
-    raw_train_dataset = tfrecord_datasets.get_dataset(train_records, schema.label_cols, batch_size, shuffle=True, drop_remainder=True)
-    raw_test_dataset = tfrecord_datasets.get_dataset(eval_records, schema.label_cols, batch_size, shuffle=False, drop_remainder=True)
+    raw_train_dataset = tfrecord_datasets.get_tfrecord_dataset(train_records, schema.label_cols, batch_size, shuffle=True, drop_remainder=True)
+    raw_test_dataset = tfrecord_datasets.get_tfrecord_dataset(eval_records, schema.label_cols, batch_size, shuffle=False, drop_remainder=True)
   
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=schema.label_cols,
@@ -118,7 +124,9 @@ if __name__ == '__main__':
         input_size=initial_size, 
         crop_size=int(initial_size * 0.75),
         resize_size=resize_size,
-        channels=channels
+        channels=channels,
+        always_augment=always_augment,
+        dropout_rate=args.dropout_rate
       )
     
       multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
@@ -126,8 +134,6 @@ if __name__ == '__main__':
       # so do it here instead
       loss = lambda x, y: multiquestion_loss(x, y) / batch_size  
       # loss = multiquestion_loss
-
-
 
     model.compile(
         loss=loss,
@@ -147,6 +153,7 @@ if __name__ == '__main__':
       with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
         api_key = f.readline()
       wandb.login(key=api_key)
+      wandb.tensorboard.patch(root_logdir=save_dir)
       wandb.init(sync_tensorboard=True)
       config = wandb.config
       config.label_cols=schema.label_cols,
@@ -156,6 +163,8 @@ if __name__ == '__main__':
       config.batch_size = batch_size
       config.train_records = train_records
       config.epochs = epochs
+      config.always_augment = always_augment
+      config.dropout_rate = args.dropout_rate
 
     # inplace on model
     training_config.train_estimator(

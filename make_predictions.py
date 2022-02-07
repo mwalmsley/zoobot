@@ -5,15 +5,15 @@ import pandas as pd
 
 import tensorflow as tf
 
-from zoobot import label_metadata, schemas
+from zoobot import label_metadata
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import define_model, preprocess
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     file_format = 'png'
 
     # utility function to easily list the images in a folder.
-    unordered_image_paths = predict_on_images.paths_in_folder('data/example_images/basic', file_format=file_format, recursive=False)
+    unordered_image_paths = predict_on_dataset.paths_in_folder('data/example_images/basic', file_format=file_format, recursive=False)
 
     ## or maybe you already have a list from a catalog?
     # unordered_image_paths = df['paths']
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     #   tf.keras.layers.Dense(1, activation="sigmoid", name='sigmoid_output')
     # ])
     # model = tf.keras.Sequential([
-    #   tf.keras.Input(shape=(initial_size, initial_size, 1)),
+    #   tf.keras.layers.InputLayer(input_shape=(initial_size, initial_size, 1)),
     #   base_model,
     #   new_head
     # ])
@@ -110,6 +110,7 @@ if __name__ == '__main__':
 
     # label_cols = ['ring']
 
-    save_loc = 'data/results/make_predictions_example.csv'
+    # save_loc = 'data/results/make_predictions_example.csv'
+    save_loc = 'data/results/make_predictions_example.hdf5'
     n_samples = 5
-    predict_on_images.predict(image_ds, model, n_samples, label_cols, save_loc)
+    predict_on_dataset.predict(image_ds, model, n_samples, label_cols, save_loc)

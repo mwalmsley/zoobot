@@ -8,7 +8,7 @@ from tqdm import tqdm
 from zoobot import label_metadata, schemas
 from zoobot.data_utils import image_datasets
 from zoobot.estimators import define_model, preprocess
-from zoobot.predictions import predict_on_tfrecords, predict_on_images
+from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 
 import argparse
 
@@ -21,7 +21,7 @@ Predictions might be GZ answers, finetuned problems, or galaxy representations (
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     #     tf.keras.layers.GlobalAveragePooling2D()
     # ])
     # model = tf.keras.Sequential([
-    #     tf.keras.Input(shape=(initial_size, initial_size, channels)),
+    #     tf.keras.layers.InputLayer(input_shape=(initial_size, initial_size, channels)),
     #     base_model,
     #     new_head
     # ])
@@ -131,7 +131,7 @@ if __name__ == '__main__':
       tf.keras.layers.Dense(1, activation="sigmoid", name='sigmoid_output')
     ])
     model = tf.keras.Sequential([
-      tf.keras.Input(shape=(initial_size, initial_size, 1)),
+      tf.keras.layers.InputLayer(input_shape=(initial_size, initial_size, 1)),
       base_model,
       new_head
     ])
@@ -182,6 +182,6 @@ if __name__ == '__main__':
             For example, below is how to load the model in finetune_minimal.py.
             """
             n_samples = 1
-            predict_on_images.predict(image_ds, model, n_samples, label_cols, save_loc)
+            predict_on_dataset.predict(image_ds, model, n_samples, label_cols, save_loc)
 
         png_start_index += png_batch_size
