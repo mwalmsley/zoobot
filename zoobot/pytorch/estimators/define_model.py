@@ -24,7 +24,7 @@ class ZoobotModel(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
-        loss = self.loss(y_hat, y)
+        loss = self.loss(y_hat, y, self.schema.question_index_groups)
         return loss
 
     def configure_optimizers(self):
