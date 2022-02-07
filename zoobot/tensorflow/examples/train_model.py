@@ -8,9 +8,9 @@ import contextlib
 import tensorflow as tf
 import wandb
 
-from zoobot.data_utils import tfrecord_datasets
-from zoobot.training import training_config, losses
-from zoobot.estimators import preprocess, define_model
+from zoobot.tensorflow.data_utils import tfrecord_datasets
+from zoobot.tensorflow.training import training_config, losses
+from zoobot.tensorflow.estimators import preprocess, define_model
 from zoobot import schemas, label_metadata
 
 

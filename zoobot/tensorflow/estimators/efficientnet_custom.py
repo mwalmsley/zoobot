@@ -3,7 +3,7 @@ import logging
 
 import  tensorflow as tf
 
-from zoobot.estimators import efficientnet_standard
+from zoobot.tensorflow.estimators import efficientnet_standard
 
 
 def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_standard.EfficientNetB0, use_imagenet_weights=False, **kwargs):
