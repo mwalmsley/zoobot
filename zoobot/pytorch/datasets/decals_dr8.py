@@ -103,9 +103,9 @@ class DECALSDR8Dataset(Dataset):
 
         return image, label
 
-import logging
+# import logging
 
 def get_galaxy_label(galaxy, schema):
-    votes = galaxy[schema.label_cols].values.astype(int)
-    logging.info(votes)
-    return torch.from_numpy(votes)
+    return galaxy[schema.label_cols].values.astype(int)
+    # logging.info(votes)
+    # return torch.from_numpy(votes)
