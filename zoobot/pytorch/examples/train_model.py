@@ -63,7 +63,7 @@ if __name__ == '__main__':
     if not os.path.isdir(save_dir):
       os.mkdir(save_dir)
 
-    question_answer_pairs = label_metadata.decals_pairs
+    question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
     dependencies = label_metadata.get_gz2_and_decals_dependencies(question_answer_pairs)
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
