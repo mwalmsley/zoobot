@@ -19,6 +19,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.catalog = catalog
         self.schema = schema
         self.seed = seed
+
         self.transform = transforms.Compose([
             transforms.Grayscale(),  # TODO make optional
             # transforms.RandomCrop(size=(224, 224)),
@@ -29,8 +30,8 @@ class DECALSDR8DataModule(pl.LightningDataModule):
                 interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
-            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
-            transforms.ToTensor()
+            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR)
+            # transforms.ToTensor()  # smth in here is already making it a tensor
             ])  # TODO more
 
     def prepare_data(self):
