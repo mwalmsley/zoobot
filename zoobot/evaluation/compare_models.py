@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as ticker
 
-from zoobot.predictions import evaluate_model
+from zoobot.evaluation import evaluate_model
 
 def compare_metric_by_question(eval_dirs, metric='mean_loss', save_loc=None):
 
