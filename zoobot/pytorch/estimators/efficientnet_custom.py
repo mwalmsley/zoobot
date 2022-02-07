@@ -34,27 +34,13 @@ def custom_top_dirichlet(output_dim):
     Args:
         output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
     """
-    return nn.Sequential([
-        nn.Linear(in_features=1280, out_features=output_dim),  # assumes effnet architecture, see lastconv_output_channels in original implementatation if needs to be dynamic
-        ScaledSoftmax()
-    ])
+    return nn.Sequential(
+        nn.Linear(in_features=1280, out_features=output_dim),  
+        ScaledSigmoid()
+    )
 
-class ScaledSoftmax(nn.Module):
-    # https://pytorch.org/docs/stable/_modules/torch/nn/modules/activation.html#Softmax
-
-    __constants__ = ['dim']
-
-    def __init__(self, dim=None) -> None:
-        super(ScaledSoftmax, self).__init__()
-        self.dim = dim
-
-    def __setstate__(self, state):
-        self.__dict__.update(state)
-        if not hasattr(self, 'dim'):
-            self.dim = None
-
-    def extra_repr(self) -> str:
-        return 'dim={dim}'.format(dim=self.dim)
+class ScaledSigmoid(nn.modules.Sigmoid):
+    # https://pytorch.org/docs/stable/_modules/torch/nn/modules/activation.html#ReLU
 
     def forward(self, input: Tensor) -> Tensor:
         return nn.functional.sigmoid(input) * 100. + 1.  # could make args if I needed
