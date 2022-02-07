@@ -59,5 +59,5 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
 
 
 def get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q):
-        dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False)
+        dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False, validate_args=False)  # see if it accepts zeros
         return -dist.log_prob(labels_for_q)  # important minus sign
