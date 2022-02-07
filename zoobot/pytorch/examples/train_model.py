@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     model = define_model.ZoobotModel(schema=schema, loss=loss_func)
 
-    catalog = pd.read_parquet(catalog_loc).sample(1000)  # debugging
+    catalog = pd.read_csv(catalog_loc).sample(1000)  # debugging
     catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas',  '/share/nas2')
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
