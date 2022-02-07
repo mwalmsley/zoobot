@@ -13,8 +13,8 @@ import pytorch_lightning as pl
 # https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html
 
 # for now, all this really does is split a dataframe and apply no transforms
-class DECALSDR8DataModule(pl.LightningDataModule, greyscale=True):
-    def __init__(self, catalog: pd.DataFrame, schema, seed=42):
+class DECALSDR8DataModule(pl.LightningDataModule)):
+    def __init__(self, catalog: pd.DataFrame, schema, greyscale=True, seed=42):
         super().__init__()
         self.catalog = catalog
         self.schema = schema
