@@ -23,10 +23,10 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
+    parser.add_argument('--catalog', dest='catalog_loc', type=str)  # expects catalog, not tfrecords
+    parser.add_argument('--epochs', dest='epochs', type=int)
     parser.add_argument('--shard-img-size', dest='shard_img_size', type=int, default=300)
     parser.add_argument('--resize-size', dest='resize_size', type=int, default=224)
-    parser.add_argument('--catalog', dest='catalog_loc', type='str')  # expects catalog, not tfrecords
-    parser.add_argument('--epochs', dest='epochs', type=int)
     parser.add_argument('--batch-size', dest='batch_size', default=256, type=int)
     parser.add_argument('--distributed', default=False, action='store_true')
     parser.add_argument('--color', default=False, action='store_true')
