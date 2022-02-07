@@ -30,8 +30,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
                 interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
-            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR)
+            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
             # transforms.ToTensor()  # smth in here is already making it a tensor
+            transforms.ConvertImageDtype(torch.float)
             ])  # TODO more
 
     def prepare_data(self):
