@@ -175,7 +175,7 @@ def get_model(
     if include_top:
         assert output_dim is not None
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard - "AdaptiveAvgPool2d"
-        modules_to_use.append(custom_layers.PermaDropout(dropout_rate, name='top_dropout'))
+        modules_to_use.append(custom_layers.PermaDropout(dropout_rate))
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(output_dim))  # unlike tf version, not inplace
 
     # if weights_loc:
