@@ -1,6 +1,6 @@
 # import logging
 
-from torch import nn
+from torch import nn, Tensor
 
 # from zoobot.pytorch.estimators import efficientnet_standard
 
@@ -34,4 +34,13 @@ def custom_top_dirichlet(output_dim):
     Args:
         output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
     """
-    return nn.Dense(output_dim, activation=lambda x: nn.functional.sigmoid(x) * 100. + 1.)  # one params per answer, 1-100 range
+    return nn.Sequential([
+        nn.Linear(in_features=1280, out_features=output_dim),  # assumes effnet architecture
+        ScaledSoftmax()
+    ])
+
+class ScaledSoftmax(nn.modules.Softmax):
+    # https://pytorch.org/docs/stable/_modules/torch/nn/modules/activation.html#ReLU
+
+    def forward(self, input: Tensor) -> Tensor:
+        return nn.functional.sigmoid(input) * 100. + 1.  # could make args if I needed
