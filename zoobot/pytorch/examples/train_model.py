@@ -1,9 +1,7 @@
 import logging
 import os
 import argparse
-import time
 import logging
-import contextlib
 import pandas as pd
 
 import pytorch_lightning as pl
@@ -11,8 +9,9 @@ import pytorch_lightning as pl
 from zoobot import schemas, label_metadata
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.datasets import decals_dr8
+from zoobot.pytorch.training import losses
 
-import wandb
+# import wandb
 
 if __name__ == '__main__':
 
@@ -73,14 +72,14 @@ if __name__ == '__main__':
 
     "shared setup ends"
 
-    model = define_model.ZoobotModel(schema=schema)
+    loss_func = losses.calculate_multiquestion_loss
+
+    model = define_model.ZoobotModel(schema=schema, loss=loss_func)
 
     catalog = pd.read_parquet(catalog_loc).sample(1000)  # debugging
     catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas',  '/share/nas2')
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
 
-    trainer = pl.Trainer()
-    trainer.fit(model, datamodule)
-
-    
+    trainer = pl.Trainer(accelerator="gpu", epochs=10)
+    trainer.fit(model, datamodule, enable_checkpointing=True, default_root_dir=save_dir)
