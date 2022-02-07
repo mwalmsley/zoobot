@@ -15,7 +15,7 @@ from torch import Tensor, nn, functional
 #         return x
 
 
-class PermaDropout(nn.Module):
+class PermaDropout(nn.modules.dropout._DropoutNd):
     # https://pytorch.org/docs/stable/_modules/torch/nn/modules/dropout.html#Dropout
     def forward(self, input: Tensor) -> Tensor:
             return functional.dropout(input, self.p, True, self.inplace)  # simply replaced self.training with True
