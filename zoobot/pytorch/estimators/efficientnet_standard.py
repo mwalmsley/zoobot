@@ -11,7 +11,6 @@ from torch import nn, Tensor
 
 from torchvision._internally_replaced_utils import load_state_dict_from_url
 from torchvision.ops.misc import ConvNormActivation
-from torchvision.utils import _log_api_usage_once
 
 from torchvision.models.efficientnet import MBConvConfig, MBConv
 
@@ -40,7 +39,7 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
             norm_layer (Optional[Callable[..., nn.Module]]): Module specifying the normalization layer to use
         """
         super().__init__()
-        _log_api_usage_once(self)
+        # _log_api_usage_once(self)
 
         if not inverted_residual_setting:
             raise ValueError("The inverted_residual_setting should not be empty")
