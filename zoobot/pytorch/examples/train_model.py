@@ -6,6 +6,9 @@ import pandas as pd
 
 import pytorch_lightning as pl
 # from pl.strategies.ddp import DDPStrategy
+from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
+from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
 
 from zoobot import schemas, label_metadata
 from zoobot.pytorch.estimators import define_model
@@ -81,8 +84,19 @@ if __name__ == '__main__':
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
 
+    pl_logger = WandbLogger(project='zoobot-pytorch')
+    callbacks = [
+      ModelCheckpoint(
+        dirpath=os.path.join(save_dir, 'checkpoints')
+      )
+    ]
+
+
     trainer = pl.Trainer(
-      accelerator="gpu", gpus=2, strategy='ddp',
-      # strategy=DDPStrategy(find_unused_parameters=False),
-      max_epochs=epochs, enable_checkpointing=True, default_root_dir=save_dir)
+      accelerator="gpu", gpus=2,
+      # strategy='ddp',
+      strategy=DDPStrategy(find_unused_parameters=False),
+      logger = pl_logger,
+      callbacks=callbacks,
+      max_epochs=epochs, default_root_dir=save_dir)
     trainer.fit(model, datamodule)
