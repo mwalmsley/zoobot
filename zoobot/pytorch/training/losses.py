@@ -35,6 +35,7 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups):
     # https://www.tensorflow.org/api_docs/python/tf/keras/losses/Loss will auto-reduce (sum) over the batch anyway
 
 
+import logging
 
 def dirichlet_loss(labels_for_q, concentrations_for_q):
     """
@@ -55,9 +56,43 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # so check --shard-img-size carefully!
     total_count = torch.sum(labels_for_q, axis=1)
 
-    return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
+    # pytorch dirichlet multinomial implementation will not accept zero total votes, need to handle separately
+
+
+    # return tf.where(
+    #     tf.math.equal(total_count, 0),  # if total_count is 0 (i.e. no votes)
+    #     tf.constant(0.),  # prob is 1 and (neg) log prob is 0, with no gradients attached. broadcasts
+    #     get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)  # else, calculate neg log prob
+    # )
+    # # slightly inefficient as get_dirichlet_neg_log_prob forward pass done for all, but avoids gradients
+    # # https://www.tensorflow.org/api_docs/python/tf/where
+    # works great, but about 50% slower than optimal
+
+    indices_with_nonzero_counts = torch.where(torch.logical_not(torch.equal(total_count, 0)))
+    logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.numpy()))
+    
+    # may potentially need to deal with the situation where there are 0 valid indices?
+
+    total_counts_with_nonzero_counts = torch.gather(total_count, indices_with_nonzero_counts)  # dim=0 by default, so same as tf
+    labels_with_nonzero_counts = torch.gather(labels_for_q, indices_with_nonzero_counts)
+    concentrations_with_nonzero_counts = torch.gather(concentrations_for_q, indices_with_nonzero_counts)
+    neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(labels_with_nonzero_counts, total_counts_with_nonzero_counts, concentrations_with_nonzero_counts)
+    logging.info('Probs of nonzero indices: {}'.format(neg_log_prob_of_indices_with_nonzero_counts.numpy()))
+
+    # not needed, scatter_nd has 0 where no value is placed (and 0 as log prob = 0 as prob = 1)
+    # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
+
+    # now mix back together
+    # The backward pass is implemented only for src.shape == index.shape
+    mixed_back = torch.zeros_like(total_count).scatter_(dim=0, index=indices_with_nonzero_counts, src=neg_log_prob_of_indices_with_nonzero_counts)
+    return mixed_back
+    # return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
+
+
+    # return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
 
 
 def get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q):
-        dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False, validate_args=False)  # see if it accepts zeros
+    # TODO won't accept zeros
+        dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False)
         return -dist.log_prob(labels_for_q)  # important minus sign
