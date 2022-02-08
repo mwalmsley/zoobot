@@ -68,7 +68,9 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # # https://www.tensorflow.org/api_docs/python/tf/where
     # works great, but about 50% slower than optimal
 
-    indices = torch.range(0, len(total_count)-1, dtype=torch.long)
+    logging.info(total_count)
+
+    indices = torch.arange(0, len(total_count), dtype=torch.long)
     indices_with_nonzero_counts = indices[total_count > 0]  # returns a tuple for some reason
         # torch.equal(total_count, torch.zeros(size=(1,)))
 
@@ -80,6 +82,8 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     nonzero_total_count = total_count[indices_with_nonzero_counts]
     nonzero_labels_for_q = labels_for_q[indices_with_nonzero_counts]
     nonzero_concentrations_for_q = concentrations_for_q[indices_with_nonzero_counts]
+
+    logging.info(nonzero_total_count)
 
     neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(nonzero_labels_for_q, nonzero_total_count, nonzero_concentrations_for_q)
     logging.info(neg_log_prob_of_indices_with_nonzero_counts)
