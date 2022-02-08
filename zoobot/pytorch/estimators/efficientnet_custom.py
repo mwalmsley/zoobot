@@ -1,5 +1,6 @@
 # import logging
 
+import torch
 from torch import nn, Tensor
 
 # from zoobot.pytorch.estimators import efficientnet_standard
@@ -43,4 +44,4 @@ class ScaledSigmoid(nn.modules.Sigmoid):
     # https://pytorch.org/docs/stable/_modules/torch/nn/modules/activation.html#ReLU
 
     def forward(self, input: Tensor) -> Tensor:
-        return nn.sigmoid(input) * 100. + 1.  # could make args if I needed
+        return torch.sigmoid(input) * 100. + 1.  # could make args if I needed
