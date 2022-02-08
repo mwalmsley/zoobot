@@ -68,7 +68,9 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # # https://www.tensorflow.org/api_docs/python/tf/where
     # works great, but about 50% slower than optimal
 
-    indices_with_nonzero_counts = torch.where(torch.logical_not(torch.equal(total_count, 0)))
+    indices_with_nonzero_counts = torch.where(torch.logical_not(
+        torch.equal(total_count, torch.zeros(size=(1)))
+        ))
     logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.numpy()))
     
     # may potentially need to deal with the situation where there are 0 valid indices?
@@ -83,7 +85,7 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
 
     # now mix back together
-    # The backward pass is implemented only for src.shape == index.shape
+    # The backward pass is implemented only for src.shape == index.shape, true in my case (each neg lob prob goes exactly one place)
     mixed_back = torch.zeros_like(total_count).scatter_(dim=0, index=indices_with_nonzero_counts, src=neg_log_prob_of_indices_with_nonzero_counts)
     return mixed_back
     # return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
