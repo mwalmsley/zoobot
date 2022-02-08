@@ -125,7 +125,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
       # strategy='ddp',
-      strategy=[DDPPlugin(find_unused_parameters=False)],
+      plugins=[DDPPlugin(find_unused_parameters=False)],
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs, default_root_dir=save_dir)
