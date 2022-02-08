@@ -113,19 +113,19 @@ if __name__ == '__main__':
     pl_logger = None
     
     callbacks = [
-      ModelCheckpoint(
-        dirpath=os.path.join(save_dir, 'checkpoints')
-        # monitor="val_loss"
-        # save_weights_only=True
-      )
-      # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
+        ModelCheckpoint(
+            dirpath=os.path.join(save_dir, 'checkpoints'),
+            monitor="val_loss",
+            save_weights_only=True,
+        ),
+        EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
 
 
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
       # strategy='ddp',
-      plugins=[DDPPlugin(find_unused_parameters=False)],
+      strategy=[DDPPlugin(find_unused_parameters=False)],
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs, default_root_dir=save_dir)
