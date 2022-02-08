@@ -77,9 +77,9 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     
     # may potentially need to deal with the situation where there are 0 valid indices?
 
-    total_counts_with_nonzero_counts = torch.gather(total_count, indices_with_nonzero_counts)  # dim=0 by default, so same as tf
-    labels_with_nonzero_counts = torch.gather(labels_for_q, indices_with_nonzero_counts)
-    concentrations_with_nonzero_counts = torch.gather(concentrations_for_q, indices_with_nonzero_counts)
+    total_counts_with_nonzero_counts = torch.gather(input=total_count, dim=0, index=indices_with_nonzero_counts)  # dim=0 by default, so same as tf
+    labels_with_nonzero_counts = torch.gather(input=labels_for_q, dim=0, index=indices_with_nonzero_counts)
+    concentrations_with_nonzero_counts = torch.gather(input=concentrations_for_q, dim=0, index=indices_with_nonzero_counts)
     neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(labels_with_nonzero_counts, total_counts_with_nonzero_counts, concentrations_with_nonzero_counts)
     logging.info(neg_log_prob_of_indices_with_nonzero_counts)
     # logging.info('Probs of nonzero indices: {}'.format(neg_log_prob_of_indices_with_nonzero_counts.numpy()))
