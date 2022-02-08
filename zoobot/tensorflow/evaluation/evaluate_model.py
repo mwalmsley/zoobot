@@ -17,8 +17,8 @@ import tensorflow as tf
 
 from zoobot.shared import schemas
 from zoobot.shared import label_metadata
-from zoobot.training import losses
-from zoobot.stats import dirichlet_stats, vote_stats
+from zoobot.tensorflow.training import losses
+from zoobot.tensorflow.stats import dirichlet_stats, vote_stats
 
 
 def load_hdf5s(hdf5_locs):
