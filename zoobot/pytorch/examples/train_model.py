@@ -10,6 +10,8 @@ import pytorch_lightning as pl
 from pytorch_lightning.plugins.training_type import DDPPlugin
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+
 
 from zoobot import schemas, label_metadata
 from zoobot.pytorch.estimators import define_model
@@ -68,6 +70,8 @@ if __name__ == '__main__':
     if not os.path.isdir(save_dir):
       os.mkdir(save_dir)
 
+    pl.seed_everything(42)
+
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
     dependencies = label_metadata.get_decals_ortho_dependencies(question_answer_pairs)
     schema = schemas.Schema(question_answer_pairs, dependencies)
@@ -94,7 +98,7 @@ if __name__ == '__main__':
         # wandb.tensorboard.patch(root_logdir=save_dir)
         # wandb.init(sync_tensorboard=True)
         # run wandb login first
-        pl_logger = WandbLogger(project='zoobot-pytorch')
+        pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping')
 
         pl_logger.experiment.config['label_cols']=schema.label_cols,
         pl_logger.experiment.config['initial_size']=initial_size
@@ -110,8 +114,11 @@ if __name__ == '__main__':
     
     callbacks = [
       ModelCheckpoint(
-        dirpath=os.path.join(save_dir, 'checkpoints')
-      )
+        dirpath=os.path.join(save_dir, 'checkpoints'),
+        monitor="val_loss"
+        # save_weights_only=True
+      ),
+      EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
 
 
