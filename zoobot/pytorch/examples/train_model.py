@@ -117,8 +117,8 @@ if __name__ == '__main__':
             dirpath=os.path.join(save_dir, 'checkpoints'),
             monitor="val_loss",
             save_weights_only=True,
-        ),
-        EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
+        )
+        # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
 
 
