@@ -112,14 +112,15 @@ if __name__ == '__main__':
     else:
       pl_logger = None
     
-    callbacks = [
-        ModelCheckpoint(
-            dirpath=os.path.join(save_dir, 'checkpoints'),
-            # monitor="val_loss",
-            # save_weights_only=True,
-        ),
-        # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
-    ]
+    # callbacks = [
+    #     ModelCheckpoint(
+    #         dirpath=os.path.join(save_dir, 'checkpoints'),
+    #         # monitor="val_loss",
+    #         # save_weights_only=True,
+    #     ),
+    #     # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
+    # ]
+    callbacks = []
 
 
     trainer = pl.Trainer(
