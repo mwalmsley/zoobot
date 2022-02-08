@@ -99,7 +99,7 @@ if __name__ == '__main__':
         # wandb.tensorboard.patch(root_logdir=save_dir)
         # wandb.init(sync_tensorboard=True)
         # run wandb login first
-        pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping')
+        pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping-repeat')
 
         # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
         # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
