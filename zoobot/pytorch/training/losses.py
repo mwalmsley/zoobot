@@ -68,12 +68,11 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # # https://www.tensorflow.org/api_docs/python/tf/where
     # works great, but about 50% slower than optimal
 
-    indices_with_nonzero_counts = torch.where(
-        torch.logical_not(total_count == 0)
-        )
+    indices_with_nonzero_counts = torch.where(total_count != 0)
         # torch.equal(total_count, torch.zeros(size=(1,)))
 
     logging.info(indices_with_nonzero_counts)
+    logging.info(type(indices_with_nonzero_counts))
     # logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.cpu().numpy()))
     
     # may potentially need to deal with the situation where there are 0 valid indices?
