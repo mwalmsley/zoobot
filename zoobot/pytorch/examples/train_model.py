@@ -80,5 +80,5 @@ if __name__ == '__main__':
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
 
-    trainer = pl.Trainer(accelerator="gpu", gpus=2, max_epochs=epochs, enable_checkpointing=True, default_root_dir=save_dir, persistent_workers=True, strategy="ddp_spawn")
+    trainer = pl.Trainer(accelerator="gpu", gpus=2, max_epochs=epochs, enable_checkpointing=True, default_root_dir=save_dir, strategy="ddp_spawn")
     trainer.fit(model, datamodule)
