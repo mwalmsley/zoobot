@@ -100,26 +100,26 @@ if __name__ == '__main__':
         # run wandb login first
         pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping')
 
-        pl_logger.experiment.config['label_cols']=schema.label_cols,
-        pl_logger.experiment.config['initial_size']=initial_size
-        pl_logger.experiment.config['greyscale'] = greyscale
-        pl_logger.experiment.config['resize_size'] = resize_size
-        pl_logger.experiment.config['batch_size'] = batch_size
-        # pl_logger.experiment.config.train_records = train_records
-        pl_logger.experiment.config['epochs'] = epochs
-        pl_logger.experiment.config['always_augment'] = always_augment
-        pl_logger.experiment.config['dropout_rate'] = args.dropout_rate
+        # pl_logger.experiment.config['label_cols']=schema.label_cols,
+        # pl_logger.experiment.config['initial_size']=initial_size
+        # pl_logger.experiment.config['greyscale'] = greyscale
+        # pl_logger.experiment.config['resize_size'] = resize_size
+        # pl_logger.experiment.config['batch_size'] = batch_size
+        # # pl_logger.experiment.config.train_records = train_records
+        # pl_logger.experiment.config['epochs'] = epochs
+        # pl_logger.experiment.config['always_augment'] = always_augment
+        # pl_logger.experiment.config['dropout_rate'] = args.dropout_rate
     else:
       pl_logger = None
     
-    # callbacks = [
-    #     ModelCheckpoint(
-    #         dirpath=os.path.join(save_dir, 'checkpoints'),
-    #         # monitor="val_loss",
-    #         # save_weights_only=True,
-    #     ),
+    callbacks = [
+        ModelCheckpoint(
+            dirpath=os.path.join(save_dir, 'checkpoints'),
+            # monitor="val_loss",
+            # save_weights_only=True,
+        ),
     #     # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
-    # ]
+    ]
     callbacks = []
 
 
