@@ -5,6 +5,7 @@ import logging
 import pandas as pd
 
 import pytorch_lightning as pl
+# from pl.strategies.ddp import DDPStrategy
 
 from zoobot import schemas, label_metadata
 from zoobot.pytorch.estimators import define_model
@@ -80,5 +81,8 @@ if __name__ == '__main__':
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
 
-    trainer = pl.Trainer(accelerator="gpu", gpus=2, max_epochs=epochs, enable_checkpointing=True, default_root_dir=save_dir, strategy="ddp_spawn")
+    trainer = pl.Trainer(
+      accelerator="gpu", gpus=2, strategy='ddp',
+      # strategy=DDPStrategy(find_unused_parameters=False),
+      max_epochs=epochs, enable_checkpointing=True, default_root_dir=save_dir)
     trainer.fit(model, datamodule)
