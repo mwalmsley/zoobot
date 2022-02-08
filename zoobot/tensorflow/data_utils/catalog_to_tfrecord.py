@@ -9,7 +9,7 @@ from PIL import Image
 from astropy.io import fits
 from tqdm import tqdm
 # import sklearn
-from zoobot.data_utils import create_tfrecord
+from zoobot.tensorflow.data_utils import create_tfrecord
 
 
 # def write_catalog_to_train_test_tfrecords(df, train_loc, test_loc, img_size, columns_to_save, reader, train_test_fraction=0.8):

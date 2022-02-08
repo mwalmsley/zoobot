@@ -1,4 +1,4 @@
-from zoobot import schemas
+from zoobot.shared import schemas
 
 # use these by importing them in another script e.g.
 # from zoobot.label_metadata import decals_label_cols 

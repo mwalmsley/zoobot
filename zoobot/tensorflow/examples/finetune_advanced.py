@@ -10,10 +10,10 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras import layers
 
-from zoobot.estimators import preprocess, define_model
-from zoobot.training import training_config
-from zoobot.transfer_learning import utils
-from zoobot.datasets import rings
+from zoobot.tensorflow.estimators import preprocess, define_model
+from zoobot.tensorflow.training import training_config
+from zoobot.tensorflow.transfer_learning import utils
+from zoobot.tensorflow.datasets import rings
 
     
 def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_show=5000000, greyscale=True):

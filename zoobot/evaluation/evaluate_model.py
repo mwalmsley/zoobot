@@ -15,7 +15,8 @@ import h5py
 # from sklearn.metrics import confusion_matrix, plot_confusion_matrix, roc_curve, mean_squared_error, mean_absolute_error
 import tensorflow as tf
 
-from zoobot import label_metadata, schemas
+from zoobot.shared import schemas
+from zoobot.shared import label_metadata
 from zoobot.training import losses
 from zoobot.stats import dirichlet_stats, vote_stats
 

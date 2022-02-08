@@ -7,11 +7,12 @@ import contextlib
 
 import tensorflow as tf
 import wandb
+from zoobot.shared import label_metadata
 
 from zoobot.tensorflow.data_utils import tfrecord_datasets
 from zoobot.tensorflow.training import training_config, losses
 from zoobot.tensorflow.estimators import preprocess, define_model
-from zoobot import schemas, label_metadata
+from zoobot.shared import schemas
 
 
 if __name__ == '__main__':

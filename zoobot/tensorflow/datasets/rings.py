@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-from zoobot.data_utils import image_datasets
+from zoobot.tensorflow.data_utils import image_datasets
 
 
 def get_advanced_ring_image_dataset(batch_size: int, requested_img_size: int, train_dataset_size=None, seed=1, file_format='png'):

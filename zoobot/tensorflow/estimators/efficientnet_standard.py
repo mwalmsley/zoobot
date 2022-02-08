@@ -21,7 +21,7 @@ from six.moves import xrange
 from keras_applications.imagenet_utils import _obtain_input_shape
 
 # use my custom layers to have dropout always on
-from zoobot.estimators import custom_layers
+from zoobot.tensorflow.estimators import custom_layers
 
 IMAGENET_WEIGHTS_PATH ='https://github.com/Callidior/keras-applications/releases/download/efficientnet/'
 

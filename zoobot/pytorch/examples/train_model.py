@@ -13,10 +13,11 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 
-from zoobot import schemas, label_metadata
+from zoobot.shared import schemas
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
+from zoobot.shared import label_metadata
 
 # import wandb
 

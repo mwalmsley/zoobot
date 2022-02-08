@@ -6,7 +6,7 @@ import pandas as pd
 import tensorflow as tf
 import tensorflow_probability as tfp
 
-from zoobot.stats import mixture_stats
+from zoobot.tensorflow.stats import mixture_stats
 
 class EqualMixture():
 

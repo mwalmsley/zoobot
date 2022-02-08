@@ -11,8 +11,8 @@ import pandas as pd
 import matplotlib
 import numpy as np
 
-from zoobot.estimators import preprocess, efficientnet_standard, efficientnet_custom, custom_layers, define_model, custom_callbacks
-from zoobot import schemas
+from zoobot.tensorflow.estimators import preprocess, efficientnet_standard, efficientnet_custom, custom_layers, define_model, custom_callbacks
+from zoobot.shared import schemas
 
 # augmentations now done via keras Input layers instead - see define_model.py
 # globals shared between train and test input configurations

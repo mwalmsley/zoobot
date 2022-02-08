@@ -15,14 +15,14 @@ from tensorflow.keras import layers, regularizers
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from zoobot import label_metadata, schemas
-from zoobot.data_utils import image_datasets
-from zoobot.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
-from zoobot.training import training_config
-from zoobot.transfer_learning import utils
-from zoobot.estimators import custom_layers
-from zoobot.datasets import rings
+from zoobot.shared import schemas, label_metadata
+from zoobot.tensorflow.data_utils import image_datasets
+from zoobot.tensorflow.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
+from zoobot.tensorflow.predictions import predict_on_tfrecords, predict_on_dataset
+from zoobot.tensorflow.training import training_config
+from zoobot.tensorflow.transfer_learning import utils
+from zoobot.tensorflow.estimators import custom_layers
+from zoobot.tensorflow.datasets import rings
 
 
 def main(train_dataset_size=None, batch_size=256, max_galaxies_to_show=5000000):

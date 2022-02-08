@@ -5,12 +5,14 @@ import pandas as pd
 import tensorflow as tf
 from tqdm import tqdm
 
-from zoobot import label_metadata, schemas
-from zoobot.data_utils import image_datasets
-from zoobot.estimators import define_model, preprocess
-from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
+from zoobot.shared import schemas
+from zoobot.tensorflow.data_utils import image_datasets
+from zoobot.tensorflow.estimators import define_model, preprocess
+from zoobot.tensorflow.predictions import predict_on_tfrecords, predict_on_dataset
 
 import argparse
+
+from zoobot.shared import label_metadata
 
 """
 This script is the more advanced (yet more useful) version of make_predictions.py

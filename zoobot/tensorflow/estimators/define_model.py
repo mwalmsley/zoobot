@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import tensorflow as tf
 
-from zoobot.estimators import efficientnet_standard, efficientnet_custom, custom_layers
+from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_custom, custom_layers
 
 
 class CustomSequential(tf.keras.Sequential):
