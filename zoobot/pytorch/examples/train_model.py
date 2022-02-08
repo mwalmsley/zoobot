@@ -117,15 +117,15 @@ if __name__ == '__main__':
             dirpath=os.path.join(save_dir, 'checkpoints'),
             monitor="val_loss",
             save_weights_only=True,
-        )
-        # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
+        ),
+        EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
 
 
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
       # strategy='ddp',
-      strategy=[DDPPlugin(find_unused_parameters=False)],
+      plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs, default_root_dir=save_dir)
