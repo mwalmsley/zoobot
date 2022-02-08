@@ -100,6 +100,9 @@ if __name__ == '__main__':
         # run wandb login first
         pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping')
 
+        # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
+        # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
+
         # pl_logger.experiment.config['label_cols']=schema.label_cols,
         # pl_logger.experiment.config['initial_size']=initial_size
         # pl_logger.experiment.config['greyscale'] = greyscale
@@ -115,10 +118,10 @@ if __name__ == '__main__':
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
-            # monitor="val_loss",
-            # save_weights_only=True,
+            monitor="val_loss",
+            save_weights_only=True,
         ),
-    #     # EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
+        EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
     callbacks = []
 
