@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if not os.path.isdir(save_dir):
       os.mkdir(save_dir)
 
-    pl.seed_everything(42)
+    # pl.seed_everything(42)
 
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
     dependencies = label_metadata.get_decals_ortho_dependencies(question_answer_pairs)
