@@ -6,7 +6,8 @@ import pandas as pd
 
 import pytorch_lightning as pl
 # from pl.strategies.ddp import DDPStrategy
-from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
+# from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
+from pytorch_lightning.plugins.training_type import DDPPlugin
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
       # strategy='ddp',
-      strategy=DDPStrategy(find_unused_parameters=False),
+      plugins=[DDPPlugin(find_unused_parameters=False)],
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs, default_root_dir=save_dir)
