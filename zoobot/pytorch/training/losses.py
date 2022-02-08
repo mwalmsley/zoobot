@@ -72,7 +72,8 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
         # torch.equal(total_count, torch.zeros(size=(1,)))
         total_count == 0
         ))
-    logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.numpy()))
+    logging.info(indices_with_nonzero_counts)
+    logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.cpu().numpy()))
     
     # may potentially need to deal with the situation where there are 0 valid indices?
 
