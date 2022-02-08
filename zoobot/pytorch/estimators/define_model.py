@@ -26,7 +26,16 @@ class ZoobotModel(pl.LightningModule):
         concentrations = self(x)
         # true, pred convention as with sklearn
         # self.loss returns shape of (galaxy, question), sum to ()
-        loss = torch.sum(self.loss(labels, concentrations, self.schema.question_index_groups))
+        loss = torch.sum(self.loss(labels, concentrations, self.schema.question_index_groups))/len(labels)
+        self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        # identical to training_step except for log
+        x, labels = batch
+        concentrations = self(x)
+        loss = torch.sum(self.loss(labels, concentrations, self.schema.question_index_groups))/len(labels)
+        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def configure_optimizers(self):

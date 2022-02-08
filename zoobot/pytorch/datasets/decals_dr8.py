@@ -65,13 +65,13 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=256, shuffle=True)
+        return DataLoader(self.train_dataset, batch_size=256, shuffle=True, num_workers=16, pin_memory=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=256)
+        return DataLoader(self.val_dataset, batch_size=256, num_workers=16, pin_memory=True)
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=256)
+        return DataLoader(self.test_dataset, batch_size=256, num_workers=16, pin_memory=True)
 
     # @property
     # def dims(self):
