@@ -111,7 +111,7 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
                 nn.Linear(lastconv_output_channels, num_classes),
             )
         else:
-            self.head = lambda x: x  # does nothing
+            self.head = nn.Identity()  # does nothing
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
