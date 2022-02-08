@@ -22,9 +22,10 @@ class ZoobotModel(pl.LightningModule):
         return self.model.forward(x)
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        y_hat = self(x)
-        loss = self.loss(y_hat, y, self.schema.question_index_groups)
+        x, labels = batch
+        concentrations = self(x)
+        # true, pred convention as with sklearn
+        loss = self.loss(labels, concentrations, self.schema.question_index_groups)
         return loss
 
     def configure_optimizers(self):

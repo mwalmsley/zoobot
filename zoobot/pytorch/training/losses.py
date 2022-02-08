@@ -55,8 +55,10 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # you will get image batches of shape [N/4, 64, 64, 1] and hence have the wrong number of images vs. labels (and meaningless images)
     # so check --shard-img-size carefully!
     total_count = torch.sum(labels_for_q, axis=1)
+    logging.info(total_count)
 
     # pytorch dirichlet multinomial implementation will not accept zero total votes, need to handle separately
+    return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
 
 
     # return tf.where(
