@@ -43,4 +43,4 @@ class ScaledSigmoid(nn.modules.Sigmoid):
     # https://pytorch.org/docs/stable/_modules/torch/nn/modules/activation.html#ReLU
 
     def forward(self, input: Tensor) -> Tensor:
-        return nn.functional.sigmoid(input) * 100. + 1.  # could make args if I needed
+        return nn.sigmoid(input) * 100. + 1.  # could make args if I needed
