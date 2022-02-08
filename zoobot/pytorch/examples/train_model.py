@@ -70,7 +70,7 @@ if __name__ == '__main__':
     if not os.path.isdir(save_dir):
       os.mkdir(save_dir)
 
-    # pl.seed_everything(42)
+    pl.seed_everything(42)
 
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
     dependencies = label_metadata.get_decals_ortho_dependencies(question_answer_pairs)
@@ -89,28 +89,28 @@ if __name__ == '__main__':
 
     datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
 
-    # if args.wandb:
-    #     # this_script_dir = os.path.dirname(__file__)
-    #     # For weights&biases you need to make this file yourself, with your api key and nothing else
-    #     # with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
-    #     #   api_key = f.readline()
-    #     # wandb.login(key=api_key)
-    #     # wandb.tensorboard.patch(root_logdir=save_dir)
-    #     # wandb.init(sync_tensorboard=True)
-    #     # run wandb login first
-    #     pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping')
+    if args.wandb:
+        # this_script_dir = os.path.dirname(__file__)
+        # For weights&biases you need to make this file yourself, with your api key and nothing else
+        # with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
+        #   api_key = f.readline()
+        # wandb.login(key=api_key)
+        # wandb.tensorboard.patch(root_logdir=save_dir)
+        # wandb.init(sync_tensorboard=True)
+        # run wandb login first
+        pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping')
 
-    #     pl_logger.experiment.config['label_cols']=schema.label_cols,
-    #     pl_logger.experiment.config['initial_size']=initial_size
-    #     pl_logger.experiment.config['greyscale'] = greyscale
-    #     pl_logger.experiment.config['resize_size'] = resize_size
-    #     pl_logger.experiment.config['batch_size'] = batch_size
-    #     # pl_logger.experiment.config.train_records = train_records
-    #     pl_logger.experiment.config['epochs'] = epochs
-    #     pl_logger.experiment.config['always_augment'] = always_augment
-    #     pl_logger.experiment.config['dropout_rate'] = args.dropout_rate
-    # else:
-    pl_logger = None
+        pl_logger.experiment.config['label_cols']=schema.label_cols,
+        pl_logger.experiment.config['initial_size']=initial_size
+        pl_logger.experiment.config['greyscale'] = greyscale
+        pl_logger.experiment.config['resize_size'] = resize_size
+        pl_logger.experiment.config['batch_size'] = batch_size
+        # pl_logger.experiment.config.train_records = train_records
+        pl_logger.experiment.config['epochs'] = epochs
+        pl_logger.experiment.config['always_augment'] = always_augment
+        pl_logger.experiment.config['dropout_rate'] = args.dropout_rate
+    else:
+      pl_logger = None
     
     callbacks = [
         ModelCheckpoint(
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
       # strategy='ddp',
-      strategy=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs, default_root_dir=save_dir)
