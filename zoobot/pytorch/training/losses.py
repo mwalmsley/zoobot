@@ -69,7 +69,8 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # works great, but about 50% slower than optimal
 
     indices_with_nonzero_counts = torch.where(torch.logical_not(
-        torch.equal(total_count, torch.zeros(size=(1,)))
+        # torch.equal(total_count, torch.zeros(size=(1,)))
+        total_count == 0
         ))
     logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.numpy()))
     
