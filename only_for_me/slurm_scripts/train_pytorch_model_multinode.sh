@@ -5,12 +5,15 @@
 #SBATCH --ntasks=4
 #SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task 1
-#SBATCH --mem=5gb
+#SBATCH --mem=10gb
 #SBATCH --constraint=A100
 #SBATCH --time=23:00:00    
-#SBATCH --exclude compute-0-[0-25,27-40,42-49,100-106]
+#SBATCH --exclude=compute-0-[5-7]
 
-  # SBATCH --exclude=compute-0-[5-7]
+
+   #SBATCH --exclude compute-0-[0-25,27-40,42-49,100-106]
+
+  
 
 pwd; hostname; date
 
