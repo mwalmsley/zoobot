@@ -7,7 +7,9 @@
 #SBATCH --mem=0
 #SBATCH --constraint=A100
 #SBATCH --time=23:00:00    
-#SBATCH --exclude=compute-0-[5-7]
+#SBATCH --exclude compute-0-[0-25,27-40,42-49,100-106]
+
+  # SBATCH --exclude=compute-0-[5-7]
 
 pwd; hostname; date
 
@@ -24,7 +26,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_6w
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_highmem
 
 echo 'Run python script'
 

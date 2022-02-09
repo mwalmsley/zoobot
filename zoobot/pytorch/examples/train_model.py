@@ -86,12 +86,14 @@ if __name__ == '__main__':
     catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
     logging.info(catalog['file_loc'].iloc[0])
 
+    num_workers = os.cpu_count()/2  # 2 gpus (hence two tasks), each with its own dataloaders
+    logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       catalog,
       schema,
       greyscale=greyscale,
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
-      num_workers=6
+      num_workers=num_workers
     )
 
     if args.wandb:
