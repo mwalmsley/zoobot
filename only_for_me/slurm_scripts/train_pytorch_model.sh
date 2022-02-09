@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=pytorch                     # Job name
 #SBATCH --output=pytorch_%A.log 
-#SBATCH --mem=32gb                                      # Job memory request
+#SBATCH --mem=0                                     # Job memory request
 #SBATCH --no-requeue                                    # Do not resubmit a failed job
 #SBATCH --time=23:00:00                                # Time limit hrs:min:sec
 #SBATCH --constraint=A100 
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=24
 
 pwd; hostname; date
 
@@ -20,7 +20,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_r3
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_single
 
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
