@@ -14,14 +14,20 @@ import pytorch_lightning as pl
 
 # for now, all this really does is split a dataframe and apply no transforms
 class DECALSDR8DataModule(pl.LightningDataModule):
-    def __init__(self, catalog: pd.DataFrame, schema, greyscale=True, seed=42):
+    def __init__(self, catalog: pd.DataFrame, schema, greyscale=True, batch_size=256, num_workers=16, seed=42):
         super().__init__()
         self.catalog = catalog
         self.schema = schema
+        self.batch_size = batch_size
+        self.num_workers = num_workers
         self.seed = seed
 
-        self.transform = transforms.Compose([
-            transforms.Grayscale(),  # TODO make optional
+        if greyscale:
+            transforms_to_apply = [transforms.Grayscale]
+        else:
+            transforms_to_apply = []
+
+        transforms_to_apply += [
             # transforms.RandomCrop(size=(224, 224)),
             transforms.RandomResizedCrop(
                 size=(224, 224),  # after crop then resize
@@ -33,7 +39,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
             # transforms.ToTensor()  # smth in here is already making it a tensor
             transforms.ConvertImageDtype(torch.float)
-            ])  # TODO more
+        ]
+
+        self.transform = transforms.Compose([transforms_to_apply])  # TODO more
 
     def prepare_data(self):
         pass   # could include some basic checks
@@ -65,13 +73,13 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=256, shuffle=True, num_workers=16, pin_memory=True, persistent_workers=True)
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=256, num_workers=16, pin_memory=True, persistent_workers=True)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=256, num_workers=16, pin_memory=True, persistent_workers=True)
+        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
 
     # @property
     # def dims(self):

@@ -88,7 +88,13 @@ if __name__ == '__main__':
     catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
     logging.info(catalog['file_loc'].iloc[0])
 
-    datamodule = decals_dr8.DECALSDR8DataModule(catalog, schema, greyscale=greyscale)
+    datamodule = decals_dr8.DECALSDR8DataModule(
+      catalog,
+      schema,
+      greyscale=greyscale,
+      batch_size=512,  # may need 256 for DDP
+      num_workers=16
+    )
 
     if args.wandb:
         # this_script_dir = os.path.dirname(__file__)
@@ -99,7 +105,7 @@ if __name__ == '__main__':
         # wandb.tensorboard.patch(root_logdir=save_dir)
         # wandb.init(sync_tensorboard=True)
         # run wandb login first
-        pl_logger = WandbLogger(project='zoobot-pytorch', name='early-stopping-repeat')
+        pl_logger = WandbLogger(project='zoobot-pytorch', name=os.path.basename(save_dir))
 
         # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
         # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
@@ -133,5 +139,7 @@ if __name__ == '__main__':
       plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
       callbacks=callbacks,
-      max_epochs=epochs, default_root_dir=save_dir)
+      max_epochs=epochs, default_root_dir=save_dir,
+      progress_bar_refresh_rate=0
+    )
     trainer.fit(model, datamodule)
