@@ -3,7 +3,7 @@
 #SBATCH --output=pyslur_%A.log 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task 1
+#SBATCH --cpus-per-task 12
 #SBATCH --mem=0
 #SBATCH --constraint=A100
 #SBATCH --time=23:00:00    
@@ -14,8 +14,8 @@ pwd; hostname; date
 nvidia-smi
 
 # debugging flags (optional)
-export NCCL_DEBUG=INFO
-export PYTHONFAULTHANDLER=1
+# export NCCL_DEBUG=INFO
+# export PYTHONFAULTHANDLER=1
 
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 
