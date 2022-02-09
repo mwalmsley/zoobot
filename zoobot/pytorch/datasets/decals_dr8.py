@@ -23,7 +23,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.seed = seed
 
         if greyscale:
-            transforms_to_apply = [transforms.Grayscale]
+            transforms_to_apply = [transforms.Grayscale()]
         else:
             transforms_to_apply = []
 
