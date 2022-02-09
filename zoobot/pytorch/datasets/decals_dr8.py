@@ -41,7 +41,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             transforms.ConvertImageDtype(torch.float)
         ]
 
-        self.transform = transforms.Compose([transforms_to_apply])  # TODO more
+        self.transform = transforms.Compose(transforms_to_apply)  # TODO more
 
     def prepare_data(self):
         pass   # could include some basic checks
