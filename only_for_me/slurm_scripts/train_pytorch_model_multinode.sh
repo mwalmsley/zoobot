@@ -2,9 +2,9 @@
 #SBATCH --job-name=pyslur                     # Job name
 #SBATCH --output=pyslur_%A.log 
 #SBATCH --nodes=2
-#SBATCH --ntasks-per-node=2
-#SBATCH --cpus-per-task 8
-#SBATCH --mem=0
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task 1
+#SBATCH --mem=5gb
 #SBATCH --constraint=A100
 #SBATCH --time=23:00:00    
 #SBATCH --exclude compute-0-[0-25,27-40,42-49,100-106]
