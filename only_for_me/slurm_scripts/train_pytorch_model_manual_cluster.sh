@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=pyslur                     # Job name
 #SBATCH --output=clus_%A_%a.log 
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task 12
 #SBATCH --mem=20gb
