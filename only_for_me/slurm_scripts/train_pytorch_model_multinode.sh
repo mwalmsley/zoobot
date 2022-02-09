@@ -19,8 +19,8 @@ pwd; hostname; date
 nvidia-smi
 
 # debugging flags (optional)
-# export NCCL_DEBUG=INFO
-# export PYTHONFAULTHANDLER=1
+export NCCL_DEBUG=INFO
+export PYTHONFAULTHANDLER=1
 
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 
