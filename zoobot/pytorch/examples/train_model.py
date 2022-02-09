@@ -114,9 +114,9 @@ if __name__ == '__main__':
 
     # del os.environ["SLURM_JOB_NAME"]
     logging.info(os.environ)
-    logging.info(os.environ["SLURM_JOB_ID"], 'No SLURM_JOB_ID')
-    logging.info(os.environ["SLURM_JOB_NAME"], 'No SLURM_JOB_NAME')
-    logging.info(os.environ["SLURM_NTASKS"], 'No SLURM_NTASKS')
+    logging.info(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
+    logging.info(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
+    logging.info(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
 
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
