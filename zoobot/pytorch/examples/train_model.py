@@ -111,8 +111,12 @@ if __name__ == '__main__':
     callbacks = []
 
     # disable slurm detection by pl
-    del os.environ["SLURM_NTASKS"]
-    del os.environ["SLURM_JOB_NAME"]
+
+    # del os.environ["SLURM_JOB_NAME"]
+    logging.info(os.environ)
+    logging.info(os.environ["SLURM_JOB_ID"], 'No SLURM_JOB_ID')
+    logging.info(os.environ["SLURM_JOB_NAME"], 'No SLURM_JOB_NAME')
+    logging.info(os.environ["SLURM_NTASKS"], 'No SLURM_NTASKS')
 
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,

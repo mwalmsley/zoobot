@@ -7,6 +7,8 @@
 #SBATCH --constraint=A100 
 #SBATCH --exclusive   # only one task per node
 
+# --ntasks 1
+# --cpus-per-task=4
 pwd; hostname; date
 
 nvidia-smi
