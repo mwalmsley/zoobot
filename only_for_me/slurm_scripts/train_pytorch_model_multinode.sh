@@ -24,7 +24,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_24w
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_6w
 
 echo 'Run python script'
 
