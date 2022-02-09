@@ -110,15 +110,23 @@ if __name__ == '__main__':
     ]
     callbacks = []
 
+    # disable slurm detection by pl
+    del os.environ["SLURM_NTASKS"]
+    del os.environ["SLURM_JOB_NAME"]
 
     trainer = pl.Trainer(
-      accelerator="gpu", gpus=2, num_nodes=1,
-      strategy='ddp',
-      # plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      accelerator="gpu", gpus=2,
+      #  num_nodes=1,
+      # strategy='ddp',
+      plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs,
       default_root_dir=save_dir,
       enable_progress_bar=False
     )
+
+    logging.info(trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank)
+    logging.info(trainer.training_type_plugin)
+
     trainer.fit(model, datamodule)
