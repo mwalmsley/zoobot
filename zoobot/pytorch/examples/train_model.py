@@ -123,6 +123,10 @@ if __name__ == '__main__':
     # disable slurm detection by pl
     del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
+    logging.info(os.getenv("NODE_RANK", 'No NODE_RANK'))
+    logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
+    logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
+
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,  # per node
       num_nodes=2,
