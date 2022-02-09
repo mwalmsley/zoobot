@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,  # per node
-      num_nodes=1,
+      num_nodes=2,
       # strategy='ddp',
       plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
