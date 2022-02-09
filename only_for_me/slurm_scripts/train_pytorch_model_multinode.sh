@@ -24,7 +24,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_r3
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_pbar
 
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
@@ -33,6 +33,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
     --batch-size 256 \
-    --distributed
+    --distributed \
+    --wandb
 
 # with DDP, batch size is per gpu

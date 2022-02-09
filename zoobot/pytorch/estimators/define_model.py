@@ -35,7 +35,15 @@ class ZoobotModel(pl.LightningModule):
         x, labels = batch
         concentrations = self(x)
         loss = torch.sum(self.loss(labels, concentrations, self.schema.question_index_groups))/len(labels)
-        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        return loss
+
+    def test_step(self, batch, batch_idx):
+        # similarly
+        x, labels = batch
+        concentrations = self(x)
+        loss = torch.sum(self.loss(labels, concentrations, self.schema.question_index_groups))/len(labels)
+        self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     def configure_optimizers(self):

@@ -123,13 +123,13 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,
       num_nodes=1,
-      strategy='ddp',
-      # plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      # strategy='ddp',
+      plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
       callbacks=callbacks,
       max_epochs=epochs,
-      default_root_dir=save_dir,
-      enable_progress_bar=False
+      default_root_dir=save_dir
+      # enable_progress_bar=False
     )
 
     logging.info((trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
