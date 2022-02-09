@@ -3,7 +3,7 @@
 #SBATCH --output=pyslur_%A.log 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task 12
+#SBATCH --cpus-per-task 8
 #SBATCH --mem=0
 #SBATCH --constraint=A100
 #SBATCH --time=23:00:00    
