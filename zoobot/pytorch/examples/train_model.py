@@ -3,7 +3,6 @@ import os
 import argparse
 import logging
 import pandas as pd
-# import wandb
 import pytorch_lightning as pl
 # from pl.strategies.ddp import DDPStrategy
 # from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
@@ -18,8 +17,6 @@ from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
-
-# import wandb
 
 if __name__ == '__main__':
 
@@ -97,28 +94,9 @@ if __name__ == '__main__':
     )
 
     if args.wandb:
-        # this_script_dir = os.path.dirname(__file__)
-        # For weights&biases you need to make this file yourself, with your api key and nothing else
-        # with open(os.path.join(this_script_dir, 'wandb_api.txt'), 'r') as f:
-        #   api_key = f.readline()
-        # wandb.login(key=api_key)
-        # wandb.tensorboard.patch(root_logdir=save_dir)
-        # wandb.init(sync_tensorboard=True)
-        # run wandb login first
         pl_logger = WandbLogger(project='zoobot-pytorch', name=os.path.basename(save_dir))
-
         # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
         # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
-
-        # pl_logger.experiment.config['label_cols']=schema.label_cols,
-        # pl_logger.experiment.config['initial_size']=initial_size
-        # pl_logger.experiment.config['greyscale'] = greyscale
-        # pl_logger.experiment.config['resize_size'] = resize_size
-        # pl_logger.experiment.config['batch_size'] = batch_size
-        # # pl_logger.experiment.config.train_records = train_records
-        # pl_logger.experiment.config['epochs'] = epochs
-        # pl_logger.experiment.config['always_augment'] = always_augment
-        # pl_logger.experiment.config['dropout_rate'] = args.dropout_rate
     else:
       pl_logger = None
     
@@ -134,12 +112,13 @@ if __name__ == '__main__':
 
 
     trainer = pl.Trainer(
-      accelerator="gpu", gpus=2,
-      # strategy='ddp',
-      plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      accelerator="gpu", gpus=2, num_nodes=1,
+      strategy='ddp',
+      # plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
       callbacks=callbacks,
-      max_epochs=epochs, default_root_dir=save_dir,
-      progress_bar_refresh_rate=0
+      max_epochs=epochs,
+      default_root_dir=save_dir,
+      enable_progress_bar=False
     )
     trainer.fit(model, datamodule)
