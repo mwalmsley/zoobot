@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task 1
-#SBATCH --mem=5gb
+#SBATCH --mem=0
 #SBATCH --constraint=A100
 #SBATCH --time=23:00:00    
 #SBATCH --exclude=compute-0-[5-7]
