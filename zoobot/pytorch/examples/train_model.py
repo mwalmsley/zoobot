@@ -121,8 +121,8 @@ if __name__ == '__main__':
     # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
     trainer = pl.Trainer(
-      accelerator="gpu", gpus=1,
-       num_nodes=1,
+      accelerator="gpu", gpus=2,
+      num_nodes=1,
       strategy='ddp',
       # plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       logger = pl_logger,
