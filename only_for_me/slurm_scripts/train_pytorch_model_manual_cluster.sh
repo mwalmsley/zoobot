@@ -30,7 +30,8 @@ EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_multinode
 
 echo $SLURM_ARRAY_TASK_ID
 
-export MASTER_ADDR=127.0.0.1
+# export MASTER_ADDR=127.0.0.1
+export MASTER_ADDR=galahad:192.168.1.1
 export MASTER_PORT=52386
 export WORLD_SIZE=4
 
