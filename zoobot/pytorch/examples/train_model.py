@@ -25,6 +25,7 @@ if __name__ == '__main__':
       level=logging.INFO
     )
 
+    logging.info('Begin python script')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)

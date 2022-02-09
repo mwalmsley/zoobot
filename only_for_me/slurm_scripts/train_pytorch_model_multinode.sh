@@ -26,6 +26,8 @@ THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
 EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_pbar
 
+echo 'Run python script'
+
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
     --shard-img-size 300 \
