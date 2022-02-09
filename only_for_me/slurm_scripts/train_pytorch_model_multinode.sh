@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=pyslur                     # Job name
 #SBATCH --output=pyslur_%A.log 
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task 8
 #SBATCH --mem=0
@@ -26,7 +26,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_highmem
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_slurm_multinode
 
 echo 'Run python script'
 
