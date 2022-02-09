@@ -92,7 +92,7 @@ if __name__ == '__main__':
       catalog,
       schema,
       greyscale=greyscale,
-      batch_size=512,  # may need 256 for DDP
+      batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
       num_workers=16
     )
 
