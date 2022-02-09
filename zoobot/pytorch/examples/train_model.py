@@ -91,7 +91,7 @@ if __name__ == '__main__':
       schema,
       greyscale=greyscale,
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
-      num_workers=12
+      num_workers=24
     )
 
     if args.wandb:
