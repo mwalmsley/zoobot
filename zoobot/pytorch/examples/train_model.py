@@ -113,15 +113,15 @@ if __name__ == '__main__':
     ]
     callbacks = []
 
-    # disable slurm detection by pl
+    
 
-    # del os.environ["SLURM_JOB_NAME"]
     logging.info(os.environ)
     logging.info(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
     logging.info(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
     logging.info(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
   # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
-    # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
+    # disable slurm detection by pl
+    del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
     trainer = pl.Trainer(
       accelerator="gpu", gpus=2,  # per node

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=pyslur                     # Job name
 #SBATCH --output=pyslur_%A.log 
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task 8
 #SBATCH --mem=0
