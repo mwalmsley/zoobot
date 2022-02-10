@@ -2,6 +2,8 @@ import logging
 import os
 import argparse
 import logging
+
+import numpy as np
 import pandas as pd
 import pytorch_lightning as pl
 # from pl.strategies.ddp import DDPStrategy
@@ -83,7 +85,8 @@ if __name__ == '__main__':
 
     model = define_model.ZoobotModel(schema=schema, loss=loss_func)
 
-    catalog = pd.read_csv(catalog_loc)  # debugging .sample(1000)
+    # catalog = pd.read_csv(catalog_loc)
+    catalog = pd.read_csv(catalog_loc).sample(1000)  # debugging
     catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
     logging.info(catalog['file_loc'].iloc[0])
 
@@ -150,7 +153,11 @@ if __name__ == '__main__':
     datamodule.setup()
     if wandb_logger is not None:
       for images, labels in datamodule.train_dataloader():
-        wandb_logger.log_image(key="example_train_images", images=images)
+        # images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
+        images_np = images.numpy()
+        logging.info(images_np.shape)
+        logging.info(images[0].min(), images[0].max())
+        wandb_logger.log_image(key="example_train_images", images=[im for im in images_np[:3]])  # assume wandb knows pytorch convention
         break
         # wandb_logger.log_image(key="example_val_images", images=next(datamodule.train_dataloader()))
 
