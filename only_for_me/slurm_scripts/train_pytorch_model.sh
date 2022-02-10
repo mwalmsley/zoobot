@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=pytorch                     # Job name
 #SBATCH --output=pytorch_%A.log 
-#SBATCH --mem=0                                     # Job memory request
+#SBATCH --mem=0                                     # "reserve all the available memory on each node assigned to the job"
 #SBATCH --no-requeue                                    # Do not resubmit a failed job
 #SBATCH --time=23:00:00                                # Time limit hrs:min:sec
 #SBATCH --constraint=A100 
@@ -27,9 +27,9 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --shard-img-size 300 \
     --resize-size 224 \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
-    --epochs 200 \
+    --epochs 1 \
     --batch-size 512 \
-    --distributed  \
+    --nodes 1  \
     --wandb
 
 # $PYTHON $ZOOBOT_DIR/train_model.py \

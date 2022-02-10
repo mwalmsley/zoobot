@@ -10,6 +10,7 @@
 #SBATCH --exclude=compute-0-[5-7]
 #SBATCH --array=[1-4]
 
+# https://github.com/PyTorchLightning/pytorch-lightning/issues/4612
 
 pwd; hostname; date
 
@@ -67,7 +68,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
     --batch-size 256 \
-    --distributed \
+    --nodes 2 \
     --wandb
 
 # with DDP, batch size is per gpu

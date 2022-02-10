@@ -7,6 +7,7 @@ import pytorch_lightning as pl
 # from pl.strategies.ddp import DDPStrategy
 # from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
 from pytorch_lightning.plugins.training_type import DDPPlugin
+# https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     parser.add_argument('--shard-img-size', dest='shard_img_size', type=int, default=300)
     parser.add_argument('--resize-size', dest='resize_size', type=int, default=224)
     parser.add_argument('--batch-size', dest='batch_size', default=256, type=int)
-    parser.add_argument('--distributed', default=False, action='store_true')
+    parser.add_argument('--nodes', default=1, type=int)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--test-time-augs', dest='always_augment', default=False, action='store_true',
@@ -53,8 +54,8 @@ if __name__ == '__main__':
       logging.info('Converting images to greyscale before training')
       channels = 1
     else:
-      logging.warning('Training on color images, not converting to greyscale')
-      channels = 3
+        logging.warning('Training on color images, not converting to greyscale')
+        channels = 3
 
     catalog_loc = args.catalog_loc
     initial_size = args.shard_img_size
@@ -97,24 +98,28 @@ if __name__ == '__main__':
     )
 
     if args.wandb:
-        pl_logger = WandbLogger(project='zoobot-pytorch', name=os.path.basename(save_dir))
+        wandb_logger = WandbLogger(
+          project='zoobot-pytorch',
+          name=os.path.basename(save_dir),
+          log_model="all")
         # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
         # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
     else:
-      pl_logger = None
+      wandb_logger = None
     
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
             monitor="val_loss",
             save_weights_only=True,
+            mode='max'
         ),
         EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
     callbacks = []
 
     
-
+    # https://hpcc.umd.edu/hpcc/help/slurmenv.html
     logging.info(os.environ)
     logging.info(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
     logging.info(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
@@ -128,18 +133,22 @@ if __name__ == '__main__':
     logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
 
     trainer = pl.Trainer(
-      accelerator="gpu", gpus=2,  # per node
-      num_nodes=2,
-      # strategy='ddp',
-      plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
-      logger = pl_logger,
-      callbacks=callbacks,
-      max_epochs=epochs,
-      default_root_dir=save_dir
-      # enable_progress_bar=False
+        accelerator="gpu", gpus=2,  # per node
+        num_nodes=args.nodes,
+        # strategy='ddp',
+        plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+        logger = wandb_logger,
+        callbacks=callbacks,
+        max_epochs=epochs,
+        default_root_dir=save_dir
+        # enable_progress_bar=False
     )
 
     logging.info((trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
     logging.info(trainer.training_type_plugin)
+
+    if wandb_logger is not None:
+        wandb_logger.log_image(key="example_train_images", images=datamodule.train_dataloader()[:3])
+        wandb_logger.log_image(key="example_val_images", images=datamodule.train_dataloader()[:3])
 
     trainer.fit(model, datamodule)
