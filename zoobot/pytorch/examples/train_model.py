@@ -147,8 +147,10 @@ if __name__ == '__main__':
     logging.info((trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
     logging.info(trainer.training_type_plugin)
 
+    datamodule.setup()
     if wandb_logger is not None:
         wandb_logger.log_image(key="example_train_images", images=datamodule.train_dataloader()[:3])
         wandb_logger.log_image(key="example_val_images", images=datamodule.train_dataloader()[:3])
+
 
     trainer.fit(model, datamodule)
