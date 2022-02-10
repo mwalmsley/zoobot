@@ -85,8 +85,8 @@ if __name__ == '__main__':
 
     model = define_model.ZoobotModel(schema=schema, loss=loss_func)
 
-    # catalog = pd.read_csv(catalog_loc)
-    catalog = pd.read_csv(catalog_loc).sample(1000)  # debugging
+    catalog = pd.read_csv(catalog_loc)
+    # catalog = pd.read_csv(catalog_loc).sample(1000)  # debugging
     catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
     logging.info(catalog['file_loc'].iloc[0])
 
