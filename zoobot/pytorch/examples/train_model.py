@@ -129,6 +129,7 @@ if __name__ == '__main__':
     logging.info(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
   # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
     # disable slurm detection by pl
+    # this is not necessary for single machine, but might be for multi-node
     del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
     logging.info(os.getenv("NODE_RANK", 'No NODE_RANK'))
@@ -149,6 +150,7 @@ if __name__ == '__main__':
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
+    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
     # datamodule.setup()
     # if wandb_logger is not None:
     #   for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
