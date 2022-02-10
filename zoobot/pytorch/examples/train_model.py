@@ -147,19 +147,16 @@ if __name__ == '__main__':
         # enable_progress_bar=False
     )
 
-    logging.info((trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
-    logging.info(trainer.training_type_plugin)
+    logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     datamodule.setup()
     if wandb_logger is not None:
-      for images, labels in datamodule.train_dataloader():
-        # images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
-        images_np = images.numpy()
-        logging.info(images_np.shape)
-        logging.info(images[0].min(), images[0].max())
-        wandb_logger.log_image(key="example_train_images", images=[im for im in images_np[:3]])  # assume wandb knows pytorch convention
-        break
-        # wandb_logger.log_image(key="example_val_images", images=next(datamodule.train_dataloader()))
-
+      for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+        for images, labels in dataloader:
+          # images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
+          images_np = images.numpy()
+          logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]])  # assume wandb knows pytorch convention
+          break  # only inner loop
 
     trainer.fit(model, datamodule)

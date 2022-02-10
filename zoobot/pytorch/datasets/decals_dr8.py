@@ -39,7 +39,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
             # transforms.ToTensor()  # smth in here is already making it a tensor
             transforms.ConvertImageDtype(torch.float)
-            # TODO maybe normalise
+            # TODO maybe normalise further? already 0-1 by default it seems which is perfect tbh
         ]
 
         self.transform = transforms.Compose(transforms_to_apply)  # TODO more
