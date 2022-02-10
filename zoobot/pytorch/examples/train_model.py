@@ -149,8 +149,8 @@ if __name__ == '__main__':
 
     datamodule.setup()
     if wandb_logger is not None:
-        wandb_logger.log_image(key="example_train_images", images=datamodule.train_dataloader()[:3])
-        wandb_logger.log_image(key="example_val_images", images=datamodule.train_dataloader()[:3])
+        wandb_logger.log_image(key="example_train_images", images=next(datamodule.train_dataloader()))
+        wandb_logger.log_image(key="example_val_images", images=next(datamodule.train_dataloader()))
 
 
     trainer.fit(model, datamodule)
