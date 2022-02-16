@@ -245,6 +245,13 @@ def get_decals_ortho_dependencies(question_answer_pairs):  # TODO remove arg
     }
     return dependencies
 
+rings_pairs = {
+    'ring': ['_yes', '_no']
+}
+rings_questions, rings_label_cols = schemas.extract_questions_and_label_cols(rings_pairs)
+def rings_dependencies():
+    return {'ring': None}
+
 
 # decals_questions = [
 #     'smooth-or-featured',
