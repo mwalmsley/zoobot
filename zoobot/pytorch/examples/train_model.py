@@ -92,7 +92,7 @@ if __name__ == '__main__':
     catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
     logging.info(catalog['file_loc'].iloc[0])
 
-    num_workers = int(os.cpu_count()/2)  # 2 gpus (hence two tasks), each with its own dataloaders
+    num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       catalog,

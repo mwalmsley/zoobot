@@ -103,7 +103,7 @@ class DECALSDR8Dataset(Dataset):
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
         img_path = galaxy['file_loc']
-        image = read_image(img_path)
+        image = read_image(img_path)  # torchvision.io.read_image
         label = get_galaxy_label(galaxy, self.schema)
 
         if self.transform:
