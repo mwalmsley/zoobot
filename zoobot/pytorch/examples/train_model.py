@@ -21,6 +21,7 @@ from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
 
+
 if __name__ == '__main__':
 
     logging.basicConfig(
@@ -115,11 +116,12 @@ if __name__ == '__main__':
             dirpath=os.path.join(save_dir, 'checkpoints'),
             monitor="val_loss",
             save_weights_only=True,
-            mode='max'
+            mode='min',
+            save_top_k=3
         ),
         EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
-    callbacks = []
+    # callbacks = []
 
     
     # https://hpcc.umd.edu/hpcc/help/slurmenv.html
@@ -144,8 +146,8 @@ if __name__ == '__main__':
         logger = wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir
-        # enable_progress_bar=False
+        default_root_dir=save_dir,
+        enable_progress_bar=False
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
