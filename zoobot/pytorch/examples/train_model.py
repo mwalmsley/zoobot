@@ -21,6 +21,7 @@ from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
 
+
 if __name__ == '__main__':
 
     logging.basicConfig(
@@ -37,6 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('--shard-img-size', dest='shard_img_size', type=int, default=300)
     parser.add_argument('--resize-size', dest='resize_size', type=int, default=224)
     parser.add_argument('--batch-size', dest='batch_size', default=256, type=int)
+    parser.add_argument('--gpus', default=1, type=int)
     parser.add_argument('--nodes', default=1, type=int)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
@@ -90,7 +92,7 @@ if __name__ == '__main__':
     catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
     logging.info(catalog['file_loc'].iloc[0])
 
-    num_workers = int(os.cpu_count()/2)  # 2 gpus (hence two tasks), each with its own dataloaders
+    num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       catalog,
@@ -115,11 +117,12 @@ if __name__ == '__main__':
             dirpath=os.path.join(save_dir, 'checkpoints'),
             monitor="val_loss",
             save_weights_only=True,
-            mode='max'
+            mode='min',
+            save_top_k=3
         ),
         EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
-    callbacks = []
+    # callbacks = []
 
     
     # https://hpcc.umd.edu/hpcc/help/slurmenv.html
@@ -136,16 +139,23 @@ if __name__ == '__main__':
     logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
     logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
 
+    plugins = None
+    if args.gpus > 1:
+      plugins = [DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      logging.info('Using multi-gpu training')
+    if args.nodes > 1:
+      assert args.gpus == 2
+      logging.info('Using multi-node training')
+
     trainer = pl.Trainer(
-        accelerator="gpu", gpus=2,  # per node
+        accelerator="gpu", gpus=args.gpus,  # per node
         num_nodes=args.nodes,
-        # strategy='ddp',
-        plugins=[DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+        plugins=plugins,
         logger = wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir
-        # enable_progress_bar=False
+        default_root_dir=save_dir,
+        enable_progress_bar=False
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
