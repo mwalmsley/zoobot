@@ -10,13 +10,14 @@ import pandas as pd
 def to_jpg(image_loc):
     assert os.path.isfile(image_loc)
     jpg_loc = image_loc.replace('/png/', '/jpeg/').replace('.png', '.jpeg')
-    if not os.path.exists(jpg_loc):
-        if not os.path.isdir(jpg_loc):
-            try:
-                os.mkdirs(jpg_loc)  # recursive
-            except IsADirectoryError:
-                pass  # anther thread already made it
-        Image.open(image_loc).save(jpg_loc)
+    print(jpg_loc)
+    # if not os.path.exists(jpg_loc):
+    #     if not os.path.isdir(jpg_loc):
+    #         try:
+    #             os.mkdirs(jpg_loc)  # recursive
+    #         except IsADirectoryError:
+    #             pass  # anther thread already made it
+    #     Image.open(image_loc).save(jpg_loc)
 
 
 if __name__ == '__main__':
@@ -31,6 +32,7 @@ if __name__ == '__main__':
 
     pool = Pool(processes=os.cpu_count())
 
-    pool.imap_unordered(to_jpg, catalog['file_loc'].sample(100, random_state=42), chunksize=1000)
+    subset = list(catalog['file_loc'].sample(100, random_state=42))
+    pool.imap_unordered(to_jpg, subset, chunksize=1000)
 
     logging.info('Saving complete - exiting gracefully')
