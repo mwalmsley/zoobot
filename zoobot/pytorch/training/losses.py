@@ -35,8 +35,6 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups):
     # https://www.tensorflow.org/api_docs/python/tf/keras/losses/Loss will auto-reduce (sum) over the batch anyway
 
 
-import logging
-
 def dirichlet_loss(labels_for_q, concentrations_for_q):
     """
     Negative log likelihood of ``labels_for_q`` being drawn from Dirichlet-Multinomial distribution with ``concentrations_for_q`` concentrations.
@@ -61,50 +59,50 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
 
 
-    # return tf.where(
-    #     tf.math.equal(total_count, 0),  # if total_count is 0 (i.e. no votes)
-    #     tf.constant(0.),  # prob is 1 and (neg) log prob is 0, with no gradients attached. broadcasts
-    #     get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)  # else, calculate neg log prob
-    # )
-    # # slightly inefficient as get_dirichlet_neg_log_prob forward pass done for all, but avoids gradients
-    # # https://www.tensorflow.org/api_docs/python/tf/where
-    # works great, but about 50% slower than optimal
+    # # return tf.where(
+    # #     tf.math.equal(total_count, 0),  # if total_count is 0 (i.e. no votes)
+    # #     tf.constant(0.),  # prob is 1 and (neg) log prob is 0, with no gradients attached. broadcasts
+    # #     get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)  # else, calculate neg log prob
+    # # )
+    # # # slightly inefficient as get_dirichlet_neg_log_prob forward pass done for all, but avoids gradients
+    # # # https://www.tensorflow.org/api_docs/python/tf/where
+    # # works great, but about 50% slower than optimal
 
-    logging.info(total_count)
+    # logging.info(total_count)
 
-    indices = torch.arange(0, len(total_count), dtype=torch.long)
-    indices_with_nonzero_counts = indices[total_count > 0]  # returns a tuple for some reason
-        # torch.equal(total_count, torch.zeros(size=(1,)))
+    # indices = torch.arange(0, len(total_count), dtype=torch.long)
+    # indices_with_nonzero_counts = indices[total_count > 0]  # returns a tuple for some reason
+    #     # torch.equal(total_count, torch.zeros(size=(1,)))
 
-    logging.info(indices_with_nonzero_counts)
-    # logging.info(type(indices_with_nonzero_counts))
-    # logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.cpu().numpy()))
+    # logging.info(indices_with_nonzero_counts)
+    # # logging.info(type(indices_with_nonzero_counts))
+    # # logging.info('Nonzero indices: {}'.format(indices_with_nonzero_counts.cpu().numpy()))
     
-    # may potentially need to deal with the situation where there are 0 valid indices?
-    nonzero_total_count = total_count[indices_with_nonzero_counts]
-    nonzero_labels_for_q = labels_for_q[indices_with_nonzero_counts]
-    nonzero_concentrations_for_q = concentrations_for_q[indices_with_nonzero_counts]
+    # # may potentially need to deal with the situation where there are 0 valid indices?
+    # nonzero_total_count = total_count[indices_with_nonzero_counts]
+    # nonzero_labels_for_q = labels_for_q[indices_with_nonzero_counts]
+    # nonzero_concentrations_for_q = concentrations_for_q[indices_with_nonzero_counts]
 
-    logging.info(nonzero_total_count)
+    # logging.info(nonzero_total_count)
 
-    neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(nonzero_labels_for_q, nonzero_total_count, nonzero_concentrations_for_q)
-    logging.info(neg_log_prob_of_indices_with_nonzero_counts)
-    # logging.info('Probs of nonzero indices: {}'.format(neg_log_prob_of_indices_with_nonzero_counts.numpy()))
+    # neg_log_prob_of_indices_with_nonzero_counts = get_dirichlet_neg_log_prob(nonzero_labels_for_q, nonzero_total_count, nonzero_concentrations_for_q)
+    # logging.info(neg_log_prob_of_indices_with_nonzero_counts)
+    # # logging.info('Probs of nonzero indices: {}'.format(neg_log_prob_of_indices_with_nonzero_counts.numpy()))
 
-    # not needed, scatter_nd has 0 where no value is placed (and 0 as log prob = 0 as prob = 1)
-    # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
+    # # not needed, scatter_nd has 0 where no value is placed (and 0 as log prob = 0 as prob = 1)
+    # # neg_log_prob_of_indices_with_zero_counts = tf.zeros_like(indices_with_zero_counts)
 
-    # now mix back together
-    # The backward pass is implemented only for src.shape == index.shape, true in my case (each neg lob prob goes exactly one place)
-    mixed_back = torch.zeros_like(total_count).scatter_(dim=0, index=indices_with_nonzero_counts, src=neg_log_prob_of_indices_with_nonzero_counts)
-    return mixed_back
-    # return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
+    # # now mix back together
+    # # The backward pass is implemented only for src.shape == index.shape, true in my case (each neg lob prob goes exactly one place)
+    # mixed_back = torch.zeros_like(total_count).scatter_(dim=0, index=indices_with_nonzero_counts, src=neg_log_prob_of_indices_with_nonzero_counts)
+    # return mixed_back
+    # # return tf.scatter_nd(indices_with_nonzero_counts, neg_log_prob_of_indices_with_nonzero_counts, shape=output_shape)
 
 
-    # return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
+    # # return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
 
 
 def get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q):
-    # TODO won't accept zeros
-        dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False)
-        return -dist.log_prob(labels_for_q)  # important minus sign
+    # https://docs.pyro.ai/en/stable/distributions.html#dirichletmultinomial
+    dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False)
+    return -dist.log_prob(labels_for_q)  # important minus sign
