@@ -155,7 +155,7 @@ if __name__ == '__main__':
         api_key = f.readline()
       wandb.login(key=api_key)
       wandb.tensorboard.patch(root_logdir=save_dir)
-      wandb.init(sync_tensorboard=True)
+      wandb.init(sync_tensorboard=True, project='zoobot-pytorch-tf', name='tf-baseline-greyscale-dr5-1x')
       config = wandb.config
       config.label_cols=schema.label_cols,
       config.initial_size=initial_size
