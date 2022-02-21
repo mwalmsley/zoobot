@@ -10,14 +10,12 @@ import pandas as pd
 def to_jpg(image_loc):
     assert os.path.isfile(image_loc)
     jpg_loc = image_loc.replace('/png/', '/jpeg/').replace('.png', '.jpeg')
-    print(jpg_loc)
-    # if not os.path.exists(jpg_loc):
-    #     if not os.path.isdir(jpg_loc):
-    #         try:
-    #             os.mkdirs(jpg_loc)  # recursive
-    #         except IsADirectoryError:
-    #             pass  # anther thread already made it
-    #     Image.open(image_loc).save(jpg_loc)
+    if not os.path.isfile(jpg_loc):
+        target_dir = os.path.dirname(jpg_loc)
+        if not os.path.isdir(target_dir):
+            print('Making dir: ', target_dir)
+            os.mkdirs(target_dir, exist_ok=True)  # recursive, okay to exist if another thread JUST made it
+        Image.open(image_loc).save(jpg_loc)
 
 
 if __name__ == '__main__':
