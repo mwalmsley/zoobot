@@ -7,7 +7,6 @@ from sklearn.model_selection import train_test_split
 from torchvision.io import read_image  # may want to replace with self.read_image for e.g. FITS, Liza
 import torch
 from torch.utils.data import DataLoader, Dataset
-from torchvision import transforms
 import pytorch_lightning as pl
 
 import albumentations as A
@@ -138,7 +137,9 @@ class DECALSDR8Dataset(Dataset):
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
         img_path = galaxy['file_loc']
-        image = read_image(img_path)  # torchvision.io.read_image
+        # Read in torch.tensors using torchvision.io.read_image, convert to np.ndarray. Rearange for colors in the default place for cv2 images HxWxC.
+        # Color order shouldn't matter as we are converting to BW images.
+        image = np.asrray(read_image(img_path), dtype=np.float64).transpose(1,2,0)
         label = get_galaxy_label(galaxy, self.schema)
 
         if self.transform:
