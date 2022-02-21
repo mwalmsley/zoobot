@@ -127,8 +127,9 @@ if __name__ == '__main__':
         catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
         catalog['file_loc'] = catalog['file_loc'].str.replace('/dr8_downloader/',  '/dr8/')
         # catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')
+        catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
         catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
-        catalog['file_loc'] = catalog['file_loc'].str.replace('/png/', '/jpeg/')
+
         logging.info(catalog['file_loc'].iloc[0])
     
     # exit()
