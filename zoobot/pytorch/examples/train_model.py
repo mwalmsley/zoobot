@@ -8,7 +8,7 @@ import pandas as pd
 import pytorch_lightning as pl
 # from pl.strategies.ddp import DDPStrategy
 # from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
-from pytorch_lightning.plugins.training_type import DDPPlugin
+# from pytorch_lightning.plugins.training_type import DDPPlugin
 # https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
