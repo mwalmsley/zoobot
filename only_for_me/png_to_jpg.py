@@ -14,7 +14,7 @@ def to_jpg(image_loc):
         target_dir = os.path.dirname(jpg_loc)
         if not os.path.isdir(target_dir):
             print('Making dir: ', target_dir)
-            os.mkdirs(target_dir, exist_ok=True)  # recursive, okay to exist if another thread JUST made it
+            os.makedirs(target_dir, exist_ok=True)  # recursive, okay to exist if another thread JUST made it
         Image.open(image_loc).save(jpg_loc)
 
 
