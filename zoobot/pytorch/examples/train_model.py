@@ -198,6 +198,7 @@ if __name__ == '__main__':
         accelerator="gpu", gpus=args.gpus,  # per node
         num_nodes=args.nodes,
         strategy=strategy,
+        precision='bf16',
         # plugins=plugins,
         logger = wandb_logger,
         callbacks=callbacks,
