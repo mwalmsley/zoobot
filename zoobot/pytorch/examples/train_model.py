@@ -174,6 +174,7 @@ if __name__ == '__main__':
     # trainer.fit(model, datamodule)
 
     trainer.test(
+      model=model,
       datamodule=datamodule,
       ckpt_path="/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
