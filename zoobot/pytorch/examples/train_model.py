@@ -154,8 +154,8 @@ if __name__ == '__main__':
         logger = wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir,
-        enable_progress_bar=False
+        default_root_dir=save_dir
+        # enable_progress_bar=False
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
