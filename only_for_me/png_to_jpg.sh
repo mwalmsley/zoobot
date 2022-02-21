@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=jpeg_dr5                    # Job name
-#SBATCH --output=jpeg_dr5_%A.log 
+#SBATCH --job-name=jpeg_dr8                    # Job name
+#SBATCH --output=jpeg_dr8_%A.log 
 #SBATCH --mem=80gb    # high mem node 
 #SBATCH --cpus-per-task=16                               # Job memory request
 #SBATCH --no-requeue                                    # Do not resubmit a failed job
