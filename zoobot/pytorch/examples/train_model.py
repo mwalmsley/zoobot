@@ -87,16 +87,56 @@ if __name__ == '__main__':
 
     model = define_model.ZoobotModel(schema=schema, loss=loss_func)
 
-    catalog = pd.read_csv(catalog_loc)
-    # catalog = pd.read_csv(catalog_loc).sample(1000)  # debugging
-    catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
-    logging.info(catalog['file_loc'].iloc[0])
+    # catalog provided
+    # catalog = pd.read_csv(catalog_loc)
+    # # catalog = pd.read_csv(catalog_loc).sample(1000)  # debugging
+    # catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
+    # logging.info(catalog['file_loc'].iloc[0])
+
+    # num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
+    # logging.info('num workers: {}'.format(num_workers))
+    # datamodule = decals_dr8.DECALSDR8DataModule(
+    #   schema=schema,
+    #   catalog=catalog,
+    #   greyscale=greyscale,
+    #   batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
+    #   num_workers=num_workers
+    # )
+
+    # or, explicit splits provided
+    train_catalog_locs = [
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/train_shards/train_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/train_shards/train_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/train_shards/train_df.csv'
+    ]
+    val_catalog_locs = [
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/val_shards/val_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/val_shards/val_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/val_shards/val_df.csv'
+    ]
+    test_catalog_locs = [
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/test_shards/test_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/test_shards/test_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/test_shards/test_df.csv'
+    ]
+
+    train_catalog = pd.concat([pd.read_csv(loc) for loc in train_catalog_locs])
+    val_catalog = pd.concat([pd.read_csv(loc) for loc in val_catalog_locs])
+    test_catalog = pd.concat([pd.read_csv(loc) for loc in test_catalog_locs])
+    for catalog in (train_catalog, val_catalog, test_catalog):
+        catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
+        logging.info(catalog['file_loc'].iloc[0])
+    
+    exit()
+      
 
     num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
-      catalog,
-      schema,
+      schema=schema,
+      train_catalog=train_catalog.sample(len(train_catalog)).reset_index(drop=True),
+      val_catalog=val_catalog.sample(len(val_catalog)).reset_index(drop=True),
+      test_catalog=test_catalog.sample(len(test_catalog)).reset_index(drop=True),
       greyscale=greyscale,
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
       num_workers=num_workers

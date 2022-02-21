@@ -14,10 +14,38 @@ import pytorch_lightning as pl
 
 # for now, all this really does is split a dataframe and apply no transforms
 class DECALSDR8DataModule(pl.LightningDataModule):
-    def __init__(self, catalog: pd.DataFrame, schema, greyscale=True, batch_size=256, num_workers=16, seed=42):
+    def __init__(
+        self,
+        schema,
+        # provide full catalog for automatic split, or...
+        catalog=None,  
+        # provide train/val/test catalogs for your own previous split
+        train_catalog=None,
+        val_catalog=None,
+        test_catalog=None,
+        greyscale=True,
+        batch_size=256,
+        num_workers=16,
+        seed=42
+        ):
         super().__init__()
-        self.catalog = catalog
+
+        if catalog is not None:  # catalog provided, should not also provide explicit split catalogs
+            assert train_catalog is None
+            assert val_catalog is None
+            assert test_catalog is None
+        else:  # catalog not provided, must provide explicit split catalogs
+            assert train_catalog is not None
+            assert val_catalog is not None
+            assert test_catalog is not None
+
         self.schema = schema
+
+        self.catalog = catalog
+        self.train_catalog = train_catalog
+        self.val_catalog = val_catalog
+        self.test_catalog = test_catalog
+
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.seed = seed
@@ -49,27 +77,32 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
 
-        train_catalog, hidden_catalog = train_test_split(
-            self.catalog, train_size=0.7, random_state=self.seed
-        )
-        val_catalog, test_catalog = train_test_split(
-            hidden_catalog, train_size=1./3., random_state=self.seed
-        )
-        del hidden_catalog
+        if self.catalog is not None:
+            self.train_catalog, hidden_catalog = train_test_split(
+                self.catalog, train_size=0.7, random_state=self.seed
+            )
+            self.val_catalog, self.test_catalog = train_test_split(
+                hidden_catalog, train_size=1./3., random_state=self.seed
+            )
+            del hidden_catalog
+        else:
+            assert self.train_catalog is not None
+            assert self.val_catalog is not None
+            assert self.test_catalog is not None
 
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
             self.train_dataset = DECALSDR8Dataset(
-                catalog=train_catalog, schema=self.schema, transform=self.transform
+                catalog=self.train_catalog, schema=self.schema, transform=self.transform
             )
             self.val_dataset = DECALSDR8Dataset(
-                catalog=val_catalog, schema=self.schema, transform=self.transform
+                catalog=self.val_catalog, schema=self.schema, transform=self.transform
             ) 
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
             self.test_dataset = DECALSDR8Dataset(
-                catalog=test_catalog, schema=self.schema, transform=self.transform
+                catalog=self.test_catalog, schema=self.schema, transform=self.transform
             )
 
 
@@ -81,9 +114,6 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
-
-    # @property
-    # def dims(self):
 
 
 
