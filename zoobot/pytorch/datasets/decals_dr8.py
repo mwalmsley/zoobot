@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from torchvision.io import read_image  # may want to replace with self.read_image for e.g. FITS, Liza
 import torch
