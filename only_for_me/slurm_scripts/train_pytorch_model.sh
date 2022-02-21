@@ -20,7 +20,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_1xgpu_greyscale
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_1xgpu_greyscale_test
 
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
@@ -32,14 +32,3 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --gpus 1  \
     --nodes 1  \
     --wandb
-
-# $PYTHON $ZOOBOT_DIR/train_model.py \
-#     --experiment-dir $EXPERIMENT_DIR \
-#     --shard-img-size 300 \
-#     --resize-size 224 \
-#     --train-dir $TRAIN_DIR \
-#     --eval-dir $EVAL_DIR \
-#     --epochs 200 \
-#     --batch-size 512 \
-#     --distributed  \
-#     --wandb

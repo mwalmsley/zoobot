@@ -171,4 +171,9 @@ if __name__ == '__main__':
     #       wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]])  # assume wandb knows pytorch convention
     #       break  # only inner loop
 
-    trainer.fit(model, datamodule)
+    # trainer.fit(model, datamodule)
+
+    trainer.test(
+      dm=datamodule.test_dataloader,
+      ckpt_path="/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+    )
