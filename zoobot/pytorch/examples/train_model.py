@@ -127,7 +127,7 @@ if __name__ == '__main__':
         catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
         logging.info(catalog['file_loc'].iloc[0])
     
-    exit()
+    # exit()
       
 
     num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
