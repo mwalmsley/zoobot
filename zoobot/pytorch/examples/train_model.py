@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     if args.wandb:
         wandb_logger = WandbLogger(
-          project='zoobot-pytorch',
+          project='zoobot-pytorch-tf',
           name=os.path.basename(save_dir),
           log_model="all")
         # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
