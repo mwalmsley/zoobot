@@ -48,7 +48,7 @@ class ZoobotModel(pl.LightningModule):
 
     def configure_optimizers(self):  # was lr=0.02, from copying tutorial - oops
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
-        return torch.optim.Adam(self.parameters(), lr=0.001, beta=(0.9, 0.999))  
+        return torch.optim.Adam(self.parameters(), lr=0.001, betas=(0.9, 0.999))  
 
     @property
     def output_dims(self):
