@@ -184,9 +184,11 @@ if __name__ == '__main__':
     logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
     logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
 
-    plugins = None
+    # plugins = None
+    strategy = None
     if args.gpus > 1:
-      plugins = [DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      # plugins = [DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+      strategy = 'ddp'
       logging.info('Using multi-gpu training')
     if args.nodes > 1:
       assert args.gpus == 2
@@ -195,7 +197,8 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         accelerator="gpu", gpus=args.gpus,  # per node
         num_nodes=args.nodes,
-        plugins=plugins,
+        strategy=strategy,
+        # plugins=plugins,
         logger = wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
