@@ -30,4 +30,5 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --epochs 200 \
     --batch-size 256 \
     --gpus 1  \
-    --nodes 1
+    --nodes 1 \
+    --wandb
