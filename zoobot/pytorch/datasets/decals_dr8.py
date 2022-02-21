@@ -140,7 +140,7 @@ class DECALSDR8Dataset(Dataset):
         img_path = galaxy['file_loc']
         # Read in torch.tensors using torchvision.io.read_image, convert to np.ndarray. Rearange for colors in the default place for cv2 images HxWxC.
         # Color order shouldn't matter as we are converting to BW images.
-        image = np.asrray(read_image(img_path), dtype=np.float64).transpose(1,2,0)
+        image = np.array(read_image(img_path), dtype=np.float64).transpose(1,2,0)
         label = get_galaxy_label(galaxy, self.schema)
 
         if self.transform:
