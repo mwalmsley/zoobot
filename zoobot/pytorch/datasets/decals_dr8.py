@@ -10,6 +10,9 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 import pytorch_lightning as pl
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
 # https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html
 
 # for now, all this really does is split a dataframe and apply no transforms
@@ -18,7 +21,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self,
         schema,
         # provide full catalog for automatic split, or...
-        catalog=None,  
+        catalog=None,
         # provide train/val/test catalogs for your own previous split
         train_catalog=None,
         val_catalog=None,
@@ -51,26 +54,28 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.seed = seed
 
         if greyscale:
-            transforms_to_apply = [transforms.Grayscale()]
+            transforms_to_apply = [A.ToGray(p=1)]
         else:
             transforms_to_apply = []
 
         transforms_to_apply += [
             # transforms.RandomCrop(size=(224, 224)),
-            transforms.RandomResizedCrop(
-                size=(224, 224),  # after crop then resize
-                scale=(0.7, 0.8),  # crop factor
-                ratio=(0.9, 1.1),  # crop aspect ratio
-                interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
-            # transforms.ToTensor()  # smth in here is already making it a tensor
-            transforms.ConvertImageDtype(torch.float)
+            A.Rotate(limit=180, interpolation=1, always_apply=True, border_mode=0, value=0), # anything outside of the original image is set to 0.
+            A.RandomResizedCrop(
+                height=224, # after crop resize
+                width=224,
+                scale=(0.7,0.8), # crop factor
+                ratio=(0.9, 1.1), # crop aspect ratio
+                interpolation=1, # This is "INTER_LINEAR" == BILINEAR interpolation. See: https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html
+                always_apply=True
+            ), # new aspect ratio
+            A.VerticalFlip(p=0.5),
+            ToTensorV2(),
+            #transforms.ConvertImageDtype(torch.float) # No Albumentations equivalent. Data should be in float anyways from interpolation etc.
             # TODO maybe normalise further? already 0-1 by default it seems which is perfect tbh
         ]
 
-        self.transform = transforms.Compose(transforms_to_apply)  # TODO more
+        self.transform = A.Compose(transforms_to_apply)  # TODO more
 
     def prepare_data(self):
         pass   # could include some basic checks
@@ -97,7 +102,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             )
             self.val_dataset = DECALSDR8Dataset(
                 catalog=self.val_catalog, schema=self.schema, transform=self.transform
-            ) 
+            )
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
@@ -137,7 +142,7 @@ class DECALSDR8Dataset(Dataset):
         label = get_galaxy_label(galaxy, self.schema)
 
         if self.transform:
-            image = self.transform(image)
+            image = self.transform(image=image)['image']
 
         if self.target_transform:
             label = self.target_transform(label)
