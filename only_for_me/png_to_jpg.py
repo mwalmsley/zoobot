@@ -31,6 +31,7 @@ if __name__ == '__main__':
     pool = Pool(processes=os.cpu_count())
 
     subset = list(catalog['file_loc'].sample(100, random_state=42))
-    pool.imap_unordered(to_jpg, subset, chunksize=1000)
+    for _ in pool.imap_unordered(to_jpg, subset, chunksize=1000):
+        pass
 
     logging.info('Saving complete - exiting gracefully')
