@@ -124,7 +124,8 @@ if __name__ == '__main__':
     val_catalog = pd.concat([pd.read_csv(loc) for loc in val_catalog_locs])
     test_catalog = pd.concat([pd.read_csv(loc) for loc in test_catalog_locs])
     for catalog in (train_catalog, val_catalog, test_catalog):
-        catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2').replace('.jpeg', '.png')
+        catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
+        catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')
         logging.info(catalog['file_loc'].iloc[0])
     
     # exit()
