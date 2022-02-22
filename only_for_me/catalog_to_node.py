@@ -47,5 +47,6 @@ if __name__ == '__main__':
     # png_paths = list(catalog['file_loc'])
     move_to_node(catalog)
 
-    new_locs = catalog['file_loc'].str.replace(r'/share/nas2', '/state/partition1')
+    new_locs = catalog['file_loc'].str.replace(r'/share/nas2', r'/state/partition1')
     logging.info(new_locs[0])
+    assert all([os.path.isfile(loc) for loc in new_locs])
