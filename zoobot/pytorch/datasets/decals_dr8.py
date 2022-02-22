@@ -83,11 +83,12 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def transform_with_torchvision(self):
 
-        transforms_to_apply = []  # transforms.ToTensor() if using simplejpeg, [] if read_image (returns tensor)
+        transforms_to_apply = []
         if self.greyscale:
             transforms_to_apply += [transforms.Grayscale()]  
 
             transforms_to_apply += [
+            transforms.ConvertImageDtype(torch.float),  # make float before any aliasing
             transforms.RandomResizedCrop(
                 size=(224, 224),  # after crop then resize
                 scale=(0.7, 0.8),  # crop factor
@@ -96,7 +97,6 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             transforms.RandomHorizontalFlip(),
             transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR),
             # transforms.Resize(size=(224, 224), interpolation=transforms.InterpolationMode.NEAREST),
-            transforms.ConvertImageDtype(torch.float)
         ]
 
         self.transform = transforms.Compose(transforms_to_apply)
@@ -195,9 +195,11 @@ class DECALSDR8Dataset(Dataset):
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
         img_path = galaxy['file_loc']
-        image = read_image(img_path) # PIL under the hood: Returns CHW Tensor.
-        # with open(img_path, 'rb') as f:
-        #     image = torch.from_numpy(decode_jpeg(f.read()).transpose(2,0,1))
+        # option A
+        # image = read_image(img_path) # PIL under the hood: Returns CHW Tensor.
+        # option B - tiny bit faster when CPU-limited
+        with open(img_path, 'rb') as f:
+            image = torch.from_numpy(decode_jpeg(f.read()).transpose(2,0,1))
         label = get_galaxy_label(galaxy, self.schema)
 
         if self.transform:
