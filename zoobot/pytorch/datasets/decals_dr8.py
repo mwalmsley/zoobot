@@ -79,7 +79,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def transform_with_torchvision(self):
 
-        transforms_to_apply = []
+        transforms_to_apply = []  # transforms.ToTensor() if using simplejpeg, [] if read_image (returns tensor)
         if self.greyscale:
             transforms_to_apply += [transforms.Grayscale()]  
 
@@ -192,7 +192,7 @@ class DECALSDR8Dataset(Dataset):
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
         img_path = galaxy['file_loc']
-        image = read_image(img_path) # PIL under the hood: CxHxW. Tensor.
+        image = read_image(img_path) # PIL under the hood: Returns CHW Tensor.
         label = get_galaxy_label(galaxy, self.schema)
 
         if self.transform:
