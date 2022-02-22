@@ -88,15 +88,13 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             transforms_to_apply += [transforms.Grayscale()]  
 
             transforms_to_apply += [
-            # transforms.RandomCrop(size=(224, 224)),
             transforms.RandomResizedCrop(
                 size=(224, 224),  # after crop then resize
                 scale=(0.7, 0.8),  # crop factor
                 ratio=(0.9, 1.1),  # crop aspect ratio
                 interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
             transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
-            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
+            transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR),
             transforms.ConvertImageDtype(torch.float)
         ]
 
