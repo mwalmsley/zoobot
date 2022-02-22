@@ -183,7 +183,7 @@ class DECALSDR8Dataset(Dataset):
 
         if self.transform:
             # convert to numpy and HxWxC for transforms
-            # image = np.asarray(image).transpose(2,0,1)
+            image = np.asarray(image).transpose(2,0,1)
             # Return torch.tensor CxHxW for torch using ToTensorV2() as last transform
             # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
             image = self.transform(image=image)['image']
@@ -226,7 +226,7 @@ class DECALSDR8DatasetMemory(DECALSDR8Dataset):
 
         # logging.info(image.shape)
         if self.transform:
-            # image = np.asarray(image).transpose(2,0,1)
+            # image = np.asarray(image).transpose(2,0,1)  # not needed simplejpeg gives np array HWC
             # logging.info(type(image))
             image = self.transform(image=image)['image']  # assumed to output torch
             # image = self.transform(image)
