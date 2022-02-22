@@ -186,7 +186,8 @@ class DECALSDR8Dataset(Dataset):
             # image = np.asarray(image).transpose(2,0,1)
             # Return torch.tensor CxHxW for torch using ToTensorV2() as last transform
             # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
-            image = self.transform(image=image)['image']
+            # image = self.transform(image=image)['image']
+            image = self.transform(image)
 
         if self.target_transform:
             label = self.target_transform(label)
@@ -227,7 +228,8 @@ class DECALSDR8DatasetMemory(DECALSDR8Dataset):
         if self.transform:
             # image = np.asarray(image).transpose(2,0,1)
             # logging.info(type(image))
-            image = self.transform(image=image)['image']  # assumed to output torch
+            # image = self.transform(image=image)['image']  # assumed to output torch
+            image = self.transform(image)
         else:
             image = torch.from_numpy(image)
 
