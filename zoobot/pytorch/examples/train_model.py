@@ -132,19 +132,19 @@ if __name__ == '__main__':
 
         logging.info(catalog['file_loc'].iloc[0])
 
-        catalog = catalog.sample(5000).reset_index(drop=True)  # debug mode
+    # debug mode
+    train_catalog = train_catalog.sample(5000).reset_index(drop=True)
+    val_catalog = val_catalog.sample(5000).reset_index(drop=True)
+    test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
-    
-    # exit()
-      
 
     num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       schema=schema,
-      train_catalog=train_catalog.sample(len(train_catalog)).reset_index(drop=True),
-      val_catalog=val_catalog.sample(len(val_catalog)).reset_index(drop=True),
-      test_catalog=test_catalog.sample(len(test_catalog)).reset_index(drop=True),
+      train_catalog=train_catalog,
+      val_catalog=val_catalog,
+      test_catalog=test_catalog,
       greyscale=greyscale,
       use_memory=True,  # new
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
