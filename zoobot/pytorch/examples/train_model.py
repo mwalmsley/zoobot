@@ -25,8 +25,8 @@ from zoobot.shared import label_metadata
 if __name__ == '__main__':
 
     logging.basicConfig(
-      format='%(levelname)s:%(message)s',
-      level=logging.INFO
+      level=logging.INFO,
+      format='%(asctime)s %(levelname)s: %(message)s'
     )
 
     logging.info('Begin python script')
@@ -131,6 +131,9 @@ if __name__ == '__main__':
         catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
 
         logging.info(catalog['file_loc'].iloc[0])
+
+        catalog = catalog.sample(5000).reset_index(drop=True)  # debug mode
+
     
     # exit()
       

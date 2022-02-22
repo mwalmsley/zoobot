@@ -2,6 +2,7 @@
 import os
 from typing import Optional
 import logging
+import random
 from multiprocessing import Pool
 
 import pandas as pd
@@ -165,8 +166,21 @@ class DECALSDR8DatasetMemory(DECALSDR8Dataset):
         super().__init__(catalog=catalog, schema=schema, transform=transform, target_transform=target_transform)
 
         logging.info('Loading encoded jpegs into memory: {}'.format(len(self.catalog)))
-        self.encoded_galaxies = [load_encoded_jpeg(loc) for loc in self.catalog['file_loc']]
+
+        self.catalog = self.catalog.sort_values('file_loc')  # for sequential -> faster hddreading. Shuffle later.
+        logging.warning('In-Memory loading will shuffle for faster reading - outputs will not align with earlier/later reads')
+
+        # assume I/O limited so use pool
+        pool = Pool(processes=int(os.cpu_count()/2))
+        self.encoded_galaxies = pool.map(load_encoded_jpeg, self.catalog['file_loc'])  # list not generator
         logging.info('Loading complete: {}'.format(len(self.encoded_galaxies)))
+
+        shuffle_indices = list(range(len(self.catalog)))
+        random.shuffle(shuffle_indices)
+
+        self.catalog = self.catalog.iloc[shuffle_indices].reset_index()
+        self.encoded_galaxies = list({self.encoded_galaxies[idx] for idx in shuffle_indices})
+        logging.info('Shuffling complete')
 
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
