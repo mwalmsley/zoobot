@@ -79,7 +79,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def transform_with_torchvision(self):
 
-        transforms_to_apply = [transforms.ToTensor()]
+        transforms_to_apply = []
         if self.greyscale:
             transforms_to_apply += [transforms.Grayscale()]  
 
