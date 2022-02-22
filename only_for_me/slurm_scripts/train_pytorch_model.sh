@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --nodelist compute-0-3
+#SBATCH --nodelist compute-0-2
 
 pwd; hostname; date
 
@@ -21,7 +21,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_2xgpu_greyscale_f16_512_vision_oom_speedtest_local
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_2xgpu_greyscale_f16_512_vision_oom_speedtest_prefetch10
 
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \

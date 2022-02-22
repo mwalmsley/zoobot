@@ -77,6 +77,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             logging.info('Using torchvision for augmentations')
             self.transform_with_torchvision()
 
+        self.prefetch_factor = 10
+        self.dataloader_timeout = 120  # seconds, I assume?
+
 
     def transform_with_torchvision(self):
 
@@ -166,13 +169,13 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, pin_memory=True, persistent_workers=self.num_workers>0)
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, pin_memory=True, persistent_workers=self.num_workers>0, prefetch_factor=self.prefetch_factor, timeout=self.dataloader_timeout)
 
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=self.num_workers>0)
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=self.num_workers>0, prefetch_factor=self.prefetch_factor, timeout=self.dataloader_timeout)
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=self.num_workers>0)
+        return DataLoader(self.test_dataset, batch_size=self.batch_size, num_workers=self.num_workers, pin_memory=True, persistent_workers=self.num_workers>0, prefetch_factor=self.prefetch_factor, timeout=self.dataloader_timeout)
 
 
 
