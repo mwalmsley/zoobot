@@ -1,5 +1,9 @@
+
 import os
 from typing import Optional
+import logging
+import random
+from multiprocessing import Pool
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -7,6 +11,7 @@ from torchvision.io import read_image  # may want to replace with self.read_imag
 import torch
 from torch.utils.data import DataLoader, Dataset
 import pytorch_lightning as pl
+import simplejpeg
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -26,6 +31,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         test_catalog=None,
         greyscale=True,
         batch_size=256,
+        use_memory=False,
         num_workers=16,
         seed=42
         ):
@@ -48,6 +54,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.test_catalog = test_catalog
 
         self.batch_size = batch_size
+
+        self.use_memory = use_memory
+
         self.num_workers = num_workers
         self.seed = seed
 
@@ -70,7 +79,6 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             ), # new aspect ratio
             A.VerticalFlip(p=0.5),
             ToTensorV2(),
-            #transforms.ConvertImageDtype(torch.float) # No Albumentations equivalent. Data should be in float anyways from interpolation etc.
             # TODO maybe normalise further? already 0-1 by default it seems which is perfect tbh
         ]
 
@@ -94,18 +102,24 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             assert self.val_catalog is not None
             assert self.test_catalog is not None
 
+        # isn't python clever - first class classes
+        if self.use_memory:
+            dataset_class = DECALSDR8DatasetMemory
+        else:
+            dataset_class = DECALSDR8Dataset
+
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
-            self.train_dataset = DECALSDR8Dataset(
+            self.train_dataset = dataset_class(
                 catalog=self.train_catalog, schema=self.schema, transform=self.transform
             )
-            self.val_dataset = DECALSDR8Dataset(
+            self.val_dataset = dataset_class(
                 catalog=self.val_catalog, schema=self.schema, transform=self.transform
             )
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
-            self.test_dataset = DECALSDR8Dataset(
+            self.test_dataset = dataset_class(
                 catalog=self.test_catalog, schema=self.schema, transform=self.transform
             )
 
@@ -140,9 +154,12 @@ class DECALSDR8Dataset(Dataset):
         image = read_image(img_path) # PIL under the hood: CxHxW
         label = get_galaxy_label(galaxy, self.schema)
 
+
         if self.transform:
             # convert to numpy and HxWxC for transforms
-            image = image.numpy().transpose(1,2,0) 
+            image = np.asarray(image)
+            if image.shape[0]==3:
+                image = image.transpose(1,2,0)
             # Return torch.tensor CxHxW for torch using ToTensorV2() as last transform
             # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
             image = self.transform(image=image)['image']
@@ -152,9 +169,55 @@ class DECALSDR8Dataset(Dataset):
 
         return image, label
 
-# import logging
+class DECALSDR8DatasetMemory(DECALSDR8Dataset):
+    # compressed data will be loaded into memory
+    # use cpu/simplejpeg to decode as needed, can't store decoded all in memory
+
+    def __init__(self, catalog: pd.DataFrame, schema, transform=None, target_transform=None):
+        super().__init__(catalog=catalog, schema=schema, transform=transform, target_transform=target_transform)
+
+        logging.info('Loading encoded jpegs into memory: {}'.format(len(self.catalog)))
+
+        self.catalog = self.catalog.sort_values('file_loc')  # for sequential -> faster hddreading. Shuffle later.
+        logging.warning('In-Memory loading will shuffle for faster reading - outputs will not align with earlier/later reads')
+
+        # assume I/O limited so use pool
+        pool = Pool(processes=int(os.cpu_count()/2))
+        self.encoded_galaxies = pool.map(load_encoded_jpeg, self.catalog['file_loc'])  # list not generator
+        logging.info('Loading complete: {}'.format(len(self.encoded_galaxies)))
+
+        shuffle_indices = list(range(len(self.catalog)))
+        random.shuffle(shuffle_indices)
+
+        self.catalog = self.catalog.iloc[shuffle_indices].reset_index()
+        self.encoded_galaxies = list({self.encoded_galaxies[idx] for idx in shuffle_indices})
+        logging.info('Shuffling complete')
+
+    def __getitem__(self, idx):
+        galaxy = self.catalog.iloc[idx]
+        label = get_galaxy_label(galaxy, self.schema)
+        image = decode_jpeg(self.encoded_galaxies[idx])
+        # Read image as torch array for consistency
+        image = torch.from_numpy(image)
+        if self.transform:
+            image = np.asarray(image)
+            if image.shape[0]==3:
+                image = image.transpose(1,2,0)
+            image = self.transform(image=image)['image']
+
+        if self.target_transform:
+            label = self.target_transform(label)
+
+        return image, label
+
+
+def load_encoded_jpeg(loc):
+    with open(loc, "rb") as f:
+        return f.read()  # bytes, not yet decoded
+
+def decode_jpeg(encoded_bytes):
+    return simplejpeg.decode_jpeg(encoded_bytes, fastdct=True, fastupsample=True)
+
 
 def get_galaxy_label(galaxy, schema):
     return galaxy[schema.label_cols].values.astype(int)
-    # logging.info(votes)
-    # return torch.from_numpy(votes)
