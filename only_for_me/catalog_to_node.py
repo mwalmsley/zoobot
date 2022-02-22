@@ -42,11 +42,15 @@ if __name__ == '__main__':
     catalog['file_loc'] = catalog['file_loc'].str.replace(r'/raid/scratch',  r'/share/nas2')
     catalog['file_loc'] = catalog['file_loc'].str.replace(r'/dr8_downloader/',  r'/dr8/')
     # catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')  # they are currently all pngs
+    catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
+    catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
+    catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas2', '/state/partition1')
     # catalog = catalog.sample(100, random_state=42)
     # png_paths = list(catalog['file_loc'].sample(100, random_state=42))
     # png_paths = list(catalog['file_loc'])
-    move_to_node(catalog)
-
     new_locs = catalog['file_loc'].str.replace(r'/share/nas2', r'/state/partition1')
     logging.info(new_locs[0])
+
+    move_to_node(catalog)
+
     assert all([os.path.isfile(loc) for loc in new_locs])
