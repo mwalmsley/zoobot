@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     loss_func = losses.calculate_multiquestion_loss
 
-    model = define_model.ZoobotModel(schema=schema, loss=loss_func)
+    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels)
 
     # catalog provided
     # catalog = pd.read_csv(catalog_loc)

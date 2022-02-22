@@ -10,12 +10,12 @@ import pytorch_lightning as pl
 
 
 class ZoobotModel(pl.LightningModule):
-    def __init__(self, schema, loss):
+    def __init__(self, schema, loss, channels):
         super().__init__()
 
         self.schema = schema
 
-        self.model = get_model(self.output_dims)
+        self.model = get_model(self.output_dims, channels=channels)
         self.loss = loss
 
     def forward(self, x):
