@@ -66,6 +66,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.seed = seed
 
+        self.greyscale = greyscale
         self.album = False
         if self.album:
             logging.info('Using albumentations for augmentations')
