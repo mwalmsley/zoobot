@@ -56,7 +56,7 @@ if __name__ == '__main__':
     greyscale = not args.color
     if greyscale:
       logging.info('Converting images to greyscale before training')
-      channels = 1  # albumentations actually keeps the third dim - need to work out a custom transform to change dim, maybe
+      channels = 3  # albumentations actually keeps the third dim - need to work out a custom transform to change dim, maybe
     else:
         logging.warning('Training on color images, not converting to greyscale')
         channels = 3
@@ -146,7 +146,7 @@ if __name__ == '__main__':
       val_catalog=val_catalog,
       test_catalog=test_catalog,
       greyscale=greyscale,
-      use_memory=True,  # new
+      use_memory=False,
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
       num_workers=num_workers
     )
