@@ -5,6 +5,7 @@ import logging
 import random
 from multiprocessing import Pool
 
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from torchvision.io import read_image  # may want to replace with self.read_image for e.g. FITS, Liza
