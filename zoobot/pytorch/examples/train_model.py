@@ -182,7 +182,8 @@ if __name__ == '__main__':
   # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
     # disable slurm detection by pl
     # this is not necessary for single machine, but might be for multi-node
-    # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
+    # may help stop tasks getting left on gpu after slurm exit?
+    del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
     logging.info(os.getenv("NODE_RANK", 'No NODE_RANK'))
     logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
