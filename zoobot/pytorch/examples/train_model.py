@@ -133,9 +133,9 @@ if __name__ == '__main__':
         logging.info(catalog['file_loc'].iloc[0])
 
     # debug mode
-    train_catalog = train_catalog.sample(5000).reset_index(drop=True)
-    val_catalog = val_catalog.sample(5000).reset_index(drop=True)
-    test_catalog = test_catalog.sample(5000).reset_index(drop=True)
+    # train_catalog = train_catalog.sample(5000).reset_index(drop=True)
+    # val_catalog = val_catalog.sample(5000).reset_index(drop=True)
+    # test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
     num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
     # num_workers=0  # debug aug hanging - yes, it's the dataloaders
