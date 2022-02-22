@@ -56,7 +56,7 @@ if __name__ == '__main__':
     greyscale = not args.color
     if greyscale:
       logging.info('Converting images to greyscale before training')
-      channels = 1
+      channels = 3  # albumentations actually keeps the third dim - need to work out a custom transform to change dim, maybe
     else:
         logging.warning('Training on color images, not converting to greyscale')
         channels = 3
