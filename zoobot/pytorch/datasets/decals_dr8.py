@@ -197,12 +197,14 @@ class DECALSDR8DatasetMemory(DECALSDR8Dataset):
         label = get_galaxy_label(galaxy, self.schema)
         image = decode_jpeg(self.encoded_galaxies[idx])
         # Read image as torch array for consistency
-        image = torch.from_numpy(image)
+
         # logging.info(image.shape)
         if self.transform:
             # image = np.asarray(image).transpose(2,0,1)
-            logging.info(image.shape)
-            image = self.transform(image=image)['image']
+            # logging.info(type(image))
+            image = self.transform(image=image)['image']  # assumed to output torch
+        else:
+            image = torch.from_numpy(image)
 
         if self.target_transform:
             label = self.target_transform(label)
