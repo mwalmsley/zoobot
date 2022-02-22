@@ -21,7 +21,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_2xgpu_greyscale_f16_512_vision_oom_speedtest_prefetch40_minaug_simplejpeg
+EXPERIMENT_DIR=$THIS_DIR/results/early_stopping_2xgpu_greyscale_f16_512_vision_oom_speedtest_prefetch40_12worker_minaug_simplejpeg
 
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
