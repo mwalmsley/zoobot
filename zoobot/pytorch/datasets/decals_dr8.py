@@ -77,7 +77,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             logging.info('Using torchvision for augmentations')
             self.transform_with_torchvision()
 
-        self.prefetch_factor = 10
+        self.prefetch_factor = 40
         self.dataloader_timeout = 120  # seconds, I assume?
 
 

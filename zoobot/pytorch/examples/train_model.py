@@ -6,7 +6,9 @@ import logging
 import numpy as np
 import pandas as pd
 import pytorch_lightning as pl
-# from pl.strategies.ddp import DDPStrategy
+from pytorch_lightning.strategies.ddp import DDPStrategy
+from pytorch_lightning.strategies import DDPStrategy
+
 # from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
 # from pytorch_lightning.plugins.training_type import DDPPlugin
 # https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
@@ -155,7 +157,7 @@ if __name__ == '__main__':
 
     if args.wandb:
         wandb_logger = WandbLogger(
-          project='zoobot-pytorch',
+          project='zoobot-pytorch-speedtest',
           name=os.path.basename(save_dir),
           log_model="all")
         # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
