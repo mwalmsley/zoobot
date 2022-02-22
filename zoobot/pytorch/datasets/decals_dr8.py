@@ -68,6 +68,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
         self.greyscale = greyscale
         self.album = False
+
         if self.album:
             logging.info('Using albumentations for augmentations')
             self.transform_with_album()
@@ -150,10 +151,10 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
             self.train_dataset = dataset_class(
-                catalog=self.train_catalog, schema=self.schema, transform=self.transform
+                catalog=self.train_catalog, schema=self.schema, album=self.album, transform=self.transform
             )
             self.val_dataset = dataset_class(
-                catalog=self.val_catalog, schema=self.schema, transform=self.transform
+                catalog=self.val_catalog, schema=self.schema, album=self.album, transform=self.transform
             )
 
         # Assign test dataset for use in dataloader(s)
@@ -176,10 +177,11 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
 # https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
 class DECALSDR8Dataset(Dataset):
-    def __init__(self, catalog: pd.DataFrame, schema, transform=None, target_transform=None):
+    def __init__(self, catalog: pd.DataFrame, schema, album=False, transform=None, target_transform=None):
         # catalog should be split already
         # should have correct image locations under file_loc
         self.catalog = catalog
+        self.album = album
         self.schema = schema
         self.transform = transform
         self.target_transform = target_transform
