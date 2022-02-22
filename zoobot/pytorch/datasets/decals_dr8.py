@@ -66,49 +66,61 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.seed = seed
 
-        # transforms_to_apply = [transforms.ToTensor()]
-        # if greyscale:
-        #     transforms_to_apply += [transforms.Grayscale()]  
-
-        # transforms_to_apply += [
-        #     # transforms.RandomCrop(size=(224, 224)),
-        #     transforms.RandomResizedCrop(
-        #         size=(224, 224),  # after crop then resize
-        #         scale=(0.7, 0.8),  # crop factor
-        #         ratio=(0.9, 1.1),  # crop aspect ratio
-        #         interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
-        #     transforms.RandomHorizontalFlip(),
-        #     transforms.RandomVerticalFlip(),
-        #     transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
-        #     transforms.ConvertImageDtype(torch.float)
-        # ]
-
-        # self.transform = transforms.Compose(transforms_to_apply)
+        self.album = False
+        if self.album:
+            logging.info('Using albumentations for augmentations')
+            self.transform_with_album()
+        else:
+            logging.info('Using torchvision for augmentations')
+            self.transform_with_torchvision()
 
 
-        if greyscale:
+    def transform_with_torchvision(self):
+
+        transforms_to_apply = [transforms.ToTensor()]
+        if self.greyscale:
+            transforms_to_apply += [transforms.Grayscale()]  
+
+            transforms_to_apply += [
+            # transforms.RandomCrop(size=(224, 224)),
+            transforms.RandomResizedCrop(
+                size=(224, 224),  # after crop then resize
+                scale=(0.7, 0.8),  # crop factor
+                ratio=(0.9, 1.1),  # crop aspect ratio
+                interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(degrees=90., interpolation=transforms.InterpolationMode.BILINEAR),
+            transforms.ConvertImageDtype(torch.float)
+        ]
+
+        self.transform = transforms.Compose(transforms_to_apply)
+
+
+    def transform_with_album(self):
+
+        if self.greyscale:
             transforms_to_apply = [A.ToGray(p=1)]
         else:
             transforms_to_apply = []
 
-        transforms_to_apply += [
-            # transforms.RandomCrop(size=(224, 224)),
-            A.ToFloat(),
-            A.Rotate(limit=180, interpolation=1, always_apply=True, border_mode=0, value=0), # anything outside of the original image is set to 0.
-            A.RandomResizedCrop(
-                height=224, # after crop resize
-                width=224,
-                scale=(0.7,0.8), # crop factor
-                ratio=(0.9, 1.1), # crop aspect ratio
-                interpolation=1, # This is "INTER_LINEAR" == BILINEAR interpolation. See: https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html
-                always_apply=True
-            ), # new aspect ratio
-            A.VerticalFlip(p=0.5),
-            ToTensorV2(),
-            # TODO maybe normalise further? already 0-1 by default it seems which is perfect tbh
-        ]
+            transforms_to_apply += [
+                A.ToFloat(),
+                A.Rotate(limit=180, interpolation=1, always_apply=True, border_mode=0, value=0), # anything outside of the original image is set to 0.
+                A.RandomResizedCrop(
+                    height=224, # after crop resize
+                    width=224,
+                    scale=(0.7,0.8), # crop factor
+                    ratio=(0.9, 1.1), # crop aspect ratio
+                    interpolation=1, # This is "INTER_LINEAR" == BILINEAR interpolation. See: https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html
+                    always_apply=True
+                ), # new aspect ratio
+                A.VerticalFlip(p=0.5),
+                ToTensorV2()
+            ]
 
         self.transform = A.Compose(transforms_to_apply)  # TODO more
+
 
     def prepare_data(self):
         pass   # could include some basic checks
@@ -177,17 +189,19 @@ class DECALSDR8Dataset(Dataset):
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
         img_path = galaxy['file_loc']
-        image = read_image(img_path) # PIL under the hood: CxHxW
+        image = read_image(img_path) # PIL under the hood: CxHxW. Tensor.
         label = get_galaxy_label(galaxy, self.schema)
 
-
         if self.transform:
-            # convert to numpy and HxWxC for transforms
-            image = np.asarray(image).transpose(1,2,0)
-            # Return torch.tensor CxHxW for torch using ToTensorV2() as last transform
-            # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
-            image = self.transform(image=image)['image']
-            # image = self.transform(image)
+            # TODO eww an extra if
+            if self.album:
+                # album wants HWC np.array
+                image = np.asarray(image).transpose(1,2,0)
+                # Returns torch.tensor CHW for torch using ToTensorV2() as last transform
+                # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
+                image = self.transform(image=image)['image']
+            else:   
+                image = self.transform(image)  # already a CHW tensor, which torchvision wants
 
         if self.target_transform:
             label = self.target_transform(label)
