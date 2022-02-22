@@ -22,7 +22,8 @@ def move_to_node(catalog: pd.DataFrame, new_base_folder='/state/partition1'):
 
 def move_image(loc_tuple):
     old_loc, new_loc = loc_tuple
-    assert os.path.isfile(old_loc)
+    if not os.path.isfile(old_loc):
+        raise FileNotFoundError(old_loc)
     if not os.path.isfile(new_loc):
         target_dir = os.path.dirname(new_loc)
         if not os.path.isdir(target_dir):
@@ -48,9 +49,10 @@ if __name__ == '__main__':
     # catalog = catalog.sample(100, random_state=42)
     # png_paths = list(catalog['file_loc'].sample(100, random_state=42))
     # png_paths = list(catalog['file_loc'])
-    new_locs = catalog['file_loc'].str.replace(r'/share/nas2', r'/state/partition1')
-    logging.info(new_locs[0])
 
     move_to_node(catalog)
+
+    new_locs = catalog['file_loc'].str.replace(r'/share/nas2', r'/state/partition1')
+    logging.info(new_locs[0])
 
     assert all([os.path.isfile(loc) for loc in new_locs])
