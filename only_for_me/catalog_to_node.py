@@ -35,8 +35,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    # catalog_loc = '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv'
-    catalog_loc = '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/labelled_catalog.csv'
+    catalog_loc = '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv'
+    # catalog_loc = '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/labelled_catalog.csv'
     # catalog_loc = '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/labelled_catalog.csv'
     catalog = pd.read_csv(catalog_loc)
     catalog['file_loc'] = catalog['file_loc'].str.replace(r'/raid/scratch',  r'/share/nas2')
