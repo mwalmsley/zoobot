@@ -198,8 +198,10 @@ class DECALSDR8DatasetMemory(DECALSDR8Dataset):
         image = decode_jpeg(self.encoded_galaxies[idx])
         # Read image as torch array for consistency
         image = torch.from_numpy(image)
+        # logging.info(image.shape)
         if self.transform:
             image = np.asarray(image).transpose(1,2,0)
+            logging.info(image.shape)
             image = self.transform(image=image)['image']
 
         if self.target_transform:
