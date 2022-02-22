@@ -36,6 +36,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         val_catalog=None,
         test_catalog=None,
         greyscale=True,
+        album=False,
         batch_size=256,
         use_memory=False,
         num_workers=16,
@@ -67,7 +68,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.seed = seed
 
         self.greyscale = greyscale
-        self.album = False
+        self.album = album
 
         if self.album:
             logging.info('Using albumentations for augmentations')
@@ -102,7 +103,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
     def transform_with_album(self):
 
         if self.greyscale:
-            transforms_to_apply = [A.ToGray(p=1)]
+            transforms_to_apply = [A.Lambda(name='ToGray', image=ToGray(reduce_channels=True), always_apply=True)]
         else:
             transforms_to_apply = []
 
@@ -266,3 +267,14 @@ def decode_jpeg(encoded_bytes):
 
 def get_galaxy_label(galaxy, schema):
     return galaxy[schema.label_cols].values.astype(int)
+
+class ToGray():
+
+    def __init__(self, reduce_channels=False):
+        if reduce_channels:
+            self.mean = lambda arr: arr.mean(axis=2, keepdims=True)
+        else:
+            self.mean = lambda arr: arr.mean(axis=2, keepdims=True).repeat(3, axis=2)
+
+    def __call__(self, image, **kwargs):
+        return self.mean(image)
