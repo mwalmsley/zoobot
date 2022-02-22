@@ -11,7 +11,10 @@ import pandas as pd
 def move_to_node(catalog: pd.DataFrame, new_base_folder='/state/partition1'):
 
     old_locs = catalog['file_loc']
-    new_locs = old_locs.str.replace(r'/share/nas2', new_base_folder)  # will keep the walml/galaxy_zoo/decals/...
+    new_locs = [loc.replace(r'/share/nas2', new_base_folder) for loc in old_locs.values]  # will keep the walml/galaxy_zoo/decals/...
+
+    logging.info(old_locs[0])
+    logging.info(new_locs[0])
 
     pool = Pool(processes=os.cpu_count())
     for _ in pool.imap_unordered(move_image, zip(old_locs, new_locs), chunksize=1000):
