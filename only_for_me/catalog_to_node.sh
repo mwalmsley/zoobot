@@ -13,6 +13,6 @@ pwd; hostname; date
 
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
-df -u
+df -h
 
 $PYTHON /share/nas2/walml/repos/zoobot/only_for_me/catalog_to_node.py
