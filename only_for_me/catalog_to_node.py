@@ -11,7 +11,7 @@ import pandas as pd
 def move_to_node(catalog: pd.DataFrame, new_base_folder='/state/partition1'):
 
     old_locs = catalog['file_loc']
-    new_locs = [loc.replace(r'/share/nas2', new_base_folder) for loc in old_locs.values]  # will keep the walml/galaxy_zoo/decals/...
+    new_locs = [loc.replace(r'/share/nas2', new_base_folder).replace(r'/png/', r'/jpeg/').replace(r'.png', r'.jpeg') for loc in old_locs.values]  # will keep the walml/galaxy_zoo/decals/...
 
     logging.info(old_locs[0])
     logging.info(new_locs[0])
@@ -46,9 +46,9 @@ if __name__ == '__main__':
     catalog['file_loc'] = catalog['file_loc'].str.replace(r'/raid/scratch',  r'/share/nas2')
     catalog['file_loc'] = catalog['file_loc'].str.replace(r'/dr8_downloader/',  r'/dr8/')
     # catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')  # they are currently all pngs
-    catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
-    catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
-    catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas2', '/state/partition1')
+    # catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
+    # catalog['file_loc'] = catalog['file_loc'].str.replace(r'.png', r'.jpeg')
+    # catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas2', '/state/partition1')
     # catalog = catalog.sample(100, random_state=42)
     # png_paths = list(catalog['file_loc'].sample(100, random_state=42))
     # png_paths = list(catalog['file_loc'])
