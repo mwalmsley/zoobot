@@ -129,6 +129,7 @@ if __name__ == '__main__':
         # catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')
         catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
         catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
+        catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas2', '/state/partition1')
 
         logging.info(catalog['file_loc'].iloc[0])
 
@@ -142,7 +143,7 @@ if __name__ == '__main__':
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       schema=schema,
-      album=True,
+      album=False,
       train_catalog=train_catalog,
       val_catalog=val_catalog,
       test_catalog=test_catalog,
