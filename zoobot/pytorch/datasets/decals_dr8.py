@@ -1,6 +1,8 @@
 
 import os
 from typing import Optional
+import logging
+from multiprocessing import Pool
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -9,6 +11,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 import pytorch_lightning as pl
+import simplejpeg
 
 # https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html
 
@@ -25,6 +28,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         test_catalog=None,
         greyscale=True,
         batch_size=256,
+        use_memory=False,
         num_workers=16,
         seed=42
         ):
@@ -47,6 +51,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.test_catalog = test_catalog
 
         self.batch_size = batch_size
+
+        self.use_memory = use_memory
+
         self.num_workers = num_workers
         self.seed = seed
 
@@ -90,18 +97,24 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             assert self.val_catalog is not None
             assert self.test_catalog is not None
 
+        # isn't python clever - first class classes
+        if self.use_memory:
+            dataset_class = DECALSDR8DatasetMemory
+        else:
+            dataset_class = DECALSDR8Dataset
+
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
-            self.train_dataset = DECALSDR8Dataset(
+            self.train_dataset = dataset_class(
                 catalog=self.train_catalog, schema=self.schema, transform=self.transform
             )
-            self.val_dataset = DECALSDR8Dataset(
+            self.val_dataset = dataset_class(
                 catalog=self.val_catalog, schema=self.schema, transform=self.transform
             ) 
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
-            self.test_dataset = DECALSDR8Dataset(
+            self.test_dataset = dataset_class(
                 catalog=self.test_catalog, schema=self.schema, transform=self.transform
             )
 
@@ -144,9 +157,39 @@ class DECALSDR8Dataset(Dataset):
 
         return image, label
 
-# import logging
+class DECALSDR8DatasetMemory(DECALSDR8Dataset):
+    # compressed data will be loaded into memory
+    # use cpu/simplejpeg to decode as needed, can't store decoded all in memory
+
+    def __init__(self, catalog: pd.DataFrame, schema, transform=None, target_transform=None):
+        super().__init__(catalog=catalog, schema=schema, transform=transform, target_transform=target_transform)
+
+        logging.info('Loading encoded jpegs into memory: {}'.format(len(self.catalog)))
+        self.encoded_galaxies = [load_encoded_jpeg(loc) for loc in self.catalog['file_loc']]
+        logging.info('Loading complete: {}'.format(len(self.encoded_galaxies)))
+
+    def __getitem__(self, idx):
+        galaxy = self.catalog.iloc[idx]
+        label = get_galaxy_label(galaxy, self.schema)
+        image = decode_jpeg(self.encoded_galaxies[idx])
+
+        if self.transform:
+            image = self.transform(image)
+
+        if self.target_transform:
+            label = self.target_transform(label)
+
+        return image, label
+
+
+def load_encoded_jpeg(loc):
+    with open(loc, "rb") as f:
+        return f.read()  # bytes, not yet decoded
+
+
+def decode_jpeg(encoded_bytes):
+    return simplejpeg.decode_jpeg(encoded_bytes, fastdct=True, fastupsample=True)
+
 
 def get_galaxy_label(galaxy, schema):
     return galaxy[schema.label_cols].values.astype(int)
-    # logging.info(votes)
-    # return torch.from_numpy(votes)

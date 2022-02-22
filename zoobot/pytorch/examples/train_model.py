@@ -143,6 +143,7 @@ if __name__ == '__main__':
       val_catalog=val_catalog.sample(len(val_catalog)).reset_index(drop=True),
       test_catalog=test_catalog.sample(len(test_catalog)).reset_index(drop=True),
       greyscale=greyscale,
+      use_memory=True,  # new
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
       num_workers=num_workers
     )
