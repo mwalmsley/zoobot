@@ -169,9 +169,11 @@ def load_weights(model, checkpoint_loc, expect_partial=False):
     logging.info('Loading weights from {}'.format(checkpoint_loc))
     load_status = model.load_weights(checkpoint_loc)
     load_status.assert_nontrivial_match()
-    load_status.assert_existing_objects_matched()
-    if expect_partial:  # some checkpointed values won't match (the optimiser state during predictions, hopefully)
+    if expect_partial:  # some checkpointed values not in the current program won't match (the optimiser state during predictions, hopefully)
         load_status.expect_partial()
+    # everything in the current program should match
+    # do after load_status.expect_partial to silence optimizer warnings
+    load_status.assert_existing_objects_matched()
 
 
 def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False, channels=1, always_augment=True, dropout_rate=0.2):
