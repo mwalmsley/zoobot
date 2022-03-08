@@ -77,7 +77,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             logging.info('Using torchvision for augmentations')
             self.transform_with_torchvision()
 
-        self.prefetch_factor = 40
+        self.prefetch_factor = 2
         self.dataloader_timeout = 120  # seconds, I assume?
 
 
@@ -210,7 +210,8 @@ class DECALSDR8Dataset(Dataset):
                 # Returns torch.tensor CHW for torch using ToTensorV2() as last transform
                 # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
                 image = self.transform(image=image)['image']
-            else:   
+                image = image.transpose(2,0,1).astype(np.half)
+            else:
                 image = self.transform(image)  # already a CHW tensor, which torchvision wants
 
         if self.target_transform:

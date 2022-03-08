@@ -146,7 +146,7 @@ if __name__ == '__main__':
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       schema=schema,
-      album=False,
+      album=True,
       train_catalog=train_catalog,
       val_catalog=val_catalog,
       test_catalog=test_catalog,
