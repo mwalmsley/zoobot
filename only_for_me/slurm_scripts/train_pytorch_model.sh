@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --nodelist compute-0-2
+#SBATCH --nodelist compute-0-3
 
 pwd; hostname; date
 
@@ -29,7 +29,7 @@ $PYTHON /share/nas2/mbowles/zoobot/zoobot/pytorch/examples/train_model.py \
     --resize-size 224 \
     --catalog ${DATA_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
-    --batch-size 128 \
+    --batch-size 512 \
     --gpus 2  \
     --nodes 1
    

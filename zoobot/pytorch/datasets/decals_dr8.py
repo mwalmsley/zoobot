@@ -15,9 +15,9 @@ import pytorch_lightning as pl
 import simplejpeg
 from torchvision import transforms
 
-# import cv2
-# cv2.setNumThreads(0)
-# cv2.ocl.setUseOpenCL(False)
+import cv2
+cv2.setNumThreads(0)
+cv2.ocl.setUseOpenCL(False)
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -77,7 +77,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             logging.info('Using torchvision for augmentations')
             self.transform_with_torchvision()
 
-        self.prefetch_factor = 2
+        self.prefetch_factor = 40
         self.dataloader_timeout = 120  # seconds, I assume?
 
 
@@ -103,14 +103,12 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
 
     def transform_with_album(self):
-
+        transforms_to_apply = []
+        
         if self.greyscale:
             transforms_to_apply = [A.Lambda(name='ToGray', image=ToGray(reduce_channels=True), always_apply=True)]
-        else:
-            transforms_to_apply = []
-
             transforms_to_apply += [
-                A.ToFloat(),
+                A.ToFloat(max_value=255),
                 A.Rotate(limit=180, interpolation=1, always_apply=True, border_mode=0, value=0), # anything outside of the original image is set to 0.
                 A.RandomResizedCrop(
                     height=224, # after crop resize
@@ -123,7 +121,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
                 A.VerticalFlip(p=0.5),
                 ToTensorV2()
             ]
-
+        
         self.transform = A.Compose(transforms_to_apply)  # TODO more
 
 
@@ -202,21 +200,20 @@ class DECALSDR8Dataset(Dataset):
             image = torch.from_numpy(decode_jpeg(f.read()).transpose(2,0,1))
         label = get_galaxy_label(galaxy, self.schema)
 
-        if self.transform:
-            # TODO eww an extra if
-            if self.album:
-                # album wants HWC np.array
-                image = np.asarray(image).transpose(1,2,0)
-                # Returns torch.tensor CHW for torch using ToTensorV2() as last transform
-                # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
-                image = self.transform(image=image)['image']
-                image = image.transpose(2,0,1).astype(np.half)
-            else:
-                image = self.transform(image)  # already a CHW tensor, which torchvision wants
+        if self.transform and self.album:
+            # album wants HWC np.array
+            image = np.asarray(image).transpose(1,2,0)
+            # Returns torch.tensor CHW for torch using ToTensorV2() as last transform
+            # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
+            image = self.transform(image=image)['image'].type(torch.HalfTensor)
+        elif self.transform:
+            image = self.transform(image)  # already a CHW tensor, which torchvision wants
+        else:
+            pass
 
         if self.target_transform:
             label = self.target_transform(label)
-
+        
         return image, label
 
 class DECALSDR8DatasetMemory(DECALSDR8Dataset):
@@ -253,7 +250,7 @@ class DECALSDR8DatasetMemory(DECALSDR8Dataset):
         if self.transform:
             # image = np.asarray(image).transpose(2,0,1)  # not needed simplejpeg gives np array HWC
             # logging.info(type(image))
-            image = self.transform(image=image)['image']  # assumed to output torch
+            image = self.transform(image=image)['image'].type(torch.HalfTensor)  # assumed to output torch
             # image = self.transform(image)
         else:
             image = torch.from_numpy(image)
