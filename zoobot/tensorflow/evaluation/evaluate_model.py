@@ -23,6 +23,10 @@ from zoobot.tensorflow.stats import dirichlet_stats, vote_stats
 
 def load_hdf5s(hdf5_locs):
 
+    if isinstance(hdf5_locs, str):
+        logging.warning('Passed a single hdf5 loc to load_hdf5s - assuming this is a single file to load, not list of files to load')
+        hdf5_locs = [hdf5_locs]  # pretend user passed a list
+
     concentrations = []
     prediction_metadata = []
     for loc in hdf5_locs:

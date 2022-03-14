@@ -56,8 +56,9 @@ I also include some working examples for you to copy and adapt:
 - [finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_advanced.py)
 - [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb) (to better understand Zoobot's statistical outputs)
 
-Latest features:
+### Latest features
 
+- PyTorch version! Integrates with PyTorch Lightning and WandB. Multi-GPU support. Trains on jpeg images, rather than TFRecords, and does not yet have a finetuning example script.
 - Train on colour (3-band) images: Add --color (American-friendly) to `train_model.py`
 - Select which EfficientNet variant to train using the `get_effnet` arg in `define_model.py` - or replace with a func. returning your own architecture!
 - New `predict_on_dataset.py` and `save_predictons.py` modules with useful functions for making predictions on large sets of images. Predictions are now saved to .hdf5 by default, which is much more convenient than csv for multi-forward-pass predictions. If using .hdf5, `reformat_predictions.py` is no longer needed.
@@ -72,5 +73,13 @@ Latest features:
 - `zoobot/data_utils/image_datasets.py` will optionally check if the image paths provided really exist (slightly slower, but sometimes useful). `tfrecord_datasets` and `image_datasets` now serve equivalent purposes.
 
 Contributions are welcome and will be credited in any future work.
+
+### Replication
+
+For replication of the GZ DECaLS classifier see /replicate. This contains slurm scripts to:
+- Create training TFRecords equivalent to those used to train the published classifier
+- Train the classifier itself (by calling `zoobot/tensorflow/examples/train_model.py`)
+
+### Citing
 
 If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414).
