@@ -19,44 +19,7 @@ from zoobot.shared import schemas
 from zoobot.shared import label_metadata
 from zoobot.tensorflow.training import losses
 from zoobot.tensorflow.stats import dirichlet_stats, vote_stats
-
-
-def load_hdf5s(hdf5_locs):
-
-    if isinstance(hdf5_locs, str):
-        logging.warning('Passed a single hdf5 loc to load_hdf5s - assuming this is a single file to load, not list of files to load')
-        hdf5_locs = [hdf5_locs]  # pretend user passed a list
-
-    concentrations = []
-    prediction_metadata = []
-    for loc in hdf5_locs:
-        with h5py.File(loc, 'r') as f:
-            print(f.keys())
-            # temp hack for old ring predictions, should standardise to id_str
-            if 'id_str' in f.keys():
-                id_col = 'id_str'
-            else:
-                id_col = 'image_paths'
-            these_concentrations = f['predictions'][:]
-            these_prediction_metadata = {
-                'id_str': f[id_col].asstr()[:],
-                'hdf5_loc': [os.path.basename(loc) for _ in these_concentrations]
-        }
-            concentrations.append(these_concentrations)
-            prediction_metadata.append(these_prediction_metadata)
-
-    concentrations = np.concatenate(concentrations, axis=0)
-    prediction_metadata = {
-        'id_str': [p for metadata in prediction_metadata for p in metadata['id_str']],
-        'hdf5_loc': [l for metadata in prediction_metadata for l in metadata['hdf5_loc']]
-    }
-    assert len(prediction_metadata['id_str']) == len(concentrations)
-
-    galaxy_id_df = pd.DataFrame(data=prediction_metadata)
-    print(galaxy_id_df.iloc[0]['id_str'])
-
-    return galaxy_id_df, concentrations
-
+from zoobot.tensorflow.predictions import load_predictions
 
 
 def match_predictions_to_catalog(predictions_hdf5_locs: List, catalog, save_loc=None):
@@ -64,7 +27,7 @@ def match_predictions_to_catalog(predictions_hdf5_locs: List, catalog, save_loc=
     # predictions will potentially not be the same galaxies as the catalog
     # need to carefully line them up 
 
-    galaxy_id_df, concentrations = load_hdf5s(predictions_hdf5_locs)
+    galaxy_id_df, concentrations, _ = load_predictions.load_hdf5s(predictions_hdf5_locs)
 
     assert not any(galaxy_id_df.duplicated(subset=['id_str']))
     assert not any(catalog.duplicated(subset=['id_str']))
@@ -84,8 +47,8 @@ def match_predictions_to_catalog(predictions_hdf5_locs: List, catalog, save_loc=
     assert len(galaxy_id_df) == len(label_df)
     assert len(label_df) > 0
 
-    print('Test predictions: {}'.format(len(label_df)))
-    print('Test galaxies from each hdf5:')
+    print('Predictions: {}'.format(len(label_df)))
+    # print('Galaxies from each hdf5:')
 
     if save_loc:
         label_df.to_parquet(save_loc, index=False)
