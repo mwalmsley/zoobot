@@ -9,9 +9,6 @@ from zoobot.shared import schemas
 from zoobot.tensorflow.data_utils import image_datasets
 from zoobot.tensorflow.estimators import define_model, preprocess
 from zoobot.tensorflow.predictions import predict_on_tfrecords, predict_on_dataset
-
-import argparse
-
 from zoobot.shared import label_metadata
 
 """
@@ -35,26 +32,9 @@ if __name__ == '__main__':
     overwrite = True
 
     """Dataframe with list of images on which to make predictions"""
-    if 'example' in run_name:
-        df = pd.read_parquet('data/example_ring_catalog_basic.csv')
-        df['png_loc'] = df['local_png_loc'].apply(lambda x: x)  # TODO customise your paths here
-        logging.info('Loaded {} example galaxies for predictions'.format(len(df)))
-    # Sorry, the rest of these options won't make sense unless you are Mike Walmsley
-    # elif 'dr8' in run_name:
-    #     df = pd.read_parquet('../download_DECaLS_images/master_file_index.parquet')
-    #     logging.info('Galaxies: {}'.format(len(df)))
-    #     df = df.query('png_loc_exists')
-    #     logging.info('Filtered: {}'.format(len(df)))
-    # elif 'dr5' in run_name:
-    #     # petrotheta and png_ready cuts already applied, but no cuts on if prev. uploaded
-    #     df = pd.read_parquet('/share/nas/walml/dr5_nsa_v1_0_0_to_upload.parquet', columns=['iauname', 'png_loc'])
-    #     df['png_loc'] = df['png_loc'].apply(lambda x: os.path.join('/share/nas/walml/galaxy_zoo/decals/dr5/png', x))
-    #     logging.info('Galaxies: {}'.format(len(df)))
-    # elif 'gz2' in run_name:
-    #     df = pd.read_parquet('/raid/scratch/walml/galaxy_zoo/gz2/image_master_catalog.parquet')
-    #     logging.info('Galaxies: {}'.format(len(df)))
-    #     df = df.query('png_ready')
-    #     logging.info('Filtered: {}'.format(len(df)))
+    df = pd.read_parquet('data/example_ring_catalog_basic.csv')  # TODO customise your catalog here
+    df['png_loc'] = df['local_png_loc'].apply(lambda x: x)  # TODO customise file your paths here, if needed (e.g. catalog made on desktop but predictions running on cluster)
+    logging.info('Loaded {} example galaxies for predictions'.format(len(df)))
 
     png_locs = list(df['png_loc'])
 
@@ -147,10 +127,11 @@ if __name__ == '__main__':
     """
     png_batch_size = 10000
     png_start_index = 0
+    n_samples = 1
     while png_start_index < len(png_locs):
         
         # TODO update this path as needed
-        save_loc = 'data/results/make_predictions_loop/{}_{}_raw.csv'.format(run_name, png_start_index)
+        save_loc = 'data/results/make_predictions_loop/{}_{}.hdf5'.format(run_name, png_start_index)
         if not os.path.isfile(save_loc) or overwrite:
 
             unordered_image_paths = png_locs[png_start_index:png_start_index+png_batch_size]
@@ -183,7 +164,6 @@ if __name__ == '__main__':
             If you have done finetuning, use include_top=False and replace the output layers exactly as you did when training.
             For example, below is how to load the model in finetune_minimal.py.
             """
-            n_samples = 1
             predict_on_dataset.predict(image_ds, model, n_samples, label_cols, save_loc)
 
         png_start_index += png_batch_size

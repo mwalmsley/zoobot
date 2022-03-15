@@ -95,7 +95,6 @@ def load_hdf5s(hdf5_locs: List):
     assert len(prediction_metadata['id_str']) == len(predictions)
 
     galaxy_id_df = pd.DataFrame(data=prediction_metadata)
-    print(galaxy_id_df)
 
     return galaxy_id_df, predictions, template_label_cols
 

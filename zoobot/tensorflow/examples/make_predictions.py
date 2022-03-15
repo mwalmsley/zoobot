@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     # label_cols = ['ring']
 
-    # save_loc = 'data/results/make_predictions_example.csv'
+    # save_loc = 'data/results/make_predictions_example.csv'  # supported, but not recommended - especially with n_samples > 1
     save_loc = 'data/results/make_predictions_example.hdf5'
     n_samples = 5
     predict_on_dataset.predict(image_ds, model, n_samples, label_cols, save_loc)
