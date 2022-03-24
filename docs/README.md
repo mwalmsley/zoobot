@@ -10,3 +10,5 @@ autodoc folder has the API import bits
 
 
 docs/requirements.txt is the instructions for readthedocs. Should match (root)/requirements.txt other than the lines for sphinx.
+
+https://github.com/ralsina/rst-cheatsheet/blob/master/rst-cheatsheet.rst
