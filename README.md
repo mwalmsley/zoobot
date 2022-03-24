@@ -1,6 +1,6 @@
 # Zoobot
 
-[![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/)
 
 Zoobot classifies galaxy morphology with deep learning. This code will let you:
 
@@ -67,7 +67,7 @@ I also include some working examples for you to copy and adapt:
 - Support for Weights and Biases (wandb)
 - Worked examples for custom representations
 - [Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing) for GZ predictions and fine-tuning
-- Schemas (questions and answers for the decision trees) extended to include DECaLS DR1/2 and DR8, in various combinations. See `zoobot.label_metadata.py`.
+- Schemas (questions and answers for the decision trees) extended to include DECaLS DR1/2 and DR8, in various combinations. See `zoobot.shared.label_metadata.py`.
 - Test time augmentations are now off by default but can be enabled with `--test-time-augs` on `train_model.py`
 - `create_shards.py` has been refactored. Use the new example script `decals_dr5_to_shards.py` to replicate Zoobot on DECaLS, and `create_shards.py` for general creation of TFRecords from catalogs. `decals_dr5_to_shards.py` now includes train/val/test splits, which it should have had in the first place.
 - `zoobot/data_utils/image_datasets.py` will optionally check if the image paths provided really exist (slightly slower, but sometimes useful). `tfrecord_datasets` and `image_datasets` now serve equivalent purposes.

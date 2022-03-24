@@ -6,5 +6,5 @@ These descriptions are used to create the practical python classes in ``schemas.
 
 See the source code the the descriptions themselves.
 
-.. autofunction:: zoobot.label_metadata.get_gz2_and_decals_dependencies
+.. autofunction:: zoobot.shared.label_metadata.get_gz2_and_decals_dependencies
 
