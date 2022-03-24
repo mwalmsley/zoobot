@@ -1,6 +1,6 @@
 # Zoobot
 
-[![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/)
 
 Zoobot classifies galaxy morphology with deep learning. This code will let you:
 
