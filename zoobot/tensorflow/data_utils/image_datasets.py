@@ -26,6 +26,7 @@ def load_image_file(loc, mode='png'):
     if mode == 'png':
         image = tf.image.decode_png(image)
     elif mode == 'jpeg':  # rename jpg to jpeg or validation checks in decode_jpg will fail
+        # TODO also allow jpg
         image = tf.image.decode_jpeg(image)
     else:
         raise ValueError(f'Image filetype mode {mode} not recognised')
