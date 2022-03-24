@@ -15,8 +15,8 @@ def get_tfrecord_dataset(tfrecord_locs, label_cols, batch_size, shuffle, drop_re
     Does NOT apply any preprocessing.
 
     Minor differences from image_datasets.get_image_dataset:
-    - Includes `shuffle' option, because shuffling is best done when loading the tfrecords as we can interleave from different records (rather than later, after loading)
-    - Labels are expected to already be encoded in the tfrecords (keyed by `label_cols'), hence no `labels' argument
+    - Includes ``shuffle`` option, because shuffling is best done when loading the tfrecords as we can interleave from different records (rather than later, after loading)
+    - Labels are expected to already be encoded in the tfrecords (keyed by ``label_cols``), hence no ``labels`` argument
     
     Args:
         tfrecord_locs (list): paths to tfrecords to load.
@@ -25,10 +25,12 @@ def get_tfrecord_dataset(tfrecord_locs, label_cols, batch_size, shuffle, drop_re
         shuffle (bool): if True, shuffle the dataset
         drop_remainder (bool): if True, drop any galaxies that don't fit exactly into a batch e.g. galaxy 9 of a list of 9 galaxies with batch size 8. Default False.
     
+
     Returns:
         tf.data.Dataset: yielding batches of {'matrix': , 'id_str': , label_cols[0]: , label_cols[1], ...}, optionally shuffled and cut.
     """
     feature_spec = get_feature_spec(label_cols)
+
 
     dataset = load_tfrecords(tfrecord_locs, feature_spec, shuffle=shuffle)
     dataset = dataset.batch(batch_size, drop_remainder=drop_remainder)

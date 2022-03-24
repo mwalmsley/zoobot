@@ -7,3 +7,6 @@ cd docs
 make html
 
 autodoc folder has the API import bits
+
+
+docs/requirements.txt is the instructions for readthedocs. Should match (root)/requirements.txt other than the lines for sphinx.
