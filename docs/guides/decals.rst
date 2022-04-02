@@ -22,11 +22,11 @@ The high-level approach to create a CNN is:
 
 - Define the decision tree asked of volunteers in ``schemas.py``. *Already done for GZD-5 and GZ2.*
 - Prepare a catalog with your images and labels (matching the decision tree)
-- Create TFRecord shards (groups of images encoded for fast reading) from your catalog with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`__
+- Create TFRecord shards (groups of images encoded for fast reading) from your catalog with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__
 - Train the CNN on those shards with `train_model.py <https://github.com/mwalmsley/zoobot/blob/main/train_model.py>`__.
 
 Galaxy Zoo uses a decision tree where the questions asked depend upon the previous answers.
-The decision tree is defined under `schemas.py <https://github.com/mwalmsley/zoobot/blob/zoobot/schemas.py>`_ and `label_metadata.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/label_metadata.py>`_.
+The decision tree is defined under `schemas.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/schemas.py>`_ and `label_metadata.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/label_metadata.py>`_.
 The GZ2 and GZ DECaLS decision trees are already defined for you; for other projects, you'll need to define your own (it's easy, just follow the same pattern).
 
 Create a catalog with all your labelled galaxies.
@@ -37,16 +37,16 @@ The catalog should be a csv file with rows of (unique) galaxies and columns incl
 - a column with the total votes for each label you want to predict, matching the schema (above).  For GZD-5, this is e.g. smooth-or-featured_smooth, smooth-or-featured_featured-or-disk, etc.
 
 It's quite slow to train a model using normal images, and so we first encode them as several TFRecords, a format which is much faster to read.
-Make these with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`__, passing in your catalog location and where the TFRecords should be placed e.g.
+Make these with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__, passing in your catalog location and where the TFRecords should be placed e.g.
 
 .. code-block:: bash
 
     python create_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
 
-More options are available, and you may need to adjust the label columns; see the examples in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`__.
+More options are available, and you may need to adjust the label columns; see the examples in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__.
 I like to use these options to make very small shards for quick debugging: ``python create_shards.py --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv --shard-dir data/decals/shards/decals_debug --img-size 300 --eval-size 100 --max-labelled 500 --max-unlabelled 300 --img-size 32``.
 
-Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/main/training/training_config.py>`__. has the code to do this. 
+Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/training_config.py>`__. has the code to do this. 
 Use it in your own code like so:
 
 .. code-block:: python
