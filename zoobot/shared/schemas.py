@@ -3,6 +3,9 @@ from typing import List
 
 import numpy as np
 
+from zoobot.shared import label_metadata
+
+
 class Question():
 
     def __init__(self, question_text:str, answer_text: List, label_cols:List):
@@ -137,7 +140,7 @@ class Schema():
         """
         logging.debug(f'Q/A pairs: {question_answer_pairs}')
         self.question_answer_pairs = question_answer_pairs
-        _, self.label_cols = extract_questions_and_label_cols(question_answer_pairs)
+        _, self.label_cols = label_metadata.extract_questions_and_label_cols(question_answer_pairs)
         self.dependencies = dependencies
         """
         Be careful:
@@ -153,7 +156,6 @@ class Schema():
         assert len(self.question_index_groups) > 0
         assert len(self.questions) == len(self.question_index_groups)
 
-        print(self.named_index_groups)
 
     def get_answer(self, answer_text):
         """
@@ -172,6 +174,7 @@ class Schema():
         except IndexError:
             raise ValueError('Answer not found: ', answer_text)
 
+
     def get_question(self, question_text):
         """
 
@@ -189,6 +192,7 @@ class Schema():
         except  IndexError:
             raise ValueError('Question not found: ', question_text)
     
+
     @property
     def question_index_groups(self):
         """
@@ -241,6 +245,7 @@ class Schema():
             p_prev_answer = self.joint_p(prob_of_answers, prev_answer.text)  # recursive
             return p_answer_given_question * p_prev_answer
 
+
     @property
     def answers(self):
         """
@@ -253,20 +258,3 @@ class Schema():
             for a in q.answers:
                 answers.append(a)
         return answers
-
-
-def extract_questions_and_label_cols(question_answer_pairs):
-    """
-    Convenience wrapper to get list of questions and label_cols from a schema.
-    Common starting point for analysis, iterating over questions, etc.
-
-    Args:
-        question_answer_pairs (dict): e.g. {'smooth-or-featured: ['_smooth, _featured-or-disk, ...], ...}
-
-    Returns:
-        list: all questions e.g. [Question('smooth-or-featured'), ...]
-        list: label_cols (list of answer strings). See ``label_metadata.py`` for examples.
-    """
-    questions = list(question_answer_pairs.keys())
-    label_cols = [q + answer for q, answers in question_answer_pairs.items() for answer in answers]
-    return questions, label_cols

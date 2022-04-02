@@ -89,7 +89,7 @@ if __name__ == '__main__':
       os.mkdir(save_dir)
 
     question_answer_pairs = label_metadata.decals_pairs
-    dependencies = label_metadata.get_gz2_and_decals_dependencies(question_answer_pairs)
+    dependencies = label_metadata.gz2_and_decals_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 

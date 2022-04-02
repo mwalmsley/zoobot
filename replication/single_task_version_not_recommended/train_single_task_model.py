@@ -85,7 +85,7 @@ if __name__ == '__main__':
       os.mkdir(save_dir)
 
     question_answer_pairs = label_metadata.decals_pairs
-    dependencies = label_metadata.get_gz2_and_decals_dependencies(question_answer_pairs)
+    dependencies = gz2_and_decals_dependencies
 
     # TODO this bit is the bit I changed! otherwise copy-paste
     # question_answer_pairs = {'smooth-or-featured': question_answer_pairs['smooth-or-featured']}  # keep only this dict key

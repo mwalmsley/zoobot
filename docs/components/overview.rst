@@ -51,7 +51,7 @@ The easiest way to load data into a tf.dataset is directly from images (png or j
 
 Loading images from disk is simple but slow. 
 If fast training is important, you can save those images as binary TFRecords.
-See :ref:`reproducing DECaLS <reproducing_decals>` for more and `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`_ for a full example.
+See :ref:`reproducing DECaLS <training_from_scratch>` for more and `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`_ for a full example.
 
 .. code-block:: python
 
@@ -113,7 +113,7 @@ Zoobot trains the convolutional neural network `EfficientNet <https://ai.googleb
 Random augmentations (crops, flips and rotations) will be applied by the first layers of the network
 (using `tf.keras.layers.experimental.preprocessing <https://www.tensorflow.org/api_docs/python/tf/keras/layers/experimental/preprocessing>`_).
 
-The exact model and loss to use depend on if you are :ref:`reproducing DECaLS <reproducing_decals>` or :ref:`finetuning <finetuning_guide>`. 
+The exact model and loss to use depend on if you are :ref:`reproducing DECaLS <training_from_scratch>` or :ref:`finetuning <finetuning_guide>`. 
 Click each link for a specific guide.
 
 The general steps are the same: define the model architecture, select a loss function and optimizer, configure training options, and begin training.

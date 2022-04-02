@@ -19,7 +19,7 @@ Training a New Model
 Representations (in this context) are simply the activations of the model before the final dense layer(s).
 Training a model (optimizing the weights) teaches it to create useful representations of input images.
 Train exactly like you normally would. The representations may be more useful if you train on a broad multi-question task, like answering the GZ decision tree.
-See :ref:`reproducing_decals` for a guide to training a new model.
+See :ref:`training_from_scratch` for a guide to training a new model.
 
 We have published pretrained weights for models trained on GZ DECaLS - see :ref:`datanotes`. 
 You could start with these and calculate representations on some new galaxies.

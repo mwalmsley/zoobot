@@ -20,7 +20,7 @@ The high-level approach is:
 You will likely only need a small amount of labelled images; a few hundred is a good starting point. 
 This is because Zoobot includes a classifier already trained to answer Galaxy Zoo questions for DECaLS galaxies.
 Retraining (finetuning) this model requires much less time and labels than starting from scratch.
-If you do want to start from scratch, to reproduce or improve upon the pretrained classifier, :ref:`Zoobot can do that as well <reproducing_decals>`.
+If you do want to start from scratch, to reproduce or improve upon the pretrained classifier, :ref:`Zoobot can do that as well <training_from_scratch>`.
 
 
 Examples

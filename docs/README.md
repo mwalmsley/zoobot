@@ -3,6 +3,9 @@ conda install sphinx
 
 <!-- local build -->
 <!-- https://www.sphinx-doc.org/en/master/usage/quickstart.html -->
+
+sudo apt install make 
+
 cd docs
 make html
 

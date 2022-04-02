@@ -62,7 +62,7 @@ if __name__ == '__main__':
     #     output_dim=34 
     # )
     # question_answer_pairs = label_metadata.decals_pairs
-    # dependencies = label_metadata.get_gz2_and_decals_dependencies(question_answer_pairs)
+    # dependencies = gz2_and_decals_dependencies
     # schema = schemas.Schema(question_answer_pairs, dependencies)
     # label_cols = schema.label_cols
 

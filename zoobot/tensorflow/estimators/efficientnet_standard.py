@@ -17,7 +17,6 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from six.moves import xrange
 from keras_applications.imagenet_utils import _obtain_input_shape
 
 # use my custom layers to have dropout always on
@@ -372,7 +371,7 @@ def EfficientNet(width_coefficient,
             block_args = block_args._replace(
                 input_filters=block_args.output_filters, strides=[1, 1])
             # pylint: enable=protected-access
-            for bidx in xrange(block_args.num_repeat - 1):
+            for bidx in range(block_args.num_repeat - 1):  # no need for six library, assume user is on python 3
                 drop_rate = drop_connect_rate * float(block_num) / num_blocks_total
                 block_prefix = 'block{}{}_'.format(
                     idx + 1,

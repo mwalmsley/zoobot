@@ -3,6 +3,9 @@ Save catalog columns and images to tfrecord shards.
 Allowed to assume:
 - Each catalog entry has an image under `file_loc`. Must be .png file (easy to extend to others if you need, submit a PR)
 - Each catalog entry has an identifier under `id_str`
+
+For a full working example, see `zoobot/tensorflow/examples/decals_dr5_to_shards.py`
+
 """
 
 import os

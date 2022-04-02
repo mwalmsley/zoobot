@@ -23,7 +23,7 @@ The weights of two of these CNN are available under ``data/pretrained_models``.
 - ``decals_dr_train_set_only_m0`` was trained only on a training set and then evaluated on a test set to calculate the performance metrics in W+21.
 - ``decals_dr_trained_on_all_labelled_m0`` was trained on all labelled data and used to make the automated predictions released with W+21 as well as the representations for W+22 (see below). 
 
-You could replicate these from scratch if you like, or even make improvements - see :ref:`the DECaLS guide <reproducing_decals>`.
+You could replicate these from scratch if you like, or even make improvements - see :ref:`the DECaLS guide <training_from_scratch>`.
 
 
 Representations
