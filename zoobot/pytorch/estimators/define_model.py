@@ -10,12 +10,12 @@ import pytorch_lightning as pl
 
 
 class ZoobotModel(pl.LightningModule):
-    def __init__(self, schema, loss, channels):
+    def __init__(self, schema, loss, channels, get_architecture=efficientnet_standard.efficientnet_b0):
         super().__init__()
 
         self.schema = schema
 
-        self.model = get_model(self.output_dims, channels=channels)
+        self.model = get_model(self.output_dims, channels=channels, get_architecture=get_architecture)
         self.loss = loss
 
     def forward(self, x):
@@ -133,7 +133,7 @@ def get_model(
     use_imagenet_weights=False,
     always_augment=True,
     dropout_rate=0.2,
-    get_effnet=efficientnet_standard.efficientnet_b0
+    get_architecture=efficientnet_standard.efficientnet_b0
     ):
     """
     Create a trainable efficientnet model.
@@ -176,11 +176,11 @@ def get_model(
 
     # effnet = efficientnet_custom.define_headless_efficientnet(
     #     input_shape=shape_after_preprocessing_layers,
-    #     get_effnet=get_effnet,
-    #     # further kwargs will be passed to get_effnet
+    #     get_architecture=get_architecture,
+    #     # further kwargs will be passed to get_architecture
     #     use_imagenet_weights=use_imagenet_weights,
     # )
-    effnet = get_effnet(
+    effnet = get_architecture(
         input_channels=channels,
         use_imagenet_weights=use_imagenet_weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
