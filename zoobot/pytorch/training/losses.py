@@ -31,8 +31,7 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups):
     
     total_loss = torch.stack(q_losses, axis=1)
 
-    return total_loss  # leave the reduce_sum to the tf.keras.losses.Loss base class, loss should keep the batch size. 
-    # https://www.tensorflow.org/api_docs/python/tf/keras/losses/Loss will auto-reduce (sum) over the batch anyway
+    return total_loss  # leave the reduction to pytorch lightning
 
 
 def dirichlet_loss(labels_for_q, concentrations_for_q):
