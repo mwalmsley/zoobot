@@ -8,6 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
+#SBATCH --nodelist=compute-0-3
 
 pwd; hostname; date
 
@@ -24,7 +25,7 @@ THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
 EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug
 
-$PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/cuda_check.py \
+$PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 
 # --catalog does nothing currently because I provide the splits explicitly
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
