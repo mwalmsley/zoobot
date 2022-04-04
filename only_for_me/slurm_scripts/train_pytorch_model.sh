@@ -32,7 +32,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --resize-size 224 \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
-    --batch-size 512 \
+    --batch-size 2048 \
     --gpus 2  \
     --nodes 1 \
     --wandb
