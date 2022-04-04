@@ -180,11 +180,14 @@ def get_model(
     #     # further kwargs will be passed to get_architecture
     #     use_imagenet_weights=use_imagenet_weights,
     # )
+    # representation_dim = 1280
+
     effnet = get_architecture(
         input_channels=channels,
         use_imagenet_weights=use_imagenet_weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
     )
+    representation_dim = 1024
 
     modules_to_use.append(effnet)
 
@@ -192,9 +195,9 @@ def get_model(
 
     if include_top:
         assert output_dim is not None
-        # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard - "AdaptiveAvgPool2d"
+        # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
         modules_to_use.append(custom_layers.PermaDropout(dropout_rate))
-        modules_to_use.append(efficientnet_custom.custom_top_dirichlet(output_dim))  # unlike tf version, not inplace
+        modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
 
     # if weights_loc:
     #     load_weights(model, weights_loc, expect_partial=expect_partial)

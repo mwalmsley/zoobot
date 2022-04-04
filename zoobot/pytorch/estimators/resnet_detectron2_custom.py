@@ -22,7 +22,11 @@ def get_resnet(
     base_resnet = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
     # output is dict of default_config.MODEL.OUT_FEATURES e.g. {'res4': (res4 features)}
 
-    return base_resnet
+    base_resnet_with_pooling = torch.nn.Sequential(
+            base_resnet, torch.nn.AdaptiveAvgPool2d((1, 1))
+    )
+
+    return base_resnet_with_pooling
 
 
 if __name__ == '__main__':
@@ -31,9 +35,11 @@ if __name__ == '__main__':
 
     input_shape = shape_spec.ShapeSpec(height=None, width=None, channels=1, stride=None)
 
-    base_resnet = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
-    # print(base_resnet)
+    # model = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
+    # print(model)
+    model = get_resnet(input_channels=1)
+
 
     x = torch.from_numpy(np.random.rand(64, 1, 224, 224)).float()
-    print(base_resnet(x))
-    print(base_resnet(x).shape)
+    # print(model(x))
+    print(model(x).shape)

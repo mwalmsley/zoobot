@@ -24,7 +24,7 @@ from torch import nn, Tensor
 
 
 
-def custom_top_dirichlet(output_dim):
+def custom_top_dirichlet(input_dim, output_dim):
     """
     Final dense layer used in GZ DECaLS (after global pooling). 
     ``output_dim`` neurons with an activation of ``tf.nn.sigmoid(x) * 100. + 1.``, chosen to ensure 1-100 output range
@@ -36,7 +36,7 @@ def custom_top_dirichlet(output_dim):
         output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
     """
     return nn.Sequential(
-        nn.Linear(in_features=1280, out_features=output_dim),  
+        nn.Linear(in_features=input_dim, out_features=output_dim),  
         ScaledSigmoid()
     )
 
