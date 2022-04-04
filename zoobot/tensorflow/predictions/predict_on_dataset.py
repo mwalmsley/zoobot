@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import tensorflow as tf
 
-from zoobot.tensorflow.predictions import save_predictions
+from zoobot.shared import save_predictions
 
 
 def predict(ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_cols: List, save_loc: str):

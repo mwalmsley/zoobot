@@ -24,7 +24,3 @@ This is crucial for both calculating the custom loss and analysing the predictio
 .. autoclass:: zoobot.shared.schemas.Schema
 
 |
-
-.. autofunction:: zoobot.shared.schemas.extract_questions_and_label_cols
-
-|

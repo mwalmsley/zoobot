@@ -9,18 +9,21 @@ Creating Shards
 ---------------
 
 It's quite slow to train a model using normal images, and so we first encode them as several TFRecords, a format which is much faster to read.
-Make these with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/pytorch/create_shards.py>`__, passing in your catalog location and where the TFRecords should be placed e.g.
+Make these with the helper functions in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/data_utils/create_shards.py>`__.
+These expect a csv listing volunteer votes and image paths.
+See `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__ for a full working example, run like:
 
 .. code-block:: bash
 
-    python create_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
+    python decals_dr5_to_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
 
-More options are available, and you may need to adjust the label columns; see the examples in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/pytorch/create_shards.py>`__.
+More options are available, and you may need to adjust the label columns; see the example for more details.
+
 I like to use these options to make very small shards for quick debugging: 
 
 .. code-block:: bash
 
-    python create_shards.py \
+    python decals_dr5_to_shards.py \
         --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv \
         --shard-dir data/decals/shards/decals_debug \
         --img-size 300 \
@@ -33,7 +36,7 @@ I like to use these options to make very small shards for quick debugging:
 Training on Shards
 ------------------
 
-Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/pytorch/training/training_config.py>`__. has the code to do this. 
+Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/training/training_config.py>`__. has the code to do this. 
 Use it in your own code like so:
 
 .. code-block:: python
@@ -76,7 +79,7 @@ Use it in your own code like so:
     )
 
 
-There is a complete working example at `train_model.py <https://github.com/mwalmsley/zoobot/blob/pytorch/train_model.py>`__ which you can copy and adapt.
+There is a complete working example at `train_model.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/train_model.py>`__ which you can copy and adapt.
 I've skipped loading the training and test datasets in the above, for clarity - see the worked example.
 
 Once trained, the model can be used to make new predictions on either folders of images (png, jpeg) or TFRecords. For example:
@@ -118,7 +121,7 @@ Once trained, the model can be used to make new predictions on either folders of
         save_loc='output/folder/ring_predictions.csv'
     )
 
-There is a complete working example at `make_predictions.py <https://github.com/mwalmsley/zoobot/blob/pytorch/make_predictions.py>`_.
+There is a complete working example at `make_predictions.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/make_predictions.py>`_.
 This example shows how to make predictions on new galaxies (by default), and how to make predictions with the custom finetuned model from ``finetime_minimal.py`` (commented out).
 Check out the code to see both versions.
 
