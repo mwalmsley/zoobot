@@ -35,3 +35,12 @@ class PermaDropout(nn.modules.dropout._DropoutNd):
 # class PermaRandomCrop(tf.keras.layers.experimental.preprocessing.RandomCrop):
 #     def call(self, x, training=None):
 #         return super().call(x, training=True)
+
+class View(nn.Module):
+    def __init__(self, shape):
+        super(View, self).__init__()
+        self.shape = shape
+
+    def forward(self, x):
+        return x.view(*self.shape)
+

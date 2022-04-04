@@ -23,7 +23,9 @@ def get_resnet(
     # output is dict of default_config.MODEL.OUT_FEATURES e.g. {'res4': (res4 features)}
 
     base_resnet_with_pooling = torch.nn.Sequential(
-            base_resnet, torch.nn.AdaptiveAvgPool2d((1, 1))
+        base_resnet,
+        torch.nn.AdaptiveAvgPool2d((1, 1)),
+        torch.nn.Flatten(1)  # adaptive pool leaves NC11, want NC before linear layer so flatten after dim=1
     )
 
     return base_resnet_with_pooling
@@ -37,9 +39,25 @@ if __name__ == '__main__':
 
     # model = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
     # print(model)
-    model = get_resnet(input_channels=1)
 
 
-    x = torch.from_numpy(np.random.rand(64, 1, 224, 224)).float()
+    # model = get_resnet(input_channels=1)
+
+    from zoobot.pytorch.training import losses
+    from zoobot.shared import label_metadata, schemas
+    from zoobot.pytorch.estimators import define_model
+
+    question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
+    dependencies = label_metadata.decals_ortho_dependencies
+    schema = schemas.Schema(question_answer_pairs, dependencies)
+
+    loss_func = losses.calculate_multiquestion_loss
+
+    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=1, get_architecture=get_resnet)
+    # print(model)
+    # exit()
+
+
+    x = torch.from_numpy(np.random.rand(16, 1, 224, 224)).float()
     # print(model(x))
     print(model(x).shape)

@@ -1,4 +1,5 @@
 import logging
+from sys import modules
 
 import numpy as np
 import torch
@@ -195,9 +196,16 @@ def get_model(
 
     if include_top:
         assert output_dim is not None
+
+
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
+
+        
         modules_to_use.append(custom_layers.PermaDropout(dropout_rate))
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
+
+        # modules_to_use.append(custom_layers.View((512, representation_dim, 1, 1)))
+        # modules_to_use.append(torch.nn.Linear(representation_dim, 5))
 
     # if weights_loc:
     #     load_weights(model, weights_loc, expect_partial=expect_partial)
