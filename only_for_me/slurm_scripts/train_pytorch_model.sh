@@ -13,6 +13,8 @@ pwd; hostname; date
 
 nvidia-smi
 
+nvcc
+
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
@@ -21,6 +23,8 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
 EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug
+
+$PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/cuda_check.py \
 
 # --catalog does nothing currently because I provide the splits explicitly
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
