@@ -1,5 +1,5 @@
 import torch
 
-print(torch.__version__)
-print(torch.cuda.is_available())
-print(torch.version.cuda)
+print('Pytorch', torch.__version__)
+print('CUDA', torch.cuda.is_available())
+print('CUDA version', torch.version.cuda)

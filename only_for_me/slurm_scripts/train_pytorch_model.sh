@@ -14,8 +14,6 @@ pwd; hostname; date
 
 nvidia-smi
 
-nvcc
-
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
