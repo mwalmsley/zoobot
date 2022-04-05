@@ -103,19 +103,19 @@ if __name__ == '__main__':
 
     # or, explicit splits provided
     train_catalog_locs = [
-      # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/train_shards/train_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/train_shards/train_df.csv',
       '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/train_shards/train_df.csv',
-      # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/train_shards/train_df.csv'
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/train_shards/train_df.csv'
     ]
     val_catalog_locs = [
-      # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/val_shards/val_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/val_shards/val_df.csv',
       '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/val_shards/val_df.csv',
-      # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/val_shards/val_df.csv'
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/val_shards/val_df.csv'
     ]
     test_catalog_locs = [
-      # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/test_shards/test_df.csv',
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/test_shards/test_df.csv',
       '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/test_shards/test_df.csv',
-      # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/test_shards/test_df.csv'
+      '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/test_shards/test_df.csv'
     ]
 
     train_catalog = pd.concat([pd.read_csv(loc) for loc in train_catalog_locs])
@@ -131,10 +131,10 @@ if __name__ == '__main__':
 
         logging.info(catalog['file_loc'].iloc[0])
 
-    # debug mode
-    train_catalog = train_catalog.sample(5000).reset_index(drop=True)
-    val_catalog = val_catalog.sample(5000).reset_index(drop=True)
-    test_catalog = test_catalog.sample(5000).reset_index(drop=True)
+    # # debug mode
+    # train_catalog = train_catalog.sample(5000).reset_index(drop=True)
+    # val_catalog = val_catalog.sample(5000).reset_index(drop=True)
+    # test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
 
     num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
@@ -180,16 +180,16 @@ if __name__ == '__main__':
     else:
       wandb_logger = None
 
-    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    if wandb_logger is not None:
-      for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-        for images, labels in dataloader:
-          # logging.info(images.shape)
-          images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
-          # images_np = images.numpy()
-          logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
-          break  # only inner loop aka don't log the whole dataloader
+    # # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
+    # if wandb_logger is not None:
+    #   for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+    #     for images, labels in dataloader:
+    #       # logging.info(images.shape)
+    #       images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
+    #       # images_np = images.numpy()
+    #       logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+    #       wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
+    #       break  # only inner loop aka don't log the whole dataloader
 
     loss_func = losses.calculate_multiquestion_loss
 
