@@ -88,7 +88,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         transforms_to_apply = [transforms.ConvertImageDtype(torch.float)]  # automatically normalises from 0-255 int to 0-1 float
     
         if self.greyscale:
-            transforms_to_apply += [GrayscaleUnweighted]    # transforms.Grayscale() adds perceptual weighting to rgb channels
+            transforms_to_apply += [GrayscaleUnweighted()]    # transforms.Grayscale() adds perceptual weighting to rgb channels
 
         transforms_to_apply += [
             transforms.RandomResizedCrop(
