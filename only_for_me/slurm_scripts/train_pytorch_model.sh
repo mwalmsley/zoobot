@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --nodelist=compute-0-4
+#SBATCH --nodelist=compute-0-5
 
 pwd; hostname; date
 
@@ -22,7 +22,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b512_res5
+EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b256_res5
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 
@@ -33,7 +33,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --resize-size 224 \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
-    --batch-size 512 \
+    --batch-size 256 \
     --gpus 2  \
     --nodes 1 \
     --wandb
