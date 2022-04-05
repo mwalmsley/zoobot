@@ -83,21 +83,23 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def transform_with_torchvision(self):
 
-        transforms_to_apply = [transforms.ConvertImageDtype(torch.float)]
-    
-        if self.greyscale:
-            transforms_to_apply += [transforms.Grayscale()]  
+        # assume input is 0-255 uint8 tensor
 
-        transforms_to_apply += [
-            transforms.RandomResizedCrop(
-                size=(224, 224),  # after crop then resize
-                # size=(244, 244),  # after crop then resize
-                scale=(0.7, 0.8),  # crop factor
-                ratio=(0.9, 1.1),  # crop aspect ratio
-                interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR)
-        ]
+        transforms_to_apply = [transforms.ConvertImageDtype(torch.float)]  # automatically normalises from 0-255 int to 0-1 float
+    
+        # if self.greyscale:
+        #     transforms_to_apply += [transforms.Grayscale()]  
+
+        # transforms_to_apply += [
+        #     transforms.RandomResizedCrop(
+        #         size=(224, 224),  # after crop then resize
+        #         # size=(244, 244),  # after crop then resize
+        #         scale=(0.7, 0.8),  # crop factor
+        #         ratio=(0.9, 1.1),  # crop aspect ratio
+        #         interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
+        #     transforms.RandomHorizontalFlip(),
+        #     transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR)
+        # ]
 
         self.transform = transforms.Compose(transforms_to_apply)
 
@@ -202,11 +204,13 @@ class DECALSDR8Dataset(Dataset):
             image = torch.from_numpy(decode_jpeg(f.read()).transpose(2,0,1))
         label = get_galaxy_label(galaxy, self.schema)
 
+        logging.info((image.shape, torch.max(image), image.dtype, label))  # probably 0-255 uint8
+
         if self.transform:
             # TODO eww an extra if
             if self.album:
                 # album wants HWC np.array
-                image = np.asarray(image).transpose(1,2,0)
+                image = np.asarray(image).transpose(1,2,0)  # send it back to np from tensor...
                 # Returns torch.tensor CHW for torch using ToTensorV2() as last transform
                 # e.g.: https://albumentations.ai/docs/examples/pytorch_classification/
                 image = self.transform(image=image)['image']
@@ -216,7 +220,7 @@ class DECALSDR8Dataset(Dataset):
         if self.target_transform:
             label = self.target_transform(label)
 
-        logging.info((image.shape, label))
+        logging.info((image.shape, torch.max(image), image.dtype, label))  # probably now 0-1 float
         return image, label
 
 class DECALSDR8DatasetMemory(DECALSDR8Dataset):
