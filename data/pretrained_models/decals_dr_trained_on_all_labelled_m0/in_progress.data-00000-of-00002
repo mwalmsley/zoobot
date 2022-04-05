@@ -1,2589 +1,0 @@
-Â”<!¿
-é
-layer-0
-layer-1
-layer-2
-layer_with_weights-0
-layer-3
-layer_with_weights-1
-layer-4
-step
-	optimizer
-
-
-_rng
-
-
-	_rng
-
-
-
-_rng
-4
-layer_with_weights-0
-layer-0
-layer-1
-
-
-kernel
-bias
-?=
-VARIABLE_VALUE
-model_stepstep/.ATTRIBUTES/VARIABLE_VALUE
-ä%
-iter
-
-beta_1
-
-beta_2
-	decay
-learning_ratem„m‰	˝mÂ	ˇmÊ	ÄmÁ	ÉmË	ÖmÈ	ÜmÍ	âmÎ	ämÏ	ãmÌ	åmÓ	çmÔ	èm	êmÒ	ìmÚ	ïmÛ	ñmÙ	ômı	õmˆ	úm˜	üm¯	†m˘	°m˙	¢m˚	£m¸	•m˝	¶m˛	©mˇ	´mÄ	¨mÅ	ØmÇ	±mÉ	≤mÑ	µmÖ	∂mÜ	∑má	∏mà	πmâ	ªmä	ºmã	ømå	¡mç	¬mé	≈mè	«mê	»më	Àmí	Ãmì	Õmî	Œmï	œmñ	—mó	“mò	’mô	◊mö	ÿmõ	€mú	›mù	ﬁmû	·mü	‚m†	„m°	‰m¢	Âm£	Ám§	Ëm•	Îm¶	Ìmß	Óm®	Òm©	Ûm™	Ùm´	˜m¨	¯m≠	˘mÆ	˙mØ	˚m∞	˝m±	˛m≤	Åm≥	Ém¥	Ñmµ	ám∂	âm∑	äm∏	çmπ	ém∫	èmª	êmº	ëmΩ	ìmæ	îmø	óm¿	ôm¡	öm¬	ùm√	ümƒ	†m≈	£m∆	§m«	•m»	¶m…	ßm 	©mÀ	™mÃ	≠mÕ	ØmŒ	∞mœ	≥m–	µm—	∂m“	πm”	∫m‘	ªm’	ºm÷	Ωm◊	ømÿ	¿mŸ	√m⁄	≈m€	∆m‹	…m›	Àmﬁ	Ãmﬂ	œm‡	–m·	—m‚	“m„	”m‰	’mÂ	÷mÊ	ŸmÁ	€mË	‹mÈ	ﬂmÍ	·mÎ	‚mÏ	ÂmÌ	ÊmÓ	ÁmÔ	Ëm	ÈmÒ	ÎmÚ	ÏmÛ	ÔmÙ	Òmı	Úmˆ	ım˜	˜m¯	¯m˘	˚m˙	¸m˚	˝m¸	˛m˝	ˇm˛	Åmˇ	ÇmÄ	ÖmÅ	ámÇ	àmÉ	ãmÑ	çmÖ	émÜ	ëmá	ímà	ìmâ	îmä	ïmã	ómå	òmç	õmé	ùmè	ûmê	°më	£mí	§mì	ßmî	®mï	©mñ	™mó	´mò	≠mô	Æmö	±mõ	≥mú	¥mù	∑mû	πmü	∫m†	Ωm°	æm¢	øm£	¿m§	¡m•	√m¶	ƒmß	«m®	…m©	 m™	Õm´	œm¨	–m≠	”mÆ	‘mØ	’m∞	÷m±	◊m≤	Ÿm≥	⁄m¥	›mµ	ﬂm∂	‡m∑v∏vπ	˝v∫	ˇvª	Ävº	ÉvΩ	Övæ	Üvø	âv¿	äv¡	ãv¬	åv√	çvƒ	èv≈	êv∆	ìv«	ïv»	ñv…	ôv 	õvÀ	úvÃ	üvÕ	†vŒ	°vœ	¢v–	£v—	•v“	¶v”	©v‘	´v’	¨v÷	Øv◊	±vÿ	≤vŸ	µv⁄	∂v€	∑v‹	∏v›	πvﬁ	ªvﬂ	ºv‡	øv·	¡v‚	¬v„	≈v‰	«vÂ	»vÊ	ÀvÁ	ÃvË	ÕvÈ	ŒvÍ	œvÎ	—vÏ	“vÌ	’vÓ	◊vÔ	ÿv	€vÒ	›vÚ	ﬁvÛ	·vÙ	‚vı	„vˆ	‰v˜	Âv¯	Áv˘	Ëv˙	Îv˚	Ìv¸	Óv˝	Òv˛	Ûvˇ	ÙvÄ	˜vÅ	¯vÇ	˘vÉ	˙vÑ	˚vÖ	˝vÜ	˛vá	Åvà	Évâ	Ñvä	ávã	âvå	ävç	çvé	évè	èvê	êvë	ëví	ìvì	îvî	óvï	ôvñ	övó	ùvò	üvô	†vö	£võ	§vú	•vù	¶vû	ßvü	©v†	™v°	≠v¢	Øv£	∞v§	≥v•	µv¶	∂vß	πv®	∫v©	ªv™	ºv´	Ωv¨	øv≠	¿vÆ	√vØ	≈v∞	∆v±	…v≤	Àv≥	Ãv¥	œvµ	–v∂	—v∑	“v∏	”vπ	’v∫	÷vª	Ÿvº	€vΩ	‹væ	ﬂvø	·v¿	‚v¡	Âv¬	Êv√	Ávƒ	Ëv≈	Èv∆	Îv«	Ïv»	Ôv…	Òv 	ÚvÀ	ıvÃ	˜vÕ	¯vŒ	˚vœ	¸v–	˝v—	˛v“	ˇv”	Åv‘	Çv’	Öv÷	áv◊	àvÿ	ãvŸ	çv⁄	év€	ëv‹	ív›	ìvﬁ	îvﬂ	ïv‡	óv·	òv‚	õv„	ùv‰	ûvÂ	°vÊ	£vÁ	§vË	ßvÈ	®vÍ	©vÎ	™vÏ	´vÌ	≠vÓ	ÆvÔ	±v	≥vÒ	¥vÚ	∑vÛ	πvÙ	∫vı	Ωvˆ	æv˜	øv¯	¿v˘	¡v˙	√v˚	ƒv¸	«v˝	…v˛	 vˇ	ÕvÄ	œvÅ	–vÇ	”vÉ	‘vÑ	’vÖ	÷vÜ	◊vá	Ÿvà	⁄vâ	›vä	ﬂvã	‡vå
-
-
-_state_var
-
-
-_state_var
-
-
-_state_var
-ô7
-layer-0
-layer_with_weights-0
-layer-1
-layer_with_weights-1
-layer-2
-layer-3
-layer_with_weights-2
-layer-4
-layer_with_weights-3
-layer-5
-layer-6
-layer-7
-layer-8
- layer_with_weights-4
- layer-9
-!layer_with_weights-5
-!layer-10
-"layer-11
-#layer_with_weights-6
-#layer-12
-$layer_with_weights-7
-$layer-13
-%layer_with_weights-8
-%layer-14
-&layer_with_weights-9
-&layer-15
-'layer-16
-(layer_with_weights-10
-(layer-17
-)layer_with_weights-11
-)layer-18
-*layer-19
-+layer-20
-,layer-21
--layer_with_weights-12
--layer-22
-.layer_with_weights-13
-.layer-23
-/layer-24
-0layer_with_weights-14
-0layer-25
-1layer_with_weights-15
-1layer-26
-2layer_with_weights-16
-2layer-27
-3layer_with_weights-17
-3layer-28
-4layer-29
-5layer_with_weights-18
-5layer-30
-6layer_with_weights-19
-6layer-31
-7layer-32
-8layer-33
-9layer-34
-:layer_with_weights-20
-:layer-35
-;layer_with_weights-21
-;layer-36
-<layer-37
-=layer_with_weights-22
-=layer-38
->layer_with_weights-23
->layer-39
-?layer-40
-@layer-41
-Alayer_with_weights-24
-Alayer-42
-Blayer_with_weights-25
-Blayer-43
-Clayer-44
-Dlayer_with_weights-26
-Dlayer-45
-Elayer_with_weights-27
-Elayer-46
-Flayer-47
-Glayer-48
-Hlayer-49
-Ilayer_with_weights-28
-Ilayer-50
-Jlayer_with_weights-29
-Jlayer-51
-Klayer-52
-Llayer_with_weights-30
-Llayer-53
-Mlayer_with_weights-31
-Mlayer-54
-Nlayer_with_weights-32
-Nlayer-55
-Olayer_with_weights-33
-Olayer-56
-Player-57
-Qlayer_with_weights-34
-Qlayer-58
-Rlayer_with_weights-35
-Rlayer-59
-Slayer-60
-Tlayer-61
-Ulayer-62
-Vlayer_with_weights-36
-Vlayer-63
-Wlayer_with_weights-37
-Wlayer-64
-Xlayer-65
-Ylayer_with_weights-38
-Ylayer-66
-Zlayer_with_weights-39
-Zlayer-67
-[layer-68
-\layer-69
-]layer_with_weights-40
-]layer-70
-^layer_with_weights-41
-^layer-71
-_layer-72
-`layer_with_weights-42
-`layer-73
-alayer_with_weights-43
-alayer-74
-blayer-75
-clayer-76
-dlayer-77
-elayer_with_weights-44
-elayer-78
-flayer_with_weights-45
-flayer-79
-glayer-80
-hlayer_with_weights-46
-hlayer-81
-ilayer_with_weights-47
-ilayer-82
-jlayer_with_weights-48
-jlayer-83
-klayer_with_weights-49
-klayer-84
-llayer-85
-mlayer_with_weights-50
-mlayer-86
-nlayer_with_weights-51
-nlayer-87
-olayer-88
-player-89
-qlayer-90
-rlayer_with_weights-52
-rlayer-91
-slayer_with_weights-53
-slayer-92
-tlayer-93
-ulayer_with_weights-54
-ulayer-94
-vlayer_with_weights-55
-vlayer-95
-wlayer-96
-xlayer-97
-ylayer_with_weights-56
-ylayer-98
-zlayer_with_weights-57
-zlayer-99
-{	layer-100
-|layer_with_weights-58
-|	layer-101
-}layer_with_weights-59
-}	layer-102
-~	layer-103
-	layer-104
-Ä	layer-105
-Ålayer_with_weights-60
-Å	layer-106
-Çlayer_with_weights-61
-Ç	layer-107
-É	layer-108
-Ñlayer_with_weights-62
-Ñ	layer-109
-Ölayer_with_weights-63
-Ö	layer-110
-Ü	layer-111
-á	layer-112
-àlayer_with_weights-64
-à	layer-113
-âlayer_with_weights-65
-â	layer-114
-ä	layer-115
-ãlayer_with_weights-66
-ã	layer-116
-ålayer_with_weights-67
-å	layer-117
-ç	layer-118
-é	layer-119
-è	layer-120
-êlayer_with_weights-68
-ê	layer-121
-ëlayer_with_weights-69
-ë	layer-122
-í	layer-123
-ìlayer_with_weights-70
-ì	layer-124
-îlayer_with_weights-71
-î	layer-125
-ïlayer_with_weights-72
-ï	layer-126
-ñlayer_with_weights-73
-ñ	layer-127
-ó	layer-128
-òlayer_with_weights-74
-ò	layer-129
-ôlayer_with_weights-75
-ô	layer-130
-ö	layer-131
-õ	layer-132
-ú	layer-133
-ùlayer_with_weights-76
-ù	layer-134
-ûlayer_with_weights-77
-û	layer-135
-ü	layer-136
-†layer_with_weights-78
-†	layer-137
-°layer_with_weights-79
-°	layer-138
-¢	layer-139
-£	layer-140
-§layer_with_weights-80
-§	layer-141
-•layer_with_weights-81
-•	layer-142
-¶	layer-143
-ßlayer_with_weights-82
-ß	layer-144
-®layer_with_weights-83
-®	layer-145
-©	layer-146
-™	layer-147
-´	layer-148
-¨layer_with_weights-84
-¨	layer-149
-≠layer_with_weights-85
-≠	layer-150
-Æ	layer-151
-Ølayer_with_weights-86
-Ø	layer-152
-∞layer_with_weights-87
-∞	layer-153
-±	layer-154
-≤	layer-155
-≥layer_with_weights-88
-≥	layer-156
-¥layer_with_weights-89
-¥	layer-157
-µ	layer-158
-∂layer_with_weights-90
-∂	layer-159
-∑layer_with_weights-91
-∑	layer-160
-∏	layer-161
-π	layer-162
-∫	layer-163
-ªlayer_with_weights-92
-ª	layer-164
-ºlayer_with_weights-93
-º	layer-165
-Ω	layer-166
-ælayer_with_weights-94
-æ	layer-167
-ølayer_with_weights-95
-ø	layer-168
-¿layer_with_weights-96
-¿	layer-169
-¡layer_with_weights-97
-¡	layer-170
-¬	layer-171
-√layer_with_weights-98
-√	layer-172
-ƒlayer_with_weights-99
-ƒ	layer-173
-≈	layer-174
-∆	layer-175
-«	layer-176
-»layer_with_weights-100
-»	layer-177
-…layer_with_weights-101
-…	layer-178
- 	layer-179
-Àlayer_with_weights-102
-À	layer-180
-Ãlayer_with_weights-103
-Ã	layer-181
-Õ	layer-182
-Œ	layer-183
-œlayer_with_weights-104
-œ	layer-184
-–layer_with_weights-105
-–	layer-185
-—	layer-186
-“layer_with_weights-106
-“	layer-187
-”layer_with_weights-107
-”	layer-188
-‘	layer-189
-’	layer-190
-÷	layer-191
-◊layer_with_weights-108
-◊	layer-192
-ÿlayer_with_weights-109
-ÿ	layer-193
-Ÿ	layer-194
-⁄layer_with_weights-110
-⁄	layer-195
-€layer_with_weights-111
-€	layer-196
-‹	layer-197
-›	layer-198
-ﬁlayer_with_weights-112
-ﬁ	layer-199
-ﬂlayer_with_weights-113
-ﬂ	layer-200
-‡	layer-201
-·layer_with_weights-114
-·	layer-202
-‚layer_with_weights-115
-‚	layer-203
-„	layer-204
-‰	layer-205
-Â	layer-206
-Êlayer_with_weights-116
-Ê	layer-207
-Álayer_with_weights-117
-Á	layer-208
-Ë	layer-209
-Èlayer_with_weights-118
-È	layer-210
-Ílayer_with_weights-119
-Í	layer-211
-Î	layer-212
-Ï	layer-213
-Ìlayer_with_weights-120
-Ì	layer-214
-Ólayer_with_weights-121
-Ó	layer-215
-Ô	layer-216
-layer_with_weights-122
-	layer-217
-Òlayer_with_weights-123
-Ò	layer-218
-Ú	layer-219
-Û	layer-220
-Ù	layer-221
-ılayer_with_weights-124
-ı	layer-222
-ˆlayer_with_weights-125
-ˆ	layer-223
-˜	layer-224
-¯layer_with_weights-126
-¯	layer-225
-˘layer_with_weights-127
-˘	layer-226
-˙layer_with_weights-128
-˙	layer-227
-˚layer_with_weights-129
-˚	layer-228
-¸	layer-229
- 
-XV
-VARIABLE_VALUEdense/kernel6layer_with_weights-1/kernel/.ATTRIBUTES/VARIABLE_VALUE
-TR
-VARIABLE_VALUE
-dense/bias4layer_with_weights-1/bias/.ATTRIBUTES/VARIABLE_VALUE
-HF
-VARIABLE_VALUE	Adam/iter)optimizer/iter/.ATTRIBUTES/VARIABLE_VALUE
-LJ
-VARIABLE_VALUEAdam/beta_1+optimizer/beta_1/.ATTRIBUTES/VARIABLE_VALUE
-LJ
-VARIABLE_VALUEAdam/beta_2+optimizer/beta_2/.ATTRIBUTES/VARIABLE_VALUE
-JH
-VARIABLE_VALUE
-Adam/decay*optimizer/decay/.ATTRIBUTES/VARIABLE_VALUE
-ZX
-VARIABLE_VALUEAdam/learning_rate2optimizer/learning_rate/.ATTRIBUTES/VARIABLE_VALUE
-PN
-VARIABLE_VALUEVariable2layer-0/_rng/_state_var/.ATTRIBUTES/VARIABLE_VALUE
-PN
-VARIABLE_VALUEVariable2layer-1/_rng/_state_var/.ATTRIBUTES/VARIABLE_VALUE
-PN
-VARIABLE_VALUEVariable2layer-2/_rng/_state_var/.ATTRIBUTES/VARIABLE_VALUE
- 
-
-˝kernel
-J
-	˛axis
-
-ˇgamma
-	Äbeta
-Åmoving_mean
-Çmoving_variance
- 
-
-Édepthwise_kernel
-J
-	Ñaxis
-
-Ögamma
-	Übeta
-ámoving_mean
-àmoving_variance
- 
- 
- 
-
-âkernel
-	äbias
-
-ãkernel
-	åbias
- 
-
-çkernel
-J
-	éaxis
-
-ègamma
-	êbeta
-ëmoving_mean
-ímoving_variance
-
-ìkernel
-J
-	îaxis
-
-ïgamma
-	ñbeta
-ómoving_mean
-òmoving_variance
- 
-
-ôdepthwise_kernel
-J
-	öaxis
-
-õgamma
-	úbeta
-ùmoving_mean
-ûmoving_variance
- 
- 
- 
-
-ükernel
-	†bias
-
-°kernel
-	¢bias
- 
-
-£kernel
-J
-	§axis
-
-•gamma
-	¶beta
-ßmoving_mean
-®moving_variance
-
-©kernel
-J
-	™axis
-
-´gamma
-	¨beta
-≠moving_mean
-Æmoving_variance
- 
-
-Ødepthwise_kernel
-J
-	∞axis
-
-±gamma
-	≤beta
-≥moving_mean
-¥moving_variance
- 
- 
- 
-
-µkernel
-	∂bias
-
-∑kernel
-	∏bias
- 
-
-πkernel
-J
-	∫axis
-
-ªgamma
-	ºbeta
-Ωmoving_mean
-æmoving_variance
- 
- 
-
-økernel
-J
-	¿axis
-
-¡gamma
-	¬beta
-√moving_mean
-ƒmoving_variance
- 
-
-≈depthwise_kernel
-J
-	∆axis
-
-«gamma
-	»beta
-…moving_mean
- moving_variance
- 
- 
- 
-
-Àkernel
-	Ãbias
-
-Õkernel
-	Œbias
- 
-
-œkernel
-J
-	–axis
-
-—gamma
-	“beta
-”moving_mean
-‘moving_variance
-
-’kernel
-J
-	÷axis
-
-◊gamma
-	ÿbeta
-Ÿmoving_mean
-⁄moving_variance
- 
-
-€depthwise_kernel
-J
-	‹axis
-
-›gamma
-	ﬁbeta
-ﬂmoving_mean
-‡moving_variance
- 
- 
- 
-
-·kernel
-	‚bias
-
-„kernel
-	‰bias
- 
-
-Âkernel
-J
-	Êaxis
-
-Ágamma
-	Ëbeta
-Èmoving_mean
-Ímoving_variance
- 
- 
-
-Îkernel
-J
-	Ïaxis
-
-Ìgamma
-	Óbeta
-Ômoving_mean
-moving_variance
- 
-
-Òdepthwise_kernel
-J
-	Úaxis
-
-Ûgamma
-	Ùbeta
-ımoving_mean
-ˆmoving_variance
- 
- 
- 
-
-˜kernel
-	¯bias
-
-˘kernel
-	˙bias
- 
-
-˚kernel
-J
-	¸axis
-
-˝gamma
-	˛beta
-ˇmoving_mean
-Ämoving_variance
-
-Åkernel
-J
-	Çaxis
-
-Égamma
-	Ñbeta
-Ömoving_mean
-Ümoving_variance
- 
-
-ádepthwise_kernel
-J
-	àaxis
-
-âgamma
-	äbeta
-ãmoving_mean
-åmoving_variance
- 
- 
- 
-
-çkernel
-	ébias
-
-èkernel
-	êbias
- 
-
-ëkernel
-J
-	íaxis
-
-ìgamma
-	îbeta
-ïmoving_mean
-ñmoving_variance
- 
- 
-
-ókernel
-J
-	òaxis
-
-ôgamma
-	öbeta
-õmoving_mean
-úmoving_variance
- 
-
-ùdepthwise_kernel
-J
-	ûaxis
-
-ügamma
-	†beta
-°moving_mean
-¢moving_variance
- 
- 
- 
-
-£kernel
-	§bias
-
-•kernel
-	¶bias
- 
-
-ßkernel
-J
-	®axis
-
-©gamma
-	™beta
-´moving_mean
-¨moving_variance
- 
- 
-
-≠kernel
-J
-	Æaxis
-
-Øgamma
-	∞beta
-±moving_mean
-≤moving_variance
- 
-
-≥depthwise_kernel
-J
-	¥axis
-
-µgamma
-	∂beta
-∑moving_mean
-∏moving_variance
- 
- 
- 
-
-πkernel
-	∫bias
-
-ªkernel
-	ºbias
- 
-
-Ωkernel
-J
-	æaxis
-
-øgamma
-	¿beta
-¡moving_mean
-¬moving_variance
-
-√kernel
-J
-	ƒaxis
-
-≈gamma
-	∆beta
-«moving_mean
-»moving_variance
- 
-
-…depthwise_kernel
-J
-	 axis
-
-Àgamma
-	Ãbeta
-Õmoving_mean
-Œmoving_variance
- 
- 
- 
-
-œkernel
-	–bias
-
-—kernel
-	“bias
- 
-
-”kernel
-J
-	‘axis
-
-’gamma
-	÷beta
-◊moving_mean
-ÿmoving_variance
- 
- 
-
-Ÿkernel
-J
-	⁄axis
-
-€gamma
-	‹beta
-›moving_mean
-ﬁmoving_variance
- 
-
-ﬂdepthwise_kernel
-J
-	‡axis
-
-·gamma
-	‚beta
-„moving_mean
-‰moving_variance
- 
- 
- 
-
-Âkernel
-	Êbias
-
-Ákernel
-	Ëbias
- 
-
-Èkernel
-J
-	Íaxis
-
-Îgamma
-	Ïbeta
-Ìmoving_mean
-Ómoving_variance
- 
- 
-
-Ôkernel
-J
-	axis
-
-Ògamma
-	Úbeta
-Ûmoving_mean
-Ùmoving_variance
- 
-
-ıdepthwise_kernel
-J
-	ˆaxis
-
-˜gamma
-	¯beta
-˘moving_mean
-˙moving_variance
- 
- 
- 
-
-˚kernel
-	¸bias
-
-˝kernel
-	˛bias
- 
-
-ˇkernel
-J
-	Äaxis
-
-Ågamma
-	Çbeta
-Émoving_mean
-Ñmoving_variance
-
-Ökernel
-J
-	Üaxis
-
-ágamma
-	àbeta
-âmoving_mean
-ämoving_variance
- 
-
-ãdepthwise_kernel
-J
-	åaxis
-
-çgamma
-	ébeta
-èmoving_mean
-êmoving_variance
- 
- 
- 
-
-ëkernel
-	íbias
-
-ìkernel
-	îbias
- 
-
-ïkernel
-J
-	ñaxis
-
-ógamma
-	òbeta
-ômoving_mean
-ömoving_variance
- 
- 
-
-õkernel
-J
-	úaxis
-
-ùgamma
-	ûbeta
-ümoving_mean
-†moving_variance
- 
-
-°depthwise_kernel
-J
-	¢axis
-
-£gamma
-	§beta
-•moving_mean
-¶moving_variance
- 
- 
- 
-
-ßkernel
-	®bias
-
-©kernel
-	™bias
- 
-
-´kernel
-J
-	¨axis
-
-≠gamma
-	Æbeta
-Ømoving_mean
-∞moving_variance
- 
- 
-
-±kernel
-J
-	≤axis
-
-≥gamma
-	¥beta
-µmoving_mean
-∂moving_variance
- 
-
-∑depthwise_kernel
-J
-	∏axis
-
-πgamma
-	∫beta
-ªmoving_mean
-ºmoving_variance
- 
- 
- 
-
-Ωkernel
-	æbias
-
-økernel
-	¿bias
- 
-
-¡kernel
-J
-	¬axis
-
-√gamma
-	ƒbeta
-≈moving_mean
-∆moving_variance
- 
- 
-
-«kernel
-J
-	»axis
-
-…gamma
-	 beta
-Àmoving_mean
-Ãmoving_variance
- 
-
-Õdepthwise_kernel
-J
-	Œaxis
-
-œgamma
-	–beta
-—moving_mean
-“moving_variance
- 
- 
- 
-
-”kernel
-	‘bias
-
-’kernel
-	÷bias
- 
-
-◊kernel
-J
-	ÿaxis
-
-Ÿgamma
-	⁄beta
-€moving_mean
-‹moving_variance
-
-›kernel
-J
-	ﬁaxis
-
-ﬂgamma
-	‡beta
-·moving_mean
-‚moving_variance
- 
-áÑ
-VARIABLE_VALUEstem_conv/kernel`layer_with_weights-0/layer_with_weights-0/layer_with_weights-0/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-ÉÄ
-VARIABLE_VALUEstem_bn/gamma_layer_with_weights-0/layer_with_weights-0/layer_with_weights-1/gamma/.ATTRIBUTES/VARIABLE_VALUE
-Ä~
-VARIABLE_VALUEstem_bn/beta^layer_with_weights-0/layer_with_weights-0/layer_with_weights-1/beta/.ATTRIBUTES/VARIABLE_VALUE
-èå
-VARIABLE_VALUEstem_bn/moving_meanelayer_with_weights-0/layer_with_weights-0/layer_with_weights-1/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-óî
-VARIABLE_VALUEstem_bn/moving_varianceilayer_with_weights-0/layer_with_weights-0/layer_with_weights-1/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-†ù
-VARIABLE_VALUEblock1a_dwconv/depthwise_kerneljlayer_with_weights-0/layer_with_weights-0/layer_with_weights-2/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-ÜÉ
-VARIABLE_VALUEblock1a_bn/gamma_layer_with_weights-0/layer_with_weights-0/layer_with_weights-3/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÑÅ
-VARIABLE_VALUEblock1a_bn/beta^layer_with_weights-0/layer_with_weights-0/layer_with_weights-3/beta/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock1a_bn/moving_meanelayer_with_weights-0/layer_with_weights-0/layer_with_weights-3/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock1a_bn/moving_varianceilayer_with_weights-0/layer_with_weights-0/layer_with_weights-3/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-èå
-VARIABLE_VALUEblock1a_se_reduce/kernel`layer_with_weights-0/layer_with_weights-0/layer_with_weights-4/kernel/.ATTRIBUTES/VARIABLE_VALUE
-ãà
-VARIABLE_VALUEblock1a_se_reduce/bias^layer_with_weights-0/layer_with_weights-0/layer_with_weights-4/bias/.ATTRIBUTES/VARIABLE_VALUE
-èå
-VARIABLE_VALUEblock1a_se_expand/kernel`layer_with_weights-0/layer_with_weights-0/layer_with_weights-5/kernel/.ATTRIBUTES/VARIABLE_VALUE
-ãà
-VARIABLE_VALUEblock1a_se_expand/bias^layer_with_weights-0/layer_with_weights-0/layer_with_weights-5/bias/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock1a_project_conv/kernel`layer_with_weights-0/layer_with_weights-0/layer_with_weights-6/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock1a_project_bn/gamma_layer_with_weights-0/layer_with_weights-0/layer_with_weights-7/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock1a_project_bn/beta^layer_with_weights-0/layer_with_weights-0/layer_with_weights-7/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock1a_project_bn/moving_meanelayer_with_weights-0/layer_with_weights-0/layer_with_weights-7/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE"block1a_project_bn/moving_varianceilayer_with_weights-0/layer_with_weights-0/layer_with_weights-7/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock2a_expand_conv/kernel`layer_with_weights-0/layer_with_weights-0/layer_with_weights-8/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-çä
-VARIABLE_VALUEblock2a_expand_bn/gamma_layer_with_weights-0/layer_with_weights-0/layer_with_weights-9/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ãà
-VARIABLE_VALUEblock2a_expand_bn/beta^layer_with_weights-0/layer_with_weights-0/layer_with_weights-9/beta/.ATTRIBUTES/VARIABLE_VALUE
-ôñ
-VARIABLE_VALUEblock2a_expand_bn/moving_meanelayer_with_weights-0/layer_with_weights-0/layer_with_weights-9/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUE!block2a_expand_bn/moving_varianceilayer_with_weights-0/layer_with_weights-0/layer_with_weights-9/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock2a_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-10/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock2a_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-11/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock2a_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-11/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock2a_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-11/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock2a_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-11/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock2a_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-12/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock2a_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-12/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock2a_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-13/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock2a_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-13/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock2a_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-14/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock2a_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-15/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock2a_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-15/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock2a_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-15/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block2a_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-15/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock2b_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-16/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock2b_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-17/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock2b_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-17/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock2b_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-17/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block2b_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-17/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock2b_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-18/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock2b_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-19/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock2b_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-19/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock2b_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-19/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock2b_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-19/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock2b_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-20/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock2b_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-20/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock2b_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-21/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock2b_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-21/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock2b_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-22/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock2b_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-23/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock2b_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-23/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock2b_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-23/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block2b_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-23/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock3a_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-24/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock3a_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-25/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock3a_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-25/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock3a_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-25/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block3a_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-25/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock3a_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-26/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock3a_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-27/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock3a_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-27/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock3a_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-27/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock3a_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-27/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock3a_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-28/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock3a_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-28/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock3a_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-29/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock3a_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-29/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock3a_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-30/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock3a_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-31/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock3a_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-31/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock3a_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-31/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block3a_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-31/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock3b_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-32/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock3b_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-33/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock3b_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-33/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock3b_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-33/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block3b_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-33/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock3b_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-34/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock3b_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-35/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock3b_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-35/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock3b_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-35/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock3b_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-35/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock3b_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-36/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock3b_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-36/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock3b_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-37/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock3b_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-37/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock3b_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-38/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock3b_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-39/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock3b_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-39/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock3b_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-39/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block3b_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-39/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock4a_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-40/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock4a_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-41/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4a_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-41/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock4a_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-41/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block4a_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-41/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock4a_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-42/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock4a_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-43/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock4a_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-43/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock4a_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-43/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock4a_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-43/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock4a_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-44/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4a_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-44/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock4a_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-45/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4a_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-45/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock4a_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-46/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock4a_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-47/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock4a_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-47/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock4a_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-47/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block4a_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-47/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock4b_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-48/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock4b_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-49/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4b_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-49/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock4b_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-49/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block4b_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-49/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock4b_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-50/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock4b_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-51/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock4b_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-51/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock4b_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-51/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock4b_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-51/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock4b_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-52/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4b_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-52/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock4b_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-53/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4b_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-53/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock4b_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-54/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock4b_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-55/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock4b_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-55/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock4b_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-55/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block4b_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-55/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock4c_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-56/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock4c_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-57/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4c_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-57/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock4c_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-57/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block4c_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-57/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock4c_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-58/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock4c_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-59/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock4c_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-59/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock4c_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-59/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock4c_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-59/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock4c_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-60/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4c_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-60/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock4c_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-61/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock4c_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-61/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock4c_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-62/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock4c_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-63/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock4c_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-63/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock4c_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-63/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block4c_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-63/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock5a_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-64/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock5a_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-65/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5a_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-65/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock5a_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-65/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block5a_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-65/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock5a_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-66/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock5a_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-67/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock5a_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-67/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock5a_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-67/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock5a_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-67/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock5a_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-68/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5a_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-68/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock5a_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-69/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5a_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-69/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock5a_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-70/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock5a_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-71/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock5a_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-71/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock5a_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-71/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block5a_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-71/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock5b_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-72/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock5b_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-73/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5b_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-73/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock5b_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-73/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block5b_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-73/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock5b_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-74/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock5b_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-75/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock5b_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-75/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock5b_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-75/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock5b_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-75/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock5b_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-76/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5b_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-76/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock5b_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-77/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5b_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-77/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock5b_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-78/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock5b_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-79/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock5b_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-79/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock5b_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-79/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block5b_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-79/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock5c_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-80/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock5c_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-81/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5c_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-81/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock5c_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-81/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block5c_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-81/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock5c_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-82/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock5c_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-83/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock5c_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-83/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock5c_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-83/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock5c_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-83/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock5c_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-84/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5c_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-84/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock5c_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-85/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock5c_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-85/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock5c_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-86/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock5c_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-87/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock5c_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-87/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock5c_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-87/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block5c_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-87/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock6a_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-88/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock6a_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-89/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock6a_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-89/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock6a_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-89/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block6a_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-89/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock6a_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-90/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock6a_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-91/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock6a_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-91/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock6a_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-91/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock6a_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-91/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock6a_se_reduce/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-92/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock6a_se_reduce/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-92/bias/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEblock6a_se_expand/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-93/kernel/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock6a_se_expand/bias_layer_with_weights-0/layer_with_weights-0/layer_with_weights-93/bias/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock6a_project_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-94/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock6a_project_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-95/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6a_project_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-95/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock6a_project_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-95/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE"block6a_project_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-95/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-íè
-VARIABLE_VALUEblock6b_expand_conv/kernelalayer_with_weights-0/layer_with_weights-0/layer_with_weights-96/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-éã
-VARIABLE_VALUEblock6b_expand_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-97/gamma/.ATTRIBUTES/VARIABLE_VALUE
-åâ
-VARIABLE_VALUEblock6b_expand_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-97/beta/.ATTRIBUTES/VARIABLE_VALUE
-öó
-VARIABLE_VALUEblock6b_expand_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-97/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUE!block6b_expand_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-97/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-°û
-VARIABLE_VALUEblock6b_dwconv/depthwise_kernelklayer_with_weights-0/layer_with_weights-0/layer_with_weights-98/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-áÑ
-VARIABLE_VALUEblock6b_bn/gamma`layer_with_weights-0/layer_with_weights-0/layer_with_weights-99/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÖÇ
-VARIABLE_VALUEblock6b_bn/beta_layer_with_weights-0/layer_with_weights-0/layer_with_weights-99/beta/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock6b_bn/moving_meanflayer_with_weights-0/layer_with_weights-0/layer_with_weights-99/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock6b_bn/moving_variancejlayer_with_weights-0/layer_with_weights-0/layer_with_weights-99/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock6b_se_reduce/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-100/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6b_se_reduce/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-100/bias/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock6b_se_expand/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-101/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6b_se_expand/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-101/bias/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock6b_project_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-102/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-êç
-VARIABLE_VALUEblock6b_project_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-103/gamma/.ATTRIBUTES/VARIABLE_VALUE
-éã
-VARIABLE_VALUEblock6b_project_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-103/beta/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock6b_project_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-103/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-§°
-VARIABLE_VALUE"block6b_project_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-103/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock6c_expand_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-104/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock6c_expand_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-105/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6c_expand_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-105/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock6c_expand_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-105/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE!block6c_expand_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-105/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUEblock6c_dwconv/depthwise_kernelllayer_with_weights-0/layer_with_weights-0/layer_with_weights-106/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-àÖ
-VARIABLE_VALUEblock6c_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-107/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÜÉ
-VARIABLE_VALUEblock6c_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-107/beta/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock6c_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-107/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock6c_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-107/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock6c_se_reduce/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-108/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6c_se_reduce/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-108/bias/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock6c_se_expand/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-109/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6c_se_expand/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-109/bias/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock6c_project_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-110/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-êç
-VARIABLE_VALUEblock6c_project_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-111/gamma/.ATTRIBUTES/VARIABLE_VALUE
-éã
-VARIABLE_VALUEblock6c_project_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-111/beta/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock6c_project_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-111/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-§°
-VARIABLE_VALUE"block6c_project_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-111/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock6d_expand_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-112/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock6d_expand_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-113/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6d_expand_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-113/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock6d_expand_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-113/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE!block6d_expand_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-113/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUEblock6d_dwconv/depthwise_kernelllayer_with_weights-0/layer_with_weights-0/layer_with_weights-114/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-àÖ
-VARIABLE_VALUEblock6d_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-115/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÜÉ
-VARIABLE_VALUEblock6d_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-115/beta/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock6d_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-115/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock6d_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-115/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock6d_se_reduce/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-116/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6d_se_reduce/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-116/bias/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock6d_se_expand/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-117/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock6d_se_expand/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-117/bias/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock6d_project_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-118/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-êç
-VARIABLE_VALUEblock6d_project_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-119/gamma/.ATTRIBUTES/VARIABLE_VALUE
-éã
-VARIABLE_VALUEblock6d_project_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-119/beta/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock6d_project_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-119/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-§°
-VARIABLE_VALUE"block6d_project_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-119/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ìê
-VARIABLE_VALUEblock7a_expand_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-120/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-èå
-VARIABLE_VALUEblock7a_expand_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-121/gamma/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock7a_expand_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-121/beta/.ATTRIBUTES/VARIABLE_VALUE
-õò
-VARIABLE_VALUEblock7a_expand_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-121/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-£†
-VARIABLE_VALUE!block7a_expand_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-121/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-¢ü
-VARIABLE_VALUEblock7a_dwconv/depthwise_kernelllayer_with_weights-0/layer_with_weights-0/layer_with_weights-122/depthwise_kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-àÖ
-VARIABLE_VALUEblock7a_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-123/gamma/.ATTRIBUTES/VARIABLE_VALUE
-ÜÉ
-VARIABLE_VALUEblock7a_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-123/beta/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock7a_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-123/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock7a_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-123/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock7a_se_reduce/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-124/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock7a_se_reduce/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-124/bias/.ATTRIBUTES/VARIABLE_VALUE
-ëé
-VARIABLE_VALUEblock7a_se_expand/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-125/kernel/.ATTRIBUTES/VARIABLE_VALUE
-çä
-VARIABLE_VALUEblock7a_se_expand/bias`layer_with_weights-0/layer_with_weights-0/layer_with_weights-125/bias/.ATTRIBUTES/VARIABLE_VALUE
-îë
-VARIABLE_VALUEblock7a_project_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-126/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-êç
-VARIABLE_VALUEblock7a_project_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-127/gamma/.ATTRIBUTES/VARIABLE_VALUE
-éã
-VARIABLE_VALUEblock7a_project_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-127/beta/.ATTRIBUTES/VARIABLE_VALUE
-úô
-VARIABLE_VALUEblock7a_project_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-127/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-§°
-VARIABLE_VALUE"block7a_project_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-127/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-àÖ
-VARIABLE_VALUEtop_conv/kernelblayer_with_weights-0/layer_with_weights-0/layer_with_weights-128/kernel/.ATTRIBUTES/VARIABLE_VALUE
- 
-ÑÅ
-VARIABLE_VALUEtop_bn/gammaalayer_with_weights-0/layer_with_weights-0/layer_with_weights-129/gamma/.ATTRIBUTES/VARIABLE_VALUE
-Å
-VARIABLE_VALUEtop_bn/beta`layer_with_weights-0/layer_with_weights-0/layer_with_weights-129/beta/.ATTRIBUTES/VARIABLE_VALUE
-êç
-VARIABLE_VALUEtop_bn/moving_meanglayer_with_weights-0/layer_with_weights-0/layer_with_weights-129/moving_mean/.ATTRIBUTES/VARIABLE_VALUE
-òï
-VARIABLE_VALUEtop_bn/moving_varianceklayer_with_weights-0/layer_with_weights-0/layer_with_weights-129/moving_variance/.ATTRIBUTES/VARIABLE_VALUE
-{y
-VARIABLE_VALUEAdam/dense/kernel/mRlayer_with_weights-1/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-wu
-VARIABLE_VALUEAdam/dense/bias/mPlayer_with_weights-1/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/stem_conv/kernel/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-0/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¶£
-VARIABLE_VALUEAdam/stem_bn/gamma/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-1/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-§°
-VARIABLE_VALUEAdam/stem_bn/beta/mzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-1/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-ƒ¡
-VARIABLE_VALUE&Adam/block1a_dwconv/depthwise_kernel/mÜlayer_with_weights-0/layer_with_weights-0/layer_with_weights-2/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block1a_bn/gamma/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-3/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-ß§
-VARIABLE_VALUEAdam/block1a_bn/beta/mzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-3/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block1a_se_reduce/kernel/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-4/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Æ´
-VARIABLE_VALUEAdam/block1a_se_reduce/bias/mzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-4/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block1a_se_expand/kernel/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-5/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Æ´
-VARIABLE_VALUEAdam/block1a_se_expand/bias/mzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-5/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE"Adam/block1a_project_conv/kernel/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-6/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block1a_project_bn/gamma/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-7/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block1a_project_bn/beta/mzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-7/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUE!Adam/block2a_expand_conv/kernel/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-8/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block2a_expand_bn/gamma/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-9/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Æ´
-VARIABLE_VALUEAdam/block2a_expand_bn/beta/mzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-9/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block2a_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-10/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block2a_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-11/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block2a_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-11/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2a_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-12/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2a_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-12/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2a_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-13/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2a_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-13/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block2a_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-14/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block2a_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-15/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block2a_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-15/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block2b_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-16/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block2b_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-17/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2b_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-17/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block2b_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-18/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block2b_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-19/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block2b_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-19/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2b_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-20/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2b_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-20/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2b_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-21/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2b_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-21/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block2b_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-22/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block2b_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-23/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block2b_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-23/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block3a_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-24/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block3a_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-25/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3a_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-25/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block3a_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-26/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block3a_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-27/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block3a_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-27/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3a_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-28/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3a_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-28/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3a_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-29/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3a_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-29/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block3a_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-30/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block3a_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-31/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block3a_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-31/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block3b_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-32/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block3b_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-33/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3b_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-33/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block3b_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-34/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block3b_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-35/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block3b_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-35/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3b_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-36/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3b_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-36/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3b_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-37/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3b_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-37/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block3b_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-38/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block3b_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-39/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block3b_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-39/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block4a_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-40/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block4a_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-41/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4a_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-41/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block4a_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-42/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block4a_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-43/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block4a_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-43/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4a_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-44/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4a_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-44/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4a_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-45/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4a_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-45/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block4a_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-46/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block4a_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-47/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block4a_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-47/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block4b_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-48/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block4b_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-49/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4b_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-49/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block4b_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-50/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block4b_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-51/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block4b_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-51/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4b_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-52/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4b_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-52/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4b_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-53/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4b_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-53/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block4b_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-54/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block4b_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-55/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block4b_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-55/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block4c_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-56/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block4c_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-57/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4c_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-57/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block4c_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-58/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block4c_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-59/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block4c_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-59/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4c_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-60/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4c_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-60/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4c_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-61/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4c_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-61/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block4c_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-62/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block4c_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-63/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block4c_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-63/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block5a_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-64/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block5a_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-65/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5a_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-65/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block5a_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-66/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block5a_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-67/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block5a_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-67/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5a_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-68/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5a_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-68/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5a_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-69/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5a_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-69/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block5a_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-70/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block5a_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-71/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block5a_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-71/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block5b_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-72/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block5b_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-73/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5b_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-73/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block5b_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-74/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block5b_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-75/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block5b_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-75/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5b_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-76/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5b_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-76/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5b_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-77/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5b_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-77/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block5b_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-78/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block5b_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-79/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block5b_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-79/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block5c_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-80/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block5c_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-81/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5c_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-81/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block5c_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-82/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block5c_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-83/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block5c_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-83/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5c_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-84/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5c_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-84/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5c_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-85/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5c_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-85/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block5c_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-86/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block5c_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-87/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block5c_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-87/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block6a_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-88/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6a_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-89/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6a_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-89/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block6a_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-90/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block6a_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-91/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block6a_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-91/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6a_se_reduce/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-92/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6a_se_reduce/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-92/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6a_se_expand/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-93/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6a_se_expand/bias/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-93/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block6a_project_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-94/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block6a_project_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-95/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6a_project_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-95/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block6b_expand_conv/kernel/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-96/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6b_expand_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-97/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6b_expand_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-97/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block6b_dwconv/depthwise_kernel/málayer_with_weights-0/layer_with_weights-0/layer_with_weights-98/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block6b_bn/gamma/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-99/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block6b_bn/beta/m{layer_with_weights-0/layer_with_weights-0/layer_with_weights-99/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6b_se_reduce/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-100/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6b_se_reduce/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-100/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6b_se_expand/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-101/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6b_se_expand/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-101/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block6b_project_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-102/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6b_project_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-103/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6b_project_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-103/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE!Adam/block6c_expand_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-104/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block6c_expand_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-105/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6c_expand_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-105/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∆√
-VARIABLE_VALUE&Adam/block6c_dwconv/depthwise_kernel/màlayer_with_weights-0/layer_with_weights-0/layer_with_weights-106/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/block6c_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-107/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block6c_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-107/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6c_se_reduce/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-108/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6c_se_reduce/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-108/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6c_se_expand/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-109/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6c_se_expand/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-109/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block6c_project_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-110/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6c_project_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-111/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6c_project_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-111/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE!Adam/block6d_expand_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-112/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block6d_expand_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-113/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6d_expand_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-113/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∆√
-VARIABLE_VALUE&Adam/block6d_dwconv/depthwise_kernel/màlayer_with_weights-0/layer_with_weights-0/layer_with_weights-114/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/block6d_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-115/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block6d_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-115/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6d_se_reduce/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-116/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6d_se_reduce/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-116/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6d_se_expand/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-117/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6d_se_expand/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-117/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block6d_project_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-118/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6d_project_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-119/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6d_project_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-119/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE!Adam/block7a_expand_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-120/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block7a_expand_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-121/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block7a_expand_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-121/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∆√
-VARIABLE_VALUE&Adam/block7a_dwconv/depthwise_kernel/màlayer_with_weights-0/layer_with_weights-0/layer_with_weights-122/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/block7a_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-123/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block7a_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-123/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block7a_se_reduce/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-124/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block7a_se_reduce/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-124/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block7a_se_expand/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-125/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block7a_se_expand/bias/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-125/bias/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block7a_project_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-126/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block7a_project_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-127/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block7a_project_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-127/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/top_conv/kernel/m~layer_with_weights-0/layer_with_weights-0/layer_with_weights-128/kernel/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-ß§
-VARIABLE_VALUEAdam/top_bn/gamma/m}layer_with_weights-0/layer_with_weights-0/layer_with_weights-129/gamma/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-•¢
-VARIABLE_VALUEAdam/top_bn/beta/m|layer_with_weights-0/layer_with_weights-0/layer_with_weights-129/beta/.OPTIMIZER_SLOT/optimizer/m/.ATTRIBUTES/VARIABLE_VALUE
-{y
-VARIABLE_VALUEAdam/dense/kernel/vRlayer_with_weights-1/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-wu
-VARIABLE_VALUEAdam/dense/bias/vPlayer_with_weights-1/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/stem_conv/kernel/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-0/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¶£
-VARIABLE_VALUEAdam/stem_bn/gamma/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-1/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-§°
-VARIABLE_VALUEAdam/stem_bn/beta/vzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-1/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-ƒ¡
-VARIABLE_VALUE&Adam/block1a_dwconv/depthwise_kernel/vÜlayer_with_weights-0/layer_with_weights-0/layer_with_weights-2/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block1a_bn/gamma/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-3/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-ß§
-VARIABLE_VALUEAdam/block1a_bn/beta/vzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-3/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block1a_se_reduce/kernel/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-4/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Æ´
-VARIABLE_VALUEAdam/block1a_se_reduce/bias/vzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-4/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block1a_se_expand/kernel/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-5/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Æ´
-VARIABLE_VALUEAdam/block1a_se_expand/bias/vzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-5/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE"Adam/block1a_project_conv/kernel/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-6/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block1a_project_bn/gamma/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-7/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block1a_project_bn/beta/vzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-7/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUE!Adam/block2a_expand_conv/kernel/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-8/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block2a_expand_bn/gamma/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-9/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Æ´
-VARIABLE_VALUEAdam/block2a_expand_bn/beta/vzlayer_with_weights-0/layer_with_weights-0/layer_with_weights-9/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block2a_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-10/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block2a_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-11/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block2a_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-11/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2a_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-12/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2a_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-12/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2a_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-13/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2a_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-13/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block2a_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-14/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block2a_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-15/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block2a_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-15/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block2b_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-16/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block2b_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-17/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2b_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-17/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block2b_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-18/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block2b_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-19/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block2b_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-19/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2b_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-20/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2b_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-20/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block2b_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-21/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block2b_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-21/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block2b_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-22/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block2b_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-23/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block2b_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-23/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block3a_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-24/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block3a_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-25/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3a_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-25/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block3a_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-26/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block3a_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-27/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block3a_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-27/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3a_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-28/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3a_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-28/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3a_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-29/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3a_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-29/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block3a_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-30/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block3a_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-31/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block3a_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-31/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block3b_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-32/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block3b_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-33/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3b_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-33/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block3b_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-34/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block3b_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-35/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block3b_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-35/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3b_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-36/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3b_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-36/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block3b_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-37/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block3b_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-37/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block3b_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-38/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block3b_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-39/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block3b_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-39/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block4a_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-40/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block4a_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-41/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4a_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-41/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block4a_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-42/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block4a_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-43/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block4a_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-43/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4a_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-44/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4a_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-44/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4a_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-45/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4a_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-45/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block4a_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-46/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block4a_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-47/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block4a_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-47/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block4b_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-48/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block4b_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-49/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4b_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-49/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block4b_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-50/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block4b_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-51/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block4b_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-51/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4b_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-52/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4b_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-52/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4b_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-53/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4b_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-53/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block4b_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-54/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block4b_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-55/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block4b_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-55/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block4c_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-56/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block4c_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-57/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4c_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-57/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block4c_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-58/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block4c_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-59/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block4c_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-59/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4c_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-60/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4c_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-60/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block4c_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-61/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block4c_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-61/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block4c_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-62/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block4c_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-63/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block4c_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-63/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block5a_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-64/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block5a_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-65/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5a_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-65/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block5a_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-66/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block5a_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-67/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block5a_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-67/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5a_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-68/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5a_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-68/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5a_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-69/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5a_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-69/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block5a_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-70/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block5a_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-71/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block5a_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-71/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block5b_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-72/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block5b_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-73/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5b_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-73/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block5b_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-74/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block5b_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-75/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block5b_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-75/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5b_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-76/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5b_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-76/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5b_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-77/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5b_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-77/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block5b_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-78/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block5b_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-79/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block5b_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-79/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block5c_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-80/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block5c_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-81/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5c_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-81/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block5c_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-82/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block5c_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-83/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block5c_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-83/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5c_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-84/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5c_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-84/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block5c_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-85/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block5c_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-85/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block5c_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-86/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block5c_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-87/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block5c_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-87/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block6a_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-88/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6a_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-89/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6a_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-89/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block6a_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-90/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block6a_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-91/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block6a_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-91/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6a_se_reduce/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-92/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6a_se_reduce/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-92/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6a_se_expand/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-93/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6a_se_expand/bias/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-93/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE"Adam/block6a_project_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-94/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block6a_project_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-95/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6a_project_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-95/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-µ≤
-VARIABLE_VALUE!Adam/block6b_expand_conv/kernel/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-96/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6b_expand_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-97/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-Ø¨
-VARIABLE_VALUEAdam/block6b_expand_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-97/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≈¬
-VARIABLE_VALUE&Adam/block6b_dwconv/depthwise_kernel/válayer_with_weights-0/layer_with_weights-0/layer_with_weights-98/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-™ß
-VARIABLE_VALUEAdam/block6b_bn/gamma/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-99/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-®•
-VARIABLE_VALUEAdam/block6b_bn/beta/v{layer_with_weights-0/layer_with_weights-0/layer_with_weights-99/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6b_se_reduce/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-100/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6b_se_reduce/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-100/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6b_se_expand/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-101/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6b_se_expand/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-101/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block6b_project_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-102/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6b_project_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-103/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6b_project_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-103/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE!Adam/block6c_expand_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-104/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block6c_expand_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-105/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6c_expand_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-105/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∆√
-VARIABLE_VALUE&Adam/block6c_dwconv/depthwise_kernel/vàlayer_with_weights-0/layer_with_weights-0/layer_with_weights-106/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/block6c_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-107/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block6c_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-107/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6c_se_reduce/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-108/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6c_se_reduce/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-108/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6c_se_expand/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-109/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6c_se_expand/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-109/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block6c_project_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-110/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6c_project_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-111/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6c_project_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-111/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE!Adam/block6d_expand_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-112/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block6d_expand_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-113/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6d_expand_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-113/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∆√
-VARIABLE_VALUE&Adam/block6d_dwconv/depthwise_kernel/vàlayer_with_weights-0/layer_with_weights-0/layer_with_weights-114/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/block6d_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-115/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block6d_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-115/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6d_se_reduce/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-116/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6d_se_reduce/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-116/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block6d_se_expand/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-117/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block6d_se_expand/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-117/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block6d_project_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-118/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block6d_project_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-119/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block6d_project_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-119/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∂≥
-VARIABLE_VALUE!Adam/block7a_expand_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-120/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≤Ø
-VARIABLE_VALUEAdam/block7a_expand_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-121/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block7a_expand_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-121/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∆√
-VARIABLE_VALUE&Adam/block7a_dwconv/depthwise_kernel/vàlayer_with_weights-0/layer_with_weights-0/layer_with_weights-122/depthwise_kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/block7a_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-123/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-©¶
-VARIABLE_VALUEAdam/block7a_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-123/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block7a_se_reduce/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-124/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block7a_se_reduce/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-124/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-¥±
-VARIABLE_VALUEAdam/block7a_se_expand/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-125/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∞≠
-VARIABLE_VALUEAdam/block7a_se_expand/bias/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-125/bias/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-∑¥
-VARIABLE_VALUE"Adam/block7a_project_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-126/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-≥∞
-VARIABLE_VALUEAdam/block7a_project_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-127/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-±Æ
-VARIABLE_VALUEAdam/block7a_project_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-127/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-´®
-VARIABLE_VALUEAdam/top_conv/kernel/v~layer_with_weights-0/layer_with_weights-0/layer_with_weights-128/kernel/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-ß§
-VARIABLE_VALUEAdam/top_bn/gamma/v}layer_with_weights-0/layer_with_weights-0/layer_with_weights-129/gamma/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE
-•¢
-VARIABLE_VALUEAdam/top_bn/beta/v|layer_with_weights-0/layer_with_weights-0/layer_with_weights-129/beta/.OPTIMIZER_SLOT/optimizer/v/.ATTRIBUTES/VARIABLE_VALUE

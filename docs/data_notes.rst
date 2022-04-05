@@ -5,8 +5,8 @@ Data Notes
 
 Zoobot includes three datasets you might be interested in:
 
-- Weights for a trained GZ DECaLS model (with excellent performance at answering GZ DECaLS questions)
-- Representations calculated with that model, for galaxies in either GZ DECaLS (approx. 340k) or the Galaxy Zoo 2 (approx. 240k)
+- Weights for trained GZ DECaLS models (with excellent performance at answering GZ DECaLS questions)
+- Representations calculated from trained GZ DECaLS models for galaxies in either GZ DECaLS (approx. 340k) or Galaxy Zoo 2 (approx. 240k)
 - Catalogues of ring galaxies. There are two catalogues: basic, derived from "ring" tags on the Galaxy Zoo forum, or advanced, derived from the GZ DECaLS "ring" vote fraction.
   
 Where the data is small, we have included it with the repository (see the ``data`` folder). Where the data is large, you can download it from Zenodo (see the links below).
@@ -16,14 +16,22 @@ You can also download previously-published volunteer vote fractions, automatic v
 Weights
 -----------------
 
-W+21 trained ensembles of CNNs to answer Galaxy Zoo DECaLS questions. See W+21 for details.
+We provide pretrained weights for a CNN trained on the GZ DECaLS volunteer votes under `data/pretrained_models <https://github.com/mwalmsley/zoobot/tree/pytorch/data/pretrained_models>`_ . 
 
-The weights of two of these CNN are available under ``data/pretrained_models``.
+- ``replicated_train_only_greyscale_tf`` is trained on the colour (3-channel grz) images shown to volunteers, but the images are averaged across bands before being input.
+- ``replicated_train_only_color_tf`` is identical but without averaging across bands. This approach was not used for the GZ DECaLS catalog to avoid bias, but may be useful for e.g. anomaly-finding.
 
-- ``decals_dr_train_set_only_m0`` was trained only on a training set and then evaluated on a test set to calculate the performance metrics in W+21.
-- ``decals_dr_trained_on_all_labelled_m0`` was trained on all labelled data and used to make the automated predictions released with W+21 as well as the representations for W+22 (see below). 
+`train_set_only` denotes that the model was trained only on a training subset, while the GZ DECaLS catalog predictions are by CNN trained on all labelled galaxies.
 
-You could replicate these from scratch if you like, or even make improvements - see :ref:`the DECaLS guide <training_from_scratch>`.
+Both models may be replicated using the code under `replication <https://github.com/mwalmsley/zoobot/tree/pytorch/replication>`_.
+See :ref:`the DECaLS guide <training_from_scratch>` for pedagogical details on how they were created and how you might train on new Galaxy Zoo campaigns.
+
+.. note:: 
+
+    W+22 trained ensembles of CNNs to answer Galaxy Zoo DECaLS questions. See W+22 for details.
+    The exact weights for the actual models used in W+22 are not available because loading weights requires the underlying TensorFlow code to be identical,
+    but that code has subsequently been refactored to create the Zoobot package and hence the weights do not load correctly. 
+    The weights provided here are equivalent in every respect other than the random seed used for training.
 
 
 Representations
@@ -34,7 +42,7 @@ These representations are available `from Zenodo TODO <TODO>`_ for GZ DECaLS DR5
 
 The most significant file is "cnn_features_decals.parquet".
 This file contains the representations calculated for the approx. 340k GZ DECaLS galaxies.
-See W+21 for a description of GZD-5.
+See W+22 for a description of GZD-5.
 Galaxies can be crossmatched to other catalogues (e.g. the GZ DECaLS automatic morphology catalogue) by ``iauname``.
 
 "cnn_features_gz2.parquet" is the representations calculated by the *same* model, i.e. without retraining on labelled SDSS GZ2 images,
@@ -71,4 +79,4 @@ Only galaxies with a smooth vote fraction < 0.75 and edge-on vote fraction < 0.2
 
 You can download the images referenced in both catalogues from the `Galaxy Zoo DECaLS data release <https://doi.org/10.5281/zenodo.4196266>`_.
 Note that all the images are approx. 100GB. We have split them into several chunks to make this process slightly less painful. 
-The original data is from the DECaLS survey; please acknowledge them appropriately (see W+21 for an example).
+The original data is from the DECaLS survey; please acknowledge them appropriately (see W+22 for an example).
