@@ -216,6 +216,7 @@ class DECALSDR8Dataset(Dataset):
         if self.target_transform:
             label = self.target_transform(label)
 
+        logging.info((image.shape, label))
         return image, label
 
 class DECALSDR8DatasetMemory(DECALSDR8Dataset):

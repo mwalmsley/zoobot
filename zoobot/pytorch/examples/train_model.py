@@ -18,9 +18,9 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 
 from zoobot.shared import schemas
-from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom
+# from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom
 from zoobot.pytorch.datasets import decals_dr8
-from zoobot.pytorch.training import losses
+# from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
 
 
@@ -84,10 +84,6 @@ if __name__ == '__main__':
     logging.info('Schema: {}'.format(schema))
 
     "shared setup ends"
-
-    loss_func = losses.calculate_multiquestion_loss
-
-    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=resnet_detectron2_custom.get_resnet)
 
     # catalog provided
     # catalog = pd.read_csv(catalog_loc)
@@ -155,6 +151,23 @@ if __name__ == '__main__':
       num_workers=num_workers
     )
 
+
+    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
+    datamodule.setup()
+    for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+      for batch in next(iter(dataloader)):
+        logging.info(batch)
+        logging.info(batch.shape)
+        images, labels = batch
+        logging.info(images.shape)
+        images_np = np.transpose(images[:5].numpy(), axis=[2, 0, 1])  # BCHW to BHWC
+        # images_np = images.numpy()
+        logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+        break  # only inner loop aka don't log the whole dataloader
+
+    exit()
+
+
     if args.wandb:
         wandb_logger = WandbLogger(
           project='zoobot-pytorch-dr8',
@@ -167,7 +180,7 @@ if __name__ == '__main__':
       wandb_logger = None
 
     # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    datamodule.setup()
+    # datamodule.setup()
     if wandb_logger is not None:
       for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
         for batch in next(iter(dataloader)):
@@ -182,6 +195,12 @@ if __name__ == '__main__':
           break  # only inner loop aka don't log the whole dataloader
 
     exit()
+
+
+    loss_func = losses.calculate_multiquestion_loss
+
+    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=resnet_detectron2_custom.get_resnet)
+
     
     callbacks = [
         ModelCheckpoint(
