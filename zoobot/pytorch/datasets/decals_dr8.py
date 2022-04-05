@@ -87,7 +87,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         if self.greyscale:
             transforms_to_apply += [transforms.Grayscale()]  
 
-            transforms_to_apply += [
+        transforms_to_apply += [
             transforms.ConvertImageDtype(torch.float),  # make float before any aliasing
             transforms.RandomResizedCrop(
                 # size=(224, 224),  # after crop then resize
