@@ -160,7 +160,7 @@ if __name__ == '__main__':
         # logging.info(batch)
         images, labels = batch
         logging.info(images.shape)
-        images_np = np.transpose(images[:5].numpy(), axes=[2, 0, 1])  # BCHW to BHWC
+        images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
         # images_np = images.numpy()
         logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
         break  # only inner loop aka don't log the whole dataloader

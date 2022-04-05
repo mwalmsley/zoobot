@@ -31,12 +31,10 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
     --shard-img-size 300 \
     --resize-size 224 \
+    --color \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
     --batch-size 512 \
     --gpus 1  \
     --nodes 1 \
     --wandb
-
-
-    # --color \
