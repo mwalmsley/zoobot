@@ -20,7 +20,7 @@ def get_resnet(
         raise NotImplementedError  # detectron2's version has no top
 
     base_resnet = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
-    # output is dict of default_config.MODEL.OUT_FEATURES e.g. {'res4': (res4 features)}
+    # output is from final stage before head aka res5, 1024
 
     base_resnet_with_pooling = torch.nn.Sequential(
         base_resnet,

@@ -188,7 +188,9 @@ def get_model(
         use_imagenet_weights=use_imagenet_weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
     )
-    representation_dim = 1024
+    # representation_dim = 1024  # using res4 output (B, 1024, 14, 14) before pooling
+    representation_dim = 2048  # using res5 output (B, 2048, 7, 7) before pooling
+
 
     modules_to_use.append(effnet)
 

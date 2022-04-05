@@ -14,14 +14,15 @@ pwd; hostname; date
 
 nvidia-smi
 
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
+export WANDB_CACHE_DIR=/share/nas2/walml/wandb_cache
+# export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64  # maybe not needed
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b512
+EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b512_res5
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 

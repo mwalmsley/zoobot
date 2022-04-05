@@ -433,21 +433,22 @@ class ResNet(Backbone):
         """
         # can slightly simplify this as I know I only want the final pre-dense layer, stage=res4
         assert x.dim() == 4, f"ResNet takes an input of shape (N, C, H, W). Got {x.shape} instead!"
-        outputs = {}
+        # outputs = {}
         x = self.stem(x)
         # if "stem" in self._out_features:
         #     outputs["stem"] = x
         for name, stage in zip(self.stage_names, self.stages):
             x = stage(x)
-            if name in self._out_features:
-                outputs[name] = x
+            # if name in self._out_features:
+            #     outputs[name] = x
         # if self.num_classes is not None:
         #     x = self.avgpool(x)
         #     x = torch.flatten(x, 1)
         #     x = self.linear(x)
         #     if "linear" in self._out_features:
         #         outputs["linear"] = x
-        return outputs['res4']  # hacky but fine for now
+        # return outputs['res5']
+        return x
 
     def output_shape(self):
         return {
@@ -620,7 +621,8 @@ def build_resnet_backbone(cfg, input_shape):
 
     # fmt: off
     freeze_at           = cfg.MODEL.BACKBONE.FREEZE_AT
-    out_features        = cfg.MODEL.RESNETS.OUT_FEATURES
+    # out_features        = cfg.MODEL.RESNETS.OUT_FEATURES  # no effect in my version, see the modified forward pass
+    out_features = ['stem', 'res2', 'res3', 'res4', 'res5']
     depth               = cfg.MODEL.RESNETS.DEPTH
     num_groups          = cfg.MODEL.RESNETS.NUM_GROUPS
     width_per_group     = cfg.MODEL.RESNETS.WIDTH_PER_GROUP
