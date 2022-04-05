@@ -136,9 +136,9 @@ if __name__ == '__main__':
         logging.info(catalog['file_loc'].iloc[0])
 
     # debug mode
-    # train_catalog = train_catalog.sample(5000).reset_index(drop=True)
-    # val_catalog = val_catalog.sample(5000).reset_index(drop=True)
-    # test_catalog = test_catalog.sample(5000).reset_index(drop=True)
+    train_catalog = train_catalog.sample(5000).reset_index(drop=True)
+    val_catalog = val_catalog.sample(5000).reset_index(drop=True)
+    test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
 
     num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
@@ -172,7 +172,7 @@ if __name__ == '__main__':
       for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
         for batch in next(iter(dataloader)):
           logging.info(batch)
-          # logging.info(batch.shape)
+          logging.info(batch.shape)
           images, labels = batch
           logging.info(images.shape)
           images_np = np.transpose(images[:5].numpy(), axis=[2, 0, 1])  # BCHW to BHWC
