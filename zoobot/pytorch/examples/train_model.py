@@ -18,9 +18,9 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 
 from zoobot.shared import schemas
-# from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom
+from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom
 from zoobot.pytorch.datasets import decals_dr8
-# from zoobot.pytorch.training import losses
+from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
 
 
@@ -150,22 +150,23 @@ if __name__ == '__main__':
       batch_size=batch_size,  # 256 with DDP, 512 with distributed (i.e. split batch)
       num_workers=num_workers
     )
-
-
-    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
     datamodule.setup()
-    for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-      # for batch in next(iter(dataloader)):
-      for batch in dataloader:
-        # logging.info(batch)
-        images, labels = batch
-        # logging.info(images.shape)
-        images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
-        # images_np = images.numpy()
-        logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-        break  # only inner loop aka don't log the whole dataloader
 
-    # exit()
+
+    # # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
+    # datamodule.setup()
+    # for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+    #   # for batch in next(iter(dataloader)):
+    #   for batch in dataloader:
+    #     # logging.info(batch)
+    #     images, labels = batch
+    #     # logging.info(images.shape)
+    #     images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
+    #     # images_np = images.numpy()
+    #     logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+    #     break  # only inner loop aka don't log the whole dataloader
+
+    # # exit()
 
 
     if args.wandb:
@@ -180,7 +181,6 @@ if __name__ == '__main__':
       wandb_logger = None
 
     # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    # datamodule.setup()
     if wandb_logger is not None:
       for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
         for images, labels in dataloader:
@@ -190,9 +190,6 @@ if __name__ == '__main__':
           logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
           wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
           break  # only inner loop aka don't log the whole dataloader
-
-    exit()
-
 
     loss_func = losses.calculate_multiquestion_loss
 
@@ -253,8 +250,6 @@ if __name__ == '__main__':
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
-
-
 
     trainer.fit(model, datamodule)
 
