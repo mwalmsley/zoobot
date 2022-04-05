@@ -155,7 +155,8 @@ if __name__ == '__main__':
     # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
     datamodule.setup()
     for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-      for batch in next(iter(dataloader)):
+      # for batch in next(iter(dataloader)):
+      for batch in dataloader:
         logging.info(batch)
         logging.info(batch.shape)
         images, labels = batch
