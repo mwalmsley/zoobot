@@ -166,6 +166,20 @@ if __name__ == '__main__':
         # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
     else:
       wandb_logger = None
+
+    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
+    datamodule.setup()
+    if wandb_logger is not None:
+      for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+        for images, labels in dataloader:
+          logging.info(images.shape)
+          images_np = np.transpose(images[:5].numpy(), axis=[2, 0, 1])  # BCHW to BHWC
+          # images_np = images.numpy()
+          logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
+          break  # only inner loop aka don't log the whole dataloader
+
+    exit()
     
     callbacks = [
         ModelCheckpoint(
@@ -210,7 +224,7 @@ if __name__ == '__main__':
         accelerator="gpu", gpus=args.gpus,  # per node
         num_nodes=args.nodes,
         strategy=strategy,
-        precision=16,
+        # precision=16,  # disable temporarily for resnet
         # precision='bf16',  # sadly, pyro does not support this - "lgamma_cuda" not implemented for 'BFloat16'
         # plugins=plugins,
         logger = wandb_logger,
@@ -222,16 +236,6 @@ if __name__ == '__main__':
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
-    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    datamodule.setup()
-    if wandb_logger is not None:
-      for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-        for images, labels in dataloader:
-          images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
-          # images_np = images.numpy()
-          logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
-          break  # only inner loop
 
 
     trainer.fit(model, datamodule)

@@ -96,8 +96,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
                 ratio=(0.9, 1.1),  # crop aspect ratio
                 interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
             transforms.RandomHorizontalFlip(),
-            transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR),
-            # transforms.Resize(size=(224, 224), interpolation=transforms.InterpolationMode.NEAREST),
+            transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR)
         ]
 
         self.transform = transforms.Compose(transforms_to_apply)
