@@ -88,18 +88,18 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         transforms_to_apply = [transforms.ConvertImageDtype(torch.float)]  # automatically normalises from 0-255 int to 0-1 float
     
         if self.greyscale:
-            transforms_to_apply += [transforms.Grayscale()]  
+            transforms_to_apply += [GrayscaleUnweighted]    # transforms.Grayscale() adds perceptual weighting to rgb channels
 
-        # transforms_to_apply += [
-        #     transforms.RandomResizedCrop(
-        #         size=(224, 224),  # after crop then resize
-        #         # size=(244, 244),  # after crop then resize
-        #         scale=(0.7, 0.8),  # crop factor
-        #         ratio=(0.9, 1.1),  # crop aspect ratio
-        #         interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
-        #     transforms.RandomHorizontalFlip(),
-        #     transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR)
-        # ]
+        transforms_to_apply += [
+            transforms.RandomResizedCrop(
+                size=(224, 224),  # after crop then resize
+                # size=(244, 244),  # after crop then resize
+                scale=(0.7, 0.8),  # crop factor
+                ratio=(0.9, 1.1),  # crop aspect ratio
+                interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR)
+        ]
 
         self.transform = transforms.Compose(transforms_to_apply)
 
@@ -279,6 +279,31 @@ def decode_jpeg(encoded_bytes):
 def get_galaxy_label(galaxy, schema):
     return galaxy[schema.label_cols].values.astype(int)
 
+# torchvision
+
+
+class GrayscaleUnweighted(torch.nn.Module):
+
+    def __init__(self, num_output_channels=1):
+        super().__init__()
+        self.num_output_channels = num_output_channels
+
+    def forward(self, img):
+        """
+        Args:
+            img (Tensor): Image to be converted to grayscale.
+
+        Returns:
+            Tensor: Grayscaled image.
+        """
+        return img.mean(axis=-3)  # (..., C, H, W) convention
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(num_output_channels={0})'.format(self.num_output_channels)
+
+
+
+# albumentations
 class ToGray():
 
     def __init__(self, reduce_channels=False):
