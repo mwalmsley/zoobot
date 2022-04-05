@@ -223,21 +223,21 @@ if __name__ == '__main__':
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    # datamodule.setup()
-    # if wandb_logger is not None:
-    #   for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-    #     for images, labels in dataloader:
-    #       # images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
-    #       images_np = images.numpy()
-    #       logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-    #       wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]])  # assume wandb knows pytorch convention
-    #       break  # only inner loop
+    datamodule.setup()
+    if wandb_logger is not None:
+      for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+        for images, labels in dataloader:
+          # images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
+          images_np = images.numpy()
+          logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]])  # assume wandb knows pytorch convention
+          break  # only inner loop
 
-    trainer.fit(model, datamodule)
+    # trainer.fit(model, datamodule)
 
-    trainer.test(
-      model=model,
-      datamodule=datamodule,
-      # ckpt_path="/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-      ckpt_path='best'
-    )
+    # trainer.test(
+    #   model=model,
+    #   datamodule=datamodule,
+    #   # ckpt_path="/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+    #   ckpt_path='best'
+    # )
