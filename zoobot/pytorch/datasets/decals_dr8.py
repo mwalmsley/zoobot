@@ -83,12 +83,12 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
     def transform_with_torchvision(self):
 
-        transforms_to_apply = []
+        transforms_to_apply = [transforms.ConvertImageDtype(torch.float)]
+    
         if self.greyscale:
             transforms_to_apply += [transforms.Grayscale()]  
 
         transforms_to_apply += [
-            transforms.ConvertImageDtype(torch.float),  # make float before any aliasing
             transforms.RandomResizedCrop(
                 # size=(224, 224),  # after crop then resize
                 size=(244, 244),  # after crop then resize
