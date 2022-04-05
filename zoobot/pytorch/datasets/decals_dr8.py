@@ -87,8 +87,8 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
         transforms_to_apply = [transforms.ConvertImageDtype(torch.float)]  # automatically normalises from 0-255 int to 0-1 float
     
-        # if self.greyscale:
-        #     transforms_to_apply += [transforms.Grayscale()]  
+        if self.greyscale:
+            transforms_to_apply += [transforms.Grayscale()]  
 
         # transforms_to_apply += [
         #     transforms.RandomResizedCrop(
@@ -204,7 +204,7 @@ class DECALSDR8Dataset(Dataset):
             image = torch.from_numpy(decode_jpeg(f.read()).transpose(2,0,1))
         label = get_galaxy_label(galaxy, self.schema)
 
-        logging.info((image.shape, torch.max(image), image.dtype, label))  # probably 0-255 uint8
+        # logging.info((image.shape, torch.max(image), image.dtype, label))  # always 0-255 uint8
 
         if self.transform:
             # TODO eww an extra if

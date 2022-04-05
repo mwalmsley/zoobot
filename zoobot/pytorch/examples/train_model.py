@@ -157,8 +157,7 @@ if __name__ == '__main__':
     for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
       # for batch in next(iter(dataloader)):
       for batch in dataloader:
-        logging.info(batch)
-        logging.info(batch.shape)
+        # logging.info(batch)
         images, labels = batch
         logging.info(images.shape)
         images_np = np.transpose(images[:5].numpy(), axis=[2, 0, 1])  # BCHW to BHWC
