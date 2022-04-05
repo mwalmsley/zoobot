@@ -296,7 +296,8 @@ class GrayscaleUnweighted(torch.nn.Module):
         Returns:
             Tensor: Grayscaled image.
         """
-        return img.mean(axis=-3)  # (..., C, H, W) convention
+        # https://pytorch.org/docs/stable/generated/torch.mean.html
+        return img.mean(dim=-3, keepdim=True)  # (..., C, H, W) convention
 
     def __repr__(self):
         return self.__class__.__name__ + '(num_output_channels={0})'.format(self.num_output_channels)
