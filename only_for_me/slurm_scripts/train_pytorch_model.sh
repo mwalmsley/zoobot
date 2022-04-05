@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --nodelist=compute-0-2
+#SBATCH --nodelist=compute-0-10
 
 pwd; hostname; date
 
