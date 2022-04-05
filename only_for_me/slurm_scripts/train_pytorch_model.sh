@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --nodelist=compute-0-6
+#SBATCH --nodelist=compute-0-3
 
 pwd; hostname; date
 
@@ -22,7 +22,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b512_res5_s244_color_debug
+EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b512_res5_s244_color_debug2
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 

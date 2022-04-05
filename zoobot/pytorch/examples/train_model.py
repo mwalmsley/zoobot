@@ -227,10 +227,10 @@ if __name__ == '__main__':
     if wandb_logger is not None:
       for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
         for images, labels in dataloader:
-          # images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
-          images_np = images.numpy()
+          images_np = np.transpose(images.numpy(), axis=[2, 0, 1])  # BCHW to BHWC
+          # images_np = images.numpy()
           logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im.transpose(2, 0, 1) for im in images_np[:5]])  # transpose back to HWC for wandb
+          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
           break  # only inner loop
 
 
