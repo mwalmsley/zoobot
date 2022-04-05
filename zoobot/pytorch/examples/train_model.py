@@ -171,7 +171,9 @@ if __name__ == '__main__':
     datamodule.setup()
     if wandb_logger is not None:
       for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-        for images, labels in next(iter(dataloader)):
+        for batch in next(iter(dataloader)):
+          logging.info(batch)
+          images, labels = batch
           logging.info(images.shape)
           images_np = np.transpose(images[:5].numpy(), axis=[2, 0, 1])  # BCHW to BHWC
           # images_np = images.numpy()
