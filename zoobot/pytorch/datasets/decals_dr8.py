@@ -90,7 +90,8 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             transforms_to_apply += [
             transforms.ConvertImageDtype(torch.float),  # make float before any aliasing
             transforms.RandomResizedCrop(
-                size=(224, 224),  # after crop then resize
+                # size=(224, 224),  # after crop then resize
+                size=(244, 244),  # after crop then resize
                 scale=(0.7, 0.8),  # crop factor
                 ratio=(0.9, 1.1),  # crop aspect ratio
                 interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio

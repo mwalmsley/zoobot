@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     catalog_loc = args.catalog_loc
     initial_size = args.shard_img_size
-    resize_size = args.resize_size
+    resize_size = args.resize_size  # currently does nothing, hardcoded into decals_dr8.py
     batch_size = args.batch_size
     always_augment = not args.always_augment
 
