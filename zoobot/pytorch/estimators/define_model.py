@@ -52,9 +52,9 @@ class ZoobotModel(pl.LightningModule):
         return torch.optim.Adam(self.parameters(), lr=0.001, betas=(0.9, 0.999))  
 
 
-    def on_train_batch_end(self, outputs, batch, batch_idx, unused=None):
-        torch.cuda.empty_cache()
-        return super().on_train_batch_end(outputs, batch, batch_idx, unused)
+    # def on_train_batch_end(self, outputs, batch, batch_idx, unused=None):
+    #     torch.cuda.empty_cache()
+    #     return super().on_train_batch_end(outputs, batch, batch_idx, unused)
 
     @property
     def output_dims(self):
