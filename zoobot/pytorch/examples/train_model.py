@@ -180,16 +180,16 @@ if __name__ == '__main__':
     else:
       wandb_logger = None
 
-    # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    if wandb_logger is not None:
-      for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-        for images, labels in dataloader:
-          logging.info(images.shape)
-          images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
-          # images_np = images.numpy()
-          logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-          wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
-          break  # only inner loop aka don't log the whole dataloader
+    # # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
+    # if wandb_logger is not None:
+    #   for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
+    #     for images, labels in dataloader:
+    #       logging.info(images.shape)
+    #       images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
+    #       # images_np = images.numpy()
+    #       logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
+    #       wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]]) 
+    #       break  # only inner loop aka don't log the whole dataloader
 
     loss_func = losses.calculate_multiquestion_loss
 
