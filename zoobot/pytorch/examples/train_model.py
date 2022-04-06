@@ -252,7 +252,7 @@ if __name__ == '__main__':
         accelerator="gpu", gpus=args.gpus,  # per node
         num_nodes=args.nodes,
         strategy=strategy,
-        # precision=16,  # disable temporarily for resnet
+        precision=16,  # disable temporarily for resnet
         # precision='bf16',  # sadly, pyro does not support this - "lgamma_cuda" not implemented for 'BFloat16'
         # plugins=plugins,
         logger = wandb_logger,
