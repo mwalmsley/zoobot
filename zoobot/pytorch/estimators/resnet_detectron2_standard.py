@@ -611,6 +611,8 @@ def build_resnet_backbone(cfg, input_shape):
     Returns:
         ResNet: a :class:`ResNet` instance.
     """
+
+    cfg.MODEL.RESNETS.NORM = 'BN'  # by default, FrozenBN, but when training on 256 batch size with zoobot, don't want frozen (a la torchvision)
     # need registration of new blocks/stems?
     norm = cfg.MODEL.RESNETS.NORM
     stem = BasicStem(
