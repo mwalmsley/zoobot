@@ -202,11 +202,11 @@ class DECALSDR8Dataset(Dataset):
 
     def __getitem__(self, idx):
         galaxy = self.catalog.iloc[idx]
-        img_path = galaxy['file_loc']
         # option A
+        # img_path = galaxy['file_loc']
         # image = read_image(img_path) # PIL under the hood: Returns CHW Tensor.
         # option B - tiny bit faster when CPU-limited
-        with open(img_path, 'rb') as f:
+        with open(galaxy['file_loc'], 'rb') as f:
             image = torch.from_numpy(decode_jpeg(f.read()).transpose(2,0,1))
         label = get_galaxy_label(galaxy, self.schema)
 

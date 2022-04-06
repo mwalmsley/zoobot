@@ -119,7 +119,7 @@ if __name__ == '__main__':
     ]
     answer_columns = [a.text for a in schema.answers]
     useful_columns = answer_columns + ['file_loc']
-    print(useful_columns)
+    # print(useful_columns)
 
     train_catalog = pd.concat([pd.read_csv(loc, usecols=useful_columns) for loc in train_catalog_locs])
     val_catalog = pd.concat([pd.read_csv(loc, usecols=useful_columns) for loc in val_catalog_locs])
@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
 
 
-    logging.info(train_catalog.columns.values)  # TODO remove unneeded columns to reduce memory pressure? but would be constant w.r.t. batch size...
+    # logging.info(train_catalog.columns.values)  # TODO remove unneeded columns to reduce memory pressure? but would be constant w.r.t. batch size...
 
     # # debug mode
     # train_catalog = train_catalog.sample(5000).reset_index(drop=True)
@@ -218,11 +218,11 @@ if __name__ == '__main__':
       loss=loss_func,
       channels=channels,
       # efficientnet
-      get_architecture=efficientnet_standard.efficientnet_b0,
-      representation_dim=1280
+      # get_architecture=efficientnet_standard.efficientnet_b0,
+      # representation_dim=1280
       # or resnet via detectron2 definition
-      # get_architecture=resnet_detectron2_custom.get_resnet,  # 
-      # representation_dim=2048
+      get_architecture=resnet_detectron2_custom.get_resnet,  # 
+      representation_dim=2048
       # or resnet via torchvision definition
       # get_architecture=resnet_torchvision_custom.get_resnet,  # only supports color
       # representation_dim=2048
