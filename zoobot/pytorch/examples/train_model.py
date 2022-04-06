@@ -117,19 +117,31 @@ if __name__ == '__main__':
       '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/test_shards/test_df.csv',
       '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/test_shards/test_df.csv'
     ]
+    answer_columns = [a.text for a in schema.answers]
+    useful_columns = answer_columns + ['file_loc']
+    print(useful_columns)
 
-    train_catalog = pd.concat([pd.read_csv(loc) for loc in train_catalog_locs])
-    val_catalog = pd.concat([pd.read_csv(loc) for loc in val_catalog_locs])
-    test_catalog = pd.concat([pd.read_csv(loc) for loc in test_catalog_locs])
+    train_catalog = pd.concat([pd.read_csv(loc, columns=useful_columns) for loc in train_catalog_locs])
+    val_catalog = pd.concat([pd.read_csv(loc, columns=useful_columns) for loc in val_catalog_locs])
+    test_catalog = pd.concat([pd.read_csv(loc, columns=useful_columns) for loc in test_catalog_locs])
     for catalog in (train_catalog, val_catalog, test_catalog):
-        catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
-        catalog['file_loc'] = catalog['file_loc'].str.replace('/dr8_downloader/',  '/dr8/')
-        # catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')
-        catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
-        catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
-        # catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas2', '/state/partition1')  # load local copy
 
-        logging.info(catalog['file_loc'].iloc[0])
+      # tweak file paths
+      catalog['file_loc'] = catalog['file_loc'].str.replace('/raid/scratch',  '/share/nas2')
+      catalog['file_loc'] = catalog['file_loc'].str.replace('/dr8_downloader/',  '/dr8/')
+      # catalog['file_loc'] = catalog['file_loc'].str.replace('.jpeg', '.png')
+      catalog['file_loc'] = catalog['file_loc'].str.replace(r'/png/', r'/jpeg/')
+      catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
+      # catalog['file_loc'] = catalog['file_loc'].str.replace('/share/nas2', '/state/partition1')  # load local copy
+
+      # enforce datatypes
+      for answer_col in answer_columns:
+        catalog[answer_col] = catalog[answer_col].astype(int)
+        catalog['file_loc'] = catalog['file_loc'].astype(str)
+
+      logging.info(catalog['file_loc'].iloc[0])
+
+
 
     logging.info(train_catalog.columns.values)  # TODO remove unneeded columns to reduce memory pressure? but would be constant w.r.t. batch size...
 
