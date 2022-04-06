@@ -206,11 +206,11 @@ if __name__ == '__main__':
       loss=loss_func,
       channels=channels,
       # efficientnet
-      get_architecture=efficientnet_standard.efficientnet_b0,
-      representation_dim=1280
+      # get_architecture=efficientnet_standard.efficientnet_b0,
+      # representation_dim=1280
       # or resnet via detectron2 definition
-      # get_architecture=resnet_detectron2_custom.get_resnet,  # 
-      # representation_dim=2048
+      get_architecture=resnet_detectron2_custom.get_resnet,  # 
+      representation_dim=2048
       # or resnet via torchvision definition
       # get_architecture=resnet_torchvision_custom.get_resnet,  # only supports color
       # representation_dim=2048
