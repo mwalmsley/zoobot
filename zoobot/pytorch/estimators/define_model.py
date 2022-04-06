@@ -11,12 +11,12 @@ import pytorch_lightning as pl
 
 
 class ZoobotModel(pl.LightningModule):
-    def __init__(self, schema, loss, channels, get_architecture=efficientnet_standard.efficientnet_b0):
+    def __init__(self, schema, loss, channels, get_architecture=efficientnet_standard.efficientnet_b0, representation_dim=1280):
         super().__init__()
 
         self.schema = schema
 
-        self.model = get_model(self.output_dims, channels=channels, get_architecture=get_architecture)
+        self.model = get_model(self.output_dims, channels=channels, get_architecture=get_architecture, representation_dim=representation_dim)
         self.loss = loss
 
     def forward(self, x):
@@ -134,7 +134,8 @@ def get_model(
     use_imagenet_weights=False,
     always_augment=True,
     dropout_rate=0.2,
-    get_architecture=efficientnet_standard.efficientnet_b0
+    get_architecture=efficientnet_standard.efficientnet_b0,
+    representation_dim=1280  # or 2048 for resnet
     ):
     """
     Create a trainable efficientnet model.
@@ -161,61 +162,26 @@ def get_model(
 
     modules_to_use = []
 
-    # TODO pytorch doesn't need this I think
-    # input_shape = (input_size, input_size, channels)
-    # model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
-
-    # TODO move these to dataloader
-    # add_augmentation_layers(
-    #     model,
-    #     crop_size=crop_size,
-    #     resize_size=resize_size,
-    #     always_augment=always_augment)  # inplace
-
-    # shape_after_preprocessing_layers = (resize_size, resize_size, channels)
-
-
-    # effnet = efficientnet_custom.define_headless_efficientnet(
-    #     input_shape=shape_after_preprocessing_layers,
-    #     get_architecture=get_architecture,
-    #     # further kwargs will be passed to get_architecture
-    #     use_imagenet_weights=use_imagenet_weights,
-    # )
-    # representation_dim = 1280
-
     effnet = get_architecture(
         input_channels=channels,
         use_imagenet_weights=use_imagenet_weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
     )
-    # representation_dim = 1024  # using res4 output (B, 1024, 14, 14) before pooling
-    representation_dim = 2048  # using res5 output (B, 2048, 7, 7) before pooling
-
-
     modules_to_use.append(effnet)
-
-    # logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
 
     if include_top:
         assert output_dim is not None
-
-
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
-
-        
         modules_to_use.append(custom_layers.PermaDropout(dropout_rate))
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
 
-        # modules_to_use.append(custom_layers.View((512, representation_dim, 1, 1)))
-        # modules_to_use.append(torch.nn.Linear(representation_dim, 5))
-
-    # if weights_loc:
+    if weights_loc:
+        raise NotImplementedError
     #     load_weights(model, weights_loc, expect_partial=expect_partial)
 
     model = nn.Sequential(*modules_to_use)
 
     return model
-
 
 # # inplace
 # def load_weights(model, checkpoint_loc, expect_partial=False):

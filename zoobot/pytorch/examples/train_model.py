@@ -18,7 +18,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 
 from zoobot.shared import schemas
-from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom
+from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom, efficientnet_standard
 from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       schema=schema,
-      album=True,
+      album=False,
       train_catalog=train_catalog,
       val_catalog=val_catalog,
       test_catalog=test_catalog,
@@ -193,8 +193,17 @@ if __name__ == '__main__':
 
     loss_func = losses.calculate_multiquestion_loss
 
-    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=resnet_detectron2_custom.get_resnet)
-
+    model = define_model.ZoobotModel(
+      schema=schema,
+      loss=loss_func,
+      channels=channels,
+      # efficientnet
+      get_architecture=efficientnet_standard.efficientnet_b0,
+      representation_dim=1280
+      # or resnet
+      # get_architecture=resnet_detectron2_custom.get_resnet,  # 
+      # representation_dim=2048  # using res5 output 2048, using effnet 1280
+    )
     
     callbacks = [
         ModelCheckpoint(
@@ -210,7 +219,7 @@ if __name__ == '__main__':
 
     
     # https://hpcc.umd.edu/hpcc/help/slurmenv.html
-    logging.info(os.environ)
+    # logging.info(os.environ)
     logging.info(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
     logging.info(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
     logging.info(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
