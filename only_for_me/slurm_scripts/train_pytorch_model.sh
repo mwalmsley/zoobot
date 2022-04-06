@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --exclude=compute-0-7
+#SBATCH --exclude=compute-0-7,compute-0-5
 
 pwd; hostname; date
 
@@ -35,6 +35,6 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
     --batch-size 256 \
-    --gpus 2  \
+    --gpus 1  \
     --nodes 1 \
     --wandb
