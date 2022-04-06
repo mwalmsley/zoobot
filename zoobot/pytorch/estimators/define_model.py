@@ -51,6 +51,11 @@ class ZoobotModel(pl.LightningModule):
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
         return torch.optim.Adam(self.parameters(), lr=0.001, betas=(0.9, 0.999))  
 
+
+    def on_train_batch_end(self, outputs, batch, batch_idx, unused=None):
+        torch.cuda.empty_cache()
+        return super().on_train_batch_end(outputs, batch, batch_idx, unused)
+
     @property
     def output_dims(self):
         return len(self.schema.answers)
