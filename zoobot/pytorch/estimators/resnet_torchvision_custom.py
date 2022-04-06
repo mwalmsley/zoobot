@@ -4,7 +4,7 @@ import torch
 import torchvision
 
 
-def get_resnet_without_head(input_channels, use_imagenet_weights, include_top):  # only colour supported
+def get_resnet(input_channels, use_imagenet_weights, include_top):  # only colour supported
     assert input_channels == 3
     assert include_top == False
     model_with_head = torchvision.models.resnet50(pretrained=use_imagenet_weights, progress=False)
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     loss_func = losses.calculate_multiquestion_loss
 
-    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=get_resnet_without_head, representation_dim=2048)
+    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=get_resnet, representation_dim=2048)
 
     x = torch.from_numpy(np.random.rand(16, channels, 224, 224)).float()
     # print(model(x))
