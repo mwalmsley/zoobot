@@ -137,7 +137,8 @@ if __name__ == '__main__':
     # test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
 
-    num_workers = int(os.cpu_count()/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus
+    num_workers = int((os.cpu_count() - 2)/args.gpus)  # if ddp mode, each gpu has own dataloaders, if 1 gpu, all cpus. Save 2 cpu per gpu just to have some breathing room.
+    assert num_workers > 0
     logging.info('num workers: {}'.format(num_workers))
     datamodule = decals_dr8.DECALSDR8DataModule(
       schema=schema,

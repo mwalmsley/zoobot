@@ -22,7 +22,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b256_res5_s244_color_1gpu_resnettv
+EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b256_res5_s244_color_2gpu_resnettv
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 
@@ -35,6 +35,6 @@ $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
     --batch-size 256 \
-    --gpus 1  \
+    --gpus 2  \
     --nodes 1 \
     --wandb
