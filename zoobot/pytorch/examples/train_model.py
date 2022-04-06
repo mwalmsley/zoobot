@@ -131,6 +131,8 @@ if __name__ == '__main__':
 
         logging.info(catalog['file_loc'].iloc[0])
 
+    logging.info(train_catalog.columns.values)  # TODO remove unneeded columns to reduce memory pressure? but would be constant w.r.t. batch size...
+
     # # debug mode
     # train_catalog = train_catalog.sample(5000).reset_index(drop=True)
     # val_catalog = val_catalog.sample(5000).reset_index(drop=True)
@@ -203,11 +205,11 @@ if __name__ == '__main__':
       loss=loss_func,
       channels=channels,
       # efficientnet
-      # get_architecture=efficientnet_standard.efficientnet_b0,
-      # representation_dim=1280
+      get_architecture=efficientnet_standard.efficientnet_b0,
+      representation_dim=1280
       # or resnet via detectron2 definition
-      get_architecture=resnet_detectron2_custom.get_resnet,  # 
-      representation_dim=2048
+      # get_architecture=resnet_detectron2_custom.get_resnet,  # 
+      # representation_dim=2048
       # or resnet via torchvision definition
       # get_architecture=resnet_torchvision_custom.get_resnet,  # only supports color
       # representation_dim=2048

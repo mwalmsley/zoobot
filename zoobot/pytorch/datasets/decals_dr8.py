@@ -40,7 +40,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         album=False,
         batch_size=256,
         use_memory=False,
-        num_workers=16,
+        num_workers=4,
         prefetch_factor=4,
         seed=42
         ):
