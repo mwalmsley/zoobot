@@ -22,7 +22,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b1024_s244_color_2gpu_detunfrozen_v2
+EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_b1024_s244_color_2gpu_num1
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 

@@ -7,6 +7,7 @@ from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
+from pyro import factor
 from sklearn.model_selection import train_test_split
 from torchvision.io import read_image  # may want to replace with self.read_image for e.g. FITS, Liza
 import torch
@@ -40,6 +41,7 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         batch_size=256,
         use_memory=False,
         num_workers=16,
+        prefetch_factor=4,
         seed=42
         ):
         super().__init__()
@@ -77,9 +79,11 @@ class DECALSDR8DataModule(pl.LightningDataModule):
             logging.info('Using torchvision for augmentations')
             self.transform_with_torchvision()
 
-        self.prefetch_factor = max(1, int(20000 / (self.num_workers * self.batch_size)))  # may need to tweak this if your mem is smaller or your dataloaders timeout
-        logging.info('Prefetch factor: ', self.prefetch_factor)
+        self.prefetch_factor = prefetch_factor
         self.dataloader_timeout = 120  # seconds
+
+        logging.info('Num workers: {}'.format(self.num_workers))
+        logging.info('Prefetch factor: {}'.format(self.prefetch_factor))
 
 
     def transform_with_torchvision(self):
