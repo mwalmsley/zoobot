@@ -35,7 +35,10 @@ if __name__ == '__main__':
 
     import numpy as np
 
-    input_shape = shape_spec.ShapeSpec(height=None, width=None, channels=1, stride=None)
+
+    channels = 3
+
+    input_shape = shape_spec.ShapeSpec(height=None, width=None, channels=channels, stride=None)
 
     # model = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
     # print(model)
@@ -53,11 +56,11 @@ if __name__ == '__main__':
 
     loss_func = losses.calculate_multiquestion_loss
 
-    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=1, get_architecture=get_resnet)
+    model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=get_resnet)
     # print(model)
     # exit()
 
 
-    x = torch.from_numpy(np.random.rand(16, 1, 224, 224)).float()
+    x = torch.from_numpy(np.random.rand(16, channels, 224, 224)).float()
     # print(model(x))
     print(model(x).shape)
