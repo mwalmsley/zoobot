@@ -18,7 +18,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 
 from zoobot.shared import schemas
-from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom, efficientnet_standard
+from zoobot.pytorch.estimators import define_model, resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
 from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
 from zoobot.shared import label_metadata
@@ -198,11 +198,14 @@ if __name__ == '__main__':
       loss=loss_func,
       channels=channels,
       # efficientnet
-      get_architecture=efficientnet_standard.efficientnet_b0,
-      representation_dim=1280
-      # or resnet
+      # get_architecture=efficientnet_standard.efficientnet_b0,
+      # representation_dim=1280
+      # or resnet via detectron2 definition
       # get_architecture=resnet_detectron2_custom.get_resnet,  # 
-      # representation_dim=2048  # using res5 output 2048, using effnet 1280
+      # representation_dim=2048
+      # or resnet via torchvision definition
+      get_architecture=resnet_torchvision_custom.get_resnet,  # only supports color
+      representation_dim=2048
     )
     
     callbacks = [

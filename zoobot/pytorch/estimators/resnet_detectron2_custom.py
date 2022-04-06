@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=get_resnet)
     # print(model)
-    # exit()
+    # # exit()
 
 
     x = torch.from_numpy(np.random.rand(16, channels, 224, 224)).float()
