@@ -22,7 +22,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_det_2gpu_b256
+EXPERIMENT_DIR=$THIS_DIR/results/pytorch/resnet_debug_det_2gpu_b256_another_node
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 
