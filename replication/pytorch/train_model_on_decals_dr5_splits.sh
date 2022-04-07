@@ -20,15 +20,15 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 
-ARCHITECTURE='efficientnet'
-BATCH_SIZE=512
-GPUS=2
-# requires --mixed-precision to be set on A100s
-
-# ARCHITECTURE='resnet_detectron'
-# BATCH_SIZE=256
+# ARCHITECTURE='efficientnet'
+# BATCH_SIZE=512
 # GPUS=2
-# # doesn't need mixed precision, but can use anyway for consistency
+# # requires --mixed-precision to be set on A100s
+
+ARCHITECTURE='resnet_detectron'
+BATCH_SIZE=256
+GPUS=2
+# doesn't need mixed precision, but can use anyway for consistency
 
 # ARCHITECTURE='resnet_torchvision'
 # BATCH_SIZE=256
@@ -36,7 +36,7 @@ GPUS=2
 ## doesn't need mixed precision, but can use anyway for consistency
 
 # be sure to add _color if appropriate
-EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch_color
+EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch
 
 $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
@@ -44,6 +44,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals
     --resize-size 224 \
     --batch-size 512 \
     --gpus 2 \
-    --mixed-precision \
-    --color
+    --mixed-precision
+    #  \
+    # --color
 
