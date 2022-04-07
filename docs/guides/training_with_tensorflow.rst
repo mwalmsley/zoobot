@@ -5,38 +5,46 @@ Training from Scratch with TensorFlow
 
 For training from scratch with either TensorFlow or PyTorch, you should have first defined a schema and a catalog. See the :ref:`Training from Scratch <training_from_scratch>` guide, and then come back here.
 
-Creating Shards
----------------
+.. note:: 
+
+    If you just want to use the classifier, you don't need to make it from scratch.
+    We provide :ref:`pretrained weights and precalculated representations <datanotes>`.
+    You can even start from these and :ref:`finetune <finetuning_guide>` to your problem.
+
+You will need galaxy images and volunteer classifications.
+For Galaxy Zoo DECaLS (GZD-5), these are available at `<https://doi.org/10.5281/zenodo.4196266>`_.
+You will also need a fairly good GPU - we used an NVIDIA V100. 
+You might get away with a worse GPU by lowering the batch size (we used 128, 64 works too) or the image size, but this may affect performance.
+
+The high-level approach to create a CNN is:
+
+- Define the decision tree asked of volunteers in ``schemas.py``. *Already done for GZD-5 and GZ2.*
+- Prepare a catalog with your images and labels (matching the decision tree)
+- Create TFRecord shards (groups of images encoded for fast reading) from your catalog with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__
+- Train the CNN on those shards with `train_model.py <https://github.com/mwalmsley/zoobot/blob/main/train_model.py>`__.
+
+Galaxy Zoo uses a decision tree where the questions asked depend upon the previous answers.
+The decision tree is defined under `schemas.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/schemas.py>`_ and `label_metadata.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/label_metadata.py>`_.
+The GZ2 and GZ DECaLS decision trees are already defined for you; for other projects, you'll need to define your own (it's easy, just follow the same pattern).
+
+Create a catalog with all your labelled galaxies.
+The catalog should be a csv file with rows of (unique) galaxies and columns including:
+
+- id_str, a string that uniquely identifies each galaxy (e.g. the iauname)
+- file_loc, the absolute location of the galaxy image on disk. This is expected to be a .png of any size, but you could easily extend it for other filetypes if needed.
+- a column with the total votes for each label you want to predict, matching the schema (above).  For GZD-5, this is e.g. smooth-or-featured_smooth, smooth-or-featured_featured-or-disk, etc.
 
 It's quite slow to train a model using normal images, and so we first encode them as several TFRecords, a format which is much faster to read.
-Make these with the helper functions in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/data_utils/create_shards.py>`__.
-These expect a csv listing volunteer votes and image paths.
-See `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__ for a full working example, run like:
+Make these with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__, passing in your catalog location and where the TFRecords should be placed e.g.
 
 .. code-block:: bash
 
     python decals_dr5_to_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
 
-More options are available, and you may need to adjust the label columns; see the example for more details.
+More options are available, and you may need to adjust the label columns; see the examples in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__.
+I like to use these options to make very small shards for quick debugging: ``python create_shards.py --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv --shard-dir data/decals/shards/decals_debug --img-size 300 --eval-size 100 --max-labelled 500 --max-unlabelled 300 --img-size 32``.
 
-I like to use these options to make very small shards for quick debugging: 
-
-.. code-block:: bash
-
-    python decals_dr5_to_shards.py \
-        --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv \
-        --shard-dir data/decals/shards/decals_debug \
-        --img-size 300 \
-        --eval-size 100 \
-        --max-labelled 500 \
-        --max-unlabelled 300 \
-        --img-size 32
-
-
-Training on Shards
-------------------
-
-Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/training/training_config.py>`__. has the code to do this. 
+Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/training_config.py>`__. has the code to do this. 
 Use it in your own code like so:
 
 .. code-block:: python
