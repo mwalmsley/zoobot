@@ -17,18 +17,19 @@ from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_sta
 
 
 def train(
-    # data to use
-    save_dir,
-    catalog,
-    train_catalog,
-    val_catalog,
-    test_catalog,
-    schema,
+    # absolutely crucial arguments
+    save_dir,  # save model here
+    schema,  # answer these questions
+    # input data - specify *either* catalog (to be split) or the splits themselves
+    catalog=None,
+    train_catalog=None,
+    val_catalog=None,
+    test_catalog=None,
     # model training parameters
-    model_architecture,
-    batch_size,
-    epochs,
-    patience,
+    model_architecture='efficientnet',
+    batch_size=256,
+    epochs=1000,
+    patience=8,
     # augmentation parameters
     color=False,
     resize_size=224,
