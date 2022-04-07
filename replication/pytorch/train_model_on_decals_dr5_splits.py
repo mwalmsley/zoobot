@@ -113,5 +113,5 @@ if __name__ == '__main__':
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
         prefetch_factor=4,
-        num_workers=8
+        num_workers=11  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
     )

@@ -44,7 +44,5 @@ $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals
     --resize-size 224 \
     --batch-size 512 \
     --gpus 2 \
-    --mixed-precision
-    #  \
-    # --color
-
+    --mixed-precision \
+    --color
