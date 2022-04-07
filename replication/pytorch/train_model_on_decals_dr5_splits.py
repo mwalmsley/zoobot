@@ -61,14 +61,14 @@ if __name__ == '__main__':
         [pd.read_csv(loc, usecols=useful_columns) for loc in test_catalog_locs])
 
     for catalog in (train_catalog, val_catalog, test_catalog):
-        # tweak file paths
+        # tweak file paths (prepend r, aka raw, to avoid regex comprehension)
         catalog['file_loc'] = catalog['file_loc'].str.replace(
-            '/raid/scratch',  '/share/nas2')
+            r'/raid/scratch',  r'/share/nas2')
         catalog['file_loc'] = catalog['file_loc'].str.replace(
-            '/dr8_downloader/',  '/dr8/')
+            r'/dr8_downloader/',  r'/dr8/')
         catalog['file_loc'] = catalog['file_loc'].str.replace(
             r'/png/', r'/jpeg/')
-        catalog['file_loc'] = catalog['file_loc'].str.replace('.png', '.jpeg')
+        catalog['file_loc'] = catalog['file_loc'].str.replace(r'.png', r'.jpeg')
 
         # enforce datatypes
         for answer_col in answer_columns:
@@ -102,7 +102,7 @@ if __name__ == '__main__':
         schema=schema,
         model_architecture=args.model_architecture,
         batch_size=args.batch_size,
-        epochs=args.epochs,
+        epochs=1000,  # rely on early stopping
         # augmentation parameters
         color=args.color,
         resize_size=args.resize_size,
