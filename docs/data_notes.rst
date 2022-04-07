@@ -57,6 +57,8 @@ We provide pretrained weights for EfficientNetB0, as with TensorFlow above, and 
 - ``resnet_detectron_dr5_pytorch`` and ``resnet_detectron_dr5_pytorch_color`` are trained using the detectron2 implementation of ResNet50 (with unfrozen batch norm layers). See here.
 - ``resnet50_torchvision_dr5_pytorch_color`` is trained using the torchvision implementation of ResNet50. Only color is supported. See here.
 
+The ResNet50 models perform slightly worse than EfficientNet, but are a very common architecture and may be useful as benchmarks or as part of other frameworks (like detectron2, for segmentation).
+
 .. warning:: 
     
     The PyTorch models are likely to change further as we experiment with different training and augmentation strategies.
