@@ -14,8 +14,7 @@ pwd; hostname; date
 
 nvidia-smi
 
-export WANDB_CACHE_DIR=/share/nas2/walml/wandb_cache
-# export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64  # maybe not needed
+export WANDB_CACHE_DIR=/share/nas2/walml/WANDB_CACHE_DIR
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python

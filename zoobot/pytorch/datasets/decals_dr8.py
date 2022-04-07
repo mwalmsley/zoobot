@@ -7,7 +7,6 @@ from multiprocessing import Pool
 
 import numpy as np
 import pandas as pd
-from pyro import factor
 from sklearn.model_selection import train_test_split
 from torchvision.io import read_image  # may want to replace with self.read_image for e.g. FITS, Liza
 import torch
@@ -39,6 +38,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         greyscale=True,
         album=False,
         batch_size=256,
+        resize_size=224,
+        crop_scale_bounds=(0.7, 0.8),
+        crop_ratio_bounds=(0.9, 1.1),
         use_memory=False,
         num_workers=4,
         prefetch_factor=4,
@@ -63,6 +65,10 @@ class DECALSDR8DataModule(pl.LightningDataModule):
         self.test_catalog = test_catalog
 
         self.batch_size = batch_size
+
+        self.resize_size = resize_size
+        self.crop_scale_bounds = crop_scale_bounds
+        self.crop_ratio_bounds = crop_ratio_bounds
 
         self.use_memory = use_memory
 
@@ -97,10 +103,9 @@ class DECALSDR8DataModule(pl.LightningDataModule):
 
         transforms_to_apply += [
             transforms.RandomResizedCrop(
-                size=(244, 244),  # after crop then resize
-                # size=(244, 244),  # after crop then resize
-                scale=(0.7, 0.8),  # crop factor
-                ratio=(0.9, 1.1),  # crop aspect ratio
+                size=self.resize_size,  # assumed square
+                scale=self.crop_scale_bounds,  # crop factor
+                ratio=self.crop_ratio_bounds,  # crop aspect ratio
                 interpolation=transforms.InterpolationMode.BILINEAR),  # new aspect ratio
             transforms.RandomHorizontalFlip(),
             transforms.RandomRotation(degrees=180., interpolation=transforms.InterpolationMode.BILINEAR)
@@ -120,10 +125,10 @@ class DECALSDR8DataModule(pl.LightningDataModule):
                 A.ToFloat(),
                 A.Rotate(limit=180, interpolation=1, always_apply=True, border_mode=0, value=0), # anything outside of the original image is set to 0.
                 A.RandomResizedCrop(
-                    height=224, # after crop resize
-                    width=224,
-                    scale=(0.7,0.8), # crop factor
-                    ratio=(0.9, 1.1), # crop aspect ratio
+                    height=self.resize_size, # after crop resize
+                    width=self.resize_size,
+                    scale=self.crop_scale_bounds, # crop factor
+                    ratio=self.crop_ratio_bounds, # crop aspect ratio
                     interpolation=1, # This is "INTER_LINEAR" == BILINEAR interpolation. See: https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html
                     always_apply=True
                 ), # new aspect ratio
@@ -229,6 +234,62 @@ class DECALSDR8Dataset(Dataset):
         # logging.info((image.shape, torch.max(image), image.dtype, label))  #  should be 0-1 float
         return image, label
 
+
+def load_encoded_jpeg(loc):
+    with open(loc, "rb") as f:
+        return f.read()  # bytes, not yet decoded
+
+def decode_jpeg(encoded_bytes):
+    return simplejpeg.decode_jpeg(encoded_bytes, fastdct=True, fastupsample=True)
+
+
+def get_galaxy_label(galaxy, schema):
+    return galaxy[schema.label_cols].values.astype(int)
+
+# torchvision
+
+
+class GrayscaleUnweighted(torch.nn.Module):
+
+    def __init__(self, num_output_channels=1):
+        super().__init__()
+        self.num_output_channels = num_output_channels
+
+    def forward(self, img):
+        """
+        PyTorch (and tensorflow) does greyscale conversion as a *weighted* mean by default (as colours have different perceptual brightnesses).
+        Here, do a simple mean.
+        Args:
+            img (Tensor): Image to be converted to grayscale.
+
+        Returns:
+            Tensor: Grayscaled image.
+        """
+        # https://pytorch.org/docs/stable/generated/torch.mean.html
+        return img.mean(dim=-3, keepdim=True)  # (..., C, H, W) convention
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(num_output_channels={0})'.format(self.num_output_channels)
+
+
+
+# albumentations versuib of GrayscaleUnweighted
+class ToGray():
+
+    def __init__(self, reduce_channels=False):
+        if reduce_channels:
+            self.mean = lambda arr: arr.mean(axis=2, keepdims=True)
+        else:
+            self.mean = lambda arr: arr.mean(axis=2, keepdims=True).repeat(3, axis=2)
+
+    def __call__(self, image, **kwargs):
+        return self.mean(image)
+
+
+"""
+I played with an in-memory version for speed, but it wasn't particularly faster - cpu is the limiting factor at Manchester
+"""
+
 # class DECALSDR8DatasetMemory(DECALSDR8Dataset):
 #     # compressed data will be loaded into memory
 #     # use cpu/simplejpeg to decode as needed, can't store decoded all in memory
@@ -272,52 +333,3 @@ class DECALSDR8Dataset(Dataset):
 #             label = self.target_transform(label)
 
 #         return image, label
-
-
-def load_encoded_jpeg(loc):
-    with open(loc, "rb") as f:
-        return f.read()  # bytes, not yet decoded
-
-def decode_jpeg(encoded_bytes):
-    return simplejpeg.decode_jpeg(encoded_bytes, fastdct=True, fastupsample=True)
-
-
-def get_galaxy_label(galaxy, schema):
-    return galaxy[schema.label_cols].values.astype(int)
-
-# torchvision
-
-
-class GrayscaleUnweighted(torch.nn.Module):
-
-    def __init__(self, num_output_channels=1):
-        super().__init__()
-        self.num_output_channels = num_output_channels
-
-    def forward(self, img):
-        """
-        Args:
-            img (Tensor): Image to be converted to grayscale.
-
-        Returns:
-            Tensor: Grayscaled image.
-        """
-        # https://pytorch.org/docs/stable/generated/torch.mean.html
-        return img.mean(dim=-3, keepdim=True)  # (..., C, H, W) convention
-
-    def __repr__(self):
-        return self.__class__.__name__ + '(num_output_channels={0})'.format(self.num_output_channels)
-
-
-
-# albumentations
-class ToGray():
-
-    def __init__(self, reduce_channels=False):
-        if reduce_channels:
-            self.mean = lambda arr: arr.mean(axis=2, keepdims=True)
-        else:
-            self.mean = lambda arr: arr.mean(axis=2, keepdims=True).repeat(3, axis=2)
-
-    def __call__(self, image, **kwargs):
-        return self.mean(image)

@@ -21,6 +21,8 @@ def get_resnet(input_channels, use_imagenet_weights=False, include_top=False):  
 
 if __name__ == '__main__':
 
+    # debugging only
+
     import numpy as np
 
     from zoobot.pytorch.training import losses

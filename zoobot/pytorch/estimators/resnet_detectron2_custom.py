@@ -33,16 +33,15 @@ def get_resnet(
 
 if __name__ == '__main__':
 
+    # debugging only
+
     import numpy as np
 
-
     channels = 3
-
     input_shape = shape_spec.ShapeSpec(height=None, width=None, channels=channels, stride=None)
 
     # model = build_resnet_backbone(default_config, input_shape)  # exactly matching detectron2's version
     # print(model)
-
 
     # model = get_resnet(input_channels=1)
 
@@ -58,9 +57,6 @@ if __name__ == '__main__':
 
     model = define_model.ZoobotModel(schema=schema, loss=loss_func, channels=channels, get_architecture=get_resnet)
     # print(model)
-    # # exit()
-
 
     x = torch.from_numpy(np.random.rand(16, channels, 224, 224)).float()
-    # print(model(x))
     print(model(x).shape)

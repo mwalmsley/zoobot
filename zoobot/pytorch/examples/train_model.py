@@ -15,6 +15,7 @@ from pytorch_lightning.plugins.training_type import DDPPlugin
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from yaml import parse
 
 
 from zoobot.shared import schemas
@@ -31,7 +32,7 @@ if __name__ == '__main__':
       format='%(asctime)s %(levelname)s: %(message)s'
     )
 
-    logging.info('Begin python script')
+    logging.info('Begin training example script')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
@@ -50,6 +51,8 @@ if __name__ == '__main__':
         They can be enabled at test time as well, which gives better uncertainties (by increasing variance between forward passes) \
         but may be unexpected and mess with e.g. GradCAM techniques.'),
     parser.add_argument('--dropout-rate', dest='dropout_rate', default=0.2, type=float)
+    parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true',
+      help='If true, use automatic mixed precision (via PyTorch Lightning) to reduce GPU memory use (~x2). Else, use full (32 bit) precision')
     args = parser.parse_args()
 
     "shared setup"
@@ -119,7 +122,6 @@ if __name__ == '__main__':
     ]
     answer_columns = [a.text for a in schema.answers]
     useful_columns = answer_columns + ['file_loc']
-    # print(useful_columns)
 
     train_catalog = pd.concat([pd.read_csv(loc, usecols=useful_columns) for loc in train_catalog_locs])
     val_catalog = pd.concat([pd.read_csv(loc, usecols=useful_columns) for loc in val_catalog_locs])
@@ -140,10 +142,6 @@ if __name__ == '__main__':
         catalog['file_loc'] = catalog['file_loc'].astype(str)
 
       logging.info(catalog['file_loc'].iloc[0])
-
-
-
-    # logging.info(train_catalog.columns.values)  # TODO remove unneeded columns to reduce memory pressure? but would be constant w.r.t. batch size...
 
     # # debug mode
     # train_catalog = train_catalog.sample(5000).reset_index(drop=True)
@@ -171,23 +169,6 @@ if __name__ == '__main__':
       prefetch_factor=prefetch_factor
     )
     datamodule.setup()
-
-
-    # # you can do this to see images, but if you do, wandb will cause training to silently hang before starting
-    # datamodule.setup()
-    # for (dataloader_name, dataloader) in [('train', datamodule.train_dataloader()), ('val', datamodule.val_dataloader()), ('test', datamodule.test_dataloader())]:
-    #   # for batch in next(iter(dataloader)):
-    #   for batch in dataloader:
-    #     # logging.info(batch)
-    #     images, labels = batch
-    #     # logging.info(images.shape)
-    #     images_np = np.transpose(images[:5].numpy(), axes=[0, 2, 3, 1])  # BCHW to BHWC
-    #     # images_np = images.numpy()
-    #     logging.info((dataloader_name, images_np.shape, images[0].min(), images[0].max()))
-    #     break  # only inner loop aka don't log the whole dataloader
-
-    # # exit()
-
 
     if args.wandb:
         wandb_logger = WandbLogger(
@@ -217,13 +198,13 @@ if __name__ == '__main__':
       schema=schema,
       loss=loss_func,
       channels=channels,
-      # efficientnet
-      # get_architecture=efficientnet_standard.efficientnet_b0,
-      # representation_dim=1280
-      # or resnet via detectron2 definition
-      get_architecture=resnet_detectron2_custom.get_resnet,  # 
-      representation_dim=2048
-      # or resnet via torchvision definition
+      # you can use efficientnet...
+      get_architecture=efficientnet_standard.efficientnet_b0,
+      representation_dim=1280
+      # or resnet via detectron2 definition...
+      # get_architecture=resnet_detectron2_custom.get_resnet,
+      # representation_dim=2048
+      # or resnet via torchvision definition...
       # get_architecture=resnet_torchvision_custom.get_resnet,  # only supports color
       # representation_dim=2048
     )
@@ -238,7 +219,6 @@ if __name__ == '__main__':
         ),
         EarlyStopping(monitor='val_loss', patience=8, check_finite=True)
     ]
-    # callbacks = []
 
     
     # https://hpcc.umd.edu/hpcc/help/slurmenv.html
@@ -256,29 +236,32 @@ if __name__ == '__main__':
     logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
     logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
 
-    # plugins = None
     strategy = None
     if args.gpus > 1:
       # plugins = [DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
       # strategy = 'ddp'
       strategy = DDPPlugin(find_unused_parameters=False)
       logging.info('Using multi-gpu training')
+  
     if args.nodes > 1:
       assert args.gpus == 2
       logging.info('Using multi-node training')
+      # this hangs silently on Manchester's slurm cluster - perhaps you will have more success?
+  
+    precision = None
+    if args.mixed_precision:
+      logging.info('Training with automatic mixed precision. Will reduce memory footprint but may cause training instability for e.g. resnet')
+      precision=16
 
     trainer = pl.Trainer(
         accelerator="gpu", gpus=args.gpus,  # per node
         num_nodes=args.nodes,
         strategy=strategy,
-        # precision=16,  # disable temporarily for resnet
-        # precision='bf16',  # sadly, pyro does not support this - "lgamma_cuda" not implemented for 'BFloat16'
-        # plugins=plugins,
+        precision=precision,
         logger = wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
         default_root_dir=save_dir
-        # enable_progress_bar=False
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size, trainer.local_rank, trainer.global_rank, trainer.node_rank))
@@ -288,6 +271,5 @@ if __name__ == '__main__':
     trainer.test(
       model=model,
       datamodule=datamodule,
-      # ckpt_path="/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-      ckpt_path='best'
+      ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
