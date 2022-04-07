@@ -20,7 +20,7 @@ def extract_questions_and_label_cols(question_answer_pairs):
 # use these by importing them in another script e.g.
 # from zoobot.label_metadata import decals_label_cols 
 
-# dr5, implicitly
+# dr5, implicitly (deprecated - use decals_dr5_ortho_pairs below instead, for clarity)
 decals_pairs = {
     'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
     'disk-edge-on': ['_yes', '_no'],
@@ -165,6 +165,7 @@ gz2_partial_questions, gz2_partial_label_cols = extract_questions_and_label_cols
 """
 Dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
 """
+# deprecated - use decals_ortho_dependencies below instead for clarity
 gz2_and_decals_dependencies = {
     'smooth-or-featured': None,  # always asked
     'disk-edge-on': 'smooth-or-featured_featured-or-disk',
