@@ -1,4 +1,4 @@
-tensorflow >= 2.3 # Tested on 2.3, 2.4, 2.5. 
+tensorflow >= 2.8 # Tested on 2.3, 2.4, 2.5, shortly 2.8 (preprocessing layers moved out of experimental)
 tqdm
 pillow
 numpy
@@ -11,8 +11,17 @@ python-dateutil==2.8.1  # for boto3
 boto3
 statsmodels
 keras_applications  # for efficientnet
-tensorflow_probability >= 0.11  # 0.11 for tf 2.3, 0.14 for tf 2.4
+tensorflow_probability >= 0.11  # 0.11 for tf 2.3, 0.14 for tf 2.4, etc
 pyarrow  # to read parquet, which is very handy for big datasets
 seaborn  # for nice plots
 astropy  # for reading .fits (not yet implemented, but likely to be added)
 wandb  # optional, for saving metrics to weights&biases (cloud service, free within limits)
+
+# and for pytorch, optionally (assuming linux, cuda 11.3, pytorch 10.2):
+
+# conda install pytorch==1.10.1 torchvision==0.11.2 torchaudio==0.10.1 cudatoolkit=11.3 -c pytorch -c conda-forge
+# python -m pip install detectron2 -f \
+#   https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
+# pip install pytorch-lightning simplejpeg albumentations pyro-ppl==1.8.0
+
+# (latest pyro currently forces pytorch 1.11.0, which is not yet released for detectron2 (1.10 only), probably causing cuda errors)
