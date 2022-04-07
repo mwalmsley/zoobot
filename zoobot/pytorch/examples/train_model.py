@@ -79,7 +79,7 @@ if __name__ == '__main__':
     pl.seed_everything(42)
 
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
-    dependencies = label_metadata.get_decals_ortho_dependencies(question_answer_pairs)
+    dependencies = label_metadata.decals_ortho_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
