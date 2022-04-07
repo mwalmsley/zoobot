@@ -100,7 +100,7 @@ def train(
         logging.info('Using multi-node training')
         # this hangs silently on Manchester's slurm cluster - perhaps you will have more success?
 
-    precision = None
+    precision = 32
     if mixed_precision:
         logging.info(
             'Training with automatic mixed precision. Will reduce memory footprint but may cause training instability for e.g. resnet')

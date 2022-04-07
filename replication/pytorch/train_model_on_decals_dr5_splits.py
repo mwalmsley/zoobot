@@ -60,22 +60,22 @@ if __name__ == '__main__':
     test_catalog = pd.concat(
         [pd.read_csv(loc, usecols=useful_columns) for loc in test_catalog_locs])
 
-    for catalog in (train_catalog, val_catalog, test_catalog):
+    for split_catalog in (train_catalog, val_catalog, test_catalog):
         # tweak file paths (prepend r, aka raw, to avoid regex comprehension)
-        catalog['file_loc'] = catalog['file_loc'].str.replace(
+        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
             r'/raid/scratch',  r'/share/nas2')
-        catalog['file_loc'] = catalog['file_loc'].str.replace(
+        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
             r'/dr8_downloader/',  r'/dr8/')
-        catalog['file_loc'] = catalog['file_loc'].str.replace(
+        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
             r'/png/', r'/jpeg/')
-        catalog['file_loc'] = catalog['file_loc'].str.replace(r'.png', r'.jpeg')
+        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(r'.png', r'.jpeg')
 
         # enforce datatypes
         for answer_col in answer_columns:
-            catalog[answer_col] = catalog[answer_col].astype(int)
-            catalog['file_loc'] = catalog['file_loc'].astype(str)
+            split_catalog[answer_col] = split_catalog[answer_col].astype(int)
+            split_catalog['file_loc'] = split_catalog['file_loc'].astype(str)
 
-        logging.info(catalog['file_loc'].iloc[0])
+        logging.info(split_catalog['file_loc'].iloc[0])
 
     # debug mode
     if args.debug:
