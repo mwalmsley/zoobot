@@ -5,7 +5,7 @@ Zoobot Documentation
 ====================
 
 Zoobot makes it easy to train a state-of-the-art deep learning classifier to solve your galaxy morphology problem.
-For example, you can train a classifier to find ring galaxies in under `200 lines of code <https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py>`_.
+For example, you can train a classifier to find ring galaxies in under `200 lines of code <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`_.
 
 .. figure:: finetuning_rings.png
    :alt: Ring galaxies found using Zoobot
