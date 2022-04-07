@@ -61,7 +61,7 @@ def train(
     logging.debug(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
     logging.debug(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
 
-    pl.seed_everything(42)
+    pl.seed_everything(random_state)
 
     assert save_dir is not None
     if not os.path.isdir(save_dir):

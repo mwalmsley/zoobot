@@ -95,7 +95,6 @@ if __name__ == '__main__':
 
     train_with_pytorch_lightning.train(
         save_dir=args.save_dir,
-        catalog=catalog,
         train_catalog=train_catalog,
         val_catalog=val_catalog,
         test_catalog=test_catalog,
