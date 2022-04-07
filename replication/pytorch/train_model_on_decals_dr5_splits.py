@@ -4,6 +4,7 @@ import argparse
 
 import pandas as pd
 from pytorch_lightning.loggers import WandbLogger
+import regex
 
 from zoobot.shared import label_metadata, schemas
 from zoobot.pytorch.training import train_with_pytorch_lightning
@@ -61,14 +62,15 @@ if __name__ == '__main__':
         [pd.read_csv(loc, usecols=useful_columns) for loc in test_catalog_locs])
 
     for split_catalog in (train_catalog, val_catalog, test_catalog):
-        # tweak file paths (prepend r, aka raw, to avoid regex comprehension)
+        # tweak file paths
         split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            r'/raid/scratch',  r'/share/nas2')
+            '/raid/scratch',  '/share/nas2', regex=False)
         split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            r'/dr8_downloader/',  r'/dr8/')
+            '/dr8_downloader/',  '/dr8/', regex=False)
         split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            r'/png/', r'/jpeg/')
-        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(r'.png', r'.jpeg')
+            '/png/', '/jpeg/', regex=False)
+        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
+            '.png', '.jpeg', regex=False)
 
         # enforce datatypes
         for answer_col in answer_columns:

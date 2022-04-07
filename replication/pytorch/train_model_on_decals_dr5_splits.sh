@@ -28,6 +28,7 @@ GPUS=2
 # ARCHITECTURE='resnet_detectron'
 # BATCH_SIZE=256
 # GPUS=2
+# requires --mixed-precision to be set
 
 # ARCHITECTURE='resnet_torchvision'
 # BATCH_SIZE=256
@@ -41,6 +42,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals
     --architecture $ARCHITECTURE \
     --resize-size 224 \
     --batch-size 512 \
-    --gpus 2
+    --gpus 2 \
+    --mixed-precision
 
     # --color \
