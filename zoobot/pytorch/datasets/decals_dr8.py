@@ -15,16 +15,10 @@ import pytorch_lightning as pl
 import simplejpeg
 from torchvision import transforms
 
-# import cv2
-# cv2.setNumThreads(0)
-# cv2.ocl.setUseOpenCL(False)
-
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 # https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html
-
-# for now, all this really does is split a dataframe and apply no transforms
 class DECALSDR8DataModule(pl.LightningDataModule):
     def __init__(
         self,
