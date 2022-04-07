@@ -111,5 +111,6 @@ if __name__ == '__main__':
         nodes=1,
         gpus=args.gpus,
         mixed_precision=args.mixed_precision,
-        wandb_logger=wandb_logger
+        wandb_logger=wandb_logger,
+        prefetch_factor=8
     )

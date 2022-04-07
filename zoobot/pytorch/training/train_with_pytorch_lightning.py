@@ -79,10 +79,10 @@ def train(
         get_architecture = efficientnet_standard.efficientnet_b0
         representation_dim = 1280
     elif model_architecture == 'resnet_detectron':
-        get_architecture = resnet_detectron2_custom.get_resnet,
+        get_architecture = resnet_detectron2_custom.get_resnet
         representation_dim = 2048
     elif model_architecture == 'resnet_torchvision':
-        get_architecture = resnet_torchvision_custom.get_resnet,  # only supports color
+        get_architecture = resnet_torchvision_custom.get_resnet  # only supports color
         representation_dim = 2048
     else:
         raise ValueError(
