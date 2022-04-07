@@ -13,7 +13,7 @@ pwd; hostname; date
 
 nvidia-smi
 
-export WANDB_CACHE_DIR=/share/nas2/walml/WANDB_CACHE_DIR
+# export WANDB_CACHE_DIR=/share/nas2/walml/WANDB_CACHE_DIR
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
@@ -40,6 +40,7 @@ $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals
     --experiment-dir $EXPERIMENT_DIR \
     --architecture $ARCHITECTURE \
     --resize-size 224 \
-    # --color \
     --batch-size 512 \
     --gpus 2
+
+    # --color \
