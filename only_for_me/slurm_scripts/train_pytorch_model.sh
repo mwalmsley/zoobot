@@ -8,14 +8,12 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --nodelist compute-0-2
 #SBATCH --exclude compute-0-7,compute-0-5
-
 pwd; hostname; date
 
 nvidia-smi
 
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
+export WANDB_CACHE_DIR=/share/nas2/walml/WANDB_CACHE_DIR
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
@@ -24,13 +22,17 @@ THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
 EXPERIMENT_DIR=$THIS_DIR/results/pytorch/effnet_train_only_dr5_greyscale_pytorch
 
+# $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
+
+# --catalog does nothing currently because I provide the splits explicitly
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
     --shard-img-size 300 \
     --resize-size 224 \
+    --color \
     --catalog ${THIS_DIR}/data/decals/shards/all_campaigns_ortho_v2/dr5/labelled_catalog.csv \
     --epochs 200 \
-    --batch-size 512 \
-    --gpus 2  \
+    --batch-size 256 \
+    --gpus 1  \
     --nodes 1 \
     --wandb

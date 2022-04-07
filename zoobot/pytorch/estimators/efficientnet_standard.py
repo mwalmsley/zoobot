@@ -102,9 +102,10 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
         )
 
         self.features = nn.Sequential(*layers)
+        # pytorch version includes the pooling outside of include_top
         self.avgpool = nn.AdaptiveAvgPool2d(1)
 
-        if include_top:
+        if include_top:  # should never be true for Zoobot
             self.head = nn.Sequential(
                 # TODO replace with PermaDropout via self.training
                 nn.Dropout(p=dropout, inplace=True),
