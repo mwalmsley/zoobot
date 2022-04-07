@@ -25,14 +25,14 @@ RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 # GPUS=2
 # # requires --mixed-precision to be set on A100s
 
-# ARCHITECTURE='resnet_detectron'
-# BATCH_SIZE=256
-# GPUS=2
-# mixed precision causes rare nan errors - not recommended!
-
-ARCHITECTURE='resnet_torchvision'
+ARCHITECTURE='resnet_detectron'
 BATCH_SIZE=256
 GPUS=2
+# mixed precision causes rare nan errors - not recommended!
+
+# ARCHITECTURE='resnet_torchvision'
+# BATCH_SIZE=256
+# GPUS=2
 # # mixed precision causes rare nan errors - not recommended!
 # # only supports color (so you must add --color)
 
