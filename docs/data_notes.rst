@@ -6,7 +6,7 @@ Data Notes
 Zoobot includes three datasets you might be interested in:
 
 - Weights for trained GZ DECaLS models (with excellent performance at answering GZ DECaLS questions)
-- Representations calculated from trained GZ DECaLS models for galaxies in either GZ DECaLS (approx. 340k) or Galaxy Zoo 2 (approx. 240k)
+- Representations calculated from trained GZ DECaLS models for galaxies in either GZ DECaLS (approx. 340k) or the Galaxy Zoo 2 "Galaxy Challenge" kaggle subset (approx. 60k).
 - Catalogues of ring galaxies. There are two catalogues: basic, derived from "ring" tags on the Galaxy Zoo forum, or advanced, derived from the GZ DECaLS "ring" vote fraction.
   
 Where the data is small, we have included it with the repository (see the ``data`` folder). Where the data is large, you can download it from Zenodo (see the links below).
@@ -16,7 +16,10 @@ You can also download previously-published volunteer vote fractions, automatic v
 Weights
 -----------------
 
-We provide pretrained weights for a CNN trained on the GZ DECaLS volunteer votes under `data/pretrained_models <https://github.com/mwalmsley/zoobot/tree/pytorch/data/pretrained_models>`_ . 
+TensorFlow
+...........
+
+We provide pretrained weights for an EfficientNet B0 CNN trained on the GZ DECaLS volunteer votes under `data/pretrained_models <https://github.com/mwalmsley/zoobot/tree/pytorch/data/pretrained_models>`_ . 
 
 - ``replicated_train_only_greyscale_tf`` is trained on the colour (3-channel grz) images shown to volunteers, but the images are averaged across bands before being input.
 - ``replicated_train_only_color_tf`` is identical but without averaging across bands. This approach was not used for the GZ DECaLS catalog to avoid bias, but may be useful for e.g. anomaly-finding.
@@ -32,6 +35,11 @@ See :ref:`the DECaLS guide <training_from_scratch>` for pedagogical details on h
     The exact weights for the actual models used in W+22 are not available because loading weights requires the underlying TensorFlow code to be identical,
     but that code has subsequently been refactored to create the Zoobot package and hence the weights do not load correctly. 
     The weights provided here are equivalent in every respect other than the random seed used for training.
+
+PyTorch
+........
+
+We provide pretrained weights 
 
 
 Representations
