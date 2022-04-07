@@ -34,6 +34,7 @@ ARCHITECTURE='resnet_torchvision'
 BATCH_SIZE=256
 GPUS=2
 # doesn't need mixed precision, but can use anyway for consistency
+# only supports color (so you must add --color)
 
 # be sure to add _color if appropriate
 EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch

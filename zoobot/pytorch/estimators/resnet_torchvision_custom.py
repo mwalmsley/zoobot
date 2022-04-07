@@ -6,7 +6,8 @@ import torchvision
 
 def get_resnet(input_channels, use_imagenet_weights=False, include_top=False):  # only colour supported
     # https://pytorch.org/vision/stable/_modules/torchvision/models/resnet.html#resnet50 see here - could paste and adapt for greyscale if needed
-    assert input_channels == 3
+    if not input_channels == 3:
+        raise ValueError('torchvision resnet only supports color (without altering their code) - input_channels must be 3, not {}'.format(input_channels))
     assert include_top == False
     model_with_head = torchvision.models.resnet50(pretrained=use_imagenet_weights, progress=False)
 
