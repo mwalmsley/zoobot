@@ -25,15 +25,15 @@ RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 # GPUS=2
 # # requires --mixed-precision to be set on A100s
 
-ARCHITECTURE='resnet_detectron'
+# ARCHITECTURE='resnet_detectron'
+# BATCH_SIZE=256
+# GPUS=2
+# # doesn't need mixed precision, but can use anyway for consistency
+
+ARCHITECTURE='resnet_torchvision'
 BATCH_SIZE=256
 GPUS=2
 # doesn't need mixed precision, but can use anyway for consistency
-
-# ARCHITECTURE='resnet_torchvision'
-# BATCH_SIZE=256
-# GPUS=2
-## doesn't need mixed precision, but can use anyway for consistency
 
 # be sure to add _color if appropriate
 EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch_color
