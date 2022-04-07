@@ -24,7 +24,6 @@ EXPERIMENT_DIR=$THIS_DIR/results/pytorch/effnet_train_only_dr5_greyscale_pytorch
 
 # $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/estimators/cuda_check.py \
 
-# --catalog does nothing currently because I provide the splits explicitly
 $PYTHON /share/nas2/walml/repos/zoobot/zoobot/pytorch/examples/train_model.py \
     --experiment-dir $EXPERIMENT_DIR \
     --shard-img-size 300 \
