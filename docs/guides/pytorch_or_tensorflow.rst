@@ -24,11 +24,20 @@ Which Version Should I Use?
 Tell Me More About What's Different
 -------------------------------------
 
+The biggest difference is how the training data is loaded.
+The TensorFlow Zoobot currently uses TFRecord shards (binary-encoded stacks of images) while the PyTorch version uses the images directly.
 This makes training more flexible: with shards, changing the training data requires making new shards, which is slow (a few hours).
 Avoiding shards also saves disk space: TFRecord shards take much up more disk space than the original images.
 
+The TensorFlow version has been around longer.
+It has more working examples (see https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/tensorflow/examples>`_).
+It has also been used in published work: both the GZ DECaLS catalog and the "practical representation tools" paper used the TensorFlow version.
 
-Currently,  and is used for the GZ DECaLS and probably the GZ LegS catalogs, (e.g. AstroAugmentations, courtesy Micah Bowles).
+The PyTorch version is new and includes the latest features but has less examples and documentation and has not yet been formally published.
+
+PyTorch-specific features include:
+- ResNet50 architecture option (with both detectron2 and torchvision's implementations) 
+- Integration with AstroAugmentations (courtesy Micah Bowles) for custom astronomy image augmentations
 
 
 Can I have a JAX version?
