@@ -35,7 +35,7 @@ GPUS=2
 # GPUS=2
 
 # be sure to add _color if appropriate
-EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch
+EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch_color
 
 $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
@@ -43,6 +43,5 @@ $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals
     --resize-size 224 \
     --batch-size 512 \
     --gpus 2 \
-    --mixed-precision
-
-    # --color \
+    --mixed-precision \
+    --color
