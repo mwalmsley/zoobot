@@ -85,15 +85,13 @@ if __name__ == '__main__':
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
-    if args.wandb:
-        wandb_logger = WandbLogger(
-            project='zoobot-pytorch-dr5-presplit-replication',
-            name=os.path.basename(args.save_dir),
-            log_model="all")
-        # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
-        # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
-    else:
-        wandb_logger = None
+    wandb_logger = WandbLogger(
+        project='zoobot-pytorch-dr5-presplit-replication',
+        name=os.path.basename(args.save_dir),
+        log_model="all")
+    # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
+    # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
+
 
     train_with_pytorch_lightning.train(
         save_dir=args.save_dir,
