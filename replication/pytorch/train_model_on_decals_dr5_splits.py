@@ -112,5 +112,6 @@ if __name__ == '__main__':
         gpus=args.gpus,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
-        prefetch_factor=8
+        prefetch_factor=4,
+        num_workers=8
     )
