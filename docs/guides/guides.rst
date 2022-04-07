@@ -18,6 +18,7 @@ These guides include content or code specific to either the PyTorch or TensorFlo
    :maxdepth: 2
 
    /guides/training_with_tensorflow
+   /guides/training_with_pytorch
 
 If you'd prefer worked examples, you can find those under `zoobot/tensorflow/examples <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples>`_ and `zoobot/pytorch/examples <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/examples>`_
 

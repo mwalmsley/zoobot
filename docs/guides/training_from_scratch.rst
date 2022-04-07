@@ -134,6 +134,11 @@ For example:
      - 17
      - 23
 
+.. warning::
+
+    Answers with zero votes should be listed as 0 in the catalog, not left blank or set to nan.
+    This ensures the number of votes can be summed to get the total votes for a question.
+
 Next Steps
 ----------
 
@@ -155,7 +160,7 @@ See the :ref:`Training with TensorFlow <training_with_tensorflow>` guide.
 With the PyTorch version, you need to define a `PyTorch Lightning DataModule <https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html>`_ that describes how to load the images listed in your catalog and how to divide them into train/validation/test sets. 
 To train as fast as possible, any static adjustments should already have been done to those images.
 Stochastic adjustments happen when the images are read from those paths into memory, using the PyTorch dataloaders you define in your DataModule.
-See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
+See the :ref:`Training with PyTorch <training_with_pytorch>` guide.
 
 .. note:: 
 
