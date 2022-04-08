@@ -20,5 +20,39 @@ setuptools.setup(
         "Environment :: GPU :: NVIDIA CUDA"
     ],
     packages=setuptools.find_packages(),
-    python_requires=">=3.6"
+    python_requires=">=3.6",
+    extras_require={
+        'pytorch': [
+            'torch == 1.10.1',
+            'torchvision == 0.11.2',
+            'torchaudio == 0.10.1',
+            'pytorch-lightning',
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl == 1.8.0'
+        ],
+        'tensorflow': [
+            'tensorflow >= 2.8',
+            'keras_applications',
+            'tensorflow_probability >= 0.11'
+        ]
+    },
+    install_requires=[
+        'tqdm',
+        'pillow',
+        'numpy',
+        'pandas',
+        'scipy',
+        'scikit-image',
+        'scikit-learn',
+        'matplotlib',
+        'python-dateutil == 2.8.1',  # for boto3
+        'boto3',
+        'statsmodels',
+        'pyarrow',  # to read parquet, which is very handy for big datasets
+        'seaborn',  # for nice plots
+        #'astropy', # for reading .fits (not yet implemented, but likely to be added)
+        # optional, for saving metrics to weights&biases (cloud service, free within limits)
+        'wandb'
+    ]
 )
