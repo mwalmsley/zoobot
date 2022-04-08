@@ -49,12 +49,18 @@ To get started, see the [documentation](https://zoobot.readthedocs.io/).
 
 I also include some working examples for you to copy and adapt:
 
-- [decals_dr5_to_shards.py](https://github.com/mwalmsley/zoobot/blob/main/decals_dr5_to_shards.py) (only necessary to train from scratch)
-- [train_model.py](https://github.com/mwalmsley/zoobot/blob/main/train_model.py) (similarly)
-- [make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/make_predictions.py)
-- [finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py)
-- [finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_advanced.py)
-- [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb) (to better understand Zoobot's statistical outputs)
+- [tensorflow/examples/decals_dr5_to_shards.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py) (only necessary to train from scratch)
+- [tensorflow/examples/train_model_on_shards.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_shards.py) (only necessary to train from scratch)
+- [tensorflow/examples/make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/make_predictions.py)
+- [tensorflow/examples/finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py)
+- [tensorflow/examples/finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py)
+- [pytorch/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/train_model_on_catalog.py) (only necessary to train from scratch)
+
+I also include some examples which record how the models in W+22a (the GZ DECaLS data release) were trained:
+- [replication/tensorflow/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/tensorflow/train_model_on_decals_dr5_splits.py)
+- [replication/pytorch/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/pytorch/train_model_on_decals_dr5_splits.py)
+
+There's also the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb), which describes Zoobot's statistical predictions. When trained from scratch, it predicts the parameters for distributions, not simple class labels!
 
 ### Latest features
 
