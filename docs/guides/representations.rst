@@ -23,10 +23,10 @@ See :ref:`training_from_scratch` for a guide to training a new model.
 
 We have published pretrained weights for models trained on GZ DECaLS - see :ref:`datanotes`. 
 You could start with these and calculate representations on some new galaxies.
-See `zoobot/tensorflow/examples/make_predictions_loop.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/make_predictions_loop.py>`__ for how to load the weights, and below for how to calculate representations.
+See `zoobot/tensorflow/examples/make_predictions_loop.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/make_predictions_loop.py>`__ for how to load the weights, and below for how to calculate representations.
 
 You might also want to start from a pretrained model and use finetuning to get the best representation for your problem.
-See `zoobot/tensorflow/examples/finetune_advanced.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/finetune_advanced.py>`__ for an example. This adds some complexity, so we suggest trying with our pretrained weights first.
+See `zoobot/tensorflow/examples/finetune_advanced.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py>`__ for an example. This adds some complexity, so we suggest trying with our pretrained weights first.
 
 Extracting the Representation
 -----------------------------
@@ -56,7 +56,7 @@ This representation is typically highly correlated and can be well-described usi
 I strongly suggest compressing the 1280-dim representation into a lower dimensionality using PCA (or similar).
 I suggest `Incremental PCA <https://scikit-learn.org/stable/auto_examples/decomposition/plot_incremental_pca.html>`__ for datasets larger than about 50,000 rows.
 The compressed representation is mathematically very similar (PCA should preserve most of the interesting variation) but much easier to work with.
-`zoobot/shared/compress_representations.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/shared/compress_representations.py>`__ shows an example.
+`zoobot/shared/compress_representations.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/compress_representations.py>`__ shows an example.
 
 .. note:: 
 

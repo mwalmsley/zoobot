@@ -52,7 +52,7 @@ To train a model on Galaxy Zoo's decision trees, we need to know what the questi
 .. 10 of 20 volunteers saying "Two spiral arms" is a more confident label than 1 of 2 volunteers.
 .. Our model should be penalised more (have a higher loss) when it's wrong about confident labels (with many volunteer answers) than uncertain labels (with few volunteer answers).
 
-`zoobot.shared.label_metadata <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/shared/label_metadata.py>`__ is essentially many manually-written dicts that describe these relationships. For example:
+`zoobot.shared.label_metadata <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/label_metadata.py>`__ is essentially many manually-written dicts that describe these relationships. For example:
 
 .. code-block:: python
 
@@ -72,7 +72,7 @@ To train a model on Galaxy Zoo's decision trees, we need to know what the questi
         # etc
     }
 
-`zoobot.shared.schemas <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/shared/schemas.py>`__ contains the ``Schema`` class. 
+`zoobot.shared.schemas <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/schemas.py>`__ contains the ``Schema`` class. 
 ``Schema`` objects have methods and properties which are more convenient for interpreting the decision tree than a simple dict.
 Most importantly, when training a model, your chosen ``schema`` is used to create the multi-question loss.
 
@@ -98,7 +98,7 @@ Most importantly, when training a model, your chosen ``schema`` is used to creat
     # the details of this are only important if you want to adjust how the multi-question loss works
 
 
-The decision trees for GZ2, GZ DECaLS 1/2 and GZ DECaLS 5/8 are already specified in `label_metadata.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/shared/label_metadata.py>`_. 
+The decision trees for GZ2, GZ DECaLS 1/2 and GZ DECaLS 5/8 are already specified in `label_metadata.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/label_metadata.py>`_. 
 For other projects, you'll need to define your own (it's easy, just follow the same pattern).
 
 Once the decision tree is specified, you'll need to gather the images and volunteer responses.
