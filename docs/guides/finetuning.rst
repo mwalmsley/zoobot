@@ -35,14 +35,14 @@ Examples
 
 Zoobot includes two complete working examples:
 
-`finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/finetune_minimal.py>`_ shows how to partially finetune a model (1 and 2 only) to classify ring galaxies using an example dataset.
+`finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`_ shows how to partially finetune a model (1 and 2 only) to classify ring galaxies using an example dataset.
 It is designed to be easy to understand.
 
-`finetune_advanced.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/finetune_advanced.py>`_ solves the same problem with some additional tips and tricks: filtering the dataset, balancing the classes (rings are rare), and unfreezing the model (3). 
+`finetune_advanced.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py>`_ solves the same problem with some additional tips and tricks: filtering the dataset, balancing the classes (rings are rare), and unfreezing the model (3). 
 
 Readers familiar with python and machine learning may prefer to read, copy and adapt the example scripts directly. 
 
-Below, for less familiar readers, I walk through the `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/finetune_minimal.py>`__ example in detail.
+Below, for less familiar readers, I walk through the `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`__ example in detail.
 
 Background
 ---------------------
