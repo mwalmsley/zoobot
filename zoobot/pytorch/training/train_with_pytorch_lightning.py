@@ -36,6 +36,7 @@ def train(
     crop_scale_bounds=(0.7, 0.8),
     crop_ratio_bounds=(0.9, 1.1),
     # hardware parameters
+    accelerator='auto',
     nodes=1,
     gpus=2,
     num_workers=4,
@@ -162,7 +163,9 @@ def train(
     ]
 
     trainer = pl.Trainer(
-        accelerator="gpu", gpus=gpus,  # per node
+        log_every_n_steps=3,
+        accelerator=accelerator,
+        gpus=gpus,  # per node
         num_nodes=nodes,
         strategy=strategy,
         precision=precision,
@@ -198,4 +201,3 @@ def train(
     #       wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]])
     #       break  # only inner loop aka don't log the whole dataloader
 
-  
