@@ -131,6 +131,7 @@ dmypy.json
 *.csv
 
 wandb_api.txt
+wandb/
 
 *.pdf
 *.png
