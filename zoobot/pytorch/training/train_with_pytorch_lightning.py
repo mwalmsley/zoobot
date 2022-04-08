@@ -13,7 +13,8 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from zoobot.pytorch.datasets import decals_dr8
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
+# from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
+from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom
 
 
 def train(
