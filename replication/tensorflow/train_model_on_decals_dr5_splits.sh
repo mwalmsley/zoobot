@@ -1,11 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=replicate-decals                        # Job name
-#SBATCH --output=replicate-decals_%A.log 
-#SBATCH --mem=32gb                                      # Job memory request
+#SBATCH --job-name=dr5-rep-tf                        # Job name
+#SBATCH --output=dr5-rep-tf_%A.log 
+#SBATCH --mem=0                                     # Job memory request
+#SBATCH --cpus-per-task=24
+#SBATCH --ntasks 1
 #SBATCH --no-requeue                                    # Do not resubmit a failed job
 #SBATCH --time=23:00:00                                # Time limit hrs:min:sec
 #SBATCH --constraint=A100 
 #SBATCH --exclusive   # only one task per node
+#SBATCH --exclude compute-0-7,compute-0-5
 
 # Train Zoobot (tensorflow version) on DR5 shards from scratch on Slurm cluster.
 # You will need to adjust various paths
