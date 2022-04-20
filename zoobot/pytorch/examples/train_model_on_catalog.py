@@ -24,8 +24,6 @@ if __name__ == '__main__':
     parser.add_argument('--catalog', dest='catalog_loc', type=str)
     parser.add_argument('--architecture', dest='model_architecture', type=str)
     parser.add_argument('--epochs', dest='epochs', type=int)
-    parser.add_argument('--shard-img-size',
-                        dest='shard_img_size', type=int, default=300)
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)
     parser.add_argument('--batch-size', dest='batch_size',

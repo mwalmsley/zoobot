@@ -9,7 +9,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
-import pytorch_galaxy_datasets
+from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
@@ -32,7 +32,7 @@ def train(
     patience=8,
     loss_func=losses.calculate_multiquestion_loss,
     # data and augmentation parameters
-    datamodule_class=pytorch_galaxy_datasets.GalaxyDataModule,  # generic catalog of galaxies, will not download itself
+    datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
     resize_size=224,
     crop_scale_bounds=(0.7, 0.8),
