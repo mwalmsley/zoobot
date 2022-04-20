@@ -1,4 +1,3 @@
-from cgi import test
 import logging
 import os
 
@@ -10,7 +9,8 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
-from zoobot.pytorch.datasets import decals_dr8
+import pytorch_galaxy_datasets
+
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
@@ -30,7 +30,9 @@ def train(
     batch_size=256,
     epochs=1000,
     patience=8,
-    # augmentation parameters
+    loss_func=losses.calculate_multiquestion_loss,
+    # data and augmentation parameters
+    datamodule_class=pytorch_galaxy_datasets.GalaxyDataModule,  # generic catalog of galaxies, will not download itself
     color=False,
     resize_size=224,
     crop_scale_bounds=(0.7, 0.8),
@@ -123,8 +125,8 @@ def train(
             'test_catalog': test_catalog
         }
 
-    datamodule = decals_dr8.DECALSDR8DataModule(
-        schema=schema,
+    datamodule = datamodule_class(
+        label_cols=schema.label_cols,
         # can take either a catalog (and split it), or a pre-split catalog
         **catalogs_to_use,
         #   augmentations parameters
@@ -139,8 +141,6 @@ def train(
         prefetch_factor=prefetch_factor
     )
     datamodule.setup()
-
-    loss_func = losses.calculate_multiquestion_loss
 
     model = define_model.ZoobotModel(
         schema=schema,
