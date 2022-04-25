@@ -3,6 +3,7 @@ message: "Please cite the following works when using this software: https://ui.a
 authors:
 - family-names: Walmsley
   given-names: Mike
+  orcid: https://orcid.org/0000-0002-6408-4181
 - family-names: Lintott
   given-names: Chris
 - family-names: Géron
@@ -38,12 +39,12 @@ authors:
 - family-names: Macmillan
   given-names: Christine
 title: "Zoobot: Deep learning galaxy morphology classifier"
-version: 0.0.2
+version: 0.0.3
 date-released: 2022-04-01
 identifiers:
  - type: "ascl-id"
    value: "2203.027"
- - type: "doi"
+ - type: "10.5281/zenodo.6483176"
    value: PLACEHOLDER
  - type: "bibcode"
    value: "2022ascl.soft03027W"
