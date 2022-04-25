@@ -34,7 +34,7 @@ See :ref:`the DECaLS guide <training_from_scratch>` for pedagogical details on h
 TensorFlow
 ...........
 
-We provide pretrained weights for an EfficientNet B0 CNN (defined here) trained on the GZ DECaLS GZD-5 campaign volunteer votes. You can download them from from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
+We provide pretrained weights for an EfficientNet B0 CNN (defined here) trained on the GZ DECaLS GZD-5 campaign volunteer votes. You can download them `from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
 
 - ``effnet_train_only_dr5_greyscale_tf`` is trained on the colour (3-channel grz) images shown to volunteers, but the images are averaged across bands before being input.
 - ``effnet_train_only_dr5_color_tf`` is identical but without averaging across bands. This approach was not used for the GZ DECaLS catalog to avoid bias, but may be useful for e.g. anomaly-finding.
@@ -51,7 +51,7 @@ We provide pretrained weights for an EfficientNet B0 CNN (defined here) trained 
 PyTorch
 ........
 
-We provide pretrained weights for EfficientNetB0, as with TensorFlow above, and for ResNet50. You can download them from from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
+We provide pretrained weights for EfficientNetB0, as with TensorFlow above, and for ResNet50. You can download them `from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
 
 - ``efficientnet_dr5_pytorch`` and ``efficientnet_dr5_pytorch_color`` are trained similarly to the TensorFlow equivalents.
 - ``resnet_detectron_dr5_pytorch`` and ``resnet_detectron_dr5_pytorch_color`` are trained using the detectron2 implementation of ResNet50 (with unfrozen batch norm layers). See here.
