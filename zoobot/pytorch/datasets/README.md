@@ -1,0 +1,1 @@
+This has been refactored to a separate repo, which has pytorch datamodules/datasets for various galaxy zoo catalogs - see https://github.com/mwalmsley/pytorch-galaxy-datasets

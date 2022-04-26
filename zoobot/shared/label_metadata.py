@@ -142,7 +142,7 @@ decals_all_campaigns_ortho_questions, decals_all_campaigns_ortho_label_cols = ex
 
 
 gz2_pairs = {
-    'smooth-or-featured': ['_smooth', '_featured-or-disk'],
+    'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
     'disk-edge-on': ['_yes', '_no'],
     'has-spiral-arms': ['_yes', '_no'],
     'bar': ['_yes', '_no'],
@@ -184,7 +184,9 @@ gz2_and_decals_dependencies = {
     'bulge-size-dr12': 'smooth-or-featured_featured-or-disk',
     'how-rounded-dr12': 'smooth-or-featured_smooth',
     'spiral-arm-count-dr12': 'has-spiral-arms_yes',
-    'merging-dr12': None
+    'merging-dr12': None,
+    # and gz2
+    'something-odd': None
 }
 
 
