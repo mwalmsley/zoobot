@@ -13,7 +13,8 @@ from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
+# from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
+from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom
 
 
 # convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
@@ -39,6 +40,7 @@ def train_default_zoobot_from_scratch(
     crop_scale_bounds=(0.7, 0.8),
     crop_ratio_bounds=(0.9, 1.1),
     # hardware parameters
+    accelerator='auto',
     nodes=1,
     gpus=2,
     num_workers=4,
@@ -148,7 +150,9 @@ def train_default_zoobot_from_scratch(
     ]
 
     trainer = pl.Trainer(
-        accelerator="gpu", gpus=gpus,  # per node
+        log_every_n_steps=3,
+        accelerator=accelerator,
+        gpus=gpus,  # per node
         num_nodes=nodes,
         strategy=strategy,
         precision=precision,
@@ -216,4 +220,3 @@ def slurm_debugging_logs():
     logging.debug(os.getenv("NODE_RANK", 'No NODE_RANK'))
     logging.debug(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
     logging.debug(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
-
