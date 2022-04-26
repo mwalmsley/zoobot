@@ -20,7 +20,7 @@ setuptools.setup(
         "Environment :: GPU :: NVIDIA CUDA"
     ],
     packages=setuptools.find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.7",  # tf 2.8.0 requires Python 3.7 and above
     extras_require={
         'pytorch': [
             'torch == 1.10.1',
