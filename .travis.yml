@@ -1,0 +1,18 @@
+env:
+  - EXTRA_DEPENDENCIES=pytorch
+  - EXTRA_DEPENDENCIES=pytorch,tensorflow
+  # tests need pytorch - not going to consider having only tf right now
+  # TODO add skip option for tests
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install:
+# let's check all three permutations resolve/install okay
+  - pip install .[$EXTRA_DEPENDENCIES]
+  
+# command to run tests
+script:
+  - pytest
+
+  # see https://docs.travis-ci.com/user/languages/python/

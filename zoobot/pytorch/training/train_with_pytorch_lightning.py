@@ -1,8 +1,6 @@
 import logging
 import os
 
-# from pytorch_lightning.strategies.ddp import DDPStrategy
-# from pytorch_lightning.strategies import DDPStrategy  # not sure why not importing?
 from pytorch_lightning.plugins.training_type import DDPPlugin
 # https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
 import pytorch_lightning as pl
@@ -13,8 +11,7 @@ from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
-# from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
-from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom
+from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
 
 
 # convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
@@ -86,6 +83,12 @@ def train_default_zoobot_from_scratch(
         precision = 16
 
     assert num_workers > 0
+    if num_workers * gpus > os.cpu_count():
+        logging.warning(
+            """num_workers * gpu > num cpu.
+            You may be spawning more dataloader workers than you have cpus, causing bottlenecks. 
+            Suggest reducing num_workers."""
+        )
 
     if catalog is not None:
         assert train_catalog is None

@@ -16,4 +16,4 @@ services:
       - ./:/usr/src/zoobot
       - /Users/camallen/workspace/zooniverse/kade/tmp/storage/staging/:/usr/src/zoobot/data/kade/
 
-
+# example - you will need to update the attached volumes for your own machine
