@@ -1,11 +1,11 @@
 env:
-  - EXTRA_DEPENDENCIES=pytorch
   - EXTRA_DEPENDENCIES=pytorch,tensorflow
-  # tests need pytorch - not going to consider having only tf right now
-  # TODO add skip option for tests
+  # - EXTRA_DEPENDENCIES=pytorch
+  # tests need both pytorch and tensorflow as they check they agree mathematically
+  # TODO add skip option for tests so I can consider single build versions
 language: python
 python:
-  - "3.6"
+  - "3.7"  # tf 2.8 requires Python 3.7 and above
 # command to install dependencies
 install:
 # let's check all three permutations resolve/install okay
