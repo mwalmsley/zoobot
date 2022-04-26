@@ -142,7 +142,7 @@ decals_all_campaigns_ortho_questions, decals_all_campaigns_ortho_label_cols = ex
 
 
 gz2_pairs = {
-    'smooth-or-featured': ['_smooth', '_featured-or-disk'],
+    'smooth-or-featured': ['_smooth', '_featured-or-disk', '_artifact'],
     'disk-edge-on': ['_yes', '_no'],
     'has-spiral-arms': ['_yes', '_no'],
     'bar': ['_yes', '_no'],
@@ -151,7 +151,7 @@ gz2_pairs = {
     'how-rounded': ['_round', '_in-between', '_cigar'],
     'bulge-shape': ['_round', '_boxy', '_no-bulge'],
     'spiral-winding': ['_tight', '_medium', '_loose'],
-    'spiral-count': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell']
+    'spiral-arm-count': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell']
 }
 gz2_questions, gz2_label_cols = extract_questions_and_label_cols(gz2_pairs)
 
@@ -184,7 +184,9 @@ gz2_and_decals_dependencies = {
     'bulge-size-dr12': 'smooth-or-featured_featured-or-disk',
     'how-rounded-dr12': 'smooth-or-featured_smooth',
     'spiral-arm-count-dr12': 'has-spiral-arms_yes',
-    'merging-dr12': None
+    'merging-dr12': None,
+    # and gz2
+    'something-odd': None
 }
 
 

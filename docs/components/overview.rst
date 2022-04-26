@@ -109,7 +109,7 @@ Re-use ``preprocess_config`` to ensure your train, validation, test and ultimate
 
 With PyTorch, preprocessing happens in the DataModule you define. 
 Personally, I find this a little simpler.
-See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
+See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
 
 .. _overview_training:
 
@@ -126,7 +126,7 @@ Random augmentations (crops, flips and rotations) will be applied by the first l
 (using `tf.keras.layers.experimental.preprocessing <https://www.tensorflow.org/api_docs/python/tf/keras/layers/experimental/preprocessing>`_).
 
 With PyTorch, training is done by `PyTorch Lightning <https://www.pytorchlightning.ai/>`_.
-Random augmentations are applied by specifing the list of ``transforms`` within your DataModule (again, see `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/datasets/decals_dr8.py>`).
+Random augmentations are applied by specifing the list of ``transforms`` within your DataModule (again, see `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/datasets/decals_dr8.py>`).
 
 .. note:: 
 

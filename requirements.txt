@@ -25,3 +25,7 @@ wandb  # optional, for saving metrics to weights&biases (cloud service, free wit
 # pip install pytorch-lightning simplejpeg albumentations pyro-ppl==1.8.0
 
 # (latest pyro currently forces pytorch 1.11.0, which is not yet released for detectron2 (1.10 only), probably causing cuda errors)
+
+# and for the datamodule code, including various galaxy datasets dataset:
+# https://stackoverflow.com/questions/16584552/how-to-state-in-requirements-txt-a-direct-github-source
+# git+https://github.com/mwalmsley/pytorch-galaxy-datasets@master

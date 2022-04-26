@@ -9,7 +9,7 @@ Creating a DataModule
 ----------------------
 
 With the PyTorch version, you need to define a `PyTorch Lightning DataModule <https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html>`_ that describes how to load the images listed in your catalog and how to divide them into train/validation/test sets. 
-See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
+See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
 
 .. note:: 
 
@@ -18,7 +18,7 @@ See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/
 Training
 ---------
 
-Now you can train a CNN using those shards. `zoobot/pytorch/training/train_with_pytorch_lightning.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/training/train_with_pytorch_lightning.py>`__. has the code to do this. 
+Now you can train a CNN using those shards. `zoobot/pytorch/training/train_with_pytorch_lightning.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/training/train_with_pytorch_lightning.py>`__. has the code to do this. 
 This has a .train() function with the following arguments:
 
 .. code-block:: python
@@ -56,13 +56,13 @@ This has a .train() function with the following arguments:
 
 Check the function docstring (and comments in the function itself) for further details.
 
-There are two complete working examples which you can copy and adapt.
+There are two complete working examples which you can copy and adapt. Both scripts are simply convenient command-line wrappers around ``train_with_keras.train``.
 
-`zoobot/pytorch/examples/train_model_on_catalog.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/pytorch/examples/train_model_on_catalog.py>`__ demonstrates training a model on a volunteer catalog. 
+`zoobot/pytorch/examples/train_model_on_catalog.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/train_model_on_catalog.py>`__ demonstrates training a model on a volunteer catalog. 
 This example provides the whole catalog to ``train_with_pytorch_lightning.train``, which then automatically splits it into train/validation/test subsets.
 You will need to provide your own catalog. I will add an example volunteer catalog to the ``data`` folder at some point TODO
 
-`replication/pytorch/train_model_on_decals_dr5_splits.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/train_model.py>`__
+`replication/pytorch/train_model_on_decals_dr5_splits.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model.py>`__
 demonstrates training a model on a volunteer catalog already split into train/validation/test subsets, but is otherwise very similar.
 This example is the script used to create the pretrained models shared under :ref:`datanotes`.
 

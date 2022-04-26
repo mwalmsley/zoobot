@@ -1,6 +1,8 @@
 # Zoobot
 
 [![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/)
+[![DOI](https://zenodo.org/badge/343787617.svg)](https://zenodo.org/badge/latestdoi/343787617)
+<a href="https://ascl.net/2203.027"><img src="https://img.shields.io/badge/ascl-2203.027-blue.svg?colorB=262255" alt="ascl:2203.027" /></a>
 
 Zoobot classifies galaxy morphology with deep learning. This code will let you:
 
@@ -45,16 +47,22 @@ Use pip instead, as above.
 
 The `main` branch is for stable-ish releases. The `dev` branch includes the shiniest features but may change at any time.
 
-To get started, see the [documentation](https://zoobot.readthedocs.io/).
+To get started, see the [documentation](https://zoobot.readthedocs.io/). For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/data_notes.html) in particular.
 
 I also include some working examples for you to copy and adapt:
 
-- [decals_dr5_to_shards.py](https://github.com/mwalmsley/zoobot/blob/main/decals_dr5_to_shards.py) (only necessary to train from scratch)
-- [train_model.py](https://github.com/mwalmsley/zoobot/blob/main/train_model.py) (similarly)
-- [make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/make_predictions.py)
-- [finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py)
-- [finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/finetune_advanced.py)
-- [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb) (to better understand Zoobot's statistical outputs)
+- [tensorflow/examples/decals_dr5_to_shards.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py) (only necessary to train from scratch)
+- [tensorflow/examples/train_model_on_shards.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_shards.py) (only necessary to train from scratch)
+- [tensorflow/examples/make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/make_predictions.py)
+- [tensorflow/examples/finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py)
+- [tensorflow/examples/finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py)
+- [pytorch/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/train_model_on_catalog.py) (only necessary to train from scratch)
+
+I also include some examples which record how the models in W+22a (the GZ DECaLS data release) were trained:
+- [replication/tensorflow/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/tensorflow/train_model_on_decals_dr5_splits.py)
+- [replication/pytorch/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/pytorch/train_model_on_decals_dr5_splits.py)
+
+There's also the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb), which describes Zoobot's statistical predictions. When trained from scratch, it predicts the parameters for distributions, not simple class labels!
 
 ### Latest features
 
@@ -82,4 +90,4 @@ For replication of the GZ DECaLS classifier see /replicate. This contains slurm 
 
 ### Citing
 
-If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414).
+If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414) and the [code](https://doi.org/10.5281/zenodo.6483175) (via Zenodo).

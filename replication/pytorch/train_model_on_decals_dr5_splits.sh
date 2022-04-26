@@ -13,8 +13,6 @@ pwd; hostname; date
 
 nvidia-smi
 
-# export WANDB_CACHE_DIR=/share/nas2/walml/WANDB_CACHE_DIR
-
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
@@ -25,16 +23,16 @@ RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 # GPUS=2
 # # requires --mixed-precision to be set on A100s
 
-# ARCHITECTURE='resnet_detectron'
-# BATCH_SIZE=256
-# GPUS=2
-# # doesn't need mixed precision, but can use anyway for consistency
-
-ARCHITECTURE='resnet_torchvision'
+ARCHITECTURE='resnet_detectron'
 BATCH_SIZE=256
 GPUS=2
-# doesn't need mixed precision, but can use anyway for consistency
-# only supports color (so you must add --color)
+# mixed precision causes rare nan errors - not recommended!
+
+# ARCHITECTURE='resnet_torchvision'
+# BATCH_SIZE=256
+# GPUS=2
+# # mixed precision causes rare nan errors - not recommended!
+# # only supports color (so you must add --color)
 
 # be sure to add _color if appropriate
 EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch
@@ -43,8 +41,11 @@ $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals
     --experiment-dir $EXPERIMENT_DIR \
     --architecture $ARCHITECTURE \
     --resize-size 224 \
-    --batch-size 512 \
-    --gpus 2 \
-    --mixed-precision
+    --batch-size $BATCH_SIZE \
+    --gpus $GPUS
+    
     #  \
     # --color
+
+    #  \
+    # --mixed-precision

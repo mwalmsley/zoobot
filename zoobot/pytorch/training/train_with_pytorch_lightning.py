@@ -1,4 +1,3 @@
-from cgi import test
 import logging
 import os
 
@@ -10,14 +9,17 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
-from zoobot.pytorch.datasets import decals_dr8
+from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
+
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
 # from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
 from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom
 
 
-def train(
+# convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
+# does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
+def train_default_zoobot_from_scratch(
     # absolutely crucial arguments
     save_dir,  # save model here
     schema,  # answer these questions
@@ -31,7 +33,8 @@ def train(
     batch_size=256,
     epochs=1000,
     patience=8,
-    # augmentation parameters
+    # data and augmentation parameters
+    datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
     resize_size=224,
     crop_scale_bounds=(0.7, 0.8),
@@ -48,20 +51,7 @@ def train(
     wandb_logger=None
 ):
 
-    # https://hpcc.umd.edu/hpcc/help/slurmenv.html
-    # logging.info(os.environ)
-    logging.debug(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
-    logging.debug(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
-    logging.debug(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
-  # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
-    # disable slurm detection by pl
-    # this is not necessary for single machine, but might be for multi-node
-    # may help stop tasks getting left on gpu after slurm exit?
-    # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
-
-    logging.debug(os.getenv("NODE_RANK", 'No NODE_RANK'))
-    logging.debug(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
-    logging.debug(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
+    slurm_debugging_logs()
 
     pl.seed_everything(random_state)
 
@@ -77,22 +67,9 @@ def train(
         logging.info('Converting images to greyscale before training')
         channels = 1
 
-    if model_architecture == 'efficientnet':
-        get_architecture = efficientnet_standard.efficientnet_b0
-        representation_dim = 1280
-    elif model_architecture == 'resnet_detectron':
-        get_architecture = resnet_detectron2_custom.get_resnet
-        representation_dim = 2048
-    elif model_architecture == 'resnet_torchvision':
-        get_architecture = resnet_torchvision_custom.get_resnet  # only supports color
-        representation_dim = 2048
-    else:
-        raise ValueError(
-            'Model architecture not recognised: got model={}, expected one of [efficientnet, resnet_detectron, resnet_torchvision]'.format(model_architecture))
-
     strategy = None
     if gpus > 1:
-        # plugins = [DDPPlugin(find_unused_parameters=False)],  # only works as plugins, not strategy
+        # only works as plugins, not strategy
         # strategy = 'ddp'
         strategy = DDPPlugin(find_unused_parameters=False)
         logging.info('Using multi-gpu training')
@@ -125,8 +102,8 @@ def train(
             'test_catalog': test_catalog
         }
 
-    datamodule = decals_dr8.DECALSDR8DataModule(
-        schema=schema,
+    datamodule = datamodule_class(
+        label_cols=schema.label_cols,
         # can take either a catalog (and split it), or a pre-split catalog
         **catalogs_to_use,
         #   augmentations parameters
@@ -142,14 +119,23 @@ def train(
     )
     datamodule.setup()
 
-    loss_func = losses.calculate_multiquestion_loss
+    get_architecture, representation_dim = select_base_architecture_func_from_name(model_architecture)
 
-    model = define_model.ZoobotModel(
-        schema=schema,
-        loss=loss_func,
+    model = define_model.get_plain_pytorch_zoobot_model(
+        output_dim=len(schema.answers),
+        include_top=True,
         channels=channels,
         get_architecture=get_architecture,
         representation_dim=representation_dim
+    )
+
+    # This just adds schema.question_index_groups as an arg to the usual (labels, preds) loss arg format
+    # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
+    def loss_func(preds, labels):  # pytorch convention is preds, labels
+        return losses.calculate_multiquestion_loss(labels, preds, schema.question_index_groups)  # my and sklearn convention is labels, preds
+
+    lightning_model = define_model.GenericLightningModule(
+        model, loss_func
     )
 
     callbacks = [
@@ -179,14 +165,30 @@ def train(
     logging.info((trainer.training_type_plugin, trainer.world_size,
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
-    trainer.fit(model, datamodule)
+    trainer.fit(lightning_model, datamodule)
 
     trainer.test(
-        model=model,
+        model=lightning_model,
         datamodule=datamodule,
         ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
 
+
+def select_base_architecture_func_from_name(base_architecture):
+    if base_architecture == 'efficientnet':
+        get_architecture = efficientnet_standard.efficientnet_b0
+        representation_dim = 1280
+    elif base_architecture == 'resnet_detectron':
+        get_architecture = resnet_detectron2_custom.get_resnet
+        representation_dim = 2048
+    elif base_architecture == 'resnet_torchvision':
+        get_architecture = resnet_torchvision_custom.get_resnet  # only supports color
+        representation_dim = 2048
+    else:
+        raise ValueError(
+            'Model architecture not recognised: got model={}, expected one of [efficientnet, resnet_detectron, resnet_torchvision]'.format(base_architecture))
+            
+    return get_architecture,representation_dim
 
 
 
@@ -202,3 +204,19 @@ def train(
     #       wandb_logger.log_image(key="example_{}_images".format(dataloader_name), images=[im for im in images_np[:5]])
     #       break  # only inner loop aka don't log the whole dataloader
 
+
+def slurm_debugging_logs():
+    # https://hpcc.umd.edu/hpcc/help/slurmenv.html
+    # logging.info(os.environ)
+    logging.debug(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
+    logging.debug(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
+    logging.debug(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
+    # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
+    # disable slurm detection by pl
+    # this is not necessary for single machine, but might be for multi-node
+    # may help stop tasks getting left on gpu after slurm exit?
+    # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
+
+    logging.debug(os.getenv("NODE_RANK", 'No NODE_RANK'))
+    logging.debug(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
+    logging.debug(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))

@@ -9,7 +9,7 @@ Zoobot includes three datasets you might be interested in:
 - Representations calculated from trained GZ DECaLS models for galaxies in either GZ DECaLS (approx. 340k) or a Galaxy Zoo 2 subset (approx. 240k).
 - Catalogues of ring galaxies. There are two catalogues: basic, derived from "ring" tags on the Galaxy Zoo forum, or advanced, derived from the GZ DECaLS "ring" vote fraction.
   
-Pretrained weights and representations are available `from Google Drive <https://drive.google.com/drive/folders/1zc1KdEzAHy-qp0Qb736mJc7SOmCkBemX?usp=sharing>`_.
+Pretrained weights and representations are available `from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
 Ring catalogs and a subset of galaxy images and are available under the `data <https://github.com/mwalmsley/zoobot/tree/pytorch/data>`_ folder. 
 Full morphology catalogs and all galaxy images are available from the `Galaxy Zoo DECaLS data release Zenodo deposit <https://doi.org/10.5281/zenodo.4196266>`_.
 
@@ -34,7 +34,7 @@ See :ref:`the DECaLS guide <training_from_scratch>` for pedagogical details on h
 TensorFlow
 ...........
 
-We provide pretrained weights for an EfficientNet B0 CNN (defined here) trained on the GZ DECaLS GZD-5 campaign volunteer votes.
+We provide pretrained weights for an EfficientNet B0 CNN (defined here) trained on the GZ DECaLS GZD-5 campaign volunteer votes. You can download them `from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
 
 - ``effnet_train_only_dr5_greyscale_tf`` is trained on the colour (3-channel grz) images shown to volunteers, but the images are averaged across bands before being input.
 - ``effnet_train_only_dr5_color_tf`` is identical but without averaging across bands. This approach was not used for the GZ DECaLS catalog to avoid bias, but may be useful for e.g. anomaly-finding.
@@ -51,7 +51,7 @@ We provide pretrained weights for an EfficientNet B0 CNN (defined here) trained 
 PyTorch
 ........
 
-We provide pretrained weights for EfficientNetB0, as with TensorFlow above, and for ResNet50.
+We provide pretrained weights for EfficientNetB0, as with TensorFlow above, and for ResNet50. You can download them `from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
 
 - ``efficientnet_dr5_pytorch`` and ``efficientnet_dr5_pytorch_color`` are trained similarly to the TensorFlow equivalents.
 - ``resnet_detectron_dr5_pytorch`` and ``resnet_detectron_dr5_pytorch_color`` are trained using the detectron2 implementation of ResNet50 (with unfrozen batch norm layers). See here.
@@ -68,7 +68,7 @@ Representations
 -----------------
 
 In Practical Morphology Tools (W+22b), we used the CNN above (trained on all galaxies) to calculate representations for those galaxies.
-These representations are available `from here <https://drive.google.com/drive/folders/1zc1KdEzAHy-qp0Qb736mJc7SOmCkBemX?usp=sharing>`_ for GZ DECaLS DR5 galaxies and most GZ2 galaxies. 
+These representations are available `from here <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_ for GZ DECaLS DR5 galaxies and most GZ2 galaxies. 
 
 ``cnn_features_decals.parquet`` contains the representations calculated for the approx. 340k GZ DECaLS galaxies.
 See W+22a for a description of GZD-5.

@@ -11,84 +11,77 @@ For training from scratch with either TensorFlow or PyTorch, you should have fir
     We provide :ref:`pretrained weights and precalculated representations <datanotes>`.
     You can even start from these and :ref:`finetune <finetuning_guide>` to your problem.
 
-You will need galaxy images and volunteer classifications.
-For Galaxy Zoo DECaLS (GZD-5), these are available at `<https://doi.org/10.5281/zenodo.4196266>`_.
-You will also need a fairly good GPU - we used an NVIDIA V100. 
-You might get away with a worse GPU by lowering the batch size (we used 128, 64 works too) or the image size, but this may affect performance.
 
-The high-level approach to create a CNN is:
-
-- Define the decision tree asked of volunteers in ``schemas.py``. *Already done for GZD-5 and GZ2.*
-- Prepare a catalog with your images and labels (matching the decision tree)
-- Create TFRecord shards (groups of images encoded for fast reading) from your catalog with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__
-- Train the CNN on those shards with `train_model.py <https://github.com/mwalmsley/zoobot/blob/main/train_model.py>`__.
-
-Galaxy Zoo uses a decision tree where the questions asked depend upon the previous answers.
-The decision tree is defined under `schemas.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/schemas.py>`_ and `label_metadata.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/label_metadata.py>`_.
-The GZ2 and GZ DECaLS decision trees are already defined for you; for other projects, you'll need to define your own (it's easy, just follow the same pattern).
-
-Create a catalog with all your labelled galaxies.
-The catalog should be a csv file with rows of (unique) galaxies and columns including:
-
-- id_str, a string that uniquely identifies each galaxy (e.g. the iauname)
-- file_loc, the absolute location of the galaxy image on disk. This is expected to be a .png of any size, but you could easily extend it for other filetypes if needed.
-- a column with the total votes for each label you want to predict, matching the schema (above).  For GZD-5, this is e.g. smooth-or-featured_smooth, smooth-or-featured_featured-or-disk, etc.
+Creating Shards
+-----------------
 
 It's quite slow to train a model using normal images, and so we first encode them as several TFRecords, a format which is much faster to read.
-Make these with `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__, passing in your catalog location and where the TFRecords should be placed e.g.
+Make these with the functions in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/data_utils/create_shards.py>`__.
+
+For a working example, see `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__.
+You can run this with command-line arguments for your catalog location and where the TFRecords should be placed e.g.
 
 .. code-block:: bash
 
     python decals_dr5_to_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
 
-More options are available, and you may need to adjust the label columns; see the examples in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/data_utils/create_shards.py>`__.
-I like to use these options to make very small shards for quick debugging: ``python create_shards.py --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv --shard-dir data/decals/shards/decals_debug --img-size 300 --eval-size 100 --max-labelled 500 --max-unlabelled 300 --img-size 32``.
+More options are available, and you may need to adjust the label columns; see the examples in `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__.
+I like to use these options to make very small shards for quick debugging: ``python create_shards.py --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv --shard-dir data/decals/shards/decals_debug --eval-size 100 --max-labelled 500 --max-unlabelled 300 --img-size 32``.
 
-Now you can train a CNN using those shards. `training_config.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/training_config.py>`__. has the code to do this. 
-Use it in your own code like so:
+Training on Shards
+--------------------
+
+Now you can train a CNN using those shards. 
+`train_with_keras.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/train_with_keras.py>`__ has the code to do this.
+This has a .train() function with the following arguments:
 
 .. code-block:: python
 
-    from zoobot.training import training_config
-    from zoobot.estimators import define_model
-    from zoobot import losses
+    from zoobot.tensorflow.training import train_with_keras
 
-    model = define_model.get_model(
-      output_dim=len(schema.label_cols),  # see train_model.py
-      input_size=initial_size, 
-      crop_size=int(initial_size * 0.75),  # small zoom
-      resize_size=resize_size,
-      channels=1  # this makes images greyscale before training (recommended)
-    )
-  
-    # dirichlet-multinomial log-likelihood per answer
-    # see the GZ DECaLS paper for more
-    multiquestion_loss = losses.get_multiquestion_loss(schema.question_index_groups)
-    loss = lambda x, y: multiquestion_loss(x, y) / batch_size
-    # dividing by batch size here, instead of automatically, helps do distributed training
-
-    model.compile(
-        loss=loss,
-        optimizer=tf.keras.optimizers.Adam()
-    )
-
-    train_config = training_config.TrainConfig(
-      log_dir='save/model/here',
-      epochs=50,
-      patience=10
+    train_with_keras.train(
+        # absolutely crucial arguments
+        save_dir,  # save model here
+        schema,  # answer these questions
+        # input data as TFRecords
+        train_records,
+        test_records,
+        shard_img_size=300,
+        # model training parameters
+        # only EfficientNet is currenty implemented
+        batch_size=256,
+        epochs=1000,
+        patience=8,
+        dropout_rate=0.2,
+        # augmentation parameters
+        color=False,
+        resize_size=224,
+        # ideally, set shard_img_size * crop_factor ~= resize_size to skip resizing
+        crop_factor=0.75,
+        always_augment=False,
+        # hardware parameters
+        gpus=2,
+        eager=False  # set True for easier debugging but slower training
     )
 
-    training_config.train_estimator(
-      model, 
-      train_config,  # parameters for how to train e.g. epochs, patience
-      train_dataset,  # tf.data.Dataset, see train_model.py
-      test_dataset,  # similarly
-      eager=True  # slow, helpful for debugging. Set False when happy.
-    )
+Check the function docstring (and comments in the function itself) for further details.
+
+There are two complete working examples which you can copy and adapt. Both scripts are simply convenient command-line wrappers around ``train_with_keras.train``.
+
+`zoobot/tensorflow/examples/train_model_on_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_catalog.py>`__ demonstrates training a model on shards you've created. 
+You can use the shards created by the worked example in the section above.
+
+`replication/tensorflow/train_model_on_decals_dr5_splits.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model.py>`__
+trains a model on the shards used by W+22a (themselves created by `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__).
+This example is the script used to create the pretrained TensorFlow models shared under :ref:`datanotes`.
 
 
-There is a complete working example at `train_model.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/train_model.py>`__ which you can copy and adapt.
-I've skipped loading the training and test datasets in the above, for clarity - see the worked example.
+Making New Predictions
+--------------------------
+
+.. note:: 
+
+    Making new predictions is also demonstrated in the [Google Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing), which can be run in your browser
 
 Once trained, the model can be used to make new predictions on either folders of images (png, jpeg) or TFRecords. For example:
 
@@ -129,9 +122,11 @@ Once trained, the model can be used to make new predictions on either folders of
         save_loc='output/folder/ring_predictions.csv'
     )
 
-There is a complete working example at `make_predictions.py <https://github.com/mwalmsley/zoobot/blob/pytorch/zoobot/tensorflow/examples/make_predictions.py>`_.
+There is a complete working example at `make_predictions.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/make_predictions.py>`_.
 This example shows how to make predictions on new galaxies (by default), and how to make predictions with the custom finetuned model from ``finetime_minimal.py`` (commented out).
 Check out the code to see both versions.
+
+If you'd like to make predictions about a new galaxy problem, for which you don't have tens of thousands of labels, you will want to finetune the model - see the :ref:`Finetuning Guide <finetuning_guide>` 
 
 .. note::
 
