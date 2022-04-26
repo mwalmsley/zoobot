@@ -6,10 +6,11 @@ env:
 language: python
 python:
   - "3.7"  # tf 2.8 requires Python 3.7 and above
+  - "3.9"  # tf 2.8 requires Python 3.7 and above
 # command to install dependencies
 install:
 # let's check all three permutations resolve/install okay
-  - pip install -U pluggy  # required to avoid a cryptic error when running tests
+  - pip install -U pluggy pytest  # required to avoid a cryptic error when running tests
   - pip install .[$EXTRA_DEPENDENCIES]
   
 # command to run tests
