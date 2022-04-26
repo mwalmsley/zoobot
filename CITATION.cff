@@ -44,8 +44,8 @@ date-released: 2022-04-01
 identifiers:
  - type: "ascl-id"
    value: "2203.027"
- - type: "10.5281/zenodo.6483176"
-   value: PLACEHOLDER
+ - type: "doi"
+   value: 10.5281/zenodo.6483176
  - type: "bibcode"
    value: "2022ascl.soft03027W"
 abstract: "Zoobot classifies galaxy morphology with Bayesian CNN. Deep learning models were trained on volunteer classifications; these models were able to both learn from uncertain volunteer responses and predict full posteriors (rather than point estimates) for what volunteers would have said. The code reproduces and improves Galaxy Zoo DECaLS automated classifications, and can be finetuned for new tasks."
