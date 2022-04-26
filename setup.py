@@ -43,8 +43,8 @@ setuptools.setup(
         'numpy',
         'pandas',
         'scipy',
-        'scikit-image',
-        'scikit-learn',
+        'scikit-image >= 0.19.2',
+        'scikit-learn >= 1.0.2',
         'matplotlib',
         'python-dateutil == 2.8.1',  # for boto3
         'boto3',
