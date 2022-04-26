@@ -1,5 +1,5 @@
 cff-version: 1.1.0
-message: "Please cite the following works when using this software: https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.3966W"
+message: "Please cite the following works when using this software: https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.3966W and https://doi.org/10.5281/zenodo.6483175"
 authors:
 - family-names: Walmsley
   given-names: Mike
