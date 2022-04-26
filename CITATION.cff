@@ -1,0 +1,51 @@
+cff-version: 1.1.0
+message: "Please cite the following works when using this software: https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.3966W and https://doi.org/10.5281/zenodo.6483175"
+authors:
+- family-names: Walmsley
+  given-names: Mike
+  orcid: https://orcid.org/0000-0002-6408-4181
+- family-names: Lintott
+  given-names: Chris
+- family-names: Géron
+  given-names: Tobias
+- family-names: Kruk
+  given-names: Sandor
+- family-names: Krawczyk
+  given-names: Coleman
+- family-names: Willett
+  given-names: Kyle W.
+- family-names: Bamford
+  given-names: Steven
+- family-names: Kelvin
+  given-names: Lee S.
+- family-names: Fortson
+  given-names: Lucy
+- family-names: Gal
+  given-names: Yarin
+- family-names: Keel
+  given-names: William
+- family-names: Masters
+  given-names: Karen L.
+- family-names: Mehta
+  given-names: Vihang
+- family-names: Simmons
+  given-names: Brooke D.
+- family-names: Smethurst
+  given-names: Rebecca
+- family-names: Smith
+  given-names: Lewis
+- family-names: Baeten
+  given-names: Elisabeth M.
+- family-names: Macmillan
+  given-names: Christine
+title: "Zoobot: Deep learning galaxy morphology classifier"
+version: 0.0.3
+date-released: 2022-04-01
+identifiers:
+ - type: "ascl-id"
+   value: "2203.027"
+ - type: "doi"
+   value: 10.5281/zenodo.6483176
+ - type: "bibcode"
+   value: "2022ascl.soft03027W"
+abstract: "Zoobot classifies galaxy morphology with Bayesian CNN. Deep learning models were trained on volunteer classifications; these models were able to both learn from uncertain volunteer responses and predict full posteriors (rather than point estimates) for what volunteers would have said. The code reproduces and improves Galaxy Zoo DECaLS automated classifications, and can be finetuned for new tasks."

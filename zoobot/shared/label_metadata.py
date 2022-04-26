@@ -151,7 +151,7 @@ gz2_pairs = {
     'how-rounded': ['_round', '_in-between', '_cigar'],
     'bulge-shape': ['_round', '_boxy', '_no-bulge'],
     'spiral-winding': ['_tight', '_medium', '_loose'],
-    'spiral-arm-count': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell'],
+    'spiral-arm-count': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell']
 }
 gz2_questions, gz2_label_cols = extract_questions_and_label_cols(gz2_pairs)
 

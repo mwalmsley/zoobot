@@ -1,6 +1,8 @@
 # Zoobot
 
 [![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/)
+[![DOI](https://zenodo.org/badge/343787617.svg)](https://zenodo.org/badge/latestdoi/343787617)
+<a href="https://ascl.net/2203.027"><img src="https://img.shields.io/badge/ascl-2203.027-blue.svg?colorB=262255" alt="ascl:2203.027" /></a>
 
 Zoobot classifies galaxy morphology with deep learning. This code will let you:
 
@@ -45,7 +47,7 @@ Use pip instead, as above.
 
 The `main` branch is for stable-ish releases. The `dev` branch includes the shiniest features but may change at any time.
 
-To get started, see the [documentation](https://zoobot.readthedocs.io/).
+To get started, see the [documentation](https://zoobot.readthedocs.io/). For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/data_notes.html) in particular.
 
 I also include some working examples for you to copy and adapt:
 
@@ -88,4 +90,4 @@ For replication of the GZ DECaLS classifier see /replicate. This contains slurm 
 
 ### Citing
 
-If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414).
+If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414) and the [code](https://doi.org/10.5281/zenodo.6483175) (via Zenodo).
