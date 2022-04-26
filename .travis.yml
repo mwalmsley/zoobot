@@ -15,7 +15,7 @@ before_install:
 install:
 # let's check all three permutations resolve/install okay
   - pip install -U pluggy>=1.0.0  # required to avoid a cryptic error when running tests, requires py>=3.8
-  - pip install ".[$EXTRA_DEPENDENCIES]" .
+  - pip install .[$EXTRA_DEPENDENCIES]
 
 # command to run tests
 script:
