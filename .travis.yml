@@ -1,0 +1,24 @@
+env:
+  - EXTRA_DEPENDENCIES=pytorch,tensorflow
+  # - EXTRA_DEPENDENCIES=pytorch
+  # tests need both pytorch and tensorflow as they check they agree mathematically
+  # TODO add skip option for tests so I can consider single build versions
+language: python
+python:
+  # - "3.8"  # tf 2.8 requires Python 3.7 and above, pytest requires pluggy 1.0.0 which requires python 3.8
+  - "3.9"
+# command to install dependencies
+before_install:
+  - python --version
+  - pip install -U pip
+  - python setup.py install
+install:
+# let's check all three permutations resolve/install okay
+  - pip install -U pluggy>=1.0.0  # required to avoid a cryptic error when running tests, requires py>=3.8
+  - pip install .[$EXTRA_DEPENDENCIES]
+
+# command to run tests
+script:
+  - pytest
+
+  # see https://docs.travis-ci.com/user/languages/python/
