@@ -79,7 +79,7 @@ if __name__ == '__main__':
     else:
         wandb_logger = None
 
-    train_with_pytorch_lightning.train(
+    train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
         catalog=catalog,
         schema=schema,
