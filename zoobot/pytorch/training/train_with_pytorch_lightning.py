@@ -31,7 +31,7 @@ def train_default_zoobot_from_scratch(
     epochs=1000,
     patience=8,
     # data and augmentation parameters
-    datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
+    # datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
     resize_size=224,
     crop_scale_bounds=(0.7, 0.8),
@@ -105,7 +105,7 @@ def train_default_zoobot_from_scratch(
             'test_catalog': test_catalog
         }
 
-    datamodule = datamodule_class(
+    datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
         # can take either a catalog (and split it), or a pre-split catalog
         **catalogs_to_use,

@@ -35,10 +35,13 @@ GPUS=2
 # # only supports color (so you must add --color)
 
 # be sure to add _color if appropriate
-EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch
+EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch_replication
+
+DATA_DIR=/share/nas2/walml/repos/_data/decals_dr5
 
 $PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
+    --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
     --resize-size 224 \
     --batch-size $BATCH_SIZE \
