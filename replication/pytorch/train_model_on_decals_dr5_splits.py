@@ -2,20 +2,25 @@ import logging
 import os
 import argparse
 
-import pandas as pd
+from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
-import regex
+
+from pytorch_galaxy_datasets.prepared_datasets import decals_dr5_setup
 
 from zoobot.shared import label_metadata, schemas
 from zoobot.pytorch.training import train_with_pytorch_lightning
+
 
 if __name__ == '__main__':
 
     """
     See zoobot/pytorch/examples/train_model_on_catalog for a version training on a catalog without prespecifing the splits
+
+    This will automatically download GZ DECaLS DR5, which is ~220k galaxies and ~11GB.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
+    parser.add_argument('--data-dir', dest='data_dir', type=str)
     parser.add_argument('--architecture', dest='model_architecture', default='efficientnet', type=str)
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)
@@ -35,49 +40,12 @@ if __name__ == '__main__':
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
-    # explicit splits provided (instead of just a single catalog)
-    train_catalog_locs = [
-        # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/train_shards/train_df.csv',
-        '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/train_shards/train_df.csv',
-        # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/train_shards/train_df.csv'
-    ]
-    val_catalog_locs = [
-        # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/val_shards/val_df.csv',
-        '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/val_shards/val_df.csv',
-        # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/val_shards/val_df.csv'
-    ]
-    test_catalog_locs = [
-        # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr12/test_shards/test_df.csv',
-        '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr5/test_shards/test_df.csv',
-        # '/share/nas2/walml/repos/gz-decals-classifiers/data/decals/shards/all_campaigns_ortho_v2/dr8/test_shards/test_df.csv'
-    ]
-    answer_columns = [a.text for a in schema.answers]
-    useful_columns = answer_columns + ['file_loc']
+    # use the setup() methods in pytorch_galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
+    canonical_train_catalog, _ = decals_dr5_setup(data_dir=args.data_dir, train=True, download=True)
+    canonical_test_catalog, _ = decals_dr5_setup(data_dir=args.data_dir, train=False, download=True)
 
-    train_catalog = pd.concat(
-        [pd.read_csv(loc, usecols=useful_columns) for loc in train_catalog_locs])
-    val_catalog = pd.concat(
-        [pd.read_csv(loc, usecols=useful_columns) for loc in val_catalog_locs])
-    test_catalog = pd.concat(
-        [pd.read_csv(loc, usecols=useful_columns) for loc in test_catalog_locs])
-
-    for split_catalog in (train_catalog, val_catalog, test_catalog):
-        # tweak file paths
-        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            '/raid/scratch',  '/share/nas2', regex=False)
-        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            '/dr8_downloader/',  '/dr8/', regex=False)
-        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            '/png/', '/jpeg/', regex=False)
-        split_catalog['file_loc'] = split_catalog['file_loc'].str.replace(
-            '.png', '.jpeg', regex=False)
-
-        # enforce datatypes
-        for answer_col in answer_columns:
-            split_catalog[answer_col] = split_catalog[answer_col].astype(int)
-            split_catalog['file_loc'] = split_catalog['file_loc'].astype(str)
-
-        logging.info(split_catalog['file_loc'].iloc[0])
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)
+    test_catalog = canonical_test_catalog.copy()
 
     # debug mode
     if args.debug:
@@ -95,12 +63,12 @@ if __name__ == '__main__':
     # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
 
 
-    train_with_pytorch_lightning.train(
+    train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
+        schema=schema,
         train_catalog=train_catalog,
         val_catalog=val_catalog,
         test_catalog=test_catalog,
-        schema=schema,
         model_architecture=args.model_architecture,
         batch_size=args.batch_size,
         epochs=1000,  # rely on early stopping
