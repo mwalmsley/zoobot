@@ -30,7 +30,7 @@ setuptools.setup(
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
-            'git+https://github.com/mwalmsley/pytorch-galaxy-datasets.git#egg=pytorch_galaxy_datasets'
+            'pytorch_galaxy_datasets @ git+https://github.com/mwalmsley/pytorch-galaxy-datasets.git#egg=pytorch_galaxy_datasets'
         ],
         'tensorflow': [
             'tensorflow >= 2.8',
