@@ -155,6 +155,22 @@ gz2_pairs = {
 }
 gz2_questions, gz2_label_cols = extract_questions_and_label_cols(gz2_pairs)
 
+# ortho version of above i.e. with -gz2 added to questions
+gz2_ortho_pairs = {
+    'smooth-or-featured-gz2': ['_smooth', '_featured-or-disk', '_artifact'],
+    'disk-edge-on-gz2': ['_yes', '_no'],
+    'has-spiral-arms-gz2': ['_yes', '_no'],
+    'bar-gz2': ['_yes', '_no'],
+    'bulge-size-gz2': ['_dominant', '_obvious', '_just-noticeable', '_no'],
+    'something-odd-gz2': ['_yes', '_no'],
+    'how-rounded-gz2': ['_round', '_in-between', '_cigar'],
+    'bulge-shape-gz2': ['_round', '_boxy', '_no-bulge'],
+    'spiral-winding-gz2': ['_tight', '_medium', '_loose'],
+    'spiral-arm-count-gz2': ['_1', '_2', '_3', '_4', '_more-than-4', '_cant-tell']
+}
+gz2_ortho_questions, gz2_ortho_label_cols = extract_questions_and_label_cols(gz2_ortho_pairs)
+
+
 # useful for development/debugging
 gz2_partial_pairs = {
     'smooth-or-featured': ['_smooth', '_featured-or-disk']
