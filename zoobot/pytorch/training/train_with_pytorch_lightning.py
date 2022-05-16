@@ -11,7 +11,7 @@ from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.estimators import resnet_detectron2_custom, efficientnet_standard, resnet_torchvision_custom
+from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom  # also resnet_detectron2_custom, imported below
 
 
 # convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
@@ -65,7 +65,7 @@ def train_default_zoobot_from_scratch(
         channels = 1
 
     strategy = None
-    if gpus > 1:
+    if (gpus is not None) and (gpus > 1):
         # only works as plugins, not strategy
         # strategy = 'ddp'
         strategy = DDPPlugin(find_unused_parameters=False)
@@ -83,9 +83,16 @@ def train_default_zoobot_from_scratch(
         precision = 16
 
     assert num_workers > 0
-    if num_workers * gpus > os.cpu_count():
+
+    if (gpus is not None) and (num_workers * gpus > os.cpu_count()):
         logging.warning(
             """num_workers * gpu > num cpu.
+            You may be spawning more dataloader workers than you have cpus, causing bottlenecks. 
+            Suggest reducing num_workers."""
+        )
+    if num_workers > os.cpu_count():
+        logging.warning(
+            """num_workers > num cpu.
             You may be spawning more dataloader workers than you have cpus, causing bottlenecks. 
             Suggest reducing num_workers."""
         )
@@ -182,6 +189,9 @@ def select_base_architecture_func_from_name(base_architecture):
         get_architecture = efficientnet_standard.efficientnet_b0
         representation_dim = 1280
     elif base_architecture == 'resnet_detectron':
+        # only import if needed, as requires gpu version of pytorch or throws cuda errors e.g.
+        # from detectron2 import _C -> ImportError: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory
+        from zoobot.pytorch.estimators import resnet_detectron2_custom
         get_architecture = resnet_detectron2_custom.get_resnet
         representation_dim = 2048
     elif base_architecture == 'resnet_torchvision':
