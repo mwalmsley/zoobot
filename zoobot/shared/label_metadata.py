@@ -172,15 +172,15 @@ gz2_ortho_questions, gz2_ortho_label_cols = extract_questions_and_label_cols(gz2
 
 gz2_ortho_dependencies = {
     'smooth-or-featured-gz2': None,  # always asked
-    'disk-edge-on-gz2': 'smooth-or-featured_featured-or-disk',
-    'has-spiral-arms-gz2': 'smooth-or-featured_featured-or-disk',
-    'bar-gz2': 'smooth-or-featured_featured-or-disk',
-    'bulge-size-gz2': 'smooth-or-featured_featured-or-disk',
-    'how-rounded-gz2': 'smooth-or-featured_smooth',
-    'bulge-shape-gz2': 'disk-edge-on_yes',  # gz2 only
-    'edge-on-bulge-gz2': 'disk-edge-on_yes',
-    'spiral-winding-gz2': 'has-spiral-arms_yes',
-    'spiral-arm-count-gz2': 'has-spiral-arms_yes',
+    'disk-edge-on-gz2': 'smooth-or-featured-gz2_featured-or-disk',
+    'has-spiral-arms-gz2': 'smooth-or-featured-gz2_featured-or-disk',
+    'bar-gz2': 'smooth-or-featured-gz2_featured-or-disk',
+    'bulge-size-gz2': 'smooth-or-featured-gz2_featured-or-disk',
+    'how-rounded-gz2': 'smooth-or-featured-gz2_smooth',
+    'bulge-shape-gz2': 'disk-edge-on-gz2_yes',  # gz2 only
+    'edge-on-bulge-gz2': 'disk-edge-on-gz2_yes',
+    'spiral-winding-gz2': 'has-spiral-arms-gz2_yes',
+    'spiral-arm-count-gz2': 'has-spiral-arms-gz2_yes',
     'something-odd-gz2': None  # actually neglects the artifact branch
 }
 
