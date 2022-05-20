@@ -170,6 +170,20 @@ gz2_ortho_pairs = {
 }
 gz2_ortho_questions, gz2_ortho_label_cols = extract_questions_and_label_cols(gz2_ortho_pairs)
 
+gz2_ortho_dependencies = {
+    'smooth-or-featured-gz2': None,  # always asked
+    'disk-edge-on-gz2': 'smooth-or-featured_featured-or-disk',
+    'has-spiral-arms-gz2': 'smooth-or-featured_featured-or-disk',
+    'bar-gz2': 'smooth-or-featured_featured-or-disk',
+    'bulge-size-gz2': 'smooth-or-featured_featured-or-disk',
+    'how-rounded-gz2': 'smooth-or-featured_smooth',
+    'bulge-shape-gz2': 'disk-edge-on_yes',  # gz2 only
+    'edge-on-bulge-gz2': 'disk-edge-on_yes',
+    'spiral-winding-gz2': 'has-spiral-arms_yes',
+    'spiral-arm-count-gz2': 'has-spiral-arms_yes',
+    'something-odd-gz2': None  # actually neglects the artifact branch
+}
+
 
 # useful for development/debugging
 gz2_partial_pairs = {
@@ -202,7 +216,7 @@ gz2_and_decals_dependencies = {
     'spiral-arm-count-dr12': 'has-spiral-arms_yes',
     'merging-dr12': None,
     # and gz2
-    'something-odd': None
+    'something-odd': None  # actually neglects the artifact branch
 }
 
 
