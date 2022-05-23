@@ -6,6 +6,7 @@ from torch import nn
 from zoobot.pytorch.estimators import efficientnet_standard, efficientnet_custom, custom_layers
 
 import pytorch_lightning as pl
+from torchmetrics import Accuracy
 
 
 
@@ -29,6 +30,11 @@ class GenericLightningModule(pl.LightningModule):
 
         self.loss_func = loss_func  # accept (labels, preds), return losses of shape (batch)
 
+        # these are ignored unless output dim = 2
+        self.train_accuracy = Accuracy()
+        self.val_accuracy = Accuracy()
+
+
     def forward(self, x):
         return self.model.forward(x)
 
@@ -40,6 +46,8 @@ class GenericLightningModule(pl.LightningModule):
         # self.loss_func returns shape of (galaxy, question), sum to ()
         loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
         self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        if predictions.shape[1] == 2:  # will only do for binary classifications
+            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=0, keepdim=False)))
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -48,6 +56,8 @@ class GenericLightningModule(pl.LightningModule):
         predictions = self(x)
         loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        if predictions.shape[1] == 2:  # will only do for binary classifications
+            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=0, keepdim=False)))
         return loss
 
     def test_step(self, batch, batch_idx):

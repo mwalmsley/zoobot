@@ -183,6 +183,8 @@ def train_default_zoobot_from_scratch(
         ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
 
+    return lightning_model, trainer
+
 
 def select_base_architecture_func_from_name(base_architecture):
     if base_architecture == 'efficientnet':
