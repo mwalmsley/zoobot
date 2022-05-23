@@ -47,7 +47,8 @@ class GenericLightningModule(pl.LightningModule):
         loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
         self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
-            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=0, keepdim=False)))
+            logging.info(predictions.shape, labels.shape)
+            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)))
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -57,7 +58,8 @@ class GenericLightningModule(pl.LightningModule):
         loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
-            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=0, keepdim=False)))
+            logging.info(predictions.shape, labels.shape)
+            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)))
         return loss
 
     def test_step(self, batch, batch_idx):
