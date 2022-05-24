@@ -1,4 +1,6 @@
 .git/
 data/example_images/
 data/pretrained_models/
-
+data/*.csv
+data/*.parquet
+results/
