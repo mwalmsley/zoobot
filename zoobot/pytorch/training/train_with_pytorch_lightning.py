@@ -160,7 +160,7 @@ def train_default_zoobot_from_scratch(
     ]
 
     trainer = pl.Trainer(
-        log_every_n_steps=3,
+        log_every_n_steps=200,
         accelerator=accelerator,
         gpus=gpus,  # per node
         num_nodes=nodes,
@@ -169,8 +169,7 @@ def train_default_zoobot_from_scratch(
         logger=wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir,
-        log_every_n_steps=200
+        default_root_dir=save_dir
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size,
