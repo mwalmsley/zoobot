@@ -43,8 +43,8 @@ class GenericLightningModule(pl.LightningModule):
         predictions = self(x)  # by default, these are Dirichlet concentrations
 
         # true, pred convention as with sklearn
-        # self.loss_func returns shape of (galaxy, question), sum to ()
-        loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
+        # self.loss_func returns shape of (galaxy, question), mean to ()
+        loss = torch.mean(self.loss_func(predictions, labels))
         self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
@@ -55,7 +55,7 @@ class GenericLightningModule(pl.LightningModule):
         # identical to training_step except for log
         x, labels = batch
         predictions = self(x)
-        loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
+        loss = torch.mean(self.loss_func(predictions, labels))
         self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
@@ -66,7 +66,7 @@ class GenericLightningModule(pl.LightningModule):
         # similarly
         x, labels = batch
         predictions = self(x)
-        loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
+        loss = torch.mean(self.loss_func(predictions, labels))
         self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
@@ -97,7 +97,7 @@ def get_plain_pytorch_zoobot_model(
 
     Args:
         output_dim (int): Dimension of head dense layer. No effect when include_top=False.
-        input_size (int): Length of initial image e.g. 300 (assumed square)
+        input_size (int): Length of initial image e.g. 300 (asmeaned square)
         crop_size (int): Length to randomly crop image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         resize_size (int): Length to resize image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.
