@@ -151,12 +151,12 @@ def train_default_zoobot_from_scratch(
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
-            monitor="val_loss",
+            monitor="val/supervised_loss",
             save_weights_only=True,
             mode='min',
             save_top_k=3
         ),
-        EarlyStopping(monitor='val_loss', patience=patience, check_finite=True)
+        EarlyStopping(monitor='val/supervised_loss', patience=patience, check_finite=True)
     ]
 
     trainer = pl.Trainer(
