@@ -169,7 +169,8 @@ def train_default_zoobot_from_scratch(
         logger=wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir
+        default_root_dir=save_dir,
+        log_every_n_steps=200
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size,
