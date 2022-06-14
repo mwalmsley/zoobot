@@ -51,7 +51,7 @@ class GenericLightningModule(pl.LightningModule):
         self.log("train/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
-            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)))
+            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -62,7 +62,7 @@ class GenericLightningModule(pl.LightningModule):
         self.log("val/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
-            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)))
+            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
     def test_step(self, batch, batch_idx):
