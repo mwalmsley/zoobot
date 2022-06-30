@@ -21,7 +21,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
     # expects catalog, not tfrecords
-    parser.add_argument('--catalog', dest='catalog_loc', type=str)
+    parser.add_argument('--catalog',
+                        dest='catalog_loc', type=str, action='append')
     parser.add_argument('--num_workers',
                         dest='num_workers', type=int, default=int((os.cpu_count() / 2)))
     parser.add_argument('--architecture',
@@ -50,18 +51,23 @@ if __name__ == '__main__':
                         help='If true, cut each catalog down to 5k galaxies (for quick training). Should cause overfitting.')
     args = parser.parse_args()
 
-    catalog_loc = args.catalog_loc
-
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
     dependencies = label_metadata.decals_ortho_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
-    # catalog provided
-    catalog = pd.read_csv(catalog_loc)
+    # load each csv catalog file into a combined pandas data frame
+    # Note: this requires the same csv column format across csv files
+    catalog = pd.concat(
+        map(pd.read_csv, args.catalog_loc),
+        ignore_index=True)
+    # morph local file locations
     catalog['file_loc'] = catalog['file_loc'].str.replace(
         '/raid/scratch',  '/share/nas2')
-    logging.info(catalog['file_loc'].iloc[0]) 
+    # print the first and last file loc of the loaded catalog
+    logging.info('Catalog has {} rows'.format(len(catalog.index)))
+    logging.info('First file_loc {}'.format(catalog['file_loc'].iloc[0]))
+    logging.info('Last file_loc {}'.format(catalog['file_loc'].iloc[len(catalog.index) - 1]))
 
     # debug mode
     if args.debug:
