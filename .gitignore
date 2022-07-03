@@ -151,3 +151,5 @@ checkpoint*
 .DS_Store
 
 .vscode
+
+data/example_images/advanced/images
