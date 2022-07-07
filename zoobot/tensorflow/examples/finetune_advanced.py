@@ -59,11 +59,13 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     # small datasets that fit in memory can be cached before augmentations
     # this speeds up training
     use_cache = False  # sequential if's for awkward None/int type
-    if train_dataset_size is not None:  # when None, load all -> very many galaxies
-      if train_dataset_size < 10000:
+    if train_dataset_size is None:
+      train_dataset_size = len(raw_train_dataset)
+    if train_dataset_size < 10000:
         use_cache = True
 
     if use_cache:
+      logging.info('Using cache')
       raw_train_dataset = raw_train_dataset.cache()
       raw_val_dataset = raw_val_dataset.cache()
       raw_test_dataset = raw_test_dataset.cache()
@@ -104,8 +106,8 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     """Pick a base model"""
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
-    pretrained_checkpoint = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
-    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_train_set_only_replicated/checkpoint'
+    # you need to download these - see the data notes docs. Link is in the data/pretrained_models folder.
+    pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
     ## a few other checkpoints used in the representations paper, trained on single questions - happy to share on request, but lower performance than the above
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
