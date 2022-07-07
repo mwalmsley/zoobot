@@ -130,9 +130,6 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     base_model.trainable = False # freeze the headless model (no training allowed)
     base_model.summary(print_fn=logging.info)
 
-
-    exit()
-
     # # OR get base model from pretrained *ImageNet* checkpoint (includes augmentations)
     # base_model = define_model.get_model(
     #   output_dim=None,
