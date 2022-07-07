@@ -124,11 +124,21 @@ def get_random_ring_catalogs(seed: int, train_dataset_size: int):
     """
     # TODO filter to only appropriate galaxies and columns, then include with repo
     # uses automatic morphology predictions from gz decals cnn
-    ring_catalog = pd.read_parquet('data/rare_features_dr5_with_ml_morph.parquet')
+    ring_catalog = pd.read_parquet('data/example_ring_catalog_advanced.parquet')
+    # ring_catalog = pd.read_parquet('data/rare_features_dr5_with_ml_morph.parquet')
+    # print(ring_catalog.columns.values)
+    # print(ring_catalog.head())
 
     # some personal path fiddling TODO point to example data instead
     # ring_catalog['local_png_loc'] = ring_catalog['local_png_loc'].str.replace('/media/walml/beta1', '/Volumes/beta')  # local
-    ring_catalog['local_png_loc'] = ring_catalog['local_png_loc'].str.replace('/media/walml/beta1/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')  # galahad
+    # ring_catalog['local_png_loc'] = ring_catalog['local_png_loc'].str.replace('/media/walml/beta1/decals/png_native/dr5', '/share/nas/walml/galaxy_zoo/decals/dr5/png')  # galahad
+    
+    this_dir = os.path.dirname(os.path.realpath(__file__))  # dir of this file i.e. foo/zoobot/zoobot/datasets
+    repo_dir = os.path.dirname(os.path.dirname(this_dir))
+    image_dir = os.path.join(repo_dir, 'data/example_images/advanced/images')
+    # TODO slightly messy. Once the rings catalog is public I can just use that (via github/mwalmsley/pytorch-galaxy-datasets)
+    ring_catalog['local_png_loc'] = ring_catalog['local_png_loc'].apply(lambda x: os.path.join(image_dir, x.replace('.png', '.jpg')))
+    print(ring_catalog['local_png_loc'][0])
 
     # apply selection cuts (in data/ring_votes_catalog_advanced.parquet, I only include galaxies that pass these cuts anyway)
     not_very_smooth = ring_catalog['smooth-or-featured_featured-or-disk_fraction'] > 0.25
@@ -136,9 +146,8 @@ def get_random_ring_catalogs(seed: int, train_dataset_size: int):
     passes_cuts = not_very_smooth & face
 
     ring_catalog = ring_catalog[passes_cuts].reset_index(drop=True)
-    logging.info('Labels after selection cuts: \n{}'.format(pd.value_counts(ring_catalog['ring'])))
-
     ring_catalog['label'] = get_rough_class_from_ring_fraction(ring_catalog['rare-features_ring_fraction'])
+    logging.info('Labels after selection cuts: \n{}'.format(pd.value_counts(ring_catalog['label'])))
 
     # new for review - fix previous possible error where possible positive ring examples in train set vs hidden set were not randomised?
     ring_catalog = ring_catalog.sample(len(ring_catalog), random_state=seed).reset_index(drop=True)
