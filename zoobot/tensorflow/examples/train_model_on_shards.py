@@ -77,8 +77,9 @@ if __name__ == '__main__':
     test_records = [os.path.join(test_records_dir, x) for x in os.listdir(
         test_records_dir) if x.endswith('.tfrecord')]
 
-    question_answer_pairs = label_metadata.decals_dr5_ortho_pairs
-    dependencies = label_metadata.decals_ortho_dependencies
+    # the shards were created without the ortho style -dr5 syntax
+    question_answer_pairs = label_metadata.decals_pairs  
+    dependencies = label_metadata.gz2_and_decals_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
