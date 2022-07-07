@@ -62,7 +62,9 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     if train_dataset_size is None:
       train_dataset_size = len(raw_train_dataset)
     if train_dataset_size < 10000:
-        use_cache = True
+        # use_cache = True
+        pass
+
 
     if use_cache:
       logging.info('Using cache')
@@ -107,13 +109,16 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
     # you need to download these - see the data notes docs. Link is in the data/pretrained_models folder.
-    pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
+    # pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
+    pretrained_checkpoint = 'data/pretrained_models/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale/checkpoint'
     ## a few other checkpoints used in the representations paper, trained on single questions - happy to share on request, but lower performance than the above
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bulge_size_only/checkpoint'
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_spiral_yn_only/checkpoint'
 
+    assert requested_img_size == 300
+    # weights will fail to load otherwise, as this model will include "resize" layer while weights do not
     base_model = get_headless_model(
       pretrained_checkpoint,
       requested_img_size,
@@ -123,6 +128,10 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
       expect_partial=True
     ) 
     base_model.trainable = False # freeze the headless model (no training allowed)
+    base_model.summary(print_fn=logging.info)
+
+
+    exit()
 
     # # OR get base model from pretrained *ImageNet* checkpoint (includes augmentations)
     # base_model = define_model.get_model(
@@ -327,10 +336,17 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # main(
+    #   batch_size=args.batch_size,
+    #   requested_img_size=args.requested_img_size,
+    #   train_dataset_size=args.train_dataset_size,
+    #   greyscale=True
+    # )
+
     main(
-      batch_size=args.batch_size,
-      requested_img_size=args.requested_img_size,
-      train_dataset_size=args.train_dataset_size,
+      batch_size=2,
+      requested_img_size=300,
+      train_dataset_size=1000,
       greyscale=True
     )
 

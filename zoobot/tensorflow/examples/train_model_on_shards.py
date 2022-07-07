@@ -13,7 +13,7 @@ from zoobot.tensorflow.training import train_with_keras
 if __name__ == '__main__':
 
     """
-    Convenient command-line API/example for training models on previously-created shards
+    Convenient command-line API/example for training models on previously-created shards (see shards.sh)
     Interfaces with Zoobot via ``train_with_keras.train``
 
     Example use:
