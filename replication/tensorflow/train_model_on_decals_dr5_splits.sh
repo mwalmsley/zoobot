@@ -39,7 +39,7 @@ $PYTHON $ZOOBOT_DIR/zoobot/tensorflow/examples/train_model_on_shards.py \
     --shard-img-size 300 \
     --resize-size 224 \
     --train-dir $TRAIN_DIR \
-    --test-dir $EVAL_DIR \
+    --test-dir $TEST_DIR \
     --epochs 200 \
     --batch-size 512 \
     --gpus 2  \
