@@ -65,6 +65,8 @@ if __name__ == '__main__':
         but may be unexpected and mess with e.g. GradCAM techniques.'),
     parser.add_argument('--dropout-rate', dest='dropout_rate',
                         default=0.2, type=float)
+    parser.add_argument('--patience', dest='patience',
+                        default=8, type=int)
     args = parser.parse_args()
 
     train_records_dir = args.train_records_dir
