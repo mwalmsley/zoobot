@@ -2,26 +2,15 @@
 
 import os
 import logging
-import glob
-import random
-import shutil
 import argparse
 import json
 import time
 
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras import layers, regularizers
-import pandas as pd
-from sklearn.model_selection import train_test_split
+from tensorflow.keras import layers
 
-from zoobot import label_metadata, schemas
-from zoobot.data_utils import image_datasets
-from zoobot.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.predictions import predict_on_tfrecords, predict_on_dataset
 from zoobot.training import training_config
-from zoobot.transfer_learning import utils
-from zoobot.estimators import custom_layers
 from zoobot.datasets import rings
 
 
@@ -138,7 +127,7 @@ if __name__ == '__main__':
           tf.config.experimental.set_memory_growth(gpu, True)
 
       
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Finetune on fixed ring representation')
     parser.add_argument('--dataset-size', dest='dataset_size', default=None, type=int,
                         help='Max labelled galaxies to use (including resampling)')
     parser.add_argument('--batch-size', dest='batch_size', default=256, type=int,
