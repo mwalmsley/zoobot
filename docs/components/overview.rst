@@ -39,9 +39,9 @@ The easiest way to load data into a tf.dataset is directly from images (png or j
 
     from zoobot.data_utils import image_datasets
 
-    paths_train = ['path/to/image_a.png', 'path/to/image_b.png']
+    paths_train = ['path/to/image_a.jpg', 'path/to/image_b.jpg']
     labels_train = [1, 0]
-    file_format = 'png'
+    file_format = 'jpg'
     requested_img_size = 300  # if images are saved on disk at a different resolution, they will be resized to this resolution
     batch_size = 64
 
@@ -49,9 +49,8 @@ The easiest way to load data into a tf.dataset is directly from images (png or j
     raw_val_dataset = image_datasets.get_image_dataset(paths_val, file_format=file_format, requested_img_size=requested_img_size, batch_size=batch_size, labels=labels_val)
 
 
-Loading images from disk is simple but slow. 
-If fast training is important, you can save those images as binary TFRecords.
-See :ref:`reproducing DECaLS <reproducing_decals>` for more and `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/create_shards.py>`_ for a full example.
+You can save those images as binary TFRecords, which may be faster to load (provided you have an excellent disk read speed).
+See :ref:`Training from Scratch <training_from_scratch>` for more.
 
 .. code-block:: python
 
@@ -64,7 +63,7 @@ See :ref:`reproducing DECaLS <reproducing_decals>` for more and `create_shards.p
         columns_to_save=['ring']  # labels
     )
 
-The binary TFRecords can then be loaded back quickly during training.
+The binary TFRecords can then be loaded back during training.
 
 .. code-block:: python
 
@@ -80,6 +79,8 @@ The binary TFRecords can then be loaded back quickly during training.
 
     Saving TFRecords is slow, fiddly, and takes up more disk space than the original images. 
     Only do so if loading speed is crucial (e.g. you are training many models on hundreds of thousands of images)
+    Also note that the TFRecords may be slower to load than the original images, depending on your disk read speed, because they are much larger than e.g. compressed jpegs.
+    TFRecords will be deprecated in future!
 
 .. _overview_preprocessing:
 
@@ -88,6 +89,8 @@ Preprocessing Data
 
 Images may need preprocessing - deterministic tweaks - before being sent to the model.
 For example, images are usually saved as 0-255 integers and should be rescaled to 0-1 floats.
+
+With Tensorflow, we provide functions for this under ``zoobot/tensorflow/preprocess``.
 
 .. code-block:: python
 
@@ -104,45 +107,34 @@ For example, images are usually saved as 0-255 integers and should be rescaled t
 preprocess.PreprocessingConfig is essentially a dict recording your preprocessing choices.
 Re-use ``preprocess_config`` to ensure your train, validation, test and ultimately prediction data are all preprocessed the same way.
 
+With PyTorch, preprocessing happens in the DataModule you define. 
+Personally, I find this a little simpler.
+See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
+
 .. _overview_training:
 
 Training
 --------
 
-Zoobot trains the convolutional neural network `EfficientNet <https://ai.googleblog.com/2019/05/efficientnet-improving-accuracy-and.html>`_, implemented in `tf.keras <https://www.tensorflow.org/guide/keras/sequential_model>`_.
+Zoobot trains the convolutional neural network `EfficientNet <https://ai.googleblog.com/2019/05/efficientnet-improving-accuracy-and.html>`_.
+
+The exact model and loss to use depend on if you are :ref:`reproducing DECaLS <training_from_scratch>` or :ref:`finetuning <finetuning_guide>`. 
+Click each link for a specific guide.
+
+With Tensorflow, training is done by `tf.keras <https://www.tensorflow.org/guide/keras/sequential_model>`_.
 Random augmentations (crops, flips and rotations) will be applied by the first layers of the network
 (using `tf.keras.layers.experimental.preprocessing <https://www.tensorflow.org/api_docs/python/tf/keras/layers/experimental/preprocessing>`_).
 
-The exact model and loss to use depend on if you are :ref:`reproducing DECaLS <reproducing_decals>` or :ref:`finetuning <finetuning_guide>`. 
-Click each link for a specific guide.
+With PyTorch, training is done by `PyTorch Lightning <https://www.pytorchlightning.ai/>`_.
+Random augmentations are applied by specifing the list of ``transforms`` within your DataModule (again, see `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/datasets/decals_dr8.py>`).
 
-The general steps are the same: define the model architecture, select a loss function and optimizer, configure training options, and begin training.
+.. note:: 
 
-.. code-block:: 
+    The PyTorch version of Zoobot also includes ResNet50 architecture options, which perform a little worse but are a common benchmark - see :ref:`datanotes`.
 
-    model = define_model.get_model(
-    ...  # options depend on what you're doing
-    )
-
-    model.compile(
-    loss=loss,  # loss depends on what you're doing
-    optimizer=tf.keras.optimizers.Adam()
-    )
-
-    train_config = training_config.TrainConfig(
-    log_dir='save/model/here',
-    epochs=50,
-    patience=10  # early stopping: end training if no improvement for this many epochs
-    )
-
-    training_config.train_estimator(
-    model, 
-    train_config,  # parameters for how to train e.g. epochs, patience
-    train_dataset,
-    val_dataset
-    )
 
 .. _overview_predictions:
+
 
 Predictions and Representations
 -------------------------------
@@ -153,45 +145,8 @@ Making predictions is then as easy as:
 
 .. code-block:: 
 
+    # the API is the same for TensorFlow and PyTorch, happily
     predictions = model.predict(pred_dataset)
 
-See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py>`_ for a complete example.
+See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py>`_ for a complete (TensorFlow) example.
 
-.. To make life even easier, 
-
-.. .. code-block:: 
-
-..     file_format = 'png'  # jpg or png supported. FITS is NOT supported (PRs welcome)
-..     predict_on_dataset.predict(
-..         label_cols=label_cols,
-..         file_format=file_format,
-..         checkpoint_dir=checkpoint_dir,
-..         save_loc=save_loc,
-..         n_samples=n_samples,  # number of dropout forward passes
-..         batch_size=batch_size,
-..         initial_size=initial_size,
-..         crop_size=crop_size,
-..         resize_size=resize_size,
-..         paths_to_predict=list(pd.read_csv('data/decals_dr_full_eval_df.csv')['local_png_loc'].apply(lambda x: x.replace('/data/phys-zooniverse/chri5177/png_native/dr5', '/raid/scratch/walml/galaxy_zoo/decals/png')))
-..     )
-
-.. .. code-block:: 
-
-..     predict_on_dataset.predict(
-..         label_cols=label_cols,
-..         file_format=file_format,
-..         checkpoint_dir=checkpoint_dir,
-..         save_loc=save_loc,
-..         n_samples=n_samples,  # number of dropout forward passes
-..         batch_size=batch_size,
-..         initial_size=initial_size,
-..         crop_size=crop_size,
-..         resize_size=resize_size,
-..         folder_to_predict=folder_to_predict,
-..         recursive=True  # if you also want to search subfolders, subsubfolders, etc
-..     )
-
-.. _overview_finetuning:
-
-Fine-tuning
--------------------------------
