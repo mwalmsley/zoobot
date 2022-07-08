@@ -20,6 +20,6 @@ REPO_LOC=/share/nas2/walml/repos/zoobot
 
 # batch size of 256 works on a single A100 with effnet b0
 # 512 with two A100's
-/share/nas2/walml/miniconda3/envs/zoobot/bin/python /share/nas2/walml/repos/zoobot/zoobot/tensorflow/examples/sfinetune_advanced.py \
+/share/nas2/walml/miniconda3/envs/zoobot/bin/python /share/nas2/walml/repos/zoobot/zoobot/tensorflow/examples/finetune_advanced.py \
     --batch-size 512 \
     --epochs 50
