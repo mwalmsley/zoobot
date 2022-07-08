@@ -16,7 +16,7 @@ from zoobot.tensorflow.transfer_learning import utils
 from zoobot.tensorflow.datasets import rings
 
     
-def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_show=5000000, greyscale=True):
+def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=True):
     """
 
     This example is the research-grade version of finetune_minimal.py. Start there first.
@@ -53,17 +53,24 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
       logging.warning('Using color images, channels=3')
 
 
+    # this loads from (zoobot dir)/data/example_images/advanced.
+    # you must have download the images to here - see the readme in that folder.
+    # also loads from the example_ring_catalog_advanced.parquet included with this repo
     raw_train_dataset, raw_val_dataset, raw_test_dataset = rings.get_advanced_ring_image_dataset(
       batch_size=batch_size, requested_img_size=requested_img_size, train_dataset_size=train_dataset_size)
 
     # small datasets that fit in memory can be cached before augmentations
     # this speeds up training
     use_cache = False  # sequential if's for awkward None/int type
-    if train_dataset_size is not None:  # when None, load all -> very many galaxies
-      if train_dataset_size < 10000:
-        use_cache = True
+    if train_dataset_size is None:
+      train_dataset_size = len(raw_train_dataset)
+    if train_dataset_size < 10000:
+        # use_cache = True
+        pass   # let's just not use the cache and keep things simple, on second thought
+
 
     if use_cache:
+      logging.info('Using cache')
       raw_train_dataset = raw_train_dataset.cache()
       raw_val_dataset = raw_val_dataset.cache()
       raw_test_dataset = raw_test_dataset.cache()
@@ -104,14 +111,17 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     """Pick a base model"""
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
-    pretrained_checkpoint = 'data/pretrained_models/decals_dr_trained_on_all_labelled_m0/in_progress'
-    # pretrained_checkpoint = 'data/pretrained_models/decals_dr_train_set_only_replicated/checkpoint'
+    # you need to download these - see the data notes docs. Link is in the data/pretrained_models folder.
+    pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
+    # pretrained_checkpoint = 'data/pretrained_models/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale/checkpoint'
     ## a few other checkpoints used in the representations paper, trained on single questions - happy to share on request, but lower performance than the above
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bulge_size_only/checkpoint'
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_spiral_yn_only/checkpoint'
 
+    assert requested_img_size == 300
+    # weights will fail to load otherwise, as this model will include "resize" layer while weights do not
     base_model = get_headless_model(
       pretrained_checkpoint,
       requested_img_size,
@@ -121,6 +131,7 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
       expect_partial=True
     ) 
     base_model.trainable = False # freeze the headless model (no training allowed)
+    base_model.summary(print_fn=logging.info)
 
     # # OR get base model from pretrained *ImageNet* checkpoint (includes augmentations)
     # base_model = define_model.get_model(
@@ -172,10 +183,9 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     ])
 
 
-    # Retrain the model. If you froze the base model, only the new head will train (fast). Otherwise, the whole model will train (slow).
+    # Retrain the model. If you froze the base model, only the new heads will train (fast). Otherwise, the whole model will train (slow).
 
-    epochs = max(int(max_galaxies_to_show / train_dataset_size), 1)
-    patience = min(max(10, int(epochs/6)), 30)  # between 5 and 30 epochs, sliding depending on num. epochs (TODO may just set at 30, we'll see)
+    patience = min(int(300000/train_dataset_size), 30)  # between 5 and 30 epochs, sliding depending on num. epochs
     # patience = 1  # TODO
     logging.info('Epochs: {}'.format(epochs))
     logging.info('Early stopping patience: {}'.format(patience))
@@ -200,6 +210,7 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
       val_dataset
     )
 
+    logging.info('Evaluating head (no finetuning) performancce')
     evaluate_performance(
       model=model,test_dataset=test_dataset, run_name=run_name + '_transfer', log_dir=log_dir, batch_size=batch_size, train_dataset_size=train_dataset_size
     )
@@ -322,6 +333,8 @@ if __name__ == '__main__':
                         help='Batch size to use for train/val/test of model')
     parser.add_argument('--img-size', dest='requested_img_size', default=300, type=int,
                         help='Image size before conv layers i.e. after loading (from 424, by default) and cropping (to 300, by default).')
+    parser.add_argument('--epochs', dest='epochs', default=50, type=int,
+                        help='Max epochs to run. N for transfer, and another N for fine-tuning')
 
     args = parser.parse_args()
 
@@ -329,8 +342,16 @@ if __name__ == '__main__':
       batch_size=args.batch_size,
       requested_img_size=args.requested_img_size,
       train_dataset_size=args.train_dataset_size,
+      epochs=args.epochs,
       greyscale=True
     )
+
+    # main(
+    #   batch_size=2,
+    #   requested_img_size=300,
+    #   train_dataset_size=1000,
+    #   greyscale=True
+    # )
 
 
       

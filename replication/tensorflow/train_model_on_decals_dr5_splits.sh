@@ -32,14 +32,14 @@ TEST_DIR=$TFRECORD_DIR/eval_shards
 
 THIS_DIR=/share/nas2/walml/repos/gz-decals-classifiers
 
-EXPERIMENT_DIR=$THIS_DIR/results/tensorflow/dr5/efficientnet_dr5_tensorflow
+EXPERIMENT_DIR=$THIS_DIR/results/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale
 
-$PYTHON $ZOOBOT_DIR/zoobot/tensorflow/examples/train_model.py \
+$PYTHON $ZOOBOT_DIR/zoobot/tensorflow/examples/train_model_on_shards.py \
     --experiment-dir $EXPERIMENT_DIR \
     --shard-img-size 300 \
     --resize-size 224 \
     --train-dir $TRAIN_DIR \
-    --test-dir $EVAL_DIR \
+    --test-dir $TEST_DIR \
     --epochs 200 \
     --batch-size 512 \
     --gpus 2  \

@@ -13,7 +13,7 @@ from zoobot.tensorflow.training import train_with_keras
 if __name__ == '__main__':
 
     """
-    Convenient command-line API/example for training models on previously-created shards
+    Convenient command-line API/example for training models on previously-created shards (see shards.sh)
     Interfaces with Zoobot via ``train_with_keras.train``
 
     Example use:
@@ -65,6 +65,8 @@ if __name__ == '__main__':
         but may be unexpected and mess with e.g. GradCAM techniques.'),
     parser.add_argument('--dropout-rate', dest='dropout_rate',
                         default=0.2, type=float)
+    parser.add_argument('--patience', dest='patience',
+                        default=8, type=int)
     args = parser.parse_args()
 
     train_records_dir = args.train_records_dir
@@ -75,8 +77,9 @@ if __name__ == '__main__':
     test_records = [os.path.join(test_records_dir, x) for x in os.listdir(
         test_records_dir) if x.endswith('.tfrecord')]
 
-    question_answer_pairs = label_metadata.decals_dr5_ortho_pairs
-    dependencies = label_metadata.decals_ortho_dependencies
+    # the shards were created without the ortho style -dr5 syntax
+    question_answer_pairs = label_metadata.decals_pairs  
+    dependencies = label_metadata.gz2_and_decals_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
