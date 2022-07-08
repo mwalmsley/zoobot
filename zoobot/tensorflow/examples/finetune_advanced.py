@@ -16,7 +16,7 @@ from zoobot.tensorflow.transfer_learning import utils
 from zoobot.tensorflow.datasets import rings
 
     
-def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_show=5000000, greyscale=True):
+def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=True):
     """
 
     This example is the research-grade version of finetune_minimal.py. Start there first.
@@ -180,10 +180,9 @@ def main(batch_size, requested_img_size, train_dataset_size, max_galaxies_to_sho
     ])
 
 
-    # Retrain the model. If you froze the base model, only the new head will train (fast). Otherwise, the whole model will train (slow).
+    # Retrain the model. If you froze the base model, only the new heads will train (fast). Otherwise, the whole model will train (slow).
 
-    epochs = max(int(max_galaxies_to_show / train_dataset_size), 1)
-    patience = min(max(10, int(epochs/6)), 30)  # between 5 and 30 epochs, sliding depending on num. epochs (TODO may just set at 30, we'll see)
+    patience = min(int(300000/train_dataset_size), 30)  # between 5 and 30 epochs, sliding depending on num. epochs
     # patience = 1  # TODO
     logging.info('Epochs: {}'.format(epochs))
     logging.info('Early stopping patience: {}'.format(patience))
