@@ -53,6 +53,9 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
       logging.warning('Using color images, channels=3')
 
 
+    # this loads from (zoobot dir)/data/example_images/advanced.
+    # you must have download the images to here - see the readme in that folder.
+    # also loads from the example_ring_catalog_advanced.parquet included with this repo
     raw_train_dataset, raw_val_dataset, raw_test_dataset = rings.get_advanced_ring_image_dataset(
       batch_size=batch_size, requested_img_size=requested_img_size, train_dataset_size=train_dataset_size)
 
@@ -63,7 +66,7 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
       train_dataset_size = len(raw_train_dataset)
     if train_dataset_size < 10000:
         # use_cache = True
-        pass
+        pass   # let's just not use the cache and keep things simple, on second thought
 
 
     if use_cache:
@@ -330,22 +333,25 @@ if __name__ == '__main__':
                         help='Batch size to use for train/val/test of model')
     parser.add_argument('--img-size', dest='requested_img_size', default=300, type=int,
                         help='Image size before conv layers i.e. after loading (from 424, by default) and cropping (to 300, by default).')
+    parser.add_argument('--epochs', dest='epochs', default=50, type=int,
+                        help='Max epochs to run. N for transfer, and another N for fine-tuning')
 
     args = parser.parse_args()
 
-    # main(
-    #   batch_size=args.batch_size,
-    #   requested_img_size=args.requested_img_size,
-    #   train_dataset_size=args.train_dataset_size,
-    #   greyscale=True
-    # )
-
     main(
-      batch_size=2,
-      requested_img_size=300,
-      train_dataset_size=1000,
+      batch_size=args.batch_size,
+      requested_img_size=args.requested_img_size,
+      train_dataset_size=args.train_dataset_size,
+      epochs=args.epochs,
       greyscale=True
     )
+
+    # main(
+    #   batch_size=2,
+    #   requested_img_size=300,
+    #   train_dataset_size=1000,
+    #   greyscale=True
+    # )
 
 
       

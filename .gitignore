@@ -156,3 +156,4 @@ checkpoint*
 data/example_images/advanced
 data/example_images/advanced_old
 *.jpg
+*.tar.gz
