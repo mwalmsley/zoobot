@@ -109,8 +109,8 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
     # you need to download these - see the data notes docs. Link is in the data/pretrained_models folder.
-    # pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
-    pretrained_checkpoint = 'data/pretrained_models/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale/checkpoint'
+    pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
+    # pretrained_checkpoint = 'data/pretrained_models/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale/checkpoint'
     ## a few other checkpoints used in the representations paper, trained on single questions - happy to share on request, but lower performance than the above
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_bar_only/checkpoint'
@@ -207,6 +207,7 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
       val_dataset
     )
 
+    logging.info('Evaluating head (no finetuning) performancce')
     evaluate_performance(
       model=model,test_dataset=test_dataset, run_name=run_name + '_transfer', log_dir=log_dir, batch_size=batch_size, train_dataset_size=train_dataset_size
     )
