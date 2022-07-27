@@ -6,6 +6,7 @@ from torch import nn
 from zoobot.pytorch.estimators import efficientnet_standard, efficientnet_custom, custom_layers
 
 import pytorch_lightning as pl
+from torchmetrics import Accuracy
 
 
 
@@ -29,6 +30,14 @@ class GenericLightningModule(pl.LightningModule):
 
         self.loss_func = loss_func  # accept (labels, preds), return losses of shape (batch)
 
+        # these are ignored unless output dim = 2
+        self.train_accuracy = Accuracy()
+        self.val_accuracy = Accuracy()
+
+        self.log_on_step = True
+        # useful for debugging, best when log_every_n_steps is fairly large
+
+
     def forward(self, x):
         return self.model.forward(x)
 
@@ -37,25 +46,31 @@ class GenericLightningModule(pl.LightningModule):
         predictions = self(x)  # by default, these are Dirichlet concentrations
 
         # true, pred convention as with sklearn
-        # self.loss_func returns shape of (galaxy, question), sum to ()
-        loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
-        self.log("train_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        # self.loss_func returns shape of (galaxy, question), mean to ()
+        loss = torch.mean(self.loss_func(predictions, labels))
+        self.log("train/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True)
+        if predictions.shape[1] == 2:  # will only do for binary classifications
+            # logging.info(predictions.shape, labels.shape)
+            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         # identical to training_step except for log
         x, labels = batch
         predictions = self(x)
-        loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
-        self.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        loss = torch.mean(self.loss_func(predictions, labels))
+        self.log("val/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        if predictions.shape[1] == 2:  # will only do for binary classifications
+            # logging.info(predictions.shape, labels.shape)
+            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
     def test_step(self, batch, batch_idx):
         # similarly
         x, labels = batch
         predictions = self(x)
-        loss = torch.sum(self.loss_func(predictions, labels))/len(labels)
-        self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        loss = torch.mean(self.loss_func(predictions, labels))
+        self.log("test/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     def configure_optimizers(self):
@@ -85,7 +100,7 @@ def get_plain_pytorch_zoobot_model(
 
     Args:
         output_dim (int): Dimension of head dense layer. No effect when include_top=False.
-        input_size (int): Length of initial image e.g. 300 (assumed square)
+        input_size (int): Length of initial image e.g. 300 (asmeaned square)
         crop_size (int): Length to randomly crop image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         resize_size (int): Length to resize image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.

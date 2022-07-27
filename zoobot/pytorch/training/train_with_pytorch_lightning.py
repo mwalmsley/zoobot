@@ -151,16 +151,16 @@ def train_default_zoobot_from_scratch(
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
-            monitor="val_loss",
+            monitor="val/supervised_loss",
             save_weights_only=True,
             mode='min',
             save_top_k=3
         ),
-        EarlyStopping(monitor='val_loss', patience=patience, check_finite=True)
+        EarlyStopping(monitor='val/supervised_loss', patience=patience, check_finite=True)
     ]
 
     trainer = pl.Trainer(
-        log_every_n_steps=3,
+        log_every_n_steps=200,
         accelerator=accelerator,
         gpus=gpus,  # per node
         num_nodes=nodes,
@@ -182,6 +182,8 @@ def train_default_zoobot_from_scratch(
         datamodule=datamodule,
         ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
+
+    return lightning_model, trainer
 
 
 def select_base_architecture_func_from_name(base_architecture):
