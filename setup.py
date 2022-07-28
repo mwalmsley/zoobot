@@ -54,7 +54,7 @@ setuptools.setup(
         'scikit-image >= 0.19.2',
         'scikit-learn >= 1.0.2',
         'matplotlib',
-        'statsmodels'
+        'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb'
     ]
