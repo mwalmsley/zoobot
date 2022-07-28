@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  zoobot:
+    image: zoobot:tensorflow
+    build:
+      context:  ./
+      dockerfile: Dockerfile.tf
+    volumes:
+      # inject the code at run time to allow edits etc
+      - ./:/usr/src/zoobot
