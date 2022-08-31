@@ -17,18 +17,19 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
 
     test_datamodule = GalaxyDataModule(
         label_cols=label_cols,
-        # can take either a catalog (and split it), or a pre-split catalog
-        test_catalog=catalog,  # no need to specify the other catalogs
+        predict_catalog=catalog,  # no need to specify the other catalogs
         # will use the default transforms unless overridden with datamodule_kwargs
         # 
         **datamodule_kwargs  # e.g. batch_size, resize_size, crop_scale_bounds, etc.
     )
-    # with this stage arg, will only use test catalog 
-    # important to use test stage to avoid shuffling
-    test_datamodule.setup(stage='test')  
+    # with this stage arg, will only use predict_catalog 
+    # crucial to specify the stage, or will error (as missing other catalogs)
+    test_datamodule.setup(stage='predict')  
 
     # set up trainer (again)
     trainer = pl.Trainer(
+        devices=1,
+        max_epochs=-1,  # does nothing in this context, suppresses warning
         **trainer_kwargs  # e.g. gpus
     )
 
