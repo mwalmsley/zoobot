@@ -38,7 +38,16 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     start = datetime.datetime.fromtimestamp(time.time())
     logging.info('Starting at: {}'.format(start.strftime('%Y-%m-%d %H:%M:%S')))
 
-    predictions = np.stack([trainer.predict(model, predict_datamodule).numpy() for n in range(n_samples)], axis=-1)
+    example_prediction = trainer.predict(model, predict_datamodule)
+    logging.info(example_prediction)
+
+    logging.info(example_prediction[0])
+
+    logging.info(example_prediction[0].numpy())
+
+    # exit()
+
+    predictions = np.stack([trainer.predict(model, predict_datamodule)[0].numpy() for n in range(n_samples)], axis=-1)
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
     if save_loc.endswith('.csv'):      # save as pandas df
