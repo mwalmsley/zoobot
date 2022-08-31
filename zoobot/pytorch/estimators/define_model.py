@@ -73,6 +73,13 @@ class GenericLightningModule(pl.LightningModule):
         self.log("test/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
+    
+    def predict_step(self, batch, batch_idx, dataloader_idx=0):
+        # https://pytorch-lightning.readthedocs.io/en/stable/common/lightning_module.html#inference
+        # this calls forward, while avoiding the need for e.g. model.eval(), torch.no_grad()
+        return self(batch)
+
+
     def configure_optimizers(self):
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
         return torch.optim.Adam(self.parameters(), lr=0.001, betas=(0.9, 0.999))  
