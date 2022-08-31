@@ -15,7 +15,7 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
 
     image_id_strs = list(catalog['id_str'])
 
-    test_datamodule = GalaxyDataModule(
+    predict_datamodule = GalaxyDataModule(
         label_cols=label_cols,
         predict_catalog=catalog,  # no need to specify the other catalogs
         # will use the default transforms unless overridden with datamodule_kwargs
@@ -24,11 +24,10 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     )
     # with this stage arg, will only use predict_catalog 
     # crucial to specify the stage, or will error (as missing other catalogs)
-    test_datamodule.setup(stage='predict')  
+    predict_datamodule.setup(stage='predict')  
 
     # set up trainer (again)
     trainer = pl.Trainer(
-        devices=1,
         max_epochs=-1,  # does nothing in this context, suppresses warning
         **trainer_kwargs  # e.g. gpus
     )
@@ -39,7 +38,7 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     start = datetime.datetime.fromtimestamp(time.time())
     logging.info('Starting at: {}'.format(start.strftime('%Y-%m-%d %H:%M:%S')))
 
-    predictions = np.stack([trainer.predict(model, test_datamodule) for n in range(n_samples)], axis=-1)
+    predictions = np.stack([trainer.predict(model, predict_datamodule) for n in range(n_samples)], axis=-1)
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
     if save_loc.endswith('.csv'):      # save as pandas df
