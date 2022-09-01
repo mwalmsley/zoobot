@@ -5,6 +5,7 @@ from typing import List
 
 import pandas as pd
 import numpy as np
+import torch
 import pytorch_lightning as pl
 
 from zoobot.shared import save_predictions
@@ -38,7 +39,12 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     start = datetime.datetime.fromtimestamp(time.time())
     logging.info('Starting at: {}'.format(start.strftime('%Y-%m-%d %H:%M:%S')))
 
-    predictions = np.stack([trainer.predict(model, predict_datamodule)[0].numpy() for n in range(n_samples)], axis=-1)
+    logging.info(len(trainer.predict(model, predict_datamodule)))
+
+    # trainer.predict gives list of tensors, each tensor being predictions for a batch. Stack on axis 0.
+    # range(n_samples) list comprehension repeats this, for dropout-permuted predictions. Stack on last (-1) axis.
+    # final shape (n_galaxies, n_answers, n_samples)
+    predictions = torch.stack([torch.stack(trainer.predict(model, predict_datamodule), axis=0) for n in range(n_samples)], axis=-1).numpy()
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
     if save_loc.endswith('.csv'):      # save as pandas df
