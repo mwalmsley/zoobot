@@ -41,10 +41,10 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
 
     logging.info(len(trainer.predict(model, predict_datamodule)))
 
-    # trainer.predict gives list of tensors, each tensor being predictions for a batch. Stack on axis 0.
-    # range(n_samples) list comprehension repeats this, for dropout-permuted predictions. Stack on last (-1) axis.
+    # trainer.predict gives list of tensors, each tensor being predictions for a batch. Concat on axis 0.
+    # range(n_samples) list comprehension repeats this, for dropout-permuted predictions. Stack to create new last axis.
     # final shape (n_galaxies, n_answers, n_samples)
-    predictions = torch.stack([torch.stack(trainer.predict(model, predict_datamodule), axis=0) for n in range(n_samples)], axis=-1).numpy()
+    predictions = torch.stack([torch.concat(trainer.predict(model, predict_datamodule), dim=0) for n in range(n_samples)], dim=2).numpy()
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
     if save_loc.endswith('.csv'):      # save as pandas df
