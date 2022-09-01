@@ -155,5 +155,9 @@ checkpoint*
 
 data/example_images/advanced
 data/example_images/advanced_old
+data/external
 *.jpg
 *.tar.gz
+
+# custom training script in root of image
+train_model_on_catalog.py

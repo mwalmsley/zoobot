@@ -2,18 +2,13 @@ version: '3'
 
 services:
   zoobot:
+    image: zoobot:cuda
     build:
       context:  ./
       dockerfile: Dockerfile
     volumes:
+      # inject the code at run time to allow edits etc
       - ./:/usr/src/zoobot
-      - /Users/camallen/workspace/zooniverse/kade/tmp/storage/staging/:/usr/src/zoobot/data/kade/
-  zoobot_tf:
-    build:
-      context:  ./
-      dockerfile: Dockerfile.tf
-    volumes:
-      - ./:/usr/src/zoobot
-      - /Users/camallen/workspace/zooniverse/kade/tmp/storage/staging/:/usr/src/zoobot/data/kade/
+      # inject this symlink external data dir as docker mounts it as a file :(
+      - ./data/external/:/usr/src/zoobot/data/external/
 
-# example - you will need to update the attached volumes for your own machine
