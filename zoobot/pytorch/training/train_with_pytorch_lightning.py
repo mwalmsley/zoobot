@@ -199,6 +199,9 @@ def select_base_architecture_func_from_name(base_architecture):
     if base_architecture == 'efficientnet':
         get_architecture = efficientnet_standard.efficientnet_b0
         representation_dim = 1280
+    if base_architecture == 'efficientnet_b2':
+        get_architecture = efficientnet_standard.efficientnet_b2
+        representation_dim = 1280
     elif base_architecture == 'resnet_detectron':
         # only import if needed, as requires gpu version of pytorch or throws cuda errors e.g.
         # from detectron2 import _C -> ImportError: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory

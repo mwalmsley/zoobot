@@ -198,6 +198,28 @@ def efficientnet_b0(
         progress=progress)
 
 
+def efficientnet_b2(
+    input_channels,
+    use_imagenet_weights: bool = False,
+    include_top: bool = True,
+    progress: bool = True) -> EfficientNet:
+    """
+    See efficientnet_b0, identical other than multipliers and dropout
+    """
+    # added include_top and input_channels, renamed pretrained to use_imagenet_weights
+    assert not use_imagenet_weights
+    return _efficientnet(
+        arch="efficientnet_b2",
+        width_mult=1.1,
+        depth_mult=1.2,
+        dropout=0.3,
+        use_imagenet_weights=use_imagenet_weights,  # will likely fail
+        include_top=include_top,
+        input_channels=input_channels,
+        progress=progress)
+
+# TODO efficientnet_v2_*, perhaps?
+
 model_urls = {
     # Weights ported from https://github.com/rwightman/pytorch-image-models/
     "efficientnet_b0": "https://download.pytorch.org/models/efficientnet_b0_rwightman-3dd342df.pth",
