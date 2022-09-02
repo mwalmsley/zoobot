@@ -199,7 +199,7 @@ def select_base_architecture_func_from_name(base_architecture):
     if base_architecture == 'efficientnet':
         get_architecture = efficientnet_standard.efficientnet_b0
         representation_dim = 1280
-    if base_architecture == 'efficientnet_b2':
+    elif base_architecture == 'efficientnet_b2':
         get_architecture = efficientnet_standard.efficientnet_b2
         representation_dim = 1408
     elif base_architecture == 'resnet_detectron':
