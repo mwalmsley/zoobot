@@ -187,10 +187,14 @@ def train_default_zoobot_from_scratch(
     trainer.fit(lightning_model, datamodule)
 
     trainer.test(
-        model=lightning_model,
+        # model=lightning_model not required. Trainer tracks this itself (trainer.model), and if provided, overrides 'best'
         datamodule=datamodule,
         ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
+
+    # explicitly update the model weights to the best checkpoint before returning
+    # (assumes only one checkpoint callback, very likely in practice)
+    lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
 
     return lightning_model, trainer
 
