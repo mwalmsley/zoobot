@@ -185,7 +185,7 @@ def train_default_zoobot_from_scratch(
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     # TEMP
-    # trainer.fit(lightning_model, datamodule)
+    trainer.fit(lightning_model, datamodule)
 
     # trainer.test(
     #     # model=lightning_model not required. Trainer tracks this itself (trainer.model), and if provided, overrides 'best'
@@ -200,7 +200,7 @@ def train_default_zoobot_from_scratch(
     # more broadly, this allows for tracking hparams
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
     # lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path, model, loss_func)
-    lightning_model.load_from_checkpoint(trainer.checkpoint_callback.last_model_path)  # or .best_model_path, eventually
+    define_model.GenericLightningModule.load_from_checkpoint(trainer.checkpoint_callback.last_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 
