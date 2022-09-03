@@ -198,7 +198,8 @@ def train_default_zoobot_from_scratch(
     # so this works like define_model.GenericLightningModule(model, loss_func).load_from_checkpoint(path)
     # more broadly, this allows for tracking hparams
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
-    lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path, model, loss_func)
+    # lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path, model, loss_func)
+    lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
 
     return lightning_model, trainer
 

@@ -25,6 +25,7 @@ class GenericLightningModule(pl.LightningModule):
         loss_func,
         ):
         super().__init__()
+        self.save_hyperparameters(model, loss_func)  # saves model, loss_func, under key in checkpoints. Unclear how!
 
         self.model = model
 
