@@ -27,10 +27,6 @@ class GenericLightningModule(pl.LightningModule):
 
         self.setup_metrics()
 
-        # will be overridden by subclass e.g. ZoobotLightningModule
-        # will throw errors otherwise
-        assert self.model is not None
-        assert self.loss_func is not None
 
     def setup_metrics(self):
         # these are ignored unless output dim = 2
@@ -109,6 +105,7 @@ class ZoobotLightningModule(GenericLightningModule):
         # now, finally, can pass only standard variables as hparams to save
         super().__init__(
             output_dim,
+            question_index_groups,
             channels,
             always_augment,
             dropout_rate,
