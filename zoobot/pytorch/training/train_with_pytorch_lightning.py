@@ -184,13 +184,14 @@ def train_default_zoobot_from_scratch(
     logging.info((trainer.training_type_plugin, trainer.world_size,
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
-    trainer.fit(lightning_model, datamodule)
+    # TEMP
+    # trainer.fit(lightning_model, datamodule)
 
-    trainer.test(
-        # model=lightning_model not required. Trainer tracks this itself (trainer.model), and if provided, overrides 'best'
-        datamodule=datamodule,
-        ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-    )
+    # trainer.test(
+    #     # model=lightning_model not required. Trainer tracks this itself (trainer.model), and if provided, overrides 'best'
+    #     datamodule=datamodule,
+    #     ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+    # )
 
     # explicitly update the model weights to the best checkpoint before returning
     # (assumes only one checkpoint callback, very likely in practice)
@@ -199,7 +200,7 @@ def train_default_zoobot_from_scratch(
     # more broadly, this allows for tracking hparams
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
     # lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path, model, loss_func)
-    lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path)
+    lightning_model.load_from_checkpoint(trainer.checkpoint_callback.last_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 
