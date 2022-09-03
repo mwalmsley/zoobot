@@ -5,7 +5,7 @@ from torch import nn
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
 
-from zoobot.pytorch.estimators import efficientnet_standard, efficientnet_custom, custom_layers
+from zoobot.pytorch.estimators import efficientnet_standard, efficientnet_custom, resnet_torchvision_custom, custom_layers
 from zoobot.pytorch.training import losses
 
 
@@ -95,6 +95,7 @@ class ZoobotLightningModule(GenericLightningModule):
     # override GenericLightningModule above, only this init
     def __init__(
         self,
+        output_dim,
         question_index_groups,
         weights_loc=None,
         include_top=True,
@@ -110,6 +111,7 @@ class ZoobotLightningModule(GenericLightningModule):
         self.loss_func = get_loss_func(question_index_groups)
 
         self.model = get_plain_pytorch_zoobot_model(
+            output_dim=output_dim,
             weights_loc=weights_loc,
             include_top=include_top,
             channels=channels,
@@ -122,6 +124,7 @@ class ZoobotLightningModule(GenericLightningModule):
 
         # now, finally, can pass only standard variables as hparams to save
         super().__init__(
+            output_dim,
             channels,
             always_augment,
             dropout_rate,
@@ -210,7 +213,13 @@ def get_plain_pytorch_zoobot_model(
     if include_top:
         assert output_dim is not None
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
-        modules_to_use.append(custom_layers.PermaDropout(dropout_rate))
+        if always_augment:
+            logging.info('Using test-time dropout')
+            dropout_layer = custom_layers.PermaDropout
+        else:
+            logging.info('Not using test-time dropout')
+            dropout_layer = torch.nn.Dropout
+        modules_to_use.append(dropout_layer(dropout_rate))
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
 
     if weights_loc:

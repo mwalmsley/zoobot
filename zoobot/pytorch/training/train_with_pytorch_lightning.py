@@ -10,7 +10,6 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom  # also resnet_detectron2_custom, imported below
 
 
 # convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
@@ -133,7 +132,8 @@ def train_default_zoobot_from_scratch(
     datamodule.setup()
 
     lightning_model = define_model.ZoobotLightningModule(
-        schema.question_index_groups,
+        output_dim=len(schema.label_cols),
+        question_index_groups=schema.question_index_groups,
         include_top=True,
         channels=1,
         use_imagenet_weights=False,
