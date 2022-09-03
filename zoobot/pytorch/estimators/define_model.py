@@ -2,12 +2,11 @@ import logging
 
 import torch
 from torch import nn
-
-from zoobot.pytorch.estimators import efficientnet_standard, efficientnet_custom, custom_layers
-
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
 
+from zoobot.pytorch.estimators import efficientnet_standard, efficientnet_custom, custom_layers
+from zoobot.pytorch.training import losses
 
 
 class GenericLightningModule(pl.LightningModule):
@@ -21,20 +20,22 @@ class GenericLightningModule(pl.LightningModule):
 
     def __init__(
         self,
-        model,
-        loss_func,
+        *args,  # to be saved as hparams
         ):
         super().__init__()
-        self.save_hyperparameters("model", "loss_func")  # saves model, loss_func, under key in checkpoints. Unclear how!
+        self.save_hyperparameters()  # saves all args by default
 
-        self.model = model
+        self.setup_metrics()
 
-        self.loss_func = loss_func  # accept (labels, preds), return losses of shape (batch)
+        # will be overridden by subclass e.g. ZoobotLightningModule
+        # will throw errors otherwise
+        assert self.model is not None
+        assert self.loss_func is not None
 
+    def setup_metrics(self):
         # these are ignored unless output dim = 2
         self.train_accuracy = Accuracy()
         self.val_accuracy = Accuracy()
-
         self.log_on_step = True
         # useful for debugging, best when log_every_n_steps is fairly large
 
@@ -85,6 +86,82 @@ class GenericLightningModule(pl.LightningModule):
     def configure_optimizers(self):
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
         return torch.optim.Adam(self.parameters(), lr=0.001, betas=(0.9, 0.999))  
+
+
+class ZoobotLightningModule(GenericLightningModule):
+
+    # lightning only supports checkpoint loading / hparams which are not fancy classes
+    # therefore, can't nicely wrap these arguments. So it goes.
+    # override GenericLightningModule above, only this init
+    def __init__(
+        self,
+        question_index_groups,
+        weights_loc=None,
+        include_top=True,
+        channels=1,
+        use_imagenet_weights=False,
+        always_augment=True,
+        dropout_rate=0.2,
+        architecture_name="efficientnet"  # recently changed from model_architecture
+        ):
+
+        get_architecture, representation_dim = select_base_architecture_func_from_name(architecture_name)
+
+        self.loss_func = get_loss_func(question_index_groups)
+
+        self.model = get_plain_pytorch_zoobot_model(
+            weights_loc=weights_loc,
+            include_top=include_top,
+            channels=channels,
+            use_imagenet_weights=use_imagenet_weights,
+            always_augment=always_augment,
+            dropout_rate=dropout_rate,
+            get_architecture=get_architecture,
+            representation_dim=representation_dim
+        )
+
+        # now, finally, can pass only standard variables as hparams to save
+        super().__init__(
+            channels,
+            always_augment,
+            dropout_rate,
+            architecture_name  # TODO can add any more specific params if needed
+        )
+
+    
+
+def get_loss_func(question_index_groups):
+    # This just adds schema.question_index_groups as an arg to the usual (labels, preds) loss arg format
+    # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
+
+    # accept (labels, preds), return losses of shape (batch)
+    def loss_func(preds, labels):  # pytorch convention is preds, labels
+        return losses.calculate_multiquestion_loss(labels, preds, question_index_groups)  # my and sklearn convention is labels, preds
+    return loss_func
+
+
+def select_base_architecture_func_from_name(base_architecture):
+    if base_architecture == 'efficientnet':
+        get_architecture = efficientnet_standard.efficientnet_b0
+        representation_dim = 1280
+    elif base_architecture == 'efficientnet_b2':
+        get_architecture = efficientnet_standard.efficientnet_b2
+        representation_dim = 1408
+    elif base_architecture == 'resnet_detectron':
+        # only import if needed, as requires gpu version of pytorch or throws cuda errors e.g.
+        # from detectron2 import _C -> ImportError: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory
+        from zoobot.pytorch.estimators import resnet_detectron2_custom
+        get_architecture = resnet_detectron2_custom.get_resnet
+        representation_dim = 2048
+    elif base_architecture == 'resnet_torchvision':
+        get_architecture = resnet_torchvision_custom.get_resnet  # only supports color
+        representation_dim = 2048
+    else:
+        raise ValueError(
+            'Model architecture not recognised: got model={}, expected one of [efficientnet, resnet_detectron, resnet_torchvision]'.format(base_architecture))
+
+    return get_architecture,representation_dim
+
 
 
 def get_plain_pytorch_zoobot_model(

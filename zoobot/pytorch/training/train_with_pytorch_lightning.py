@@ -9,7 +9,6 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
-from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom  # also resnet_detectron2_custom, imported below
 
@@ -18,7 +17,7 @@ from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_
 # does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
 def train_default_zoobot_from_scratch(
     # absolutely crucial arguments
-    save_dir,  # save model here
+    save_dir: str,  # save model here
     schema,  # answer these questions
     # input data - specify *either* catalog (to be split) or the splits themselves
     catalog=None,
@@ -26,7 +25,7 @@ def train_default_zoobot_from_scratch(
     val_catalog=None,
     test_catalog=None,
     # model training parameters
-    model_architecture='efficientnet',
+    architecture_name='efficientnet',  # recently changed
     batch_size=256,
     epochs=1000,
     patience=8,
@@ -133,23 +132,14 @@ def train_default_zoobot_from_scratch(
     )
     datamodule.setup()
 
-    get_architecture, representation_dim = select_base_architecture_func_from_name(model_architecture)
-
-    model = define_model.get_plain_pytorch_zoobot_model(
-        output_dim=len(schema.answers),
+    lightning_model = define_model.ZoobotLightningModule(
+        schema.question_index_groups,
         include_top=True,
-        channels=channels,
-        get_architecture=get_architecture,
-        representation_dim=representation_dim
-    )
-
-    # This just adds schema.question_index_groups as an arg to the usual (labels, preds) loss arg format
-    # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
-    def loss_func(preds, labels):  # pytorch convention is preds, labels
-        return losses.calculate_multiquestion_loss(labels, preds, schema.question_index_groups)  # my and sklearn convention is labels, preds
-
-    lightning_model = define_model.GenericLightningModule(
-        model, loss_func
+        channels=1,
+        use_imagenet_weights=False,
+        always_augment=True,
+        dropout_rate=0.2,
+        architecture_name=architecture_name
     )
 
     callbacks = [
@@ -208,28 +198,6 @@ def train_default_zoobot_from_scratch(
 
     return lightning_model, trainer
 
-
-def select_base_architecture_func_from_name(base_architecture):
-    if base_architecture == 'efficientnet':
-        get_architecture = efficientnet_standard.efficientnet_b0
-        representation_dim = 1280
-    elif base_architecture == 'efficientnet_b2':
-        get_architecture = efficientnet_standard.efficientnet_b2
-        representation_dim = 1408
-    elif base_architecture == 'resnet_detectron':
-        # only import if needed, as requires gpu version of pytorch or throws cuda errors e.g.
-        # from detectron2 import _C -> ImportError: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory
-        from zoobot.pytorch.estimators import resnet_detectron2_custom
-        get_architecture = resnet_detectron2_custom.get_resnet
-        representation_dim = 2048
-    elif base_architecture == 'resnet_torchvision':
-        get_architecture = resnet_torchvision_custom.get_resnet  # only supports color
-        representation_dim = 2048
-    else:
-        raise ValueError(
-            'Model architecture not recognised: got model={}, expected one of [efficientnet, resnet_detectron, resnet_torchvision]'.format(base_architecture))
-
-    return get_architecture,representation_dim
 
 
 
