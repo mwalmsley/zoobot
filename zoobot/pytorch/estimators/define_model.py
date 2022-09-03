@@ -106,6 +106,17 @@ class ZoobotLightningModule(GenericLightningModule):
         architecture_name="efficientnet"  # recently changed from model_architecture
         ):
 
+        # now, finally, can pass only standard variables as hparams to save
+        super().__init__(
+            output_dim,
+            channels,
+            always_augment,
+            dropout_rate,
+            architecture_name  # TODO can add any more specific params if needed
+        )
+
+        logging.info('Generic __init__ complete - moving to Zoobot __init__')
+
         get_architecture, representation_dim = select_base_architecture_func_from_name(architecture_name)
 
         self.loss_func = get_loss_func(question_index_groups)
@@ -122,14 +133,8 @@ class ZoobotLightningModule(GenericLightningModule):
             representation_dim=representation_dim
         )
 
-        # now, finally, can pass only standard variables as hparams to save
-        super().__init__(
-            output_dim,
-            channels,
-            always_augment,
-            dropout_rate,
-            architecture_name  # TODO can add any more specific params if needed
-        )
+        logging.info('Zoobot __init__ complete')
+
 
     
 
