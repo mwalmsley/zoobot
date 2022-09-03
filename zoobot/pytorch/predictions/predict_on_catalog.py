@@ -4,7 +4,6 @@ import datetime
 from typing import List
 
 import pandas as pd
-import numpy as np
 import torch
 import pytorch_lightning as pl
 
