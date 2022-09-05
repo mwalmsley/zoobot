@@ -186,12 +186,9 @@ def train_default_zoobot_from_scratch(
     # explicitly update the model weights to the best checkpoint before returning
     # (assumes only one checkpoint callback, very likely in practice)
     # additional kwargs are passed to re-init the lighting_model automatically
-    # so this works like define_model.GenericLightningModule(model, loss_func).load_from_checkpoint(path)
     # more broadly, this allows for tracking hparams
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
-    # lightning_model.load_from_checkpoint(trainer.checkpoint_callback.best_model_path, model, loss_func)
-    # checkpoint_to_load = trainer.checkpoint_callback.last_model_path
-    # logging.info('Returning model from checkpoint: {}'.format(checkpoint_to_load))
+    # to make this work, ZoobotLightningModule can only take "normal" parameters (e.g. not custom objects) so has quite a few args
     checkpoint_to_load = trainer.checkpoint_callback.best_model_path
     logging.info('Returning model from checkpoint: {}'.format(checkpoint_to_load))
     define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_to_load)  # or .best_model_path, eventually

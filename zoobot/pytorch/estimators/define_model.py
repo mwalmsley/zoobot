@@ -147,9 +147,10 @@ def get_loss_func(question_index_groups):
 
 def select_base_architecture_func_from_name(base_architecture):
     if base_architecture == 'efficientnet':
+        logging.info('Efficientnet variant not specified - using b0 by default')
         get_architecture = efficientnet_standard.efficientnet_b0
         representation_dim = 1280
-    elif base_architecture == 'efficientnet_b2':
+    elif base_architecture == 'efficientnet_b2' or base_architecture == 'efficientnetb2':
         get_architecture = efficientnet_standard.efficientnet_b2
         representation_dim = 1408
     elif base_architecture == 'resnet_detectron':
@@ -163,7 +164,7 @@ def select_base_architecture_func_from_name(base_architecture):
         representation_dim = 2048
     else:
         raise ValueError(
-            'Model architecture not recognised: got model={}, expected one of [efficientnet, resnet_detectron, resnet_torchvision]'.format(base_architecture))
+            'Model architecture not recognised: got model={}, expected one of [efficientnet, efficinetnet_b2, resnet_detectron, resnet_torchvision]'.format(base_architecture))
 
     return get_architecture,representation_dim
 

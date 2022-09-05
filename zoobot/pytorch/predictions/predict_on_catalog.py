@@ -46,6 +46,8 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     predictions = torch.stack([torch.concat(trainer.predict(model, predict_datamodule), dim=0) for n in range(n_samples)], dim=2).numpy()
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
+    logging.info(f'Saving predictions to {save_loc}')
+
     if save_loc.endswith('.csv'):      # save as pandas df
         save_predictions.predictions_to_csv(predictions, image_id_strs, label_cols, save_loc)
     elif save_loc.endswith('.hdf5'):

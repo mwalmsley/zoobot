@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="0.0.3",
+    version="0.0.4",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -26,7 +26,7 @@ setuptools.setup(
             'torch == 1.10.1',
             'torchvision == 0.11.2',
             'torchaudio == 0.10.1',
-            'pytorch-lightning',
+            'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
