@@ -218,8 +218,9 @@ def get_plain_pytorch_zoobot_model(
 
     effnet = get_architecture(
         input_channels=channels,
+        # TODO this arg will break resnet, at the moment - needs tweaking
         # don't adjust dropout_rate= here, that's the effnet head, which I replace below anyway. Use below instead.
-        drop_connect_rate=drop_connect_rate,  # this is used though! It's about skipping *layers* inside the main model.
+        stochastic_depth_prob=drop_connect_rate,  # this is used though! It's about skipping *layers* inside the main model.
         use_imagenet_weights=use_imagenet_weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
     )
