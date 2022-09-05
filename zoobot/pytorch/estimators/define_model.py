@@ -99,6 +99,7 @@ class ZoobotLightningModule(GenericLightningModule):
         use_imagenet_weights=False,
         always_augment=True,
         dropout_rate=0.2,
+        drop_connect_rate=0.2,
         architecture_name="efficientnet"  # recently changed from model_architecture
         ):
 
@@ -109,6 +110,7 @@ class ZoobotLightningModule(GenericLightningModule):
             channels,
             always_augment,
             dropout_rate,
+            drop_connect_rate,
             architecture_name  # TODO can add any more specific params if needed
         )
 
@@ -126,6 +128,7 @@ class ZoobotLightningModule(GenericLightningModule):
             use_imagenet_weights=use_imagenet_weights,
             always_augment=always_augment,
             dropout_rate=dropout_rate,
+            drop_connect_rate=drop_connect_rate,
             get_architecture=get_architecture,
             representation_dim=representation_dim
         )
@@ -146,13 +149,19 @@ def get_loss_func(question_index_groups):
 
 
 def select_base_architecture_func_from_name(base_architecture):
-    if base_architecture == 'efficientnet':
+    # efficientnet variants are designed for specific resolutions
+    # they will work with any reasonable res, though
+    # https://github.com/tensorflow/tpu/issues/390#issuecomment-1237211990
+    if base_architecture == 'efficientnet':  # 224px
         logging.info('Efficientnet variant not specified - using b0 by default')
         get_architecture = efficientnet_standard.efficientnet_b0
         representation_dim = 1280
-    elif base_architecture == 'efficientnet_b2' or base_architecture == 'efficientnetb2':
+    elif base_architecture == 'efficientnet_b2' or base_architecture == 'efficientnetb2':  # 260px
         get_architecture = efficientnet_standard.efficientnet_b2
         representation_dim = 1408
+    elif base_architecture == 'efficientnet_b4' or base_architecture == 'efficientnetb4':  # 380px
+        get_architecture = efficientnet_standard.efficientnet_b4
+        representation_dim = 1792
     elif base_architecture == 'resnet_detectron':
         # only import if needed, as requires gpu version of pytorch or throws cuda errors e.g.
         # from detectron2 import _C -> ImportError: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory
@@ -178,6 +187,7 @@ def get_plain_pytorch_zoobot_model(
     use_imagenet_weights=False,
     always_augment=True,
     dropout_rate=0.2,
+    drop_connect_rate=0.2,
     get_architecture=efficientnet_standard.efficientnet_b0,
     representation_dim=1280  # or 2048 for resnet
     ):
@@ -201,13 +211,15 @@ def get_plain_pytorch_zoobot_model(
         channels (int, default 1): Number of channels i.e. C in NHWC-dimension inputs. 
 
     Returns:
-        tf.keras.Model: trainable efficientnet model including augmentations and optional head
+        torch.nn.Sequential: trainable efficientnet model including augmentations and optional head
     """
 
     modules_to_use = []
 
     effnet = get_architecture(
         input_channels=channels,
+        # don't adjust dropout_rate= here, that's the effnet head, which I replace below anyway. Use below instead.
+        drop_connect_rate=drop_connect_rate,  # this is used though! It's about skipping *layers* inside the main model.
         use_imagenet_weights=use_imagenet_weights,
         include_top=False,  # no final three layers: pooling, dropout and dense
     )
@@ -223,6 +235,7 @@ def get_plain_pytorch_zoobot_model(
             logging.info('Not using test-time dropout')
             dropout_layer = torch.nn.Dropout
         modules_to_use.append(dropout_layer(dropout_rate))
+        # TODO could optionally add a bottleneck layer here
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
 
     if weights_loc:
@@ -232,4 +245,3 @@ def get_plain_pytorch_zoobot_model(
     model = nn.Sequential(*modules_to_use)
 
     return model
-

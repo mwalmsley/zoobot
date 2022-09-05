@@ -23,11 +23,14 @@ def train_default_zoobot_from_scratch(
     train_catalog=None,
     val_catalog=None,
     test_catalog=None,
-    # model training parameters
-    architecture_name='efficientnet',  # recently changed
-    batch_size=256,
+    # training parameters
     epochs=1000,
     patience=8,
+    # model hparams
+    architecture_name='efficientnet',  # recently changed
+    batch_size=256,
+    dropout_rate=0.2,
+    drop_connect_rate=0.2,
     # data and augmentation parameters
     # datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
@@ -138,7 +141,8 @@ def train_default_zoobot_from_scratch(
         channels=1,
         use_imagenet_weights=False,
         always_augment=True,
-        dropout_rate=0.2,
+        dropout_rate=dropout_rate,
+        drop_connect_rate=drop_connect_rate,
         architecture_name=architecture_name
     )
 
