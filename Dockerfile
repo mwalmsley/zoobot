@@ -29,3 +29,4 @@ RUN pip install -U .[pytorch]
 
 # install zoobot package code
 COPY . .
+RUN pip install -U -e .
