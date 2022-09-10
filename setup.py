@@ -41,7 +41,6 @@ setuptools.setup(
             'seaborn',  # for nice plots
             'boto3',    # for AWs s3 access
             'python-dateutil == 2.8.1',  # for boto3
-            'pyarrow',  # to read parquet, which is very handy for big datasets
             'astropy' # for reading .fits (not yet implemented, but likely to be added)
         ]
     },
@@ -54,6 +53,7 @@ setuptools.setup(
         'scikit-image >= 0.19.2',
         'scikit-learn >= 1.0.2',
         'matplotlib',
+        'pyarrow',  # to read parquet, which is very handy for big datasets
         'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb'
