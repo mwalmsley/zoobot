@@ -84,7 +84,6 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     else:
         logging.warning('Skipping valid path check')
 
-    # will load full dataset into memory, possibly?
     path_ds = tf.data.Dataset.from_tensor_slices([str(path) for path in image_paths])
 
     image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format))
@@ -115,7 +114,7 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
         # drop_remainder applied to labels as well, if relevant. Equal length = same drop.
         label_ds = label_ds.batch(batch_size, drop_remainder=drop_remainder)
 
-        print(list(label_ds.take(1)))  
+        # print(list(label_ds.take(1)))  
 
         # label_dict is {'label': (256)} or {'feat_a': (256), 'feat_b': (256)}
         # image_dict is {'id_str': some_id 'matrix': (image)}
@@ -125,7 +124,8 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
 
     # shuffle must only happen *after* zipping in the labels
     if shuffle:
-        image_ds = image_ds.shuffle(buffer_size=batch_size*5)
+        image_ds = image_ds.shuffle(buffer_size=5)  # already batched, so buffer is *batches*
+        # TODO could use interleave etc
 
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
