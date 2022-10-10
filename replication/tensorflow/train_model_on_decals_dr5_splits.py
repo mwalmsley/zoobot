@@ -52,7 +52,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # dr5
-    dependencies = label_metadata.gz2_and_decals_dependencies
+    dependencies = label_metadata.decals_ortho_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
