@@ -21,7 +21,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
     parser.add_argument('--data-dir', dest='data_dir', type=str)
-    parser.add_argument('--architecture', dest='model_architecture', default='efficientnet', type=str)
+    parser.add_argument('--architecture', dest='architecture_name', default='efficientnet', type=str)
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)
     parser.add_argument('--color', default=False, action='store_true')
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         train_catalog=train_catalog,
         val_catalog=val_catalog,
         test_catalog=test_catalog,
-        model_architecture=args.model_architecture,
+        architecture_name=args.architecture_name,
         batch_size=args.batch_size,
         epochs=1000,  # rely on early stopping
         # augmentation parameters

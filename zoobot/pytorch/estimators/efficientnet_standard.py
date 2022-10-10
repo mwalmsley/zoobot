@@ -32,7 +32,7 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
 
         Args:
             inverted_residual_setting (List[MBConvConfig]): Network structure
-            dropout (float): The droupout probability
+            dropout (float): The dropout probability. Only used for head, and I usually only have headless effnet, so rarely used
             stochastic_depth_prob (float): The stochastic depth probability
             num_classes (int): Number of classes
             block (Optional[Callable[..., nn.Module]]): Module specifying inverted residual building block for mobilenet
@@ -149,6 +149,7 @@ def _efficientnet(
     use_imagenet_weights: bool,
     include_top: bool,
     input_channels: int,
+    stochastic_depth_prob: float,
     progress: bool
 ) -> EfficientNet:
     bneck_conf = partial(MBConvConfig, width_mult=width_mult, depth_mult=depth_mult)
@@ -163,7 +164,7 @@ def _efficientnet(
         bneck_conf(6, 3, 1, 192, 320, 1),
     ]
     model = EfficientNet(
-        inverted_residual_setting, dropout, include_top, input_channels)
+        inverted_residual_setting, dropout, include_top, input_channels, stochastic_depth_prob)
     if use_imagenet_weights:
         assert include_top  # otherwise not sure if weights will load as I've changed code
         if model_urls.get(arch, None) is None:
@@ -175,6 +176,7 @@ def _efficientnet(
 
 def efficientnet_b0(
     input_channels,
+    stochastic_depth_prob: float = 0.2,
     use_imagenet_weights: bool = False,
     include_top: bool = True,
     progress: bool = True) -> EfficientNet:
@@ -192,11 +194,60 @@ def efficientnet_b0(
         width_mult=1.0,
         depth_mult=1.0,
         dropout=0.2,
+        stochastic_depth_prob=stochastic_depth_prob,
         use_imagenet_weights=use_imagenet_weights,
         include_top=include_top,
         input_channels=input_channels,
         progress=progress)
 
+
+def efficientnet_b2(
+    input_channels,
+    stochastic_depth_prob: float = 0.2,
+    use_imagenet_weights: bool = False,
+    include_top: bool = True,
+    progress: bool = True) -> EfficientNet:
+    """
+    See efficientnet_b0, identical other than multipliers and dropout
+    """
+    # added include_top and input_channels, renamed pretrained to use_imagenet_weights
+    assert not use_imagenet_weights
+    return _efficientnet(
+        arch="efficientnet_b2",
+        width_mult=1.1,
+        depth_mult=1.2,
+        dropout=0.3,
+        stochastic_depth_prob=stochastic_depth_prob,  # I added as an arg, for extra hparam to search (optionally - default=0.2)
+        use_imagenet_weights=use_imagenet_weights,  # will likely fail
+        include_top=include_top,
+        input_channels=input_channels,
+        progress=progress)
+
+
+def efficientnet_b4(
+    input_channels,
+    stochastic_depth_prob: float = 0.2,
+    use_imagenet_weights: bool = False,
+    include_top: bool = True,
+    progress: bool = True) -> EfficientNet:
+    """
+    See efficientnet_b0, identical other than multipliers and dropout
+    """
+    # added include_top and input_channels, renamed pretrained to use_imagenet_weights
+    assert not use_imagenet_weights
+    return _efficientnet(
+        arch="efficientnet_b4",
+        width_mult=1.4,
+        depth_mult=1.8,
+        dropout=0.4,
+        stochastic_depth_prob=stochastic_depth_prob,
+        use_imagenet_weights=use_imagenet_weights,  # will likely fail
+        include_top=include_top,
+        input_channels=input_channels,
+        progress=progress)
+
+
+# TODO efficientnet_v2_*, perhaps?
 
 model_urls = {
     # Weights ported from https://github.com/rwightman/pytorch-image-models/

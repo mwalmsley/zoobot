@@ -35,7 +35,7 @@ This has a .train() function with the following arguments:
         val_catalog=None,
         test_catalog=None,
         # model training parameters
-        model_architecture='efficientnet',  # or resnet_detectron, or resnet_torchvision
+        architecture_name='efficientnet',  # or resnet_detectron, or resnet_torchvision
         batch_size=256,
         epochs=1000,
         patience=8,

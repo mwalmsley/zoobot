@@ -9,27 +9,28 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
 
-from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.estimators import efficientnet_standard, resnet_torchvision_custom  # also resnet_detectron2_custom, imported below
 
 
 # convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
 # does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
 def train_default_zoobot_from_scratch(
     # absolutely crucial arguments
-    save_dir,  # save model here
+    save_dir: str,  # save model here
     schema,  # answer these questions
     # input data - specify *either* catalog (to be split) or the splits themselves
     catalog=None,
     train_catalog=None,
     val_catalog=None,
     test_catalog=None,
-    # model training parameters
-    model_architecture='efficientnet',
-    batch_size=256,
+    # training parameters
     epochs=1000,
     patience=8,
+    # model hparams
+    architecture_name='efficientnet',  # recently changed
+    batch_size=256,
+    dropout_rate=0.2,
+    drop_connect_rate=0.2,
     # data and augmentation parameters
     # datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
@@ -133,23 +134,16 @@ def train_default_zoobot_from_scratch(
     )
     datamodule.setup()
 
-    get_architecture, representation_dim = select_base_architecture_func_from_name(model_architecture)
-
-    model = define_model.get_plain_pytorch_zoobot_model(
-        output_dim=len(schema.answers),
+    lightning_model = define_model.ZoobotLightningModule(
+        output_dim=len(schema.label_cols),
+        question_index_groups=schema.question_index_groups,
         include_top=True,
         channels=channels,
-        get_architecture=get_architecture,
-        representation_dim=representation_dim
-    )
-
-    # This just adds schema.question_index_groups as an arg to the usual (labels, preds) loss arg format
-    # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
-    def loss_func(preds, labels):  # pytorch convention is preds, labels
-        return losses.calculate_multiquestion_loss(labels, preds, schema.question_index_groups)  # my and sklearn convention is labels, preds
-
-    lightning_model = define_model.GenericLightningModule(
-        model, loss_func
+        use_imagenet_weights=False,
+        always_augment=True,
+        dropout_rate=dropout_rate,
+        drop_connect_rate=drop_connect_rate,
+        architecture_name=architecture_name
     )
 
     callbacks = [
@@ -186,33 +180,26 @@ def train_default_zoobot_from_scratch(
 
     trainer.fit(lightning_model, datamodule)
 
-    trainer.test(
-        model=lightning_model,
-        datamodule=datamodule,
-        ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-    )
+    # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
+    # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
+    # trainer.test(
+    #     datamodule=datamodule,
+    #     ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+    # )
+    # no need to provide model, trainer tracks this
+
+    # explicitly update the model weights to the best checkpoint before returning
+    # (assumes only one checkpoint callback, very likely in practice)
+    # additional kwargs are passed to re-init the lighting_model automatically
+    # more broadly, this allows for tracking hparams
+    # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
+    # to make this work, ZoobotLightningModule can only take "normal" parameters (e.g. not custom objects) so has quite a few args
+    checkpoint_to_load = trainer.checkpoint_callback.best_model_path
+    logging.info('Returning model from checkpoint: {}'.format(checkpoint_to_load))
+    define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_to_load)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 
-
-def select_base_architecture_func_from_name(base_architecture):
-    if base_architecture == 'efficientnet':
-        get_architecture = efficientnet_standard.efficientnet_b0
-        representation_dim = 1280
-    elif base_architecture == 'resnet_detectron':
-        # only import if needed, as requires gpu version of pytorch or throws cuda errors e.g.
-        # from detectron2 import _C -> ImportError: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory
-        from zoobot.pytorch.estimators import resnet_detectron2_custom
-        get_architecture = resnet_detectron2_custom.get_resnet
-        representation_dim = 2048
-    elif base_architecture == 'resnet_torchvision':
-        get_architecture = resnet_torchvision_custom.get_resnet  # only supports color
-        representation_dim = 2048
-    else:
-        raise ValueError(
-            'Model architecture not recognised: got model={}, expected one of [efficientnet, resnet_detectron, resnet_torchvision]'.format(base_architecture))
-
-    return get_architecture,representation_dim
 
 
 

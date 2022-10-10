@@ -20,16 +20,18 @@ def get_expected_votes_ml(concentrations, question, votes_for_base_question: int
 
 
 def get_expected_votes_human(label_df, question, votes_for_base_question: int, schema, round_votes):
-    # this expects 
+    # might be better called "get galaxies where at least half of humans actually answered that question, in the labels"
     
-    prob_of_answers = label_df[[a + '_fraction' for a in schema.label_cols]].values
+
+    answer_fractions = label_df[[a + '_fraction' for a in schema.label_cols]].values
     # some will be nan as fractions are often nan (as 0 of 0)
 
     prev_q = question.asked_after
     if prev_q is None:
         expected_votes = tf.ones(len(label_df)) * votes_for_base_question
     else:
-        joint_p_of_asked = schema.joint_p(prob_of_answers, prev_q.text)  # prob of getting the answer needed to ask this question
+        # prob of getting the answer needed to ask this question - the product of the (perhaps expected, but here, actual) dependent vote fractions
+        joint_p_of_asked = schema.joint_p(answer_fractions, prev_q.text)  
         # for humans, its just votes_for_base_question * the product of all the fractions leading to that q
         expected_votes = joint_p_of_asked * votes_for_base_question
     if round_votes:
