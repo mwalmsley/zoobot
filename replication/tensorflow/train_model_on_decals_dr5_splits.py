@@ -87,7 +87,6 @@ if __name__ == '__main__':
         train_catalog=train_catalog,
         val_catalog=val_catalog,
         test_catalog=test_catalog,
-        shard_img_size=300,
         batch_size=args.batch_size,
         epochs=args.epochs,
         dropout_rate=0.2,
