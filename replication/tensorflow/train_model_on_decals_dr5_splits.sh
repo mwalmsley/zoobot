@@ -23,6 +23,8 @@ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
+RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
+
 # make these with shards_sbatch
 # W+22a originally trained with validation data from an automatic subset of the train data,
 # so there's no explictly-known validation set
@@ -32,7 +34,7 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 # to download, run decals_dr5_setup - see replication/pytorch/train_model_on_decals_dr5_splits.py
 DATA_DIR=/share/nas2/walml/repos/_data/decals_dr5
 
-EXPERIMENT_DIR=$THIS_DIR/results/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale_catalog
+EXPERIMENT_DIR=$RESULTS_DIR/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale_catalog
 
 $PYTHON $ZOOBOT_DIR/replication/tensorflow/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
