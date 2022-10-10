@@ -25,7 +25,9 @@ def load_image_file(loc, mode='png'):
     image = tf.io.read_file(loc)
     if mode == 'png':
         image = tf.image.decode_png(image)
-    elif mode == 'jpeg':  # rename jpg to jpeg or validation checks in decode_jpg will fail
+    # rename jpg to jpeg or validation checks in decode_jpg will fail
+    # might fail, let's see
+    elif (mode == 'jpg') or (mode == 'jpeg'):  
         # TODO also allow jpg
         image = tf.image.decode_jpeg(image)
     else:
