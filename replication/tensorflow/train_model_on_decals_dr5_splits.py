@@ -90,7 +90,6 @@ if __name__ == '__main__':
         shard_img_size=300,
         batch_size=args.batch_size,
         epochs=args.epochs,
-        patience=args.patience,
         dropout_rate=0.2,
         color=args.color,
         resize_size=224,
