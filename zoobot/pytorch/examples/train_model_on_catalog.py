@@ -102,5 +102,6 @@ if __name__ == '__main__':
         gpus=args.gpus,
         num_workers=args.num_workers,
         mixed_precision=args.mixed_precision,
+        dropout_rate=args.dropout_rate,  # recently added
         wandb_logger=wandb_logger
     )

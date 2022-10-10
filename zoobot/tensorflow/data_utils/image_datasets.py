@@ -50,7 +50,7 @@ def prepare_image_batch(batch, resize_size=None):
     return {'matrix': images, 'id_str': id_strs}  # pack back into dict
 
 
-def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, labels=None, check_valid_paths=True):
+def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, labels=None, check_valid_paths=True, shuffle=False, drop_remainder=False):
     """
     Load images in a folder as a tf.data dataset
     Supports jpeg (note the e) and png
@@ -86,7 +86,9 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     path_ds = tf.data.Dataset.from_tensor_slices([str(path) for path in image_paths])
 
     image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format))
-    image_ds = image_ds.batch(batch_size, drop_remainder=False)
+
+    image_ds = image_ds.batch(batch_size, drop_remainder=drop_remainder)
+
     # check if the image shape matches requested_img_size, and resize if not
     test_images = [batch for batch in image_ds.take(1)][0]['matrix']
     size_on_disk = test_images.numpy().shape[1]  # x dimension (BXYC convention)
@@ -107,7 +109,8 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
             # make it a dict anyway for consistency, keyed by 'label' instead of e.g. 'feat_a', 'feat_b'
             label_ds = tf.data.Dataset.from_tensor_slices({'label': labels})
 
-        label_ds = label_ds.batch(batch_size, drop_remainder=False)
+        # drop_remainder applied to labels as well, if relevant. Equal length = same drop.
+        label_ds = label_ds.batch(batch_size, drop_remainder=drop_remainder)
 
         print(list(label_ds.take(1)))  
 
@@ -116,6 +119,10 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
         # merge the two dicts to create {'id_str': ..., 'matrix': ..., 'feat_a': ..., 'feat_b': ...}
         image_ds = tf.data.Dataset.zip((image_ds, label_ds)).map(lambda image_dict, label_dict: {**image_dict, **label_dict})
         # now yields {'matrix': , 'id_str': , 'label': } batched dicts
+
+    # shuffle must only happen *after* zipping in the labels
+    if shuffle:
+        image_ds = image_ds.shuffle(buffer_size=batch_size*5)
 
     image_ds = image_ds.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 

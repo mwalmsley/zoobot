@@ -45,7 +45,7 @@ class TrainConfig():
 
     # don't decorate, this is session creation point
 
-def train_estimator(model, train_config, train_dataset, test_dataset, extra_callbacks=[], eager=False, verbose=2):
+def train_estimator(model, train_config, train_dataset, val_dataset, extra_callbacks=[], eager=False, verbose=2):
     """
     Train and evaluate a model.
 
@@ -57,7 +57,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
         model (tf.keras.Model): model to train. Must already be compiled with model.compile(loss, optimizer)
         train_config (TrainConfig): parameters controlling training procedure e.g. epochs, early stopping
         train_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
-        test_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
+        val_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
         extra_callbacks (list): any extra callbacks to use when training the model. See e.g. tf.keras.callbacks.
         eager (bool, optional): If True, train in eager mode - slow, but helpful for debugging. Defaults to False.
         verbose (int, optional): 1 for progress bar, useful for local training. 2 for one line per epoch, useful for scripts. Defaults to 2.
@@ -113,7 +113,7 @@ def train_estimator(model, train_config, train_dataset, test_dataset, extra_call
 
         model.fit(
             train_dataset,
-            validation_data=test_dataset.repeat(2),  # reduce variance from dropout, augs
+            validation_data=val_dataset.repeat(2),  # reduce variance from dropout, augs
             epochs=train_config.epochs,
             callbacks=callbacks,
             verbose=verbose
