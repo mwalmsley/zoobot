@@ -52,6 +52,9 @@ if __name__ == '__main__':
     parser.add_argument('--debug', default=False, action='store_true')
     args = parser.parse_args()
 
+    if not os.path.isdir(args.save_dir):
+        os.mkdir(args.save_dir)
+
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # dr5
     dependencies = label_metadata.decals_ortho_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
