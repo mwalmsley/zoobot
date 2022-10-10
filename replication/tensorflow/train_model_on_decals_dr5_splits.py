@@ -74,6 +74,9 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
+        epochs = 2
+    else:
+        epochs = args.epochs
 
     if args.wandb:
         wandb.tensorboard.patch(root_logdir=args.save_dir)
@@ -91,7 +94,7 @@ if __name__ == '__main__':
         val_catalog=val_catalog,
         test_catalog=test_catalog,
         batch_size=args.batch_size,
-        epochs=args.epochs,
+        epochs=epochs,
         dropout_rate=0.2,
         color=args.color,
         resize_size=224,
