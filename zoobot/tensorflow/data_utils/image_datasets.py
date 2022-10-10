@@ -106,6 +106,7 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
         if isinstance(labels[0], dict):
             # assume list of dicts, each representing one datapoint e.g. [{'feat_a': 1, 'feat_b': 2}, {'feat_a': 12, 'feat_b': 42}]
             # reshape to columnlike dict e.g. {'feat_a': [1, 12], 'feat_b: [2, 42]} because that's what tf supports
+            # (could pass this directly, but inputs tend to be easier to handle row-wise for e.g. shuffling etc)
             label_ds = tf.data.Dataset.from_tensor_slices(pd.DataFrame.from_dict(labels).to_dict(orient="list"))
         else:
             # make it a dict anyway for consistency, keyed by 'label' instead of e.g. 'feat_a', 'feat_b'

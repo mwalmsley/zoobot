@@ -93,11 +93,13 @@ def train(
     example_image_loc = train_image_paths[0]
     file_format = example_image_loc.split('.')[-1]
 
+    # format is [{label_col: 0, label_col: 12}, {label_col: 3, label_col: 14}, ...]
     train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
     val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
     test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
 
-    # logging.info(train_labels[0])
+    logging.info(train_labels[0])
+    exit()
 
     raw_train_dataset = image_datasets.get_image_dataset(
         train_image_paths, file_format, img_size_to_load, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
