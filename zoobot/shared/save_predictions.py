@@ -15,6 +15,7 @@ def predictions_to_hdf5(predictions, id_str, label_cols, save_loc):
         # predictions_dset.attrs['label_cols'] = label_cols  # would be more conventional but is a little awkward
         f.create_dataset(name='id_str', data=id_str, dtype=dt)
         f.create_dataset(name='label_cols', data=label_cols, dtype=dt)
+        # sometimes throws a "could not lock file" error but still saves fine. I don't understand why
 
 
 def predictions_to_csv(predictions, id_str, label_cols, save_loc):

@@ -138,7 +138,7 @@ def train_default_zoobot_from_scratch(
         output_dim=len(schema.label_cols),
         question_index_groups=schema.question_index_groups,
         include_top=True,
-        channels=1,
+        channels=channels,
         use_imagenet_weights=False,
         always_augment=True,
         dropout_rate=dropout_rate,
@@ -178,14 +178,15 @@ def train_default_zoobot_from_scratch(
     logging.info((trainer.training_type_plugin, trainer.world_size,
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
-    # TEMP
     trainer.fit(lightning_model, datamodule)
 
+    # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
+    # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
     # trainer.test(
-    #     # model=lightning_model not required. Trainer tracks this itself (trainer.model), and if provided, overrides 'best'
     #     datamodule=datamodule,
     #     ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     # )
+    # no need to provide model, trainer tracks this
 
     # explicitly update the model weights to the best checkpoint before returning
     # (assumes only one checkpoint callback, very likely in practice)
