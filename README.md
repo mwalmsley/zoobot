@@ -35,7 +35,11 @@ training_config.train_estimator(
 
 You can finetune Zoobot with a free GPU using this [Google Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing). To install locally, keep reading.
 
-Download the code using git:
+## Installation
+
+### Development Use
+
+If you will be making changes to the Zoobot package itself (e.g. to add a new architecture), download the code using git:
 
     # I recommend using a virtual environment, see below
     git clone git@github.com:mwalmsley/zoobot.git
@@ -46,22 +50,31 @@ And then install Zoobot using pip, specifying either the pytorch dependencies, t
     pip install -e zoobot[tensorflow]  # tensorflow dependencies
     pip install -e zoobot[pytorch,tensorflow]  # both
 
-I recommend installing in a virtual environment like anaconda.  For example, `conda create --name zoobot python=3.7`, then `conda activate zoobot`.
-Do not install directly with anaconda itself (e.g. `conda install tensorflow`) as Anaconda may install older versions.
-Use pip instead, as above. Python 3.7 or greater is required.
-
 The `main` branch is for stable-ish releases. The `dev` branch includes the shiniest features but may change at any time.
+
+### Direct Use
+
+I expect most users will make small changes. But if you won't be making any changes to Zoobot itself (e.g. you just want to apply it, or you're in a production environment), you can simply install directly from pip:
+
+    pip install zoobot[pytorch]  # pytorch dependencies
+    # other dependency options as above
+
+## Getting Started
 
 To get started, see the [documentation](https://zoobot.readthedocs.io/). For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/data_notes.html) in particular.
 
-I also include some working examples for you to copy and adapt:
+I also include some working examples for you to copy and adapt.
 
-- [tensorflow/examples/decals_dr5_to_shards.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py) (only necessary to train from scratch)
-- [tensorflow/examples/train_model_on_shards.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_shards.py) (only necessary to train from scratch)
+TensorFlow:
+
+- [tensorflow/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_catalog.py) (only necessary to train from scratch)
 - [tensorflow/examples/make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/make_predictions.py)
 - [tensorflow/examples/finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py)
 - [tensorflow/examples/finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py)
+
+PyTorch:
 - [pytorch/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/train_model_on_catalog.py) (only necessary to train from scratch)
+- Finetuning examples coming soon (this note added Oct 2022)
 
 I also include some examples which record how the models in W+22a (the GZ DECaLS data release) were trained:
 - [replication/tensorflow/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/tensorflow/train_model_on_decals_dr5_splits.py)
@@ -71,21 +84,28 @@ There's also the [gz_decals_data_release_analysis_demo.ipynb](https://github.com
 
 ### Latest features
 
+- Added to PyPI/pip! Convenient for production or simple use.
 - PyTorch version! Integrates with PyTorch Lightning and WandB. Multi-GPU support. Trains on jpeg images, rather than TFRecords, and does not yet have a finetuning example script.
 - Train on colour (3-band) images: Add --color (American-friendly) to `train_model.py`
-- Select which EfficientNet variant to train using the `get_effnet` arg in `define_model.py` - or replace with a func. returning your own architecture!
-- New `predict_on_dataset.py` and `save_predictons.py` modules with useful functions for making predictions on large sets of images. Predictions are now saved to .hdf5 by default, which is much more convenient than csv for multi-forward-pass predictions. If using .hdf5, `reformat_predictions.py` is no longer needed.
-- New `visualize_predictions.py`, `evaluate_model.py` and `compare_models.py` scripts for measuring model performance.
-- Multi-GPU distributed training
+- Select which EfficientNet variant to train using the `get_architecture` arg in `define_model.py` - or replace with a func. returning your own architecture!
+- New `predict_on_dataset.py` and `save_predictons.py` modules with useful functions for making predictions on large sets of images. Predictions are now saved to .hdf5 by default, which is much more convenient than csv for multi-forward-pass predictions.
+- Multi-GPU (single node) training
 - Support for Weights and Biases (wandb)
 - Worked examples for custom representations
 - [Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing) for GZ predictions and fine-tuning
 - Schemas (questions and answers for the decision trees) extended to include DECaLS DR1/2 and DR8, in various combinations. See `zoobot.shared.label_metadata.py`.
 - Test time augmentations are now off by default but can be enabled with `--test-time-augs` on `train_model.py`
-- `create_shards.py` has been refactored. Use the new example script `decals_dr5_to_shards.py` to replicate Zoobot on DECaLS, and `create_shards.py` for general creation of TFRecords from catalogs. `decals_dr5_to_shards.py` now includes train/val/test splits, which it should have had in the first place.
-- `zoobot/data_utils/image_datasets.py` will optionally check if the image paths provided really exist (slightly slower, but sometimes useful). `tfrecord_datasets` and `image_datasets` now serve equivalent purposes.
 
 Contributions are welcome and will be credited in any future work.
+
+
+### Note on Environments
+
+
+I recommend installing in a virtual environment like anaconda.  For example, `conda create --name zoobot python=3.7`, then `conda activate zoobot`.
+Do not install packages directly with anaconda itself (e.g. `conda install tensorflow`) as Anaconda may install older versions.
+Use pip instead, as above. Python 3.7 or greater is required.
+
 
 ### Replication
 
