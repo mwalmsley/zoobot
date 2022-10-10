@@ -54,9 +54,7 @@ def train(
         assert catalog is None
             
 
-    train_image_paths = train_catalog['file_loc']
-    val_image_paths = val_catalog['file_loc']
-    test_image_paths = test_catalog['file_loc']
+
 
     
 
@@ -97,14 +95,24 @@ def train(
     example_image_loc = train_image_paths[0]
     file_format = example_image_loc.split('.')[-1]
 
+    train_image_paths = train_catalog['file_loc']
+    val_image_paths = val_catalog['file_loc']
+    test_image_paths = test_catalog['file_loc']
+
+    train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
+    val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
+    test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
+
+    logging.info(train_labels[0])
+
     raw_train_dataset = image_datasets.get_image_dataset(
-        train_image_paths, file_format, resize_size, batch_size, labels=None, check_valid_paths=True, shuffle=True, drop_remainder=True
+        train_image_paths, file_format, resize_size, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
     )
     raw_val_dataset = image_datasets.get_image_dataset(
-        val_image_paths, file_format, resize_size, batch_size, labels=None, check_valid_paths=True, shuffle=True, drop_remainder=False
+        val_image_paths, file_format, resize_size, batch_size, labels=val_labels, check_valid_paths=True, shuffle=True, drop_remainder=False
     )
     raw_test_dataset = image_datasets.get_image_dataset(
-        test_image_paths, file_format, resize_size, batch_size, labels=None, check_valid_paths=True, shuffle=False, drop_remainder=False
+        test_image_paths, file_format, resize_size, batch_size, labels=test_labels, check_valid_paths=True, shuffle=False, drop_remainder=False
     )
 
     train_dataset = preprocess.preprocess_dataset(
