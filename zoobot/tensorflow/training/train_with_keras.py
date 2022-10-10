@@ -103,7 +103,7 @@ def train(
     val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
     test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
 
-    logging.info(train_labels[0])
+    # logging.info(train_labels[0])
 
     raw_train_dataset = image_datasets.get_image_dataset(
         train_image_paths, file_format, resize_size, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
@@ -130,7 +130,7 @@ def train(
                 Note that this is a global setting (why, tensorflow, why...) \
                 and so may affect any future code'
             )
-            mixed_precision.set_global_policy('mixed_float16')
+            tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
         model = define_model.get_model(
             output_dim=len(schema.label_cols),
