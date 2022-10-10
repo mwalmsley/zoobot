@@ -92,12 +92,12 @@ def train(
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
 
-    example_image_loc = train_image_paths[0]
-    file_format = example_image_loc.split('.')[-1]
-
     train_image_paths = train_catalog['file_loc']
     val_image_paths = val_catalog['file_loc']
     test_image_paths = test_catalog['file_loc']
+
+    example_image_loc = train_image_paths[0]
+    file_format = example_image_loc.split('.')[-1]
 
     train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
     val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
