@@ -52,6 +52,9 @@ def train(
         val_catalog, test_catalog = train_test_split(hidden_catalog, train_size=1./3., random_state=random_state)
     else:
         assert catalog is None
+        assert len(train_catalog) > 0
+        assert len(val_catalog) > 0
+        assert len(test_catalog) > 0
 
     # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
     greyscale = not color
@@ -103,7 +106,7 @@ def train(
 
     logging.info(train_image_paths[0])
     logging.info(train_labels[0])
-    exit()
+    # exit()
 
     raw_train_dataset = image_datasets.get_image_dataset(
         train_image_paths, file_format, img_size_to_load, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
