@@ -64,13 +64,12 @@ if __name__ == '__main__':
     canonical_train_catalog, _ = decals_dr5_setup(root=args.data_dir, train=True, download=True)
     canonical_test_catalog, _ = decals_dr5_setup(root=args.data_dir, train=False, download=True)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # could add random_state
     test_catalog = canonical_test_catalog.copy()
 
     # debug mode
     if args.debug:
-        logging.warning(
-            'Using debug mode: cutting catalogs down to 5k galaxies each')
+        logging.warning('Using debug mode: cutting catalogs down to 5k galaxies each')
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)

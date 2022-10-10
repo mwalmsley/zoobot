@@ -89,11 +89,9 @@ def train(
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
 
-    train_image_paths = train_catalog['file_loc']
-    val_image_paths = val_catalog['file_loc']
-    test_image_paths = test_catalog['file_loc']
-
-
+    train_image_paths = list(train_catalog['file_loc'])
+    val_image_paths = list(val_catalog['file_loc'])
+    test_image_paths = list(test_catalog['file_loc'])
     # exit()
 
     example_image_loc = train_image_paths[0]
