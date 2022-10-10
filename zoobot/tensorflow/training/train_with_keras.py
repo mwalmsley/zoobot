@@ -52,12 +52,6 @@ def train(
         val_catalog, test_catalog = train_test_split(hidden_catalog, train_size=1./3., random_state=random_state)
     else:
         assert catalog is None
-            
-
-
-
-    
-
 
     # a bit awkward, but I think it is better to have to specify you def. want color than that you def want greyscale
     greyscale = not color
@@ -106,13 +100,13 @@ def train(
     # logging.info(train_labels[0])
 
     raw_train_dataset = image_datasets.get_image_dataset(
-        train_image_paths, file_format, resize_size, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
+        train_image_paths, file_format, img_size_to_load, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
     )
     raw_val_dataset = image_datasets.get_image_dataset(
-        val_image_paths, file_format, resize_size, batch_size, labels=val_labels, check_valid_paths=True, shuffle=True, drop_remainder=False
+        val_image_paths, file_format, img_size_to_load, batch_size, labels=val_labels, check_valid_paths=True, shuffle=True, drop_remainder=False
     )
     raw_test_dataset = image_datasets.get_image_dataset(
-        test_image_paths, file_format, resize_size, batch_size, labels=test_labels, check_valid_paths=True, shuffle=False, drop_remainder=False
+        test_image_paths, file_format, img_size_to_load, batch_size, labels=test_labels, check_valid_paths=True, shuffle=False, drop_remainder=False
     )
 
     train_dataset = preprocess.preprocess_dataset(
@@ -136,7 +130,7 @@ def train(
             output_dim=len(schema.label_cols),
             input_size=img_size_to_load,
             crop_size=int(img_size_to_load * crop_factor),
-            resize_size=resize_size,
+            resize_size=resize_size,  # ideally, matches crop size
             channels=channels,
             always_augment=always_augment,
             dropout_rate=dropout_rate
