@@ -49,6 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
                         help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
+    parser.add_argument('--debug', default=False, action='store_true')
     args = parser.parse_args()
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # dr5

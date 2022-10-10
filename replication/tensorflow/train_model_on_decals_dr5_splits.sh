@@ -41,7 +41,7 @@ $PYTHON $ZOOBOT_DIR/replication/tensorflow/train_model_on_decals_dr5_splits.py \
     --epochs 200 \
     --batch-size 512 \
     --gpus 2  \
-    --wandb
+    --debug
 
     #  \
     # --color
