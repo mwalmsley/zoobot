@@ -52,7 +52,7 @@ class PreprocessingConfig():
 
 # Wrapping this causes weird op error - leave it be. Issue raised w/ tf.
 # @tf.function
-def preprocess_dataset(dataset, config):
+def preprocess_dataset(dataset: tf.data.Dataset, config):
     """
     Thin wrapper applying ``preprocess_batch`` across dataset. See ``preprocess_batch`` for more.
 
@@ -63,7 +63,7 @@ def preprocess_dataset(dataset, config):
         (dict) of form {'x': make_greyscale image batch}, as Tensor of shape [batch, size, size, 1]}
         (Tensor) categorical labels for each image
     """
-    return dataset.map(lambda x: preprocess_batch(x, config))
+    return dataset.map(lambda x: preprocess_batch(x, config), num_parallel_calls=tf.data.AUTOTUNE)
 
 
 def preprocess_batch(batch, config):

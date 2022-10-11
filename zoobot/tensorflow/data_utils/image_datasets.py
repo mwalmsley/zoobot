@@ -88,7 +88,7 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
 
     path_ds = tf.data.Dataset.from_tensor_slices([str(path) for path in image_paths])
 
-    image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format))
+    image_ds = path_ds.map(lambda x: load_image_file(x, mode=file_format), num_parallel_calls=tf.data.AUTOTUNE)  # keep determinstic though
 
     image_ds = image_ds.batch(batch_size, drop_remainder=drop_remainder)
 
