@@ -46,6 +46,7 @@ if __name__ == '__main__':
                         default=512, type=int)
     parser.add_argument('--gpus', default=2, type=int)
     parser.add_argument('--color', default=False, action='store_true')
+    parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
                         help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
@@ -99,4 +100,5 @@ if __name__ == '__main__':
         dropout_rate=0.2,
         color=args.color,
         resize_size=224,
+        mixed_precision=args.mixed_precision
     )
