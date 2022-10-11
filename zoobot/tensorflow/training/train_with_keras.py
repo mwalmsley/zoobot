@@ -71,7 +71,7 @@ def train(
         input_size=img_size_to_load,
         make_greyscale=greyscale,
         # False for tfrecords with 0-1 floats, True for png/jpg with 0-255 uints
-        normalise_from_uint8=False
+        # normalise_from_uint8=False
     )
 
     assert save_dir is not None
@@ -85,14 +85,13 @@ def train(
         context_manager = strategy.scope()
         logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
     else:
-        logging.info('Using single GPU, not distributed')
+        logging.info('Using single or no GPU, not distributed')
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
 
     train_image_paths = list(train_catalog['file_loc'])
     val_image_paths = list(val_catalog['file_loc'])
     test_image_paths = list(test_catalog['file_loc'])
-    # exit()
 
     example_image_loc = train_image_paths[0]
     file_format = example_image_loc.split('.')[-1]
@@ -102,9 +101,8 @@ def train(
     val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
     test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
 
-    logging.info(train_image_paths[0])
-    logging.info(train_labels[0])
-    # exit()
+    logging.info('Example path: {}'.format(train_image_paths[0]))
+    logging.info('Example labels: {}'.format(train_labels[0]))
 
     raw_train_dataset = image_datasets.get_image_dataset(
         train_image_paths, file_format, img_size_to_load, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True

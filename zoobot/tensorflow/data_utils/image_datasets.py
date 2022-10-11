@@ -9,6 +9,7 @@ import tensorflow as tf
 def load_image_file(loc, mode='png'):
     """
     Load an image file from disk to memory.
+    *Recently changed to return 0-1 floats not 0-255 floats*
 
     Args:
         loc (str): Path to image on disk. Includes format e.g. .png.
@@ -18,7 +19,7 @@ def load_image_file(loc, mode='png'):
         ValueError: mode is neither png nor jpeg.
 
     Returns:
-        dict: like {'matrix': float32 np.ndarray from 0. to 255., 'id_str': ``loc``}
+        dict: like {'matrix': float32 np.ndarray from 0. to 1., 'id_str': ``loc``}
     """
     # values will be 0-255, does not normalise. Happens in preprocessing instead.
     # specify mode explicitly to avoid graph tracing issues
@@ -33,7 +34,7 @@ def load_image_file(loc, mode='png'):
     else:
         raise ValueError(f'Image filetype mode {mode} not recognised')
 
-    converted_image = tf.cast(image, tf.float32)
+    converted_image = tf.cast(image, tf.float32) / 255.  # floats in 0-1 range
 
     return {'matrix': converted_image, 'id_str': loc}  # using the file paths as identifiers
 
@@ -45,10 +46,11 @@ def resize_image_batch_with_tf(batch, size):
 
 
 def prepare_image_batch(batch, resize_size=None):
+    # batch['matrix'] must be 0-1 floats, not 0-255 ints, or clipping will ruin
     images, id_strs = batch['matrix'], batch['id_str']  # unpack from dict
     if resize_size:
         images = resize_image_batch_with_tf(images , size=resize_size)   # initial size = after resize from image on disk (e.g. 424 for GZ pngs) but before crop/zoom
-        images = tf.clip_by_value(images, 0., 255.)  # resizing can cause slight change in min/max
+        images = tf.clip_by_value(images, 0., 1.)  # resizing can cause slight change in min/max
     return {'matrix': images, 'id_str': id_strs}  # pack back into dict
 
 
@@ -98,6 +100,16 @@ def get_image_dataset(image_paths, file_format, requested_img_size, batch_size, 
     else:
         logging.warning('Resizing images from disk size {} to requested size {}'.format(size_on_disk, requested_img_size))
         image_ds = image_ds.map(lambda x: prepare_image_batch(x, resize_size=requested_img_size))
+
+    # now returns floats from 0 to 1
+    # image_batch = list(image_ds.take(1))[0]
+    # print(image_batch)
+    # image = image_batch['matrix'].numpy()[0]
+    # print(image.min(), image.max())
+    # import matplotlib.pyplot as plt
+    # plt.imshow(image)
+    # plt.show()
+    # exit()
 
     if labels is not None:
         assert len(labels) == len(image_paths)

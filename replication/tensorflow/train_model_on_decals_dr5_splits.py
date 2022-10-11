@@ -93,6 +93,8 @@ if __name__ == '__main__':
         val_catalog=val_catalog,
         test_catalog=test_catalog,
         batch_size=args.batch_size,
+        eager=args.eager,
+        gpus=args.gpus,
         epochs=epochs,
         dropout_rate=0.2,
         color=args.color,
