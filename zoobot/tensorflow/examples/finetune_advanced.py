@@ -26,6 +26,14 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
     - Train a new head on a frozen model
     - Finetune a new head on a trained head/frozen model pair
     - Initialise the frozen model with either GZ DECaLS weights (note: channels=1!) or ImageNet weights (note: channels=3!) or randomly
+
+    *Files needed*
+    The rings images are the same images as used in GZ DECaLS. 
+    You can download only the rings-relevant images from https://www.dropbox.com/s/9qcveuv23zccw1u/decals_rings.tar.gz?dl=0 (3GB)
+    Extract into data/example_images.
+
+    You also need a catalog of the rings votes. This is included on GitHub (data/example_ring_catalog_advanced.parquet)
+    Note that these are *not* science-ready and should only be used with this illustrative example!
     """
 
     """  
@@ -85,7 +93,6 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=['label'],  # image_datasets.get_image_dataset will put the labels arg under the 'label' key for each batch
         input_size=requested_img_size,
-        normalise_from_uint8=True,  # divide by 255
         make_greyscale=greyscale,  # take the mean over RGB channels
         permute_channels=False  # swap channels around randomly (no need when making greyscale anwyay)
     )
@@ -112,7 +119,8 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
 
     # get base model from pretrained *DECaLS* checkpoint (includes augmentations)
     # you need to download these - see the data notes docs. Link is in the data/pretrained_models folder.
-    pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
+    # pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'
+    pretrained_checkpoint = '/nvme1/scratch/walml/repos/gz-decals-classifiers/results/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale_catalog_debug/checkpoint'
     # pretrained_checkpoint = 'data/pretrained_models/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale/checkpoint'
     ## a few other checkpoints used in the representations paper, trained on single questions - happy to share on request, but lower performance than the above
     # pretrained_checkpoint = '/share/nas2/walml/repos/gz-decals-classifiers/results/replicated_train_only_smooth_only/checkpoint'  # single task smooth
@@ -207,7 +215,8 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
       model,
       train_config,  # e.g. how to train epochs, patience
       train_dataset,
-      val_dataset
+      val_dataset,
+      verbose=1
     )
 
     logging.info('Evaluating head (no finetuning) performancce')
