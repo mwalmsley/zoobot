@@ -15,21 +15,19 @@ You could also extend the code (e.g. by changing the architecture, preprocessing
 
 You will need galaxy images and volunteer classifications.
 For Galaxy Zoo DECaLS (GZD-5), these are available at `<https://doi.org/10.5281/zenodo.4196266>`_.
-You will also need a fairly good GPU - we used an NVIDIA V100. 
+You will also need a fairly good GPU - we used an NVIDIA V100 (now A100). 
 You might get away with a worse GPU by lowering the batch size (we used 128, 64 works too) or the image size, but this may affect performance.
 
 The high-level approach to create a CNN is:
 
 - Specify the decision tree asked of volunteers
 - Prepare a catalog with your images and labels (matching the decision tree)
-- Convert your images into a format that's fast to read - either .jpeg, for pytorch, or TFRecord shards, for TensorFlow
+- Convert your images into .jpg files (fast to read)
 - Train the CNN on the converted images
 
 .. note:: 
 
-    The PyTorch version of zoobot does not require the images to be written into TFRecord shards. The images are read directly.
-    This makes it easier to adjust your training data and requires less disk space.
-    We recommend using the PyTorch version of zoobot where possible - see :ref:`Should I use PyTorch or TensorFlow? <pytorch_or_tensorflow>`
+    Not sure if you'd rather use TensorFlow or PyTorch? See :ref:`Should I use PyTorch or TensorFlow? <pytorch_or_tensorflow>`
 
 
 Specifying the Decision Tree using a Schema
@@ -113,7 +111,7 @@ Specifically, the catalog should be a table with rows of (unique) galaxies and c
 
 - ``id_str``, a string that uniquely identifies each galaxy (e.g. the iauname, like ``J012345``, or the decals ``{brickid}_{objid}``, like ``1856_67919``)
 - ``file_loc``, the absolute location of the galaxy image on disk. This is expected to be a .png or .jpg of any size, but you could easily extend it for other filetypes if needed.
-- a column with the number of votes for each question you want to predict, matching the schema (above).  For GZD-5, this is e.g. smooth-or-featured_smooth, smooth-or-featured_featured-or-disk, etc.
+- a column with the number of votes for each question you want to predict, matching the schema (above).  For GZD-5, this is e.g. ``smooth-or-featured_smooth``, ``smooth-or-featured_featured-or-disk``, etc.
 
 For example:
 
@@ -143,26 +141,20 @@ Next Steps
 ----------
 
 We are now ready to make the final adjustments to our data and then train our model.
-
+Zoobot will learn from the catalogs by loading the images under ``file_loc`` and the labels listed in the other columns.
 Exactly how the data is loaded depends on if you're using the PyTorch or TensorFlow version of Zoobot. 
 
-With the TensorFlow version, the images should be saved as TFRecords (stacks of binary-encoded images, designed to be read very quickly to speed up training).
-Any static adjustments (for example, converting to greyscale) should be done when saving the TFRecords.
-Stochastic adjustments (for example, rotation augmentations) happen when the images are input to the model, as the first few layers of the model are tf.keras.layers.preprocessing layers.
+With the PyTorch version, you need to define a `PyTorch Lightning DataModule <https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html>`_ that describes how to load the images listed in your catalog and how to divide them into train/validation/test sets. 
+Augmentations happen when the images are read from those paths into memory, using the PyTorch dataloaders you define in your DataModule.
+I have provided a generic ``GalaxyDataModule``, which supports common augmentations (and some exotic astronomical ones) in a separate repo, `pytorch-galaxy-datasets <https://www.github.com/mwalmsley/pytorch-galaxy-datasets>`_.
+See the :ref:`Training with PyTorch <training_with_pytorch>` guide.
+
+With the TensorFlow version, loading images is simpler but less flexible.
+Augmentations happen when the images are input to the model, as the first few layers of the model are tf.keras.layers.experimental.preprocessing layers.
 See the :ref:`Training with TensorFlow <training_with_tensorflow>` guide.
 
 .. note:: 
 
-    I will probably remove the TFRecord feature and have the TensorFlow version load the images directly, as the PyTorch version does now.
-    I will also adjust the model to not include these preprocessing layers, to allow more flexibilty with stochastic adjustments.
+    I recently removed TensorFlow support for TFRecords feature. The TensorFlow version now load the images directly, as the PyTorch version does.
+    I may later adjust the model to not include these preprocessing layers, to allow more flexibilty with stochastic adjustments.
     Any help would be very welcome and would be credited appropriately.
-
-With the PyTorch version, you need to define a `PyTorch Lightning DataModule <https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html>`_ that describes how to load the images listed in your catalog and how to divide them into train/validation/test sets. 
-To train as fast as possible, any static adjustments should already have been done to those images.
-Stochastic adjustments happen when the images are read from those paths into memory, using the PyTorch dataloaders you define in your DataModule.
-See the :ref:`Training with PyTorch <training_with_pytorch>` guide.
-
-.. note:: 
-
-    The PyTorch example uses stochastic adjustments from the new AstroAugmentations package by Micah Bowles. These are optional and were not used for the GZ DECaLS paper.
-    However, we believe they will improve performance (vs. standard augmentations) and hope to present results on this soon.
