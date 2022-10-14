@@ -5,36 +5,36 @@ sphinxcontrib-napoleon
 furo
 
 # pytorch
-'torch == 1.10.1',
-'torchvision == 0.11.2',
-'torchaudio == 0.10.1',
-'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
-'simplejpeg',
-'albumentations',
-'pyro-ppl == 1.8.0',
-'pytorch-galaxy-datasets == 0.0.1'
+torch == 1.10.1
+torchvision == 0.11.2
+torchaudio == 0.10.1
+pytorch-lightning==1.6.5  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
+simplejpeg
+albumentations
+pyro-ppl == 1.8.0
+pytorch-galaxy-datasets == 0.0.1
 
 # tensorflow
-'tensorflow >= 2.8',
-'keras_applications',
-'tensorflow_probability >= 0.11'
+tensorflow >= 2.8
+keras_applications
+tensorflow_probability >= 0.11
 
-# utilities probably not required
-# 'seaborn',  # for nice plots
-# 'boto3',    # for AWs s3 access
-# 'python-dateutil == 2.8.1',  # for boto3
-# 'astropy' # for reading .fits (not yet implemented, but likely to be added)
+# utilities probably not requireds
+# seaborn  # for nice plots
+# boto3    # for AWs s3 access
+# python-dateutil == 2.8.1  # for boto3
+# astropy # for reading .fits (not yet implemented, but likely to be added)
 
 # all
-'tqdm',
-'pillow',
-'numpy',
-'pandas',
-'scipy',
-'scikit-image >= 0.19.2',
-'scikit-learn >= 1.0.2',
-'matplotlib',
-'pyarrow',  # to read parquet, which is very handy for big datasets
-'statsmodels',
+tqdm
+pillow
+numpy
+pandas
+scipy
+scikit-image >= 0.19.2
+scikit-learn >= 1.0.2
+matplotlib
+pyarrow  # to read parquet, which is very handy for big datasets
+statsmodels
 # for saving metrics to weights&biases (cloud service, free within limits)
-'wandb'
+wandb
