@@ -3,7 +3,7 @@ import logging
 
 import pandas as pd
 
-from zoobot.tensorflow.data_utils import create_shards
+from zoobot.tensorflow.data_utils.deprecated import create_shards
 from zoobot.shared import label_metadata
 
 if __name__ == '__main__':

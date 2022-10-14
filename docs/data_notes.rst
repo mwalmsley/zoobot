@@ -89,8 +89,11 @@ The galaxies can be cross-matched to the Galaxy Zoo 2 catalogues on the "id_str"
     See :ref:`representations_guide` for more details on the representations.
 
 
-Catalogues
------------------
+Catalogues and Images
+----------------------
+
+Rings
+........
 
 W+22b investigated finding rings in DECaLS DR5 images either using the representations as-is (``cnn_features_decals.parquet``, ``cnn_features_gz2.parquet``, see above), or fine-tuning those representations.
 We have included the code used to carry out this fine-tuning in this repository, both as practical working examples and for reproducibility.
@@ -115,7 +118,14 @@ The columns include:
 - the volunteer vote fraction for the "ring" answer to the question "are there any of these rare features"
 - the relative path to the image (e.g. ``J000/J0000001.png``). 
 
-You can download the images referenced in both catalogues from the `Galaxy Zoo DECaLS data release <https://doi.org/10.5281/zenodo.4196266>`_.
+You can download the images needed for the advanced example from `Dropbox <https://www.dropbox.com/s/9qcveuv23zccw1u/decals_rings.tar.gz?dl=0>`_ (3GB).
+Extract into data/example_images.
+
+
+Training from Scratch on DECaLS DR5
+......................................
+
+You can download all the images used when training from scratch, along with all morphology labels, from the `Galaxy Zoo DECaLS data release <https://doi.org/10.5281/zenodo.4196266>`_.
 Note that all the images are approx. 100GB. We have split them into several .zip chunks to make this process slightly less painful. 
 
 The original data is from the DECaLS survey; please acknowledge them appropriately (see W+22a for an example).

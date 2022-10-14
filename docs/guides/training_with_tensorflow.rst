@@ -11,68 +11,50 @@ For training from scratch with either TensorFlow or PyTorch, you should have fir
     We provide :ref:`pretrained weights and precalculated representations <datanotes>`.
     You can even start from these and :ref:`finetune <finetuning_guide>` to your problem.
 
+Training on Catalog of Images
+-------------------------------
 
-Creating Shards
------------------
-
-It's quite slow to train a model using normal images, and so we first encode them as several TFRecords, a format which is much faster to read.
-Make these with the functions in `create_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/data_utils/create_shards.py>`__.
-
-For a working example, see `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__.
-You can run this with command-line arguments for your catalog location and where the TFRecords should be placed e.g.
-
-.. code-block:: bash
-
-    python decals_dr5_to_shards.py --labelled-catalog path/to/my_catalog.csv --shard-dir folder/for/shards --img-size 300  --eval-size 5000
-
-More options are available, and you may need to adjust the label columns; see the examples in `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__.
-I like to use these options to make very small shards for quick debugging: ``python create_shards.py --labelled-catalog data/decals/prepared_catalogs/my_subfolder/labelled_catalog.csv --shard-dir data/decals/shards/decals_debug --eval-size 100 --max-labelled 500 --max-unlabelled 300 --img-size 32``.
-
-Training on Shards
---------------------
-
-Now you can train a CNN using those shards. 
-`train_with_keras.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/train_with_keras.py>`__ has the code to do this.
-This has a .train() function with the following arguments:
+`train_with_keras.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/train_with_keras.py>`__ has a .train() function with the following arguments:
 
 .. code-block:: python
 
     from zoobot.tensorflow.training import train_with_keras
 
     train_with_keras.train(
-        # absolutely crucial arguments
         save_dir,  # save model here
         schema,  # answer these questions
-        # input data as TFRecords
-        train_records,
-        test_records,
-        shard_img_size=300,
+        # input data - specify *either* catalog (to be split) or the splits themselves
+        catalog=None,
+        train_catalog=None,
+        val_catalog=None,
+        test_catalog=None,
         # model training parameters
-        # only EfficientNet is currenty implemented
         batch_size=256,
+        dropout_rate=0.2,
         epochs=1000,
         patience=8,
-        dropout_rate=0.2,
         # augmentation parameters
         color=False,
-        resize_size=224,
+        img_size_to_load=300,  # resizing on load *before* augmentations, will skip if given same size as on disk
+        resize_size=224,  # resizing *during* augmentations, will skip if given appropriate crop
         # ideally, set shard_img_size * crop_factor ~= resize_size to skip resizing
         crop_factor=0.75,
         always_augment=False,
         # hardware parameters
+        mixed_precision=True,
         gpus=2,
-        eager=False  # set True for easier debugging but slower training
+        eager=False,  # Enable eager mode. Set True for easier debugging but slower training
     )
 
 Check the function docstring (and comments in the function itself) for further details.
 
 There are two complete working examples which you can copy and adapt. Both scripts are simply convenient command-line wrappers around ``train_with_keras.train``.
 
-`zoobot/tensorflow/examples/train_model_on_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_catalog.py>`__ demonstrates training a model on shards you've created. 
-You can use the shards created by the worked example in the section above.
+`zoobot/tensorflow/examples/train_model_on_catalog.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_catalog.py>`__ demonstrates training a model on an arbitrary catalog.
+This might be useful if you're training from scratch on your own data.
 
 `replication/tensorflow/train_model_on_decals_dr5_splits.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model.py>`__
-trains a model on the shards used by W+22a (themselves created by `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__).
+trains a model on the DECaLS DR5 catalog, as was done by W+22a.
 This example is the script used to create the pretrained TensorFlow models shared under :ref:`datanotes`.
 
 
@@ -83,7 +65,7 @@ Making New Predictions
 
     Making new predictions is also demonstrated in the [Google Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing), which can be run in your browser
 
-Once trained, the model can be used to make new predictions on either folders of images (png, jpeg) or TFRecords. For example:
+Once trained, the model can be used to make new predictions on either folders of images (png, jpeg) or catalogs listing images. For example:
 
 .. code-block:: python
 
@@ -101,7 +83,6 @@ Once trained, the model can be used to make new predictions on either folders of
         label_cols=[],  # no labels are needed, we're only doing predictions
         input_size=initial_size,
         make_greyscale=True,
-        normalise_from_uint8=True
     )
     image_ds = preprocess.preprocess_dataset(raw_image_ds, preprocessing_config)
 
@@ -131,4 +112,4 @@ If you'd like to make predictions about a new galaxy problem, for which you don'
 .. note::
 
     In the GZ DECaLS paper, we only used galaxies classified in GZD-5 even for questions which did not change between GZD-1/2 and GZD-5.
-    In the GZ LegS paper, we train the models using GZD-1/2 and GZD-8 classifications as well.
+    In the GZ DESI paper (upcoming), we train the models using GZD-1/2 and GZD-8 classifications as well.

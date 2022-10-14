@@ -18,28 +18,33 @@ PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 
 RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 
-# ARCHITECTURE='efficientnet'
-# BATCH_SIZE=512
-# GPUS=2
-# # requires --mixed-precision to be set on A100s
-
-ARCHITECTURE='resnet_detectron'
-BATCH_SIZE=256
+# as per GZ DECaLS data release
+ARCHITECTURE='efficientnet'
+BATCH_SIZE=512
 GPUS=2
+# requires --mixed-precision to be set on A100s
+
+# some other possible configurations, testing other architectures:
+
+# ARCHITECTURE='resnet_detectron'
+# BATCH_SIZE=256
+# GPUS=2
 # mixed precision causes rare nan errors - not recommended!
+# TODO need to update to ignore stochastic_depth_prob arg
 
 # ARCHITECTURE='resnet_torchvision'
 # BATCH_SIZE=256
 # GPUS=2
 # # mixed precision causes rare nan errors - not recommended!
 # # only supports color (so you must add --color)
+# TODO need to update to ignore stochastic_depth_prob arg
 
 # be sure to add _color if appropriate
 EXPERIMENT_DIR=$RESULTS_DIR/pytorch/dr5/${ARCHITECTURE}_dr5_pytorch_replication
 
 DATA_DIR=/share/nas2/walml/repos/_data/decals_dr5
 
-$PYTHON /share/nas2/walml/repos/zoobot/replication/pytorch/train_model_on_decals_dr5_splits.py \
+$PYTHON $ZOOBOT_DIR/replication/pytorch/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \

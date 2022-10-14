@@ -39,6 +39,9 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
 
     Model (probably tf.keras.Sequential) is modified in-place so this func. returns None.
 
+    TODO I would prefer to refactor this so augmentations are separate from the model, as with pytorch.
+    But it's not a high priority change.
+
     Args:
         model (tf.keras.Model): Model to add augmentation layers. Layers are added at *end*, so likely an empty model e.g. tf.keras.Sequential()
         crop_size (int): desired length of image after random crop (assumed square)

@@ -26,6 +26,10 @@ def get_advanced_ring_image_dataset(batch_size: int, requested_img_size: int, tr
     Train will have exactly balanced ring/non-rings unless restricting the train size, in which case the balance will vary slightly.
     Val and test will have the same total number of rings and non-rings, but similarly vary slightly within each due to the random shuffle then split.
 
+    The rings images are the same images as used in GZ DECaLS. 
+    You can download only the rings-relevant images from https://www.dropbox.com/s/9qcveuv23zccw1u/decals_rings.tar.gz?dl=0 (3GB)
+    Extract into data/example_images.
+
     Args:
         batch_size (int): batch size for each tf.data.dataset to use (i.e. ds.batch(batch_size))
         requested_img_size (int): [description]

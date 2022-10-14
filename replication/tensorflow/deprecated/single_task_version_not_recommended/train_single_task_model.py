@@ -1,4 +1,5 @@
-  
+# deprecated as I no longer use TFRecords. Adapt replication/tensorflow/dr5 instead.
+
 import os
 import argparse
 import time
@@ -119,7 +120,6 @@ if __name__ == '__main__':
         label_cols=schema.label_cols,
         input_size=initial_size,
         make_greyscale=greyscale,
-        normalise_from_uint8=False  # False for tfrecords with 0-1 floats, True for png/jpg with 0-255 uints
     )
     train_dataset = preprocess.preprocess_dataset(raw_train_dataset, preprocess_config)
     test_dataset = preprocess.preprocess_dataset(raw_test_dataset, preprocess_config)

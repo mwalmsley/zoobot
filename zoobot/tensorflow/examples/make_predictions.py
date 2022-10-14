@@ -46,7 +46,6 @@ if __name__ == '__main__':
         label_cols=[],  # no labels are needed, we're only doing predictions
         input_size=initial_size,
         make_greyscale=True,
-        normalise_from_uint8=True  # False for tfrecords with 0-1 floats, True for png/jpg with 0-255 uints
     )
     image_ds = preprocess.preprocess_dataset(raw_image_ds, preprocessing_config)
     # image_ds will give batches of (images, paths) when label_cols=[]

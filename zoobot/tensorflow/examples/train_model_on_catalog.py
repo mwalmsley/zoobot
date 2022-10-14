@@ -1,43 +1,69 @@
 import logging
-import os
 import argparse
+from multiprocessing.sharedctypes import Value
+import os
 
 import pandas as pd
-from pytorch_lightning.loggers import WandbLogger
+import tensorflow as tf
+import wandb
 
 from zoobot.shared import label_metadata, schemas
-from zoobot.pytorch.training import train_with_pytorch_lightning
+from zoobot.tensorflow.training import train_with_keras
 
 
 if __name__ == '__main__':
 
+    """
+    Convenient command-line API/example for training models on a catalog of images.
+    Interfaces with Zoobot via ``train_with_keras.train``
+
+    Note that training on TFRecords is now deprecated. 
+    Train directly on the image files, as listed in a catalog.
+
+    Example use:
+
+    python zoobot/tensorflow/examples/train_model_on_shards.py \
+        --experiment-dir /will/save/model/here \
+        --resize-size 224 \
+        --catalog-loc path/to/some/catalog.csv
+        --wandb
+    """
+
     logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s %(levelname)s: %(message)s'
+        format='%(levelname)s:%(message)s',
+        level=logging.INFO
     )
 
-    logging.info('Begin training on catalog example script')
+    # useful to avoid errors on small GPU
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+
+    # check which GPU we're using
+    physical_devices = tf.config.list_physical_devices('GPU')
+    logging.info('GPUs: {}'.format(physical_devices))
 
     parser = argparse.ArgumentParser()
+    # args re. what to train on
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
-    # expects catalog, not tfrecords
     parser.add_argument('--catalog',
                         dest='catalog_loc', type=str, action='append')
-    parser.add_argument('--num_workers',
-                        dest='num_workers', type=int, default=int((os.cpu_count() / 2)))
-    parser.add_argument('--architecture',
-                        dest='model_architecture', type=str, default='efficientnet')
-    parser.add_argument('--epochs', dest='epochs', type=int)
+    # TODO note - no num_workers arg, tf does this automatically
+    # how to train
+    parser.add_argument('--epochs', dest='epochs', type=int, 
+        help='Supports multiple space-separated paths')
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)
     parser.add_argument('--batch-size', dest='batch_size',
-                        default=256, type=int)
-    parser.add_argument('--accelerator', type=str, default='gpu')
+                        default=128, type=int)
     parser.add_argument('--gpus', default=1, type=int)
-    parser.add_argument('--nodes', default=1, type=int)
+    # TODO note - no nodes arg, not supported (yet)
     parser.add_argument('--color', default=False, action='store_true')
-    parser.add_argument('--patience', default=8, type=int)
     parser.add_argument('--wandb', default=False, action='store_true')
+    parser.add_argument('--patience', default=8, type=int)
+    parser.add_argument('--eager', default=False, action='store_true',
+                        help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
     parser.add_argument('--test-time-augs', dest='always_augment', default=False, action='store_true',
                         help='Zoobot includes keras.preprocessing augmentation layers. \
         These only augment (rotate/flip/etc) at train time by default. \
@@ -45,22 +71,32 @@ if __name__ == '__main__':
         but may be unexpected and mess with e.g. GradCAM techniques.'),
     parser.add_argument('--dropout-rate', dest='dropout_rate',
                         default=0.2, type=float)
+    parser.add_argument('--patience', dest='patience',
+                        default=8, type=int)
     parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true',
                         help='If true, use automatic mixed precision (via PyTorch Lightning) to reduce GPU memory use (~x2). Else, use full (32 bit) precision')
     parser.add_argument('--debug', dest='debug', default=False, action='store_true',
                         help='If true, cut each catalog down to 5k galaxies (for quick training). Should cause overfitting.')
     args = parser.parse_args()
 
-    question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
-    dependencies = label_metadata.decals_ortho_dependencies
+    question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs  
+    dependencies = label_metadata.gz2_and_decals_dependencies
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
     # load each csv catalog file into a combined pandas data frame
     # Note: this requires the same csv column format across csv files
+    if '.csv' in args.catalog_loc:
+        catalog_reader = pd.read_csv
+    elif '.parquet' in args.catalog_loc:
+        catalog_reader = pd.read_parquet
+    else:
+        raise ValueError('Extension not automatically understood as csv or parquet: {}'.format(args.catalog_loc))
+
     catalog = pd.concat(
-        map(pd.read_csv, args.catalog_loc),
-        ignore_index=True)
+        map(catalog_reader, args.catalog_loc),
+        ignore_index=True
+    )
     # morph local file locations
     catalog['file_loc'] = catalog['file_loc'].str.replace(
         '/raid/scratch',  '/share/nas2')
@@ -76,32 +112,31 @@ if __name__ == '__main__':
         catalog = catalog.sample(5000).reset_index(drop=True)
 
     if args.wandb:
-        wandb_logger = WandbLogger(
-            project='zoobot-pytorch-catalog-example',
-            name=os.path.basename(args.save_dir),
-            log_model="all")
-        # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
-        # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
-    else:
-        wandb_logger = None
+        wandb.tensorboard.patch(root_logdir=args.save_dir)
+        wandb.init(
+            sync_tensorboard=True,
+            project='zoobot-tf',  # TODO rename
+            name=os.path.basename(args.save_dir)
+        )
+    #   with TensorFlow, doesn't need to be passed to trainer
 
-    train_with_pytorch_lightning.train_default_zoobot_from_scratch(
+    train_with_keras.train(
         save_dir=args.save_dir,
         catalog=catalog,
         schema=schema,
-        model_architecture=args.model_architecture,
+        # architecture_name=args.architecture_name, TODO not yet implemented
         batch_size=args.batch_size,
         epochs=args.epochs,
         patience=args.patience,
         # augmentation parameters
         color=args.color,
         resize_size=args.resize_size,
-        # hardware parameters
-        accelerator=args.accelerator,
-        nodes=args.nodes,
-        gpus=args.gpus,
-        num_workers=args.num_workers,
+        always_augment=args.always_augment,
+        # hardware params
         mixed_precision=args.mixed_precision,
-        dropout_rate=args.dropout_rate,  # recently added
-        wandb_logger=wandb_logger
+        gpus=args.gpus,
+        eager=args.eager, 
+        # other hparams
+        dropout_rate=args.dropout_rate,
+        # no wandb logger required, tensorboard patch applied above instead
     )
