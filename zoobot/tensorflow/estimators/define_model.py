@@ -26,7 +26,7 @@ class CustomSequential(tf.keras.Sequential):
 def add_augmentation_layers(model, crop_size, resize_size, always_augment=False):
     """
     Add image augmentation layers to end of ``model``.
-    
+
     The following augmentations are applied, in order:
         - Random rotation (aliased)
         - Random flip (horizontal and/or vertical)
@@ -89,7 +89,7 @@ def get_model(
     use_imagenet_weights=False,
     always_augment=True,
     dropout_rate=0.2,
-    get_effnet=efficientnet_standard.EfficientNetB0
+    get_effnet=efficientnet_standard.EfficientNetB0  # this line defines the model!
     ):
     """
     Create a trainable efficientnet model.
@@ -108,7 +108,7 @@ def get_model(
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.
         include_top (bool, optional): If True, include head used for GZ DECaLS: global pooling and dense layer. Defaults to True.
         expect_partial (bool, optional): If True, do not raise partial match error when loading weights (likely for optimizer state). Defaults to False.
-        channels (int, default 1): Number of channels i.e. C in NHWC-dimension inputs. 
+        channels (int, default 1): Number of channels i.e. C in NHWC-dimension inputs.
 
     Returns:
         tf.keras.Model: trainable efficientnet model including augmentations and optional head
@@ -123,21 +123,27 @@ def get_model(
     input_shape = (input_size, input_size, channels)
     model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
-    add_augmentation_layers(
+    add_augmentation_layers(  # add augmentation layer to the end of the model (func defined above)
         model,
         crop_size=crop_size,
         resize_size=resize_size,
         always_augment=always_augment)  # inplace
 
+    # Modify here -----------------
+
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
-    effnet = efficientnet_custom.define_headless_efficientnet(
+    effnet = efficientnet_custom.define_headless_efficientnet(  # from efficientnet_custom.py
+                                                                # defines efficientnet model to train
+                                                                # direct to maxvit_standard.py instead!
         input_shape=shape_after_preprocessing_layers,
-        get_effnet=get_effnet,
+        get_effnet=get_effnet,  # model
         # further kwargs will be passed to get_effnet
         use_imagenet_weights=use_imagenet_weights,
     )
-    model.add(effnet)
+    model.add(effnet)  # modify
+
+    # ------------------------------
 
     logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
 
@@ -179,7 +185,7 @@ def load_weights(model, checkpoint_loc, expect_partial=False):
 
 
 def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False, channels=1, always_augment=True, dropout_rate=0.2):
-    """    
+    """
     Utility wrapper for the common task of defining the GZ DECaLS model and then loading a pretrained checkpoint.
     resize_size must match the pretrained model used.
     output_dim must match if ``include_top=True``

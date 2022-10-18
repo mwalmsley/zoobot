@@ -1,4 +1,4 @@
-# Copied almost exactly from https://github.com/qubvel/efficientnet for convenience, all credit to those authors. 
+# Copied almost exactly from https://github.com/qubvel/efficientnet for convenience, all credit to those authors.
 # Dropout switched to permanantly on via #97 and #364
 # Please see the license on that repository.
 # - Mike
@@ -63,7 +63,7 @@ backend = tf.keras.backend
 layers = tf.keras.layers
 models = tf.keras.models
 utils = tf.keras.utils
-keras_utils = tf.keras.utils 
+keras_utils = tf.keras.utils
 
 BlockArgs = collections.namedtuple('BlockArgs', [
     'kernel_size', 'num_repeat', 'input_filters', 'output_filters',
@@ -228,7 +228,7 @@ def mb_conv_block(inputs, block_args, activation, drop_rate=None, prefix='', ):
                 # pylint: disable=no-member
                 lambda x: backend.pattern_broadcast(x, pattern),
                 # pylint: enable=no-member
-                name=prefix + 'se_broadcast')(se_tensor)  
+                name=prefix + 'se_broadcast')(se_tensor)
         x = layers.multiply([x, se_tensor], name=prefix + 'se_excite')
 
     # Output phase
@@ -249,7 +249,7 @@ def mb_conv_block(inputs, block_args, activation, drop_rate=None, prefix='', ):
 
     return x
 
-def EfficientNet(width_coefficient,
+def EfficientNet(width_coefficient,  # important: used for training
                  depth_coefficient,
                  default_resolution,
                  dropout_rate=0.2,
@@ -391,9 +391,9 @@ def EfficientNet(width_coefficient,
                       name='top_conv')(x)
     x = layers.BatchNormalization(axis=bn_axis, name='top_bn')(x)
     x = layers.Activation(activation, name='top_activation')(x)
-    if include_top:  
-        # this is NEVER true with Zoobot. 
-        # `define_model.get_model(include_top=True)` will build my own top, not this. 
+    if include_top:
+        # this is NEVER true with Zoobot.
+        # `define_model.get_model(include_top=True)` will build my own top, not this.
         # Left for comparison only!
 
         x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
@@ -401,7 +401,7 @@ def EfficientNet(width_coefficient,
             x = layers.Dropout(dropout_rate, name='top_dropout')(x)
             # I use constantly-on dropout instead
             # top layer dropout needs to be high to do anything much
-            # x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)  
+            # x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)
         x = layers.Dense(classes,
                          activation='softmax',
                          kernel_initializer=DENSE_KERNEL_INITIALIZER,
