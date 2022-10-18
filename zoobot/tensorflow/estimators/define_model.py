@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_custom, custom_layers
+from zoobot.tensorflow.estimators import maxvit_standard
 
 
 class CustomSequential(tf.keras.Sequential):
@@ -89,7 +90,9 @@ def get_model(
     use_imagenet_weights=False,
     always_augment=True,
     dropout_rate=0.2,
-    get_effnet=efficientnet_standard.EfficientNetB0  # this line defines the model!
+    get_effnet=efficientnet_standard.EfficientNetB0,  # this line defines the model!
+    get_maxvit=maxvit_standard.MaxViTTiny,
+    eff_net=True,
     ):
     """
     Create a trainable efficientnet model.
@@ -133,15 +136,22 @@ def get_model(
 
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
-    effnet = efficientnet_custom.define_headless_efficientnet(  # from efficientnet_custom.py
-                                                                # defines efficientnet model to train
-                                                                # direct to maxvit_standard.py instead!
-        input_shape=shape_after_preprocessing_layers,
-        get_effnet=get_effnet,  # model
-        # further kwargs will be passed to get_effnet
-        use_imagenet_weights=use_imagenet_weights,
-    )
-    model.add(effnet)  # modify
+    if eff_net:
+        effnet = efficientnet_custom.define_headless_efficientnet(  # from efficientnet_custom.py
+                                                                    # defines efficientnet model to train
+                                                                    # direct to maxvit_standard.py instead!
+            input_shape=shape_after_preprocessing_layers,
+            get_effnet=get_effnet,  # model
+            # further kwargs will be passed to get_effnet
+            use_imagenet_weights=use_imagenet_weights,
+        )
+        model.add(effnet)  # modify`
+    else:
+        maxvit=get_maxvit(
+
+        
+        )
+        model.add(maxvit)
 
     # ------------------------------
 
