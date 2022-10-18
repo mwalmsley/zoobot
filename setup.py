@@ -47,7 +47,8 @@ setuptools.setup(
         'docs': [
             'Sphinx',
             'sphinxcontrib-napoleon',
-            'furo'
+            'furo',
+            'docutils<0.18'
         ]
     },
     install_requires=[

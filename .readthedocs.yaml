@@ -7,6 +7,8 @@ python:
       path: .
       extra_requirements:
         - docs
+        - pytorch
+        - tensorflow
   system_packages: true
 
 sphinx:
