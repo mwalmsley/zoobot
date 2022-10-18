@@ -46,11 +46,11 @@ If you will be making changes to the Zoobot package itself (e.g. to add a new ar
     # I recommend using a virtual environment, see below
     git clone git@github.com:mwalmsley/zoobot.git
 
-And then install Zoobot using pip, specifying either the pytorch dependencies, the tensorflow dependencies, or both:
+And then (from same directory i.e. above the one you just cloned) install Zoobot using pip, specifying either the pytorch dependencies, the tensorflow dependencies, or both:
 
-    pip install -e zoobot[pytorch]  # pytorch dependencies
-    pip install -e zoobot[tensorflow]  # tensorflow dependencies
-    pip install -e zoobot[pytorch,tensorflow]  # both
+    pip install -e 'zoobot[pytorch]'  # pytorch dependencies
+    pip install -e 'zoobot[tensorflow]'  # tensorflow dependencies
+    pip install -e 'zoobot[pytorch,tensorflow]'  # both
 
 The `main` branch is for stable-ish releases. The `dev` branch includes the shiniest features but may change at any time.
 
@@ -58,7 +58,7 @@ The `main` branch is for stable-ish releases. The `dev` branch includes the shin
 
 I expect most users will make small changes. But if you won't be making any changes to Zoobot itself (e.g. you just want to apply it, or you're in a production environment), you can simply install directly from pip:
 
-    pip install zoobot[pytorch]  # pytorch dependencies
+    pip install 'zoobot[pytorch]'  # pytorch dependencies
     # other dependency options as above
 
 ## Getting Started
