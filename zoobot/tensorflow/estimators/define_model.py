@@ -4,7 +4,12 @@ import sys
 import numpy as np
 import tensorflow as tf
 
+<<<<<<< HEAD
 from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_custom, custom_layers, maxvit_standard
+=======
+from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_custom, custom_layers
+from zoobot.tensorflow.estimators import maxvit_standard
+>>>>>>> 3efef5ed952dc0b6234797a85fe1e9f338e3bf85
 
 
 class CustomSequential(tf.keras.Sequential):
@@ -90,9 +95,15 @@ def get_model(
     use_imagenet_weights=False,
     always_augment=True,
     dropout_rate=0.2,
+<<<<<<< HEAD
     effnet_model = efficientnet_standard.EfficientNetB0,
     maxvit_model = maxvit_standard.MaxViTTinyModel,  # this line defines the model!
     use_effnet = True
+=======
+    get_effnet=efficientnet_standard.EfficientNetB0,  # this line defines the model!
+    get_maxvit=maxvit_standard.MaxViTTiny,
+    eff_net=True,
+>>>>>>> 3efef5ed952dc0b6234797a85fe1e9f338e3bf85
     ):
     """
     Create a trainable efficientnet model.
@@ -136,11 +147,16 @@ def get_model(
 
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
+<<<<<<< HEAD
     if use_effnet:
+=======
+    if eff_net:
+>>>>>>> 3efef5ed952dc0b6234797a85fe1e9f338e3bf85
         effnet = efficientnet_custom.define_headless_efficientnet(  # from efficientnet_custom.py
                                                                     # defines efficientnet model to train
                                                                     # direct to maxvit_standard.py instead!
             input_shape=shape_after_preprocessing_layers,
+<<<<<<< HEAD
             get_effnet=effnet_model,  # model
             # further kwargs will be passed to get_effnet
             use_imagenet_weights=use_imagenet_weights,
@@ -156,6 +172,19 @@ def get_model(
         logging.info('What happened here....')
         sys.exit()
 
+=======
+            get_effnet=get_effnet,  # model
+            # further kwargs will be passed to get_effnet
+            use_imagenet_weights=use_imagenet_weights,
+        )
+        model.add(effnet)  # modify`
+    else:
+        maxvit=get_maxvit(
+
+        
+        )
+        model.add(maxvit)
+>>>>>>> 3efef5ed952dc0b6234797a85fe1e9f338e3bf85
 
     # ------------------------------
 
