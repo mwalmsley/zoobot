@@ -87,6 +87,8 @@ def get_model(
     input_size,
     crop_size,
     resize_size,
+    batch_size=8,
+    epochs=50,
     weights_loc=None,
     include_top=True,
     expect_partial=False,
