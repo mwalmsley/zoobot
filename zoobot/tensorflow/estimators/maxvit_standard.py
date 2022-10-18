@@ -13,17 +13,25 @@ import maxvit.models.hparams as hparams
 import maxvit.models.maxvit as layers
 
 # building our transformer!
-def MaxViTModel(model_name):
-    config = hparams.lookup(model_name)
+def MaxViTModel(maxvit_model):
+
+    config = hparams.lookup(maxvit_model)
 
     model = layers.MaxViT(config.model)
-
+    
     return model
 
+def get_maxvit_model(
+    input_shape=None,
+    maxvit_model = None,
+    use_imagenet_weights=False
+):
+    return MaxViTModel(
+        maxvit_model
+    )
 
 def MaxViTTinyModel(
 ):
-
-    return MaxViTModel(
-        model_name = 'MaxViTTiny'
-    )
+    maxvit_model = 'MaxViTTiny'
+    return maxvit_model
+    
