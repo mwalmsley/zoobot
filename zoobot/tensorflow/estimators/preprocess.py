@@ -12,7 +12,7 @@ class PreprocessingConfig():
             label_cols: List,  # use [] if no labels
             input_size: int,
             make_greyscale: bool,
-            normalise_from_uint8: bool,
+            # normalise_from_uint8: bool,
             permute_channels=False,
             input_channels=3,  # for png, jpg etc. Might be different if e.g. fits (not supported yet).
     ):
@@ -34,7 +34,7 @@ class PreprocessingConfig():
         self.label_cols = label_cols
         self.input_size = input_size
         self.input_channels = input_channels
-        self.normalise_from_uint8 = normalise_from_uint8
+        # self.normalise_from_uint8 = normalise_from_uint8
         self.make_greyscale = make_greyscale
         self.permute_channels = permute_channels
 
@@ -52,7 +52,7 @@ class PreprocessingConfig():
 
 # Wrapping this causes weird op error - leave it be. Issue raised w/ tf.
 # @tf.function
-def preprocess_dataset(dataset, config):
+def preprocess_dataset(dataset: tf.data.Dataset, config):
     """
     Thin wrapper applying ``preprocess_batch`` across dataset. See ``preprocess_batch`` for more.
 
@@ -63,15 +63,13 @@ def preprocess_dataset(dataset, config):
         (dict) of form {'x': make_greyscale image batch}, as Tensor of shape [batch, size, size, 1]}
         (Tensor) categorical labels for each image
     """
-    return dataset.map(lambda x: preprocess_batch(x, config))
+    return dataset.map(lambda x: preprocess_batch(x, config), num_parallel_calls=tf.data.AUTOTUNE)
 
 
 def preprocess_batch(batch, config):
     """
     Apply preprocessing to batch as directed by ``config``.
-
-    If config.normalise_from_uint8, assume images are 0-255 range and divide by 255.
-    Then apply ``preprocess_images``.
+    Wrapper for ``preprocess_images``.
 
     Finally, split batch into tuples of (images, labels) (if ``config.label_cols`` is not empty) or (images, id_strings) otherwise.
     
@@ -88,8 +86,9 @@ def preprocess_batch(batch, config):
         size=config.input_size,
         channels=config.input_channels)
 
-    if config.normalise_from_uint8:
-        batch_images = batch_images / 255.
+    # deprecated - happens in load_image always, no further need
+    # if config.normalise_from_uint8:
+    #     batch_images = batch_images / 255.
 
     # WARNING the /255 may cause issues if repeated again by accident, maybe move
     # by default, simply makes the images make_greyscale. More augmentations on loading model.

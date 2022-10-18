@@ -35,13 +35,20 @@ setuptools.setup(
         'tensorflow': [
             'tensorflow >= 2.8',
             'keras_applications',
-            'tensorflow_probability >= 0.11'
+            'tensorflow_probability >= 0.11',
+            'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
         'utilities': [
             'seaborn',  # for nice plots
             'boto3',    # for AWs s3 access
             'python-dateutil == 2.8.1',  # for boto3
             'astropy' # for reading .fits (not yet implemented, but likely to be added)
+        ],
+        'docs': [
+            'Sphinx',
+            'sphinxcontrib-napoleon',
+            'furo',
+            'docutils<0.18'
         ]
     },
     install_requires=[

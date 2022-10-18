@@ -1,10 +1,4 @@
-
-
-import os
 import logging
-import glob
-import random
-import shutil
 
 import tensorflow as tf
 import numpy as np
@@ -12,13 +6,9 @@ from tensorflow.keras import layers, regularizers
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from zoobot.shared import schemas, label_metadata
 from zoobot.tensorflow.data_utils import image_datasets
-from zoobot.tensorflow.estimators import preprocess, define_model, alexnet_baseline, small_cnn_baseline
-from zoobot.tensorflow.predictions import predict_on_tfrecords, predict_on_dataset
+from zoobot.tensorflow.estimators import preprocess, define_model
 from zoobot.tensorflow.training import training_config
-from zoobot.tensorflow.transfer_learning import utils
-from zoobot.tensorflow.estimators import custom_layers
 
 
 if __name__ == '__main__':
@@ -66,7 +56,7 @@ if __name__ == '__main__':
     preprocess_config = preprocess.PreprocessingConfig(
         label_cols=['label'],  # image_datasets.get_image_dataset will put the labels arg under the 'label' key for each batch
         input_size=requested_img_size,
-        normalise_from_uint8=True,  # divide by 255
+        # normalise_from_uint8=True,  # divide by 255
         make_greyscale=True,  # take the mean over RGB channels
         permute_channels=False  # swap channels around randomly (no need when making greyscale anwyay)
     )
@@ -77,7 +67,9 @@ if __name__ == '__main__':
     Load the pretrained model (without the "head" output layer), freeze it, and add a new head
     """
 
-    pretrained_checkpoint = 'data/pretrained_models/gz_decals_full_m0/in_progress'
+    # download from Dropbox - see zoobot.readthedocs.io Data Notes
+    # pretrained_checkpoint = 'data/pretrained_models/tensorflow/replicated_train_only_greyscale_tf/checkpoint'  # note the "/checkpoint"
+    pretrained_checkpoint = '/nvme1/scratch/walml/repos/gz-decals-classifiers/results/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale_catalog_debug/checkpoint'
     # should match how the model was trained
     crop_size = int(requested_img_size * 0.75)
     resize_size = 224  # 224 for paper
@@ -88,6 +80,7 @@ if __name__ == '__main__':
     logging.info('Loading pretrained model from {}'.format(pretrained_checkpoint))
     base_model = define_model.load_model(
       pretrained_checkpoint,
+      expect_partial=True,  # the optimizer state will be loaded. expect_partial silences this warning.
       include_top=False,  # do not include the head used for GZ DECaLS - we will add our own head
       input_size=requested_img_size,  # the preprocessing above did not change size
       crop_size=crop_size,  # model augmentation layers apply a crop...
@@ -112,7 +105,7 @@ if __name__ == '__main__':
 
     # stick the new head on the pretrained base model
     model = tf.keras.Sequential([
-      tf.keras.layers.InputLayer(shape=(requested_img_size, requested_img_size, 1)),
+      tf.keras.layers.InputLayer(input_shape=(requested_img_size, requested_img_size, 1)),
       base_model,
       new_head
     ])
@@ -152,7 +145,7 @@ if __name__ == '__main__':
     for _ in range(5):
       losses.append(model.evaluate(val_dataset)[0])
     logging.info('Mean validation loss: {:.3f} (var {:.4f})'.format(np.mean(losses), np.var(losses)))
-    # should train to a loss of around 0.54, equivalent to 75-80% accuracy on the (class-balanced) validation set
+    # should train to a loss of ~0.55, equivalent to ~76% accuracy on the (class-balanced) validation set
 
     """
     Well done!
@@ -170,7 +163,7 @@ if __name__ == '__main__':
       label_cols=[],  # image_datasets.get_image_dataset will put the labels arg under 'label' key for each batch
       input_size=requested_img_size,
       make_greyscale=True,
-      normalise_from_uint8=True,
+      # normalise_from_uint8=True,
       permute_channels=False
     )
     pred_dataset = preprocess.preprocess_dataset(raw_pred_dataset, pred_config)

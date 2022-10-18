@@ -151,8 +151,7 @@ if __name__ == '__main__':
             preprocessing_config = preprocess.PreprocessingConfig(
                 label_cols=[],  # no labels are needed, we're only doing predictions
                 input_size=initial_size,
-                make_greyscale=greyscale,
-                normalise_from_uint8=True
+                make_greyscale=greyscale
             )
             image_ds = preprocess.preprocess_dataset(raw_image_ds, preprocessing_config)
             # image_ds will give batches of (images, paths) when label_cols=[]
