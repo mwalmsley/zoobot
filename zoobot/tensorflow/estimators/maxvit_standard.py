@@ -1,9 +1,11 @@
+# imports
+
 import logging
 
 # Normal packages
 import numpy as np
 
-# ML related.
+# ML related
 import tensorflow as tf
 import tensorflow.compat.v1 as tf1
 import tensorflow_datasets as tfds
@@ -22,7 +24,9 @@ def MaxViTModel(
 
     config = hparams.lookup(maxvit_model)
 
-    config.train.image_size = image_size
+    config.model.num_classes = 1280
+
+    config.train.image_size = image_size  # 300
     config.train.epochs = epochs
     config.train.batch_size = batch_size
 
@@ -32,6 +36,7 @@ def MaxViTModel(
     model = layers.MaxViT(config.model)
 
     return model
+
 
 def get_maxvit_model(
     batch_size,

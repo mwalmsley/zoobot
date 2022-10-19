@@ -153,12 +153,14 @@ def get_model(
         )
         model.add(effnet)  # modify`
     else:
-        maxvit=maxvit_standard.get_maxvit_model(
+        maxvit_model=maxvit_standard.get_maxvit_model(
             input_shape = shape_after_preprocessing_layers,
             get_maxvit = maxvit_model,
             use_image_weights=use_imagenet_weights
         )
-        model.add(maxvit)
+        model.add(maxvit_model)
+
+        model.build(input_shape=shape_after_preprocessing_layers)
 
     # ------------------------------
 
