@@ -1,4 +1,5 @@
 #!/bin/bash
+# run with ./benchmarks/pytorch/run_benchmarks.sh
 # inspired by https://www.osc.edu/resources/getting_started/howto/howto_submit_multiple_jobs_using_parameters
 
 TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/pytorch/run_decals_dr5_benchmark.sh

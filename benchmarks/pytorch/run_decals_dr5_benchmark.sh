@@ -19,7 +19,7 @@ DATA_DIR=/share/nas2/walml/repos/_data/decals_dr5
 ARCHITECTURE='efficientnet'
 BATCH_SIZE=128
 
-echo $PYTHON $ZOOBOT_DIR/replication/pytorch/train_model_on_decals_dr5_splits.py \
+echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
@@ -29,7 +29,7 @@ echo $PYTHON $ZOOBOT_DIR/replication/pytorch/train_model_on_decals_dr5_splits.py
     $COLOR_STRING \
     $MIXED_PRECISION_STRING
 
-$PYTHON $ZOOBOT_DIR/replication/pytorch/train_model_on_decals_dr5_splits.py \
+$PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
