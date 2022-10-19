@@ -9,8 +9,8 @@ import tensorflow.compat.v1 as tf1
 import tensorflow_datasets as tfds
 
 # MaxVit Packages
-import maxvit_zoobot.models.hparams as hparams
-import maxvit_zoobot.models.maxvit as layers
+import maxvit.models.hparams as hparams
+import maxvit.models.maxvit as layers
 
 # building our transformer!
 def MaxViTModel(
