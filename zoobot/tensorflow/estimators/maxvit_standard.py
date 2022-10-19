@@ -34,11 +34,12 @@ def MaxViTModel(
     return model
 
 def get_maxvit_model(
+    batch_size,
+    epochs,
     input_shape=None,
     maxvit_model = None,
     use_imagenet_weights=False,
-    batch_size,
-    epochs
+
 ):
     return MaxViTModel(
         maxvit_model,
