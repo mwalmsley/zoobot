@@ -16,6 +16,9 @@ ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
 DATA_DIR=/share/nas2/walml/repos/_data/decals_dr5
 
+RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
+EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
+
 ARCHITECTURE='efficientnet'
 BATCH_SIZE=128
 
