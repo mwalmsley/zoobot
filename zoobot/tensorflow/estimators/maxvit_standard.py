@@ -9,13 +9,13 @@ import tensorflow.compat.v1 as tf1
 import tensorflow_datasets as tfds
 
 # MaxVit Packages
-import maxvit.models.hparams as hparams
-import maxvit.models.maxvit as layers
+import maxvit_zoobot.models.hparams as hparams
+import maxvit_zoobot.models.maxvit as layers
 
 # building our transformer!
 def MaxViTModel(
-    maxvit_model, 
-    image_size, 
+    maxvit_model,
+    image_size,
     batch_size,
     epochs
     ):
@@ -51,4 +51,3 @@ def MaxViTTinyModel(
 ):
     maxvit_model = 'MaxViTTiny'
     return maxvit_model
-    
