@@ -15,45 +15,18 @@ import maxvit.models.hparams as hparams
 import maxvit.models.maxvit as layers
 
 # building our transformer!
-def MaxViTModel(
-    maxvit_model,
-    image_size,
-    batch_size,
-    epochs
-    ):
+def MaxViTModel(maxvit_model, input_shape,):
 
     config = hparams.lookup(maxvit_model)
-
-    config.model.num_classes = 1280
-
-    config.train.image_size = image_size  # 300
-    config.train.epochs = epochs
-    config.train.batch_size = batch_size
-
-    config.eval.image_size = image_size
-    config.eval.batch_size = batch_size
+    config.model.num_classes = 1280  # matching both models
+    config.train.image_size = input_shape
+    config.eval.image_size = input_shape
 
     model = layers.MaxViT(config.model)
-
     return model
 
 
-def get_maxvit_model(
-    batch_size,
-    epochs,
-    input_shape=None,
-    maxvit_model = None,
-    use_imagenet_weights=False,
-
-):
-    return MaxViTModel(
-        maxvit_model,
-        input_shape,
-        batch_size,
-        epochs
-    )
-
-def MaxViTTinyModel(
-):
-    maxvit_model = 'MaxViTTiny'
-    return maxvit_model
+def get_maxvit_model(input_shape,
+                     get_maxvit,
+                     use_image_weights=False):
+    return MaxViTModel(maxvit_model='MaxViTTiny', input_shape=input_shape)

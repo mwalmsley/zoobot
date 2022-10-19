@@ -97,7 +97,7 @@ def get_model(
     always_augment=True,
     dropout_rate=0.2,
     effnet_model = efficientnet_standard.EfficientNetB0,
-    maxvit_model = maxvit_standard.MaxViTTinyModel,  # this line defines the model!
+    maxvit_model = 'MaxViTTiny',  # this line defines the model!
     use_effnet = True
     ):
     """
@@ -154,7 +154,7 @@ def get_model(
         model.add(effnet)  # modify`
     else:
         maxvit_model=maxvit_standard.get_maxvit_model(
-            maxvit_model,
+            # maxvit_model,
             input_shape = shape_after_preprocessing_layers,
             get_maxvit = maxvit_model,
             use_image_weights=use_imagenet_weights
@@ -169,7 +169,10 @@ def get_model(
 
     if include_top:
         assert output_dim is not None
-        model.add(tf.keras.layers.GlobalAveragePooling2D())
+
+        if use_effnet:
+            model.add(tf.keras.layers.GlobalAveragePooling2D())
+
         model.add(custom_layers.PermaDropout(dropout_rate, name='top_dropout'))
         efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
 
