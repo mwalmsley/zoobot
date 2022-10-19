@@ -39,6 +39,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--data-dir', dest='data_dir', type=str)
+    parser.add_argument('--architecture', dest='architecture_name',
+                        type=str, default='efficientnet')
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)
     parser.add_argument('--epochs', dest='epochs', type=int)
@@ -94,6 +96,7 @@ if __name__ == '__main__':
         val_catalog=val_catalog,
         test_catalog=test_catalog,
         batch_size=args.batch_size,
+        architecture_name=args.architecture_name,
         eager=args.eager,
         gpus=args.gpus,
         epochs=epochs,

@@ -21,7 +21,7 @@ def train(
     val_catalog=None,
     test_catalog=None,
     # model training parameters
-    # TODO architecture_name=, only EfficientNet is currenty implemented
+    architecture_name='efficientnet',  # only EfficientNet is currenty implemented
     batch_size=256,
     dropout_rate=0.2,
     # TODO drop_connect_rate not implemented
@@ -130,6 +130,8 @@ def train(
                 and so may affect any future code'
             )
             tf.keras.mixed_precision.set_global_policy('mixed_float16')
+
+        # TODO use architecture_name here
 
         model = define_model.get_model(
             output_dim=len(schema.label_cols),

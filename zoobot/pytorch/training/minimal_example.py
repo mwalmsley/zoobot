@@ -1,9 +1,6 @@
 import logging
-import os
-import argparse
 
 from sklearn.model_selection import train_test_split
-from pytorch_lightning.loggers import WandbLogger
 
 from pytorch_galaxy_datasets.prepared_datasets import decals_dr5_setup
 
