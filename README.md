@@ -44,7 +44,7 @@ You can finetune Zoobot with a free GPU using this [Google Colab notebook](https
 If you will be making changes to the Zoobot package itself (e.g. to add a new architecture), download the code using git:
 
     # I recommend using a virtual environment, see below
-    git clone git@github.com:mwalmsley/zoobot.git
+    git clone https://github.com/mwalmsley/zoobot.git 
 
 And then (from same directory i.e. above the one you just cloned) install Zoobot using pip, specifying either the pytorch dependencies, the tensorflow dependencies, or both:
 
@@ -63,7 +63,7 @@ I expect most users will make small changes. But if you won't be making any chan
 
 ## Getting Started
 
-To get started, see the [documentation](https://zoobot.readthedocs.io/). For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/data_notes.html) in particular.
+To get started, see the [documentation](https://zoobot.readthedocs.io/). For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/en/latest/data_notes.html) in particular.
 
 I also include some working examples for you to copy and adapt.
 
