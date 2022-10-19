@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     Example use:
 
-    python zoobot/tensorflow/examples/train_model_on_shards.py \
+    python zoobot/tensorflow/examples/train_model_on_catalog.py \
         --save-dir /will/save/model/here \
         --resize-size 224 \
         --catalog-loc path/to/some/catalog.csv

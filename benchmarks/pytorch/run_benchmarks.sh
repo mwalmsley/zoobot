@@ -12,7 +12,7 @@ sbatch --job-name=dr5_py_min --export=GPUS=1 $TRAIN_JOB
 sbatch --job-name=dr5_py_gr --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2 $TRAIN_JOB
 sbatch --job-name=dr5_py_co --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color $TRAIN_JOB
 
-echo 'Jobs submitted'
+echo 'PyTorch jobs submitted'
 
 # TODO add other architectures
 
