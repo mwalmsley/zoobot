@@ -14,9 +14,10 @@ from zoobot.pytorch.training import train_with_pytorch_lightning
 if __name__ == '__main__':
 
     """
-    See zoobot/pytorch/examples/train_model_on_catalog for a version training on a catalog without prespecifing the splits
+    Used to create the PyTorch pretrained weights checkpoints
+    See .sh file of the same name for args used.
 
-    This will automatically download GZ DECaLS DR5, which is ~220k galaxies and ~11GB.
+    See zoobot/pytorch/examples/minimal_examples.py for a friendlier example
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment-dir', dest='save_dir', type=str)
@@ -28,7 +29,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', dest='batch_size',
                         default=256, type=int)
     parser.add_argument('--gpus', default=1, type=int)
-
     parser.add_argument('--mixed-precision', dest='mixed_precision',
                         default=False, action='store_true')
     parser.add_argument('--debug', dest='debug',
@@ -56,12 +56,13 @@ if __name__ == '__main__':
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
     wandb_logger = WandbLogger(
-        project='zoobot-pytorch-dr5-presplit-replication',
+        project='zoobot-benchmarks-pytorch',
         name=os.path.basename(args.save_dir),
-        log_model="all")
-    # only rank 0 process gets access to the wandb.run object, and for non-zero rank processes: wandb.run = None
-    # https://docs.wandb.ai/guides/integrations/lightning#how-to-use-multiple-gpus-with-lightning-and-w-and-b
-
+        log_model=True
+    )
+    wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(10))
+    wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(10))
+    wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
 
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,

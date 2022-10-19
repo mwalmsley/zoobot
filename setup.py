@@ -63,6 +63,7 @@ setuptools.setup(
         'pyarrow',  # to read parquet, which is very handy for big datasets
         'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
-        'wandb'
+        'wandb',
+        'setuptools==59.5.0'  # wandb logger incompatibility
     ]
 )
