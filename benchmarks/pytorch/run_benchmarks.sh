@@ -1,7 +1,7 @@
 #!/bin/bash
 # inspired by https://www.osc.edu/resources/getting_started/howto/howto_submit_multiple_jobs_using_parameters
 
-TRAIN_JOB=/share/nas2/waalml/repos/zoobot/benchmarks/pytorch/run_decals_dr5_benchmark.sh
+TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/pytorch/run_decals_dr5_benchmark.sh
 RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
 
@@ -10,8 +10,8 @@ EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
 sbatch --job-name=dr5_py_min --export=GPUS=1 $TRAIN_JOB
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
-sbatch --job-name=dr5_py_gr --export=MIXED_PRECISION_STRING=--mixed-precision, GPUS=2 $TRAIN_JOB
-sbatch --job-name=dr5_py_co --export=MIXED_PRECISION_STRING=--mixed-precision, GPUS=2, COLOR_STRING=--color $TRAIN_JOB
+sbatch --job-name=dr5_py_gr --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2 $TRAIN_JOB
+sbatch --job-name=dr5_py_co --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color $TRAIN_JOB
 
 echo 'Jobs submitted'
 
