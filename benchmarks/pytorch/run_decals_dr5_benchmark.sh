@@ -20,7 +20,7 @@ ARCHITECTURE='efficientnet'
 BATCH_SIZE=128
 
 echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
-    --experiment-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
+    --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
     --resize-size 224 \
@@ -30,7 +30,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     $MIXED_PRECISION_STRING
 
 $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
-    --experiment-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
+    --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
     --resize-size 224 \

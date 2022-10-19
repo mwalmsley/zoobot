@@ -18,14 +18,14 @@ from zoobot import schemas, label_metadata
 if __name__ == '__main__':
     """
     DECaLS debugging (make the shards first with create_shards.py):
-      python train_model.py --experiment-dir results/decals_debug --shard-img-size 32 --resize-size 224 --train-dir data/decals/shards/decals_debug/train_shards --eval-dir data/decals/shards/decals_debug/eval_shards --epochs 2 --batch-size 8
+      python train_model.py --save-dir results/decals_debug --shard-img-size 32 --resize-size 224 --train-dir data/decals/shards/decals_debug/train_shards --eval-dir data/decals/shards/decals_debug/eval_shards --epochs 2 --batch-size 8
       
     DECaLS full:
-      python train_model.py --experiment-dir results/decals_debug --shard-img-size 300 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 200 --batch-size 256 --resize-size 224
+      python train_model.py --save-dir results/decals_debug --shard-img-size 300 --train-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/train_shards --eval-dir /raid/scratch/walml/galaxy_zoo/decals/tfrecords/all_2p5_unfiltered_retired/eval_shards --epochs 200 --batch-size 256 --resize-size 224
     New features: add --distributed for multi-gpu, --wandb for weights&biases metric tracking, --color for color (does not perform better)
 
     GZ2 debugging:
-      python train_model.py --experiment-dir results/gz2_debug --shard-img-size 300 --train-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --eval-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --epochs 1 --batch-size 8 --resize-size 128
+      python train_model.py --save-dir results/gz2_debug --shard-img-size 300 --train-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --eval-dir data/gz2/shards/all_sim_2p5_unfiltered_300/train_shards --epochs 1 --batch-size 8 --resize-size 128
 
 
     """
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     logging.info('GPUs: {}'.format(physical_devices))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--experiment-dir', dest='save_dir', type=str)
+    parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--shard-img-size', dest='shard_img_size', type=int, default=300)
     parser.add_argument('--resize-size', dest='resize_size', type=int, default=224)
     parser.add_argument('--train-dir', dest='train_records_dir', type=str)

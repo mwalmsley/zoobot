@@ -37,7 +37,7 @@ if __name__ == '__main__':
     logging.info('GPUs: {}'.format(physical_devices))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--experiment-dir', dest='save_dir', type=str)
+    parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--data-dir', dest='data_dir', type=str)
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)

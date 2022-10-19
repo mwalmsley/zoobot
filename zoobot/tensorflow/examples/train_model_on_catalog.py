@@ -23,7 +23,7 @@ if __name__ == '__main__':
     Example use:
 
     python zoobot/tensorflow/examples/train_model_on_shards.py \
-        --experiment-dir /will/save/model/here \
+        --save-dir /will/save/model/here \
         --resize-size 224 \
         --catalog-loc path/to/some/catalog.csv
         --wandb
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     # args re. what to train on
-    parser.add_argument('--experiment-dir', dest='save_dir', type=str)
+    parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--catalog',
                         dest='catalog_loc', type=str, action='append')
     # TODO note - no num_workers arg, tf does this automatically
