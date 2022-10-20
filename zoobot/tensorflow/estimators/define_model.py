@@ -158,7 +158,7 @@ def get_model(
         maxvit_model=maxvit_standard.get_maxvit_model(
             # maxvit_model,
             input_shape = shape_after_preprocessing_layers,
-            get_maxvit = maxvit_model,
+            get_maxvit = which_maxvit,
             use_image_weights=use_imagenet_weights
         )
         model.add(maxvit_model)
