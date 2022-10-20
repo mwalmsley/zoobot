@@ -10,6 +10,8 @@
 #SBATCH --cpus-per-task=16
 pwd; hostname; date
 
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
+
 nvidia-smi
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
