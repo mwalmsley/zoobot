@@ -43,7 +43,7 @@ if __name__ == '__main__':
                         type=str, default='efficientnet')
     parser.add_argument('--resize-size', dest='resize_size',
                         type=int, default=224)
-    parser.add_argument('--epochs', dest='epochs', type=int)
+    parser.add_argument('--epochs', dest='epochs', type=int, default=1000)
     parser.add_argument('--batch-size', dest='batch_size',
                         default=512, type=int)
     parser.add_argument('--gpus', default=2, type=int)
