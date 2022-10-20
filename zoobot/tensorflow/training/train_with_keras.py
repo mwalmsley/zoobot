@@ -40,7 +40,8 @@ def train(
     gpus=2,
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
     # replication parameters
-    random_state=42,  # TODO not yet implemented
+    random_state=42,
+    use_effnet=False
 ):
 
     # get the image paths, divide into train/val/test if not explicitly passed above
@@ -138,7 +139,8 @@ def train(
             resize_size=resize_size,  # ideally, matches crop size
             channels=channels,
             always_augment=always_augment,
-            dropout_rate=dropout_rate
+            dropout_rate=dropout_rate,
+            use_effnet=use_effnet
         )
 
         multiquestion_loss = losses.get_multiquestion_loss(
@@ -164,7 +166,8 @@ def train(
         train_config,  # parameters for how to train e.g. epochs, patience
         train_dataset,
         val_dataset,
-        eager=eager
+        eager=eager,
+        verbose=1
     )
 
     # unsure if this will work
