@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=dr5-rep-tf                        # Job name
-#SBATCH --output=dr5-rep-tf_%A.log 
+#SBATCH --job-name=tf-vit                        # Job name
+#SBATCH --output=%x_%A.log 
 #SBATCH --mem=0                                     # Job memory request
 #SBATCH --cpus-per-task=24
 #SBATCH --ntasks 1
@@ -8,7 +8,6 @@
 #SBATCH --time=23:00:00                                # Time limit hrs:min:sec
 #SBATCH --constraint=A100 
 #SBATCH --exclusive   # only one task per node
-#SBATCH --exclude compute-0-7,compute-0-5
 
 # Train Zoobot (tensorflow version) on DR5 shards from scratch on Slurm cluster.
 # You will need to adjust various paths
@@ -43,6 +42,6 @@ $PYTHON $ZOOBOT_DIR/replication/tensorflow/train_model_on_decals_dr5_splits.py \
     --resize-size 224 \
     --data-dir $DATA_DIR \
     --epochs 200 \
-    --batch-size 512 \
-    --gpus 2 \
+    --batch-size 64 \
+    --gpus 1 \
     --wandb

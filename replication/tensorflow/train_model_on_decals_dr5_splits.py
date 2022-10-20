@@ -100,5 +100,6 @@ if __name__ == '__main__':
         dropout_rate=0.2,
         color=args.color,
         resize_size=224,
-        mixed_precision=args.mixed_precision
+        mixed_precision=args.mixed_precision,
+        use_effnet=True
     )
