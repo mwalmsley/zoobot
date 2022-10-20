@@ -166,7 +166,8 @@ def train(
         train_config,  # parameters for how to train e.g. epochs, patience
         train_dataset,
         val_dataset,
-        eager=eager
+        eager=eager,
+        verbose=1
     )
 
     # unsure if this will work
