@@ -35,7 +35,7 @@ RESULTS_DIR=$BASE_DIR/repos/gz-decals-classifiers/results
 # to download, run decals_dr5_setup - see replication/pytorch/train_model_on_decals_dr5_splits.py
 DATA_DIR=$BASE_DIR/repos/_data/decals_dr5
 
-EXPERIMENT_DIR=$RESULTS_DIR/tensorflow/dr5/vit_2xgpu
+EXPERIMENT_DIR=$RESULTS_DIR/tensorflow/dr5/vit_2xgpu_lowadam
 
 $PYTHON $ZOOBOT_DIR/replication/tensorflow/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
