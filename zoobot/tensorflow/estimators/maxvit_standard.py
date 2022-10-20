@@ -29,4 +29,5 @@ def MaxViTModel(maxvit_model, input_shape,):
 def get_maxvit_model(input_shape,
                      get_maxvit,
                      use_image_weights=False):
-    return MaxViTModel(maxvit_model='MaxViTTiny', input_shape=input_shape)
+    return MaxViTModel(maxvit_model=get_maxvit#'MaxViTTiny'
+    , input_shape=input_shape)
