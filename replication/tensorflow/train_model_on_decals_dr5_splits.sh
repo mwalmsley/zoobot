@@ -22,7 +22,7 @@ nvidia-smi
 BASE_DIR=/share/nas2/walml  
 # BASE_DIR=/nvme1/scratch/walml  # local (copy-paste into terminal)
 
-ZOOBOT_DIR=$BASE_DIR/repos/zoobot
+ZOOBOT_DIR=$BASE_DIR/repos/zoobot_astrohack
 PYTHON=$BASE_DIR/miniconda3/envs/zoobot/bin/python
 RESULTS_DIR=$BASE_DIR/repos/gz-decals-classifiers/results
 
@@ -35,7 +35,7 @@ RESULTS_DIR=$BASE_DIR/repos/gz-decals-classifiers/results
 # to download, run decals_dr5_setup - see replication/pytorch/train_model_on_decals_dr5_splits.py
 DATA_DIR=$BASE_DIR/repos/_data/decals_dr5
 
-EXPERIMENT_DIR=$RESULTS_DIR/tensorflow/dr5/efficientnet_dr5_tensorflow_greyscale_catalog
+EXPERIMENT_DIR=$RESULTS_DIR/tensorflow/dr5/vit
 
 $PYTHON $ZOOBOT_DIR/replication/tensorflow/train_model_on_decals_dr5_splits.py \
     --experiment-dir $EXPERIMENT_DIR \
