@@ -143,7 +143,7 @@ def get_model(
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
     if use_effnet:
-        logging.info('Using effnet')
+        logging.warning('Using effnet')
         effnet = efficientnet_custom.define_headless_efficientnet(  # from efficientnet_custom.py
                                                                     # defines efficientnet model to train
                                                                     # direct to maxvit_standard.py instead!
@@ -154,7 +154,7 @@ def get_model(
         )
         model.add(effnet)  # modify`
     else:
-        logging.info('Using MaxVIT')
+        logging.warning('Using MaxVIT')
         maxvit_model=maxvit_standard.get_maxvit_model(
             # maxvit_model,
             input_shape = shape_after_preprocessing_layers,

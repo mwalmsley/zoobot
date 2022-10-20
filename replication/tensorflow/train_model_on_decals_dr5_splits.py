@@ -82,7 +82,7 @@ if __name__ == '__main__':
         wandb.tensorboard.patch(root_logdir=args.save_dir)
         wandb.init(
             sync_tensorboard=True,
-            project='zoobot-pytorch-dr5-presplit-replication',  # TODO rename
+            project='zoobot-tf-vit',
             name=os.path.basename(args.save_dir)
         )
     #   with TensorFlow, doesn't need to be passed as arg
