@@ -73,7 +73,7 @@ if __name__ == '__main__':
         architecture_name=args.architecture_name,
         batch_size=args.batch_size,
         epochs=1000,  # rely on early stopping
-        patiene=20, # increased as 8 seemed to stop too early (~300 epochs)
+        patience=20, # increased as 8 seemed to stop too early (~300 epochs)
         # augmentation parameters
         color=args.color,
         resize_size=args.resize_size,
