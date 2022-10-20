@@ -98,7 +98,7 @@ def get_model(
     dropout_rate=0.2,
     effnet_model = efficientnet_standard.EfficientNetB0,
     maxvit_model = 'MaxViTTiny',  # this line defines the model!
-    use_effnet = True
+    use_effnet = False
     ):
     """
     Create a trainable efficientnet model.

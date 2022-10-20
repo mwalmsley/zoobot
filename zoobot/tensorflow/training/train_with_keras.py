@@ -41,7 +41,7 @@ def train(
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
     # replication parameters
     random_state=42,
-    use_effnet=True
+    use_effnet=False
 ):
 
     # get the image paths, divide into train/val/test if not explicitly passed above
