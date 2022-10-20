@@ -28,11 +28,15 @@ def MaxViTModel(maxvit_model,input_shape):
         config.model.stem_hsize = [8,8]
         config.model.hidden_size = [32, 64, 128, 256]
         config.model.num_classes = 1280  # matching both models
-
-    if maxvit_model == 'MaxViTTiny':
+    elif maxvit_model == 'MaxViTTiny':
         maxvit_name = 'MaxViTTiny'
         config = hparams.lookup(maxvit_name)
 
+        config.train.image_size = input_shape
+        config.eval.image_size = input_shape
+        config.model.num_classes = 1280  # matching both models
+    else:
+        maxvit_name = maxvit_model
         config.train.image_size = input_shape
         config.eval.image_size = input_shape
         config.model.num_classes = 1280  # matching both models
