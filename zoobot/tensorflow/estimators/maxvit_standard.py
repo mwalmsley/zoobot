@@ -37,6 +37,7 @@ def MaxViTModel(maxvit_model,input_shape):
         config.model.num_classes = 1280  # matching both models
     else:
         maxvit_name = maxvit_model
+        config = hparams.lookup(maxvit_name)
         config.train.image_size = input_shape
         config.eval.image_size = input_shape
         config.model.num_classes = 1280  # matching both models
@@ -48,7 +49,7 @@ def MaxViTModel(maxvit_model,input_shape):
 
 
 def get_maxvit_model(input_shape,
-                     which_maxvit = 'MaxViTTiny',
+                     get_maxvit = 'MaxViTTiny',
                      use_image_weights=False):
-    return MaxViTModel(maxvit_model=which_maxvit#'MaxViTTiny'
+    return MaxViTModel(maxvit_model=get_maxvit#'MaxViTTiny'
     , input_shape=input_shape)
