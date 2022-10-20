@@ -41,7 +41,8 @@ def train(
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
     # replication parameters
     random_state=42,
-    use_effnet=False
+    use_effnet=False,
+    maxvit_name=None
 ):
 
     # get the image paths, divide into train/val/test if not explicitly passed above
@@ -140,7 +141,8 @@ def train(
             channels=channels,
             always_augment=always_augment,
             dropout_rate=dropout_rate,
-            use_effnet=use_effnet
+            use_effnet=use_effnet,
+            maxvit_name=maxvit_name
         )
 
         multiquestion_loss = losses.get_multiquestion_loss(
