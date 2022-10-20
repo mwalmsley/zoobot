@@ -2,7 +2,7 @@
 #SBATCH --job-name=tf-vit                        # Job name
 #SBATCH --output=%x_%A.log 
 #SBATCH --mem=0                                     # Job memory request
-#SBATCH --cpus-per-task=24
+#SBATCH --cpus-per-task=16
 #SBATCH --ntasks 1
 #SBATCH --no-requeue                                    # Do not resubmit a failed job
 #SBATCH --time=23:00:00                                # Time limit hrs:min:sec
