@@ -103,6 +103,6 @@ if __name__ == '__main__':
         resize_size=224,
         mixed_precision=args.mixed_precision,
         use_effnet=False,
-        # maxvit_name='MaxViTTiniest'
-        maxvit_name='MaxViTTiny'
+        maxvit_name='MaxViTTiniest'
+        # maxvit_name='MaxViTTiny'
     )
