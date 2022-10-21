@@ -50,7 +50,8 @@ def train_default_zoobot_from_scratch(
     # checkpointing
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
-    save_top_k=3
+    save_top_k=3,
+    extra_callbacks=None
 ):
 
     slurm_debugging_logs()
@@ -145,7 +146,9 @@ def train_default_zoobot_from_scratch(
         drop_connect_rate=drop_connect_rate,
         architecture_name=architecture_name
     )
-
+    
+    extra_callbacks = extra_callbacks if extra_callbacks else []
+    
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
@@ -159,7 +162,8 @@ def train_default_zoobot_from_scratch(
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
         ),
-        EarlyStopping(monitor='val/supervised_loss', patience=patience, check_finite=True)
+        EarlyStopping(monitor='val/supervised_loss', patience=patience, check_finite=True),
+        *extra_callbacks
     ]
 
     trainer = pl.Trainer(
