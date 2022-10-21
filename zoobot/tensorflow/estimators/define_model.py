@@ -97,8 +97,8 @@ def get_model(
     always_augment=True,
     dropout_rate=0.2,
     effnet_model = efficientnet_standard.EfficientNetB0,
-    which_maxvit = 'MaxViTTiny',  # this line defines the model!
-    use_effnet = True
+    maxvit_name = 'MaxViTTiny',  # this line defines the model!
+    use_effnet = False
     ):
     """
     Create a trainable efficientnet model.
@@ -143,6 +143,7 @@ def get_model(
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
     if use_effnet:
+        logging.warning('Using effnet')
         effnet = efficientnet_custom.define_headless_efficientnet(  # from efficientnet_custom.py
                                                                     # defines efficientnet model to train
                                                                     # direct to maxvit_standard.py instead!
@@ -153,10 +154,11 @@ def get_model(
         )
         model.add(effnet)  # modify`
     else:
+        logging.warning('Using MaxVIT')
         maxvit_model=maxvit_standard.get_maxvit_model(
             # maxvit_model,
             input_shape = shape_after_preprocessing_layers,
-            get_maxvit = which_maxvit,
+            get_maxvit = maxvit_name,
             use_image_weights=use_imagenet_weights
         )
         model.add(maxvit_model)

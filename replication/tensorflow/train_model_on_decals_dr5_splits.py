@@ -74,7 +74,8 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
-        epochs = 2
+        # epochs = 2
+        epochs = args.epochs
     else:
         epochs = args.epochs
 
@@ -82,7 +83,7 @@ if __name__ == '__main__':
         wandb.tensorboard.patch(root_logdir=args.save_dir)
         wandb.init(
             sync_tensorboard=True,
-            project='zoobot-pytorch-dr5-presplit-replication',  # TODO rename
+            project='zoobot-tf-vit',
             name=os.path.basename(args.save_dir)
         )
     #   with TensorFlow, doesn't need to be passed as arg
@@ -100,5 +101,8 @@ if __name__ == '__main__':
         dropout_rate=0.2,
         color=args.color,
         resize_size=224,
-        mixed_precision=args.mixed_precision
+        mixed_precision=args.mixed_precision,
+        use_effnet=False,
+        # maxvit_name='MaxViTTiniest'
+        maxvit_name='MaxViTTiny'
     )
