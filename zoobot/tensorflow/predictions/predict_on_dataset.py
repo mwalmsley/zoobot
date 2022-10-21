@@ -49,6 +49,8 @@ def predict(ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_co
     logging.info('Completed at: {}'.format(end.strftime('%Y-%m-%d %H:%M:%S')))
     logging.info('Time elapsed: {}'.format(end - start))
 
+    return predictions, image_id_strs
+
 
 
 def paths_in_folder(folder: str, file_format: str, recursive=False):
