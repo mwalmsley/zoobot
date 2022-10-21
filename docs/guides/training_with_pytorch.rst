@@ -67,6 +67,30 @@ demonstrates training a model on a volunteer catalog already split into train/va
 This example is the script used to create the pretrained models shared under :ref:`datanotes`.
 
 
+Logging
+------------
+
+There is a `tensorboard <https://www.tensorflow.org/tensorboard>` utility class in `zoobot/pytorch/training/tensorboard_classes.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/training/tensorboard_writers.py>`
+which logs loss values and optionally other user-defined metrics.
+
+When training from scratch, use the optional argument of:
+
+.. code-block:: python
+
+    model, trainer = train_with_pytorch_lightning.train_default_zoobot_from_scratch(
+        ...
+        extra_callbacks=[MetricsWriter(writer, [user_defined_criterion]),
+                         MetricsWriter(writer, [user_defined_criterion], "validation"),
+                         MetricsWriter(writer, [user_defined_criterion], "test")],
+    )
+
+with a SummaryWriter object and criterions, e.g.:
+
+.. code-block:: python
+    def mock_criterion(prediction: Tensor,
+                       ground_truth: Tensor) -> float:
+        return ... # Return a value here
+
 Predictions
 ------------
 
