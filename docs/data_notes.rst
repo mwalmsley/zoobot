@@ -10,7 +10,7 @@ Zoobot includes three datasets you might be interested in:
 - Catalogues of ring galaxies. There are two catalogues: basic, derived from "ring" tags on the Galaxy Zoo forum, or advanced, derived from the GZ DECaLS "ring" vote fraction.
   
 Pretrained weights and representations are available `from Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_.
-Ring catalogs and a subset of galaxy images and are available under the `data <https://github.com/mwalmsley/zoobot/tree/pytorch/data>`_ folder. 
+Ring catalogs and a subset of galaxy images and more are available under the `galaxy-datasets <https://github.com/mwalmsley/pytorch-galaxy-datasets>`_ repo. 
 Full morphology catalogs and all galaxy images are available from the `Galaxy Zoo DECaLS data release Zenodo deposit <https://doi.org/10.5281/zenodo.4196266>`_.
 
 Weights
@@ -22,7 +22,7 @@ All models are trained on a dataset split into 70% training, 10% validation (for
 This is denoted by ``train_only_dr5`` in the name.
 To verify that the TensorFlow/PyTorch versions of Zoobot perform similarly, the split is the same for both versions and all models.
 
-The exact training scripts are in the `replication <https://github.com/mwalmsley/zoobot/tree/pytorch/replication>`_ folder.
+The exact training scripts are in the `replication <https://github.com/mwalmsley/zoobot/tree/main/replication>`_ folder.
 These record important details like batch size, mixed precision, etc.
 
 See :ref:`the DECaLS guide <training_from_scratch>` for pedagogical details on how to train models from scratch and how you might train on new Galaxy Zoo campaigns.
@@ -85,7 +85,7 @@ The galaxies can be cross-matched to the Galaxy Zoo 2 catalogues on the "id_str"
     The representations have 1280 features per galaxy. These features are highly redundant (because the CNN has no reason to make them independent).
     They can be effectively compressed by e.g. PCA into around ~40 features while preserving ~95% of the variation.
     The compressed representations are much more practical to work with for e.g. clustering, anomaly-finding, active learning, visualisation with umap, etc.
-    See `this example <https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/shared/compress_representations.py>`_ for how to compress the representations (essentially, just apply sklearn's ``IterativePCA``).
+    See `this example <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/compress_representations.py>`_ for how to compress the representations (essentially, just apply sklearn's ``IterativePCA``).
     See :ref:`representations_guide` for more details on the representations.
 
 
@@ -97,7 +97,7 @@ We have included the code used to carry out this fine-tuning in this repository,
 You might like to improve on our work or to use this as a starting point to be swapped out for your own target galaxies.
 
 To carry out the fine-tuning with our example scripts, you will need the catalogues of labelled rings and the images.
-This repository includes two catalogues under `data <https://github.com/mwalmsley/zoobot/tree/pytorch/data>`_ : ``example_ring_catalog_basic.csv`` and ``example_ring_catalog_advanced.parquet``.
+This repository includes two catalogues under `data <https://github.com/mwalmsley/zoobot/tree/main/data>`_ : ``example_ring_catalog_basic.csv`` and ``example_ring_catalog_advanced.parquet``.
 
 ``example_ring_catalog_basic.csv`` is a basic catalogue used for demonstration purposes in ``finetune_minimal.py``.
 Ring labels are assigned depending on if each GZD-5 galaxy was tagged as "ring" by any volunteers on the Galaxy Zoo forum. 

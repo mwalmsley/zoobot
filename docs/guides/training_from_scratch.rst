@@ -157,7 +157,7 @@ See the :ref:`Training with TensorFlow <training_with_tensorflow>` guide.
     I will also adjust the model to not include these preprocessing layers, to allow more flexibilty with stochastic adjustments.
     Any help would be very welcome and would be credited appropriately.
 
-With the PyTorch version, you need to define a `PyTorch Lightning DataModule <https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html>`_ that describes how to load the images listed in your catalog and how to divide them into train/validation/test sets. 
+With the PyTorch version, you need to define a `PyTorch Lightning DataModule <https://pytorch-lightning.readthedocs.io/en/stable/notebooks/lightning_examples/datamodules.html>`_ that describes how to load the images listed in your catalog and how to divide them into train/validation/test sets. 
 To train as fast as possible, any static adjustments should already have been done to those images.
 Stochastic adjustments happen when the images are read from those paths into memory, using the PyTorch dataloaders you define in your DataModule.
 See the :ref:`Training with PyTorch <training_with_pytorch>` guide.

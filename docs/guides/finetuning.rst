@@ -27,7 +27,7 @@ If you do want to start from scratch, to reproduce or improve upon the pretraine
     This guide uses code for the TensorFlow version of Zoobot.
     The conceptual approach is exactly the same with the PyTorch version.
     I haven't written examples yet - sorry! 
-    For now, here are two links for fine-tuning vision models with `PyTorch Vision <https://github.com/PyTorchLightning/pytorch-lightning/blob/master/pl_examples/domain_templates/computer_vision_fine_tuning.py>`__ and `PyTorch Lightning <https://github.com/PyTorchLightning/pytorch-lightning/blob/master/pl_examples/domain_templates/computer_vision_fine_tuning.py>`__.
+    For now, here are two links for fine-tuning vision models with `PyTorch Vision <>`__ and `PyTorch Lightning <https://github.com/Lightning-AI/lightning/blob/master/examples/pl_domain_templates/computer_vision_fine_tuning.py>`__.
 
 
 Examples

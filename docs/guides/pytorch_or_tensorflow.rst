@@ -5,7 +5,7 @@
 PyTorch or TensorFlow?
 ===========================
 
-Zoobot is really two separate sets of code: `zoobot/pytorch <https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/pytorch>`_ and `zoobot/tensorflow <https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/tensorflow>`_.
+Zoobot is really two separate sets of code: `zoobot/pytorch <https://github.com/mwalmsley/zoobot/tree/main/zoobot/pytorch>`_ and `zoobot/tensorflow <https://github.com/mwalmsley/zoobot/tree/main/zoobot/tensorflow>`_.
 They both do (almost) exactly the same thing - train the same model architecture on the same Galaxy Zoo data in the same way, for extracting representations and for finetuning - but they use different underlying deep learning frameworks to do so.
 
 We have created two versions of Zoobot so that you can use your preferred framework.
@@ -30,7 +30,7 @@ This makes training more flexible: with shards, changing the training data requi
 Avoiding shards also saves disk space: TFRecord shards take much up more disk space than the original images.
 
 The TensorFlow version has been around longer.
-It has more working examples (see https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/tensorflow/examples>`_).
+It has more working examples (see `<https://github.com/mwalmsley/zoobot/tree/main/zoobot/tensorflow/examples>`_).
 It has also been used in published work: both the GZ DECaLS catalog and the "practical representation tools" paper used the TensorFlow version.
 
 The PyTorch version is new and includes the latest features but has less examples and documentation and has not yet been formally published.

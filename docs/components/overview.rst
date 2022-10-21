@@ -109,7 +109,9 @@ Re-use ``preprocess_config`` to ensure your train, validation, test and ultimate
 
 With PyTorch, preprocessing happens in the DataModule you define. 
 Personally, I find this a little simpler.
-See `zoobot/pytorch/datasets/decals_dr8.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/datasets/decals_dr8.py>`_ for a working example to adjust. 
+See `pytorch-galaxy-datasets/pytorch_galaxy_datasets/deprecated/decals_dr8.py
+<https://github.com/mwalmsley/pytorch-galaxy-datasets/blob/main/pytorch_galaxy_datasets/deprecated/decals_dr8.py>`_
+for a working example to adjust. 
 
 .. _overview_training:
 
@@ -148,5 +150,5 @@ Making predictions is then as easy as:
     # the API is the same for TensorFlow and PyTorch, happily
     predictions = model.predict(pred_dataset)
 
-See the end of `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/finetune_minimal.py>`_ for a complete (TensorFlow) example.
+See the end of `zoobot/tensorflow/examples/finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`_ for a complete (TensorFlow) example.
 

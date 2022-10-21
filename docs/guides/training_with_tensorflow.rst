@@ -32,7 +32,7 @@ Training on Shards
 --------------------
 
 Now you can train a CNN using those shards. 
-`train_with_keras.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/training/train_with_keras.py>`__ has the code to do this.
+`train_with_keras.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/training/train_with_keras.py>`__ has the code to do this.
 This has a .train() function with the following arguments:
 
 .. code-block:: python
@@ -68,10 +68,10 @@ Check the function docstring (and comments in the function itself) for further d
 
 There are two complete working examples which you can copy and adapt. Both scripts are simply convenient command-line wrappers around ``train_with_keras.train``.
 
-`zoobot/tensorflow/examples/train_model_on_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_catalog.py>`__ demonstrates training a model on shards you've created. 
+`zoobot/tensorflow/examples/train_model_on_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_shards.py>`__ demonstrates training a model on shards you've created. 
 You can use the shards created by the worked example in the section above.
 
-`replication/tensorflow/train_model_on_decals_dr5_splits.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model.py>`__
+`replication/tensorflow/train_model_on_decals_dr5_splits.py <https://github.com/mwalmsley/zoobot/blob/main/replication/tensorflow/train_model_on_decals_dr5_splits.py>`__
 trains a model on the shards used by W+22a (themselves created by `decals_dr5_to_shards.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/decals_dr5_to_shards.py>`__).
 This example is the script used to create the pretrained TensorFlow models shared under :ref:`datanotes`.
 
