@@ -91,6 +91,8 @@ with a SummaryWriter object and criterions, e.g.:
                        ground_truth: Tensor) -> float:
         return ... # Return a value here
 
+You can use the MetricsWriter class as any other PyTorch Lightning `Callback <https://pytorch-lightning.readthedocs.io/en/stable/extensions/callbacks.html>`.
+
 Predictions
 ------------
 
