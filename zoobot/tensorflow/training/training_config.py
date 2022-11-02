@@ -72,9 +72,10 @@ def train_estimator(model, train_config, train_dataset, val_dataset, extra_callb
     # will create a multi-file checkpoint like {checkpoint.index, checkpoint.data.00000-00001, ...}
     checkpoint_name = os.path.join(train_config.log_dir, 'checkpoint')
 
+    tensorboard_dir = os.path.join(train_config.log_dir, 'tensorboard')
     callbacks = [
         tf.keras.callbacks.TensorBoard(
-            log_dir=os.path.join(train_config.log_dir, 'tensorboard'),
+            log_dir=tensorboard_dir,
             # explicitly disable various slow logging options - enable these if you like
             # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
             histogram_freq=0,  # don't log all the internal histograms, possibly slow
@@ -104,7 +105,9 @@ def train_estimator(model, train_config, train_dataset, val_dataset, extra_callb
     )
 
     # https://www.tensorflow.org/tensorboard/scalars_and_keras
-    fit_summary_writer = tf.summary.create_file_writer(os.path.join(train_config.log_dir, 'manual_summaries'))
+    # automatically logs (train/validation)/epoch_loss
+    # adds into tensorboard_dir, which also has train/val subfolders
+    fit_summary_writer = tf.summary.create_file_writer(tensorboard_dir)
     # pylint: disable=not-context-manager
     with fit_summary_writer.as_default(): 
         # pylint: enable=not-context-manager
