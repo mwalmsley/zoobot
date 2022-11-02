@@ -156,7 +156,12 @@ def train(
     model.compile(
         loss=loss,
         optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
-        metrics=[custom_metrics.LossPerQuestion(schema.question_index_groups)]
+        metrics=[
+            custom_metrics.LossPerQuestion(
+                name='loss_per_question',
+                question_index_groups=schema.question_index_groups
+            )
+        ]
     )
     model.summary()
 
