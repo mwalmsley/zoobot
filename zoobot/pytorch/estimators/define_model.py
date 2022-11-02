@@ -46,7 +46,7 @@ class GenericLightningModule(pl.LightningModule):
         # true, pred convention as with sklearn
         # self.loss_func returns shape of (galaxy, question), mean to ()
         loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("train/epoch_loss", loss, on_step=False, prog_bar=True, logger=True)
+        self.log("train/epoch_loss", loss, on_epoch=True, prog_bar=True, logger=True)
         if self.log_on_step:
             # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
             self.log("train/step_loss", loss, on_step=True, prog_bar=True, logger=True)
@@ -61,7 +61,7 @@ class GenericLightningModule(pl.LightningModule):
         predictions = self(x)
         loss = torch.mean(self.loss_func(predictions, labels))
         # TODO what is sync_dist doing here?
-        self.log("validation/epoch_loss", loss, on_step=False, prog_bar=True, logger=True, sync_dist=True)
+        self.log("validation/epoch_loss", loss, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         if self.log_on_step:
             self.log("validation/step_loss", loss, on_step=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
@@ -74,7 +74,7 @@ class GenericLightningModule(pl.LightningModule):
         x, labels = batch
         predictions = self(x)
         loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("test/epoch_loss", loss, on_step=False, prog_bar=True, logger=True, sync_dist=True)
+        self.log("test/epoch_loss", loss, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     
