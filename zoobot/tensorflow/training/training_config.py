@@ -73,31 +73,32 @@ def train_estimator(model, train_config, train_dataset, val_dataset, extra_callb
     checkpoint_name = os.path.join(train_config.log_dir, 'checkpoint')
 
     tensorboard_dir = os.path.join(train_config.log_dir, 'tensorboard')
-    callbacks = [
-        tf.keras.callbacks.TensorBoard(
-            log_dir=tensorboard_dir,
-            # explicitly disable various slow logging options - enable these if you like
-            # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
-            histogram_freq=0,  # don't log all the internal histograms, possibly slow
-            write_images=False,  # this actually writes the weights, terrible name
-            write_graph=False,
-            # profile_batch='2,10' 
-            profile_batch=0,   # i.e. disable profiling
-            update_freq='epoch'
-        ),
-        tf.keras.callbacks.ModelCheckpoint(
-            filepath=checkpoint_name,
-            monitor='val_loss',
-            mode='min',
-            save_freq=train_config.save_freq,
-            save_best_only=True,
-            save_weights_only=True),
-        tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=train_config.patience),
-        tf.keras.callbacks.TerminateOnNaN(),
-        custom_callbacks.UpdateStepCallback(
-            batch_size=next(iter(train_dataset))[0].shape[0]  # grab the first batch, 0th tuple element (the images), 0th dimension, to check the batch size
-        )
-    ] + extra_callbacks
+    # callbacks = [
+    #     tf.keras.callbacks.TensorBoard(
+    #         log_dir=tensorboard_dir,
+    #         # explicitly disable various slow logging options - enable these if you like
+    #         # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
+    #         histogram_freq=0,  # don't log all the internal histograms, possibly slow
+    #         write_images=False,  # this actually writes the weights, terrible name
+    #         write_graph=False,
+    #         # profile_batch='2,10' 
+    #         profile_batch=0,   # i.e. disable profiling
+    #         update_freq='epoch'
+    #     ),
+    #     tf.keras.callbacks.ModelCheckpoint(
+    #         filepath=checkpoint_name,
+    #         monitor='val_loss',
+    #         mode='min',
+    #         save_freq=train_config.save_freq,
+    #         save_best_only=True,
+    #         save_weights_only=True),
+    #     tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=train_config.patience),
+    #     tf.keras.callbacks.TerminateOnNaN(),
+    #     custom_callbacks.UpdateStepCallback(
+    #         batch_size=next(iter(train_dataset))[0].shape[0]  # grab the first batch, 0th tuple element (the images), 0th dimension, to check the batch size
+    #     )
+    # ] + extra_callbacks
+    callbacks = None
 
     # attribute used by the callbacks to track the current step when writing to tensorboard.
     model.step = tf.Variable(
