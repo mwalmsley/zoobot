@@ -15,7 +15,7 @@ class LossPerQuestion(tf.keras.metrics.Metric):
     # dict of weights, keyed by question_n
     self.question_weights = {}
     for question_n in range(len(self.question_index_groups)):
-        self.question_weights[question_n] = self.add_weight(name=question_n, initializer='zeros')
+        self.question_weights[question_n] = self.add_weight(name=f'questions/question_{question_n}_loss', initializer='zeros')
 
   def update_state(self, y_true, y_pred, sample_weight=None):
 
@@ -26,5 +26,5 @@ class LossPerQuestion(tf.keras.metrics.Metric):
         self.question_weights[question_n].assign_add(mean_loss_for_question)
 
   def result(self):
-    # TODO rename with questions/question_{question_n}_loss
+    # TODO rename with 
     return self.question_weights
