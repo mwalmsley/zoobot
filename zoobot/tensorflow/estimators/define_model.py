@@ -141,7 +141,7 @@ def get_model(
     x = get_augmentation_layers(
         crop_size=crop_size,
         resize_size=resize_size,
-        always_augment=always_augment)(x)
+        always_augment=always_augment)(inputs)
 
     # Functional-created Model of EfficientNet
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
