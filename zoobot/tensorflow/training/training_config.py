@@ -93,17 +93,17 @@ def train_estimator(model, train_config, train_dataset, val_dataset, extra_callb
             save_best_only=True,
             save_weights_only=True),
         tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=train_config.patience),
-        tf.keras.callbacks.TerminateOnNaN(),
-        custom_callbacks.UpdateStepCallback(
-            batch_size=next(iter(train_dataset))[0].shape[0]  # grab the first batch, 0th tuple element (the images), 0th dimension, to check the batch size
-        )
+        tf.keras.callbacks.TerminateOnNaN()
+        # custom_callbacks.UpdateStepCallback(
+        #     batch_size=next(iter(train_dataset))[0].shape[0]  # grab the first batch, 0th tuple element (the images), 0th dimension, to check the batch size
+        # )
     ] + extra_callbacks
     # callbacks = None
 
     # attribute used by the callbacks to track the current step when writing to tensorboard.
-    model.step = tf.Variable(
-      0, dtype=tf.int64, name='model_step', trainable=False
-    )
+    # model.step = tf.Variable(
+    #   0, dtype=tf.int64, name='model_step', trainable=False
+    # )
 
     # https://www.tensorflow.org/tensorboard/scalars_and_keras
     # automatically logs (train/validation)/epoch_loss

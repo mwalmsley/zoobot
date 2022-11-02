@@ -26,5 +26,5 @@ class UpdateStepCallback(tf.keras.callbacks.Callback):
         # # self.model.step = step
         # # self.model.step.assign(step)
         tf.keras.backend.set_value(self.model.step, step)
-        print('\n Ending step: ', float(tf.keras.backend.get_value(self.model.step)))
+        # print('\n Ending step: ', float(tf.keras.backend.get_value(self.model.step)))
         # # print(f'Step {step}')

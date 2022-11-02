@@ -42,18 +42,22 @@ def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_stand
     return model
 
 
-def custom_top_dirichlet(model, output_dim):
+def custom_top_dirichlet(output_dim):
     """
     Final dense layer used in GZ DECaLS (after global pooling). 
     ``output_dim`` neurons with an activation of ``tf.nn.sigmoid(x) * 100. + 1.``, chosen to ensure 1-100 output range
     This range is suitable for parameters of Dirichlet distribution.
 
+    Use with Functional API e.g. x = custom_top_dirichlet(output_dim)(x)
+
     Args:
-        model (tf.keras.Model): Model to which to add this dense layer
         output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
+
+    Returns:
+        (tf.keras.layers.Dense): suitable for predicting Dirichlet distributions, as above.
     """
     # model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 20. + .2))  # one params per answer, 1-20 range (mebe fractionally worse)
-    model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 100. + 1.))  # one params per answer, 1-100 range
+    return tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 100. + 1.)  # one params per answer, 1-100 range
 
 
 # def custom_top_multinomial(model, output_dim, schema, batch_size):

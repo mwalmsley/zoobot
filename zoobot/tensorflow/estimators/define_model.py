@@ -23,9 +23,8 @@ class CustomSequential(tf.keras.Sequential):
         return super().call(x, training)
 
 
-def add_augmentation_layers(model, crop_size, resize_size, always_augment=False):
+def get_augmentation_layers(crop_size, resize_size, always_augment=False):
     """
-    Add image augmentation layers to end of ``model``.
     
     The following augmentations are applied, in order:
         - Random rotation (aliased)
@@ -37,17 +36,22 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
     This is both faster and avoids information loss from aliasing.
     I strongly suggest this approach if possible.
 
-    Model (probably tf.keras.Sequential) is modified in-place so this func. returns None.
+    Designed for use with tf Functional API
 
     TODO I would prefer to refactor this so augmentations are separate from the model, as with pytorch.
     But it's not a high priority change.
 
     Args:
-        model (tf.keras.Model): Model to add augmentation layers. Layers are added at *end*, so likely an empty model e.g. tf.keras.Sequential()
         crop_size (int): desired length of image after random crop (assumed square)
         resize_size (int): desired length of image after resizing (assumed square)
         always_augment (bool, optional): If True, augmentations also happen at test time. Defaults to False.
+
+    Returns:
+        (tf.keras.Sequential): applying augmentations with e.g. x_aug = model(x)
     """
+
+    model = tf.keras.Sequential()
+
     if crop_size < resize_size:
         logging.warning('Crop size {} < final size {}, losing resolution'.format(
             crop_size, resize_size))
@@ -73,11 +77,14 @@ def add_augmentation_layers(model, crop_size, resize_size, always_augment=False)
     model.add(rotation_layer(0.5, fill_mode='reflect'))  # rotation range +/- 0.25 * 2pi i.e. +/- 90*.
     model.add(flip_layer())
     model.add(crop_layer(crop_size, crop_size))
+    # TODO will deprecate
     if resize:
         logging.info('Using resizing, to {}'.format(resize_size))
         model.add(tf.keras.layers.experimental.preprocessing.Resizing(
             resize_size, resize_size, interpolation='bilinear'
         ))
+
+    return model
 
 
 def get_model(
@@ -121,17 +128,22 @@ def get_model(
         input_size, crop_size, resize_size))
 
     # model = CustomSequential()  # to log the input image for debugging
-    model = tf.keras.Sequential()
+    # model = tf.keras.Sequential()
 
     input_shape = (input_size, input_size, channels)
-    model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
-    add_augmentation_layers(
-        model,
+    inputs = tf.keras.Input(shape=input_shape)
+
+
+    # model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
+
+    # Sequential block of augmentations
+    x = get_augmentation_layers(
         crop_size=crop_size,
         resize_size=resize_size,
-        always_augment=always_augment)  # inplace
+        always_augment=always_augment)(x)
 
+    # Functional-created Model of EfficientNet
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
@@ -140,22 +152,27 @@ def get_model(
         # further kwargs will be passed to get_effnet
         use_imagenet_weights=use_imagenet_weights,
     )
-    model.add(effnet)
+    x = effnet(x)  # hopefully supports functional
 
     logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
 
+    # Functional head
     if include_top:
         assert output_dim is not None
-        model.add(tf.keras.layers.GlobalAveragePooling2D())
-        model.add(custom_layers.PermaDropout(dropout_rate, name='top_dropout'))
-        efficientnet_custom.custom_top_dirichlet(model, output_dim)  # inplace
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)
+        x = efficientnet_custom.custom_top_dirichlet(output_dim)(x)  # inplace
 
-    # will be updated by callback
-    model.step = tf.Variable(
-        0, dtype=tf.int64, name='model_step', trainable=False)
+    model = tf.keras.Model(inputs=inputs, outputs=x, name="zoobot")
+
+    # # will be updated by callback
+    # model.step = tf.Variable(
+    #     0, dtype=tf.int64, name='model_step', trainable=False)
 
     if weights_loc:
+        # raise NotImplementedError
         load_weights(model, weights_loc, expect_partial=expect_partial)
+
     return model
 
 
