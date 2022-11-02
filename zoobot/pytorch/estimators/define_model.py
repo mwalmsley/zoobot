@@ -45,7 +45,11 @@ class GenericLightningModule(pl.LightningModule):
 
         # true, pred convention as with sklearn
         # self.loss_func returns shape of (galaxy, question), mean to ()
-        loss = torch.mean(self.loss_func(predictions, labels))
+        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
+        # if hasattr(self, 'schema'):
+        self.log_loss_per_question(multiq_loss, prefix='train')
+
+        loss = torch.mean(torch.sum(multiq_loss, axis=1))
         self.log("train/epoch_loss", loss, on_epoch=True, on_step=False,prog_bar=True, logger=True)
         if self.log_on_step:
             # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
@@ -55,13 +59,25 @@ class GenericLightningModule(pl.LightningModule):
             self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
+    def log_loss_per_question(self, multiq_loss, prefix):
+        # log questions individually
+        # TODO need schema attribute or similar to have access to question names, this will do for now
+        for question_n in range(multiq_loss.shape[1]):
+            self.log(f'{prefix}/questions/question_{question_n}_loss', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
+
     def validation_step(self, batch, batch_idx):
-        # identical to training_step except for log
+        # identical to training_step except for log prefix TODO refactor?
         x, labels = batch
         predictions = self(x)
-        loss = torch.mean(self.loss_func(predictions, labels))
+
+        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
+        # if hasattr(self, 'schema'):
+        self.log_loss_per_question(multiq_loss, prefix='validation')
+
+        loss = torch.mean(torch.sum(multiq_loss, axis=1))
         # TODO what is sync_dist doing here?
         self.log("validation/epoch_loss", loss, on_epoch=True, on_step=False, prog_bar=True, logger=True, sync_dist=True)
+
         if self.log_on_step:
             self.log("validation/step_loss", loss, on_epoch=False, on_step=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
@@ -73,7 +89,12 @@ class GenericLightningModule(pl.LightningModule):
         # similarly
         x, labels = batch
         predictions = self(x)
-        loss = torch.mean(self.loss_func(predictions, labels))
+
+        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
+        # if hasattr(self, 'schema'):
+        self.log_loss_per_question(multiq_loss, prefix='test')
+
+        loss = torch.mean(torch.sum(multiq_loss, axis=1))
         self.log("test/epoch_loss", loss, on_epoch=True, on_step=False, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
@@ -149,13 +170,17 @@ def get_loss_func(question_index_groups):
     # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
 
     # accept (labels, preds), return losses of shape (batch, question)
-    def loss_func(preds, labels):
+    def loss_func(preds, labels, sum_over_questions=False):
         # pytorch convention is preds, labels for loss func
         # my and sklearn convention is labels, preds for loss func
 
         # multiquestion_loss returns loss of shape (batch, question)
         # torch.sum(multiquestion_loss, axis=1) gives loss of shape (batch). Equiv. to non-log product of question likelihoods.
-        return torch.sum(losses.calculate_multiquestion_loss(labels, preds, question_index_groups), axis=1)  
+        multiq_loss = losses.calculate_multiquestion_loss(labels, preds, question_index_groups)
+        if sum_over_questions:
+            return torch.sum(multiq_loss, axis=1)
+        else:
+            return multiq_loss
     return loss_func
 
 
