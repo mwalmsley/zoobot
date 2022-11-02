@@ -132,7 +132,7 @@ def get_model(
 
     input_shape = (input_size, input_size, channels)
 
-    inputs = tf.keras.Input(shape=input_shape)
+    inputs = tf.keras.Input(shape=input_shape, name='preprocessed_image_batch')
 
 
     # model.add(tf.keras.layers.InputLayer(input_shape=input_shape))

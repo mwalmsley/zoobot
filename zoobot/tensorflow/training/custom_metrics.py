@@ -10,7 +10,7 @@ class LossPerQuestion(tf.keras.metrics.Metric):
 
     self.question_index_groups = question_index_groups
 
-    self.multiq_loss_func = losses.get_multiquestion_loss(question_index_groups=self.question_index_groups)  # doesn't sum over questions    
+    self.multiq_loss_func = losses.get_multiquestion_loss(question_index_groups=self.question_index_groups, reduction=tf.keras.losses.Reduction.NONE)  # doesn't sum over questions    
 
     # dict of weights, keyed by question_n
     self.question_weights = {}
