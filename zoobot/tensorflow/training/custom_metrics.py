@@ -17,6 +17,9 @@ class LossPerQuestion(tf.keras.metrics.Metric):
     for question_n in range(len(self.question_index_groups)):
         self.question_weights[question_n] = self.add_weight(name=f'questions/question_{question_n}_loss', initializer='zeros')
 
+    # also track num. galaxies
+    self.num_galaxies = self.add_weight(name='num_galaxies', initializer='zeros')
+
   def update_state(self, y_true, y_pred, sample_weight=None):
 
     multiq_loss = self.multiq_loss_func(y_true, y_pred)
@@ -25,6 +28,10 @@ class LossPerQuestion(tf.keras.metrics.Metric):
         mean_loss_for_question = tf.reduce_mean(multiq_loss[:, question_n])
         self.question_weights[question_n].assign_add(mean_loss_for_question)
 
+    self.num_galaxies.assign_add(len(y_true))
+ 
+
   def result(self):
+    return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
     # TODO rename with 
-    return self.question_weights[0]
+    # return self.question_weights[0]
