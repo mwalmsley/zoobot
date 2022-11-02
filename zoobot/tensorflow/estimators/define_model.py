@@ -50,7 +50,7 @@ def get_augmentation_layers(crop_size, resize_size, always_augment=False):
         (tf.keras.Sequential): applying augmentations with e.g. x_aug = model(x)
     """
 
-    model = tf.keras.Sequential()
+    model = tf.keras.Sequential(name='augmentations')
 
     if crop_size < resize_size:
         logging.warning('Crop size {} < final size {}, losing resolution'.format(

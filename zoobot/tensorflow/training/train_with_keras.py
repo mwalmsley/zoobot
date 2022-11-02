@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 from zoobot.tensorflow.data_utils import image_datasets
-from zoobot.tensorflow.training import training_config, losses
+from zoobot.tensorflow.training import training_config, losses, custom_metrics
 from zoobot.tensorflow.estimators import preprocess, define_model
 
 
@@ -155,7 +155,8 @@ def train(
 
     model.compile(
         loss=loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4)
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+        metrics=[custom_metrics.LossPerQuestion(schema.question_index_groups)]
     )
     model.summary()
 

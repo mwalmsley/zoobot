@@ -20,7 +20,7 @@ def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_stand
     Returns:
         [type]: [description]
     """
-    model = tf.keras.models.Sequential()
+    model = tf.keras.models.Sequential(name='headless_efficientnet')
     logging.info('Building efficientnet to expect input {}, after any preprocessing layers'.format(input_shape))
 
 
