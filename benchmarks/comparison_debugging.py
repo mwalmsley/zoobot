@@ -14,5 +14,8 @@ PyTorch loss just has x, and it's not clear how the loss is aggregated between r
 
 Do the losses agree on 1 GPU mode? This will tell if the difference is from per-replica aggregation, or from e.g. averaging over all values not all rows
 
+The difference is approx. 6 - TF is 6x PT, currently.
+Perhaps difference of 10 (questions) and factor of 2 (replica aggregation)?
+
 """
 

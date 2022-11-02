@@ -33,6 +33,7 @@ $PYTHON $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_decals_dr5_splits.py \
     --wandb \
     --gpus $GPUS \
     $COLOR_STRING \
-    $MIXED_PRECISION_STRING
+    $MIXED_PRECISION_STRING \
+    $DEBUG_STRING
 
 # new architecture arg
