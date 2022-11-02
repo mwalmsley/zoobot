@@ -8,6 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
+#SBATCH --exclude=compute-0-7
 pwd; hostname; date
 
 nvidia-smi

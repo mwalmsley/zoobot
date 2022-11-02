@@ -49,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpus', default=2, type=int)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true')
-    parser.add_argument('--wandb', default=False, action='store_true')
+    # parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
                         help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
     parser.add_argument('--debug', default=False, action='store_true')
@@ -80,14 +80,15 @@ if __name__ == '__main__':
     else:
         epochs = args.epochs
 
-    if args.wandb:
-        wandb.tensorboard.patch(root_logdir=args.save_dir)
-        wandb.init(
-            sync_tensorboard=True,
-            project='zoobot-benchmarks',
-            name=os.path.basename(args.save_dir)
-        )
+    # if args.wandb:
+    wandb.tensorboard.patch(root_logdir=args.save_dir)
+    wandb.init(
+        sync_tensorboard=True,
+        project='zoobot-benchmarks',
+        name=os.path.basename(args.save_dir)
+    )
     #   with TensorFlow, doesn't need to be passed as arg
+    # comment out if not desired to use wandb
 
     train_with_keras.train(
         save_dir=args.save_dir,

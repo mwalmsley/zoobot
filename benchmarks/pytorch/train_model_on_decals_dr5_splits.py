@@ -64,6 +64,8 @@ if __name__ == '__main__':
     wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(10))
     wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
 
+    # or set wandb_logger = None to not use wandb
+
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
         schema=schema,
