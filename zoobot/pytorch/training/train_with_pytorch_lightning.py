@@ -149,7 +149,7 @@ def train_default_zoobot_from_scratch(
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
-            monitor="val/supervised_loss",
+            monitor="validation/epoch_loss",
             save_weights_only=True,
             mode='min',
             # custom filename for checkpointing due to / in metric
@@ -159,7 +159,7 @@ def train_default_zoobot_from_scratch(
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
         ),
-        EarlyStopping(monitor='val/supervised_loss', patience=patience, check_finite=True)
+        EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
     ]
 
     trainer = pl.Trainer(
