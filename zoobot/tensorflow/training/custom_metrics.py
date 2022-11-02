@@ -32,6 +32,12 @@ class LossPerQuestion(tf.keras.metrics.Metric):
  
 
   def result(self):
-    return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
+
+    result = {}
+    for weight in self.question_weights.values():
+      result[weight.name] = result[weight]/self.num_galaxies
+
+    return result
+    # return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
     # TODO rename with 
     # return self.question_weights[0]
