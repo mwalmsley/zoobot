@@ -57,6 +57,7 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups):
 
     return total_loss  # leave the reduce_sum to the tf.keras.losses.Loss base class, loss should keep the batch size. 
     # https://www.tensorflow.org/api_docs/python/tf/keras/losses/Loss will auto-reduce (sum) over the batch anyway
+    # with MirroredStrategy, only losses.reduction.SUM is supported, hence I divide this by the batch size manually in train_with_keras.py
 
 
 

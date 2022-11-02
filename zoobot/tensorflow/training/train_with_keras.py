@@ -84,10 +84,14 @@ def train(
         # strategy = tf.distribute.MultiWorkerMirroredStrategy()  # one or more machines. Not tested - you'll need to set this up for your own cluster.
         context_manager = strategy.scope()
         logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
+          # MirroredStrategy causes loss to decrease by factor of num_gpus.
+          # Multiply by gpu_loss_factor to keep loss consistent.
+        gpu_loss_factor = gpus
     else:
         logging.info('Using single or no GPU, not distributed')
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
+        gpu_loss_factor = 1  # do nothing
 
     train_image_paths = list(train_catalog['file_loc'])
     val_image_paths = list(val_catalog['file_loc'])
@@ -147,7 +151,7 @@ def train(
             schema.question_index_groups)
         # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
         # so do it here instead
-        def loss(x, y): return multiquestion_loss(x, y) / batch_size
+        def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
 
     model.compile(
         loss=loss,

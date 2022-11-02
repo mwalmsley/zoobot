@@ -56,7 +56,7 @@ if __name__ == '__main__':
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
 
     wandb_logger = WandbLogger(
-        project='zoobot-benchmarks-pytorch',
+        project='zoobot-benchmarks',
         name=os.path.basename(args.save_dir),
         log_model=True
     )

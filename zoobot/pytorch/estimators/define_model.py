@@ -142,9 +142,14 @@ def get_loss_func(question_index_groups):
     # This just adds schema.question_index_groups as an arg to the usual (labels, preds) loss arg format
     # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
 
-    # accept (labels, preds), return losses of shape (batch)
-    def loss_func(preds, labels):  # pytorch convention is preds, labels
-        return losses.calculate_multiquestion_loss(labels, preds, question_index_groups)  # my and sklearn convention is labels, preds
+    # accept (labels, preds), return losses of shape (batch, question)
+    def loss_func(preds, labels):
+        # pytorch convention is preds, labels for loss func
+        # my and sklearn convention is labels, preds for loss func
+
+        # multiquestion_loss returns loss of shape (batch, question)
+        # torch.sum(multiquestion_loss, axis=1) gives loss of shape (batch). Equiv. to non-log product of question likelihoods.
+        return torch.sum(losses.calculate_multiquestion_loss(labels, preds, question_index_groups), axis=1)  
     return loss_func
 
 
