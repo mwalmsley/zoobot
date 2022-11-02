@@ -28,7 +28,7 @@ class LossPerQuestion(tf.keras.metrics.Metric):
         mean_loss_for_question = tf.reduce_mean(multiq_loss[:, question_n])
         self.question_weights[question_n].assign_add(mean_loss_for_question)
 
-    self.num_galaxies.assign_add(len(y_true))
+    self.num_galaxies.assign_add(tf.cast(len(y_true), dtype=tf.float32))
  
 
   def result(self):
