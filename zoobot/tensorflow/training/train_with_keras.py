@@ -41,7 +41,7 @@ def train(
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
     # replication parameters
     random_state=42,  # TODO not yet implemented
-):
+) -> tf.keras.Sequential:
 
     # get the image paths, divide into train/val/test if not explicitly passed above
     if catalog is not None:
