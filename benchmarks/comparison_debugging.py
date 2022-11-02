@@ -1,3 +1,4 @@
+
 """
 we know from tests/test_loss_equivalence that the losses are mathematically identical prior to aggregation 
 (i.e. rows of galaxies, columns of loss-per-question). 
@@ -8,8 +9,13 @@ Both benchmarks use batch_size=128
 Both use 2 GPUs
 
 Tensorflow loss uses x / batch size because can only SUM within a replica, not MEAN
-Presumably should give loss = sum(x/batch_size), where sum is over all questions and all galaxies
+Presumably should give loss = np.sum(x/batch_size), where sum is over all questions and all galaxies
+(uses tf.keras.losses.Reduction.SUM, "scalar sum of weighted losses", https://www.tensorflow.org/api_docs/python/tf/keras/losses/Reduction)
+Adding up across rows and columns and dividing by num. rows is equivalent to adding up across columns and taking an average across (new) rows
+"""
 
+
+"""
 PyTorch loss just has x, and it's not clear how the loss is aggregated between replicas
 
 Do the losses agree on 1 GPU mode? This will tell if the difference is from per-replica aggregation, or from e.g. averaging over all values not all rows
@@ -17,5 +23,9 @@ Do the losses agree on 1 GPU mode? This will tell if the difference is from per-
 The difference is approx. 6 - TF is 6x PT, currently.
 Perhaps difference of 10 (questions) and factor of 2 (replica aggregation)?
 
-"""
+- PT has no 2x factor change in loss with gpu number (good, this is intuitive)
+- TF...
 
+
+
+"""
