@@ -27,4 +27,4 @@ class LossPerQuestion(tf.keras.metrics.Metric):
 
   def result(self):
     # TODO rename with 
-    return self.question_weights
+    return self.question_weights[0]
