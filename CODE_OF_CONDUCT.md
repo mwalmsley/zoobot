@@ -59,8 +59,8 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-.
+reported in confidence to project manager Dr Mike Walmsley.
+Please see [walmsley.dev](walmsley.dev) for up-to-date contact details.
 All complaints will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the
@@ -111,6 +111,10 @@ individual, or aggression toward or disparagement of classes of individuals.
 
 **Consequence**: A permanent ban from any sort of public interaction within
 the community.
+
+## Dictatorship
+
+Dr Mike Walmsley reserves the right to take any action in pursuit of a safe and positive community experience. In particular, the *Enforcement Guidelines* are indicative only and do not limit possible enforcement actions.
 
 ## Attribution
 
