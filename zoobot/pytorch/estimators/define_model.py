@@ -32,8 +32,8 @@ class GenericLightningModule(pl.LightningModule):
         # these are ignored unless output dim = 2
         self.train_accuracy = Accuracy()
         self.val_accuracy = Accuracy()
-        self.log_on_step = True
-        # useful for debugging, best when log_every_n_steps is fairly large
+        self.log_on_step = False
+        # self.log_on_step is useful for debugging, but slower - best when log_every_n_steps is fairly large
 
 
     def forward(self, x):
@@ -46,7 +46,10 @@ class GenericLightningModule(pl.LightningModule):
         # true, pred convention as with sklearn
         # self.loss_func returns shape of (galaxy, question), mean to ()
         loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("train/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True)
+        self.log("train/epoch_loss", loss, on_step=False, prog_bar=True, logger=True)
+        if self.log_on_step:
+            # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
+            self.log("train/step_loss", loss, on_step=True, prog_bar=True, logger=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
             self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
@@ -57,10 +60,13 @@ class GenericLightningModule(pl.LightningModule):
         x, labels = batch
         predictions = self(x)
         loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("val/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        # TODO what is sync_dist doing here?
+        self.log("validation/epoch_loss", loss, on_step=False, prog_bar=True, logger=True, sync_dist=True)
+        if self.log_on_step:
+            self.log("validation/step_loss", loss, on_step=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
-            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
+            self.log("validation_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -68,7 +74,7 @@ class GenericLightningModule(pl.LightningModule):
         x, labels = batch
         predictions = self(x)
         loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("test/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+        self.log("test/epoch_loss", loss, on_step=False, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     

@@ -76,12 +76,14 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
-        epochs = 2
+        epochs = 10
     else:
         epochs = args.epochs
 
     # if args.wandb:
-    wandb.tensorboard.patch(root_logdir=args.save_dir)
+    # root_logdir must match tensorboard logdir, not full logdir (aka root for /checkpoint, /tensorboard..)
+    # tensorboard logdir is /tensorboard as per training_config.py
+    wandb.tensorboard.patch(root_logdir=os.path.join(args.save_dir, 'tensorboard'))
     wandb.init(
         sync_tensorboard=True,
         project='zoobot-benchmarks',

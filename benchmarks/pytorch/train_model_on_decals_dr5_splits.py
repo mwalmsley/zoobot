@@ -54,6 +54,9 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
+        epochs = 10
+    else:
+        epochs = 1000
 
     wandb_logger = WandbLogger(
         project='zoobot-benchmarks',
@@ -74,7 +77,7 @@ if __name__ == '__main__':
         test_catalog=test_catalog,
         architecture_name=args.architecture_name,
         batch_size=args.batch_size,
-        epochs=1000,  # rely on early stopping
+        epochs=epochs,  # rely on early stopping
         patience=20, # increased as 8 seemed to stop too early (~300 epochs)
         # augmentation parameters
         color=args.color,
