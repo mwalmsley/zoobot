@@ -63,7 +63,7 @@ class GenericLightningModule(pl.LightningModule):
         # log questions individually
         # TODO need schema attribute or similar to have access to question names, this will do for now
         for question_n in range(multiq_loss.shape[1]):
-            self.log(f'{prefix}/questions/question_{question_n}_loss', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
+            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
 
     def validation_step(self, batch, batch_idx):
         # identical to training_step except for log prefix TODO refactor?
