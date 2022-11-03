@@ -153,15 +153,18 @@ def train(
         # so do it here instead
         def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
 
-    model.compile(
-        loss=loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
-        metrics=[
+        # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu
+        extra_metrics = [
             custom_metrics.LossPerQuestion(
                 name='loss_per_question',
                 question_index_groups=schema.question_index_groups
             )
         ]
+
+    model.compile(
+        loss=loss,
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+        metrics=extra_metrics
     )
     model.summary()
 

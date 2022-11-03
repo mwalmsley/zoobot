@@ -6,21 +6,21 @@ import tensorflow as tf
 from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_custom, custom_layers
 
 
-class CustomSequential(tf.keras.Sequential):
+# class CustomSequential(tf.keras.Sequential):
 
-    def __init__(self):
-        super().__init__()
-        self.step = 0
+#     def __init__(self):
+#         super().__init__()
+#         self.step = 0
 
-    def call(self, x, training):
-        """
-        Override tf.keras.Sequential to optionally save image data to tensorboard.
-        Slow but useful for debugging.
-        Not used by default (see get_model). I suggest only uncommenting when you want to debug.
-        """
-        tf.summary.image('model_input', x, step=self.step)
-        tf.summary.histogram('model_input', x, step=self.step)
-        return super().call(x, training)
+#     def call(self, x, training):
+#         """
+#         Override tf.keras.Sequential to optionally save image data to tensorboard.
+#         Slow but useful for debugging.
+#         Not used by default (see get_model). I suggest only uncommenting when you want to debug.
+#         """
+#         tf.summary.image('model_input', x, step=self.step)
+#         tf.summary.histogram('model_input', x, step=self.step)
+#         return super().call(x, training)
 
 
 def get_augmentation_layers(crop_size, resize_size, always_augment=False):
@@ -137,14 +137,30 @@ def get_model(
 
     # model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
+    tf.summary.image(
+        name='images_before_augmentation',
+        data=inputs,
+        max_outputs=3,
+        description='Images passed to Zoobot'
+    )
+
     # Sequential block of augmentations
     x = get_augmentation_layers(
         crop_size=crop_size,
         resize_size=resize_size,
         always_augment=always_augment)(inputs)
 
+    tf.summary.image(
+        name='images_after_augmentation',
+        data=x,
+        max_outputs=3,
+        description='Images after applying tf.keras augmentations within Zoobot'
+    )
+
     # Functional-created Model of EfficientNet
     shape_after_preprocessing_layers = (resize_size, resize_size, channels)
+    logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
+
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
         input_shape=shape_after_preprocessing_layers,
@@ -153,8 +169,8 @@ def get_model(
         use_imagenet_weights=use_imagenet_weights,
     )
     x = effnet(x)  # hopefully supports functional
+    tf.summary.histogram(name='embedding', data=x)
 
-    logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
 
     # Functional head
     if include_top:
@@ -162,6 +178,7 @@ def get_model(
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)
         x = efficientnet_custom.custom_top_dirichlet(output_dim)(x)  # inplace
+        tf.summary.histogram(name='dirichlet_outputs', data=x)
 
     model = tf.keras.Model(inputs=inputs, outputs=x, name="zoobot")
 

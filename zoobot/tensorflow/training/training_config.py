@@ -94,11 +94,12 @@ def train_estimator(model, train_config, train_dataset, val_dataset, extra_callb
             save_weights_only=True),
         tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=train_config.patience),
         tf.keras.callbacks.TerminateOnNaN()
+        # custom_callbacks.VisualizeImages()
         # custom_callbacks.UpdateStepCallback(
         #     batch_size=next(iter(train_dataset))[0].shape[0]  # grab the first batch, 0th tuple element (the images), 0th dimension, to check the batch size
         # )
     ] + extra_callbacks
-    # callbacks = None
+    # TODO https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ReduceLROnPlateau
 
     # attribute used by the callbacks to track the current step when writing to tensorboard.
     # model.step = tf.Variable(
