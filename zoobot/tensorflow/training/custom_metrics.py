@@ -25,8 +25,8 @@ class LossPerQuestion(tf.keras.metrics.Metric):
     multiq_loss = self.multiq_loss_func(y_true, y_pred)
 
     for question_n in range(len(self.question_index_groups)):
-        mean_loss_for_question = tf.reduce_mean(multiq_loss[:, question_n])
-        self.question_weights[question_n].assign_add(mean_loss_for_question)
+        total_loss_for_question_in_batch = tf.reduce_sum(multiq_loss[:, question_n])
+        self.question_weights[question_n].assign_add(total_loss_for_question_in_batch)
 
     self.num_galaxies.assign_add(tf.cast(len(y_true), dtype=tf.float32))
  
@@ -36,7 +36,7 @@ class LossPerQuestion(tf.keras.metrics.Metric):
     result = {}
     for weight in self.question_weights.values():
       # .ref() is the hashable string that you'd imagine .name would give, .name is some unhashable weird TF object 
-      result[weight.ref()] = result[weight]/self.num_galaxies
+      result[weight.name] = weight/self.num_galaxies  # total loss for q across all batches, divide by total num galaxies
 
     return result
     # return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
