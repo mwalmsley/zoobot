@@ -35,7 +35,8 @@ class LossPerQuestion(tf.keras.metrics.Metric):
 
     result = {}
     for weight in self.question_weights.values():
-      result[weight.name] = result[weight]/self.num_galaxies
+      # .ref() is the hashable string that you'd imagine .name would give, .name is some unhashable weird TF object 
+      result[weight.ref()] = result[weight]/self.num_galaxies
 
     return result
     # return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
