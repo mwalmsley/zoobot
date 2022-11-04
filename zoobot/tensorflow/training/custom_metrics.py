@@ -40,8 +40,8 @@ class LossPerQuestion(tf.keras.metrics.Metric):
       result[weight.name] = weight/self.num_galaxies  # total loss for q across all batches, divide by total num galaxies
 
     tf.print(result)
-    return weight/self.num_galaxies
-    # return result
+    # return weight/self.num_galaxies
+    return result
     # return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
     # TODO rename with 
     # return self.question_weights[0]
