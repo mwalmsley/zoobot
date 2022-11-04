@@ -22,7 +22,7 @@ class LossPerQuestion(tf.keras.metrics.Metric):
 
   def update_state(self, y_true, y_pred, sample_weight=None):
 
-    multiq_loss = self.multiq_loss_func(y_true, y_pred)
+    multiq_loss = tf.cast(self.multiq_loss_func(y_true, y_pred), tf.float32)
 
     for question_n in range(len(self.question_index_groups)):
         total_loss_for_question_in_batch = tf.reduce_sum(multiq_loss[:, question_n])
