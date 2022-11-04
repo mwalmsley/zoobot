@@ -35,12 +35,13 @@ class LossPerQuestion(tf.keras.metrics.Metric):
 
     result = {}
     for weight in self.question_weights.values():
-      tf.print(weight/self.num_galaxies)
+      # tf.print(weight/self.num_galaxies)
       # .ref() is the hashable string that you'd imagine .name would give, .name is some unhashable weird TF object 
-      result[weight.name] = (weight/self.num_galaxies).numpy()  # total loss for q across all batches, divide by total num galaxies
+      result[weight.name] = weight/self.num_galaxies  # total loss for q across all batches, divide by total num galaxies
 
     tf.print(result)
-    return result
+    return weight/self.num_galaxies
+    # return result
     # return {'something': self.question_weights[0], 'something_else': self.num_galaxies}
     # TODO rename with 
     # return self.question_weights[0]
