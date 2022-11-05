@@ -28,7 +28,7 @@ def train_default_zoobot_from_scratch(
     patience=8,
     # model hparams
     architecture_name='efficientnet',  # recently changed
-    batch_size=256,
+    batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     # data and augmentation parameters

@@ -33,9 +33,9 @@ setuptools.setup(
             'pytorch-galaxy-datasets == 0.0.1'
         ],
         'tensorflow': [
-            'tensorflow >= 2.8',
+            'tensorflow >= 2.10.0',
             'keras_applications',
-            'tensorflow_probability >= 0.11',
+            'tensorflow_probability >= 0.18.0',
             'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
         'utilities': [

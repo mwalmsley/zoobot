@@ -22,7 +22,7 @@ def train(
     test_catalog=None,
     # model training parameters
     architecture_name='efficientnet',  # only EfficientNet is currenty implemented
-    batch_size=256,
+    batch_size=128,
     dropout_rate=0.2,
     # TODO drop_connect_rate not implemented
     epochs=1000,
@@ -155,10 +155,10 @@ def train(
 
         # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu
         extra_metrics = [
-            custom_metrics.LossPerQuestion(
-                name='loss_per_question',
-                question_index_groups=schema.question_index_groups
-            )
+            # custom_metrics.LossPerQuestion(
+            #     name='loss_per_question',
+            #     question_index_groups=schema.question_index_groups
+            # )
         ]
 
     model.compile(
