@@ -23,27 +23,25 @@ from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_cus
 #         return super().call(x, training)
 
 
-def get_augmentation_layers(crop_size, resize_size, always_augment=False):
+def get_augmentation_layers(crop_size, always_augment=False):
     """
     
     The following augmentations are applied, in order:
         - Random rotation (aliased)
         - Random flip (horizontal and/or vertical)
         - Random crop (not centered) down to ``(crop_size, crop_size)``
-        - Resize down to ``(resize_size, resize_size)``
-
-    If crop_size is within 10 of resize_size, resizing is skipped and instead the image is cropped directly to `resize_size`.
-    This is both faster and avoids information loss from aliasing.
-    I strongly suggest this approach if possible.
 
     Designed for use with tf Functional API
 
     TODO I would prefer to refactor this so augmentations are separate from the model, as with pytorch.
     But it's not a high priority change.
 
+    Recent changes:
+    - resize_size option removed. Do in preprocessing step instead.
+    - Switching to albumentations (for consistent API with PyTorch)
+
     Args:
         crop_size (int): desired length of image after random crop (assumed square)
-        resize_size (int): desired length of image after resizing (assumed square)
         always_augment (bool, optional): If True, augmentations also happen at test time. Defaults to False.
 
     Returns:
@@ -51,17 +49,6 @@ def get_augmentation_layers(crop_size, resize_size, always_augment=False):
     """
 
     model = tf.keras.Sequential(name='augmentations')
-
-    if crop_size < resize_size:
-        logging.warning('Crop size {} < final size {}, losing resolution'.format(
-            crop_size, resize_size))
-
-    resize = True
-    if np.abs(crop_size - resize_size) < 10:
-        logging.warning(
-            'Crop size and final size are similar: skipping resizing and cropping directly to resize_size (ignoring crop_size)')
-        resize = False
-        crop_size = resize_size
 
     if always_augment:
         rotation_layer = custom_layers.PermaRandomRotation
@@ -72,17 +59,10 @@ def get_augmentation_layers(crop_size, resize_size, always_augment=False):
         flip_layer = tf.keras.layers.experimental.preprocessing.RandomFlip
         crop_layer = tf.keras.layers.experimental.preprocessing.RandomCrop
 
-
     # np.pi fails with tf 2.5
     model.add(rotation_layer(0.5, fill_mode='reflect'))  # rotation range +/- 0.25 * 2pi i.e. +/- 90*.
     model.add(flip_layer())
     model.add(crop_layer(crop_size, crop_size))
-    # TODO will deprecate
-    if resize:
-        logging.info('Using resizing, to {}'.format(resize_size))
-        model.add(tf.keras.layers.experimental.preprocessing.Resizing(
-            resize_size, resize_size, interpolation='bilinear'
-        ))
 
     return model
 
@@ -114,7 +94,6 @@ def get_model(
         output_dim (int): Dimension of head dense layer. No effect when include_top=False.
         input_size (int): Length of initial image e.g. 300 (assumed square)
         crop_size (int): Length to randomly crop image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
-        resize_size (int): Length to resize image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.
         include_top (bool, optional): If True, include head used for GZ DECaLS: global pooling and dense layer. Defaults to True.
         expect_partial (bool, optional): If True, do not raise partial match error when loading weights (likely for optimizer state). Defaults to False.
@@ -124,8 +103,8 @@ def get_model(
         tf.keras.Model: trainable efficientnet model including augmentations and optional head
     """
 
-    logging.info('Input size {}, crop size {}, final size {}'.format(
-        input_size, crop_size, resize_size))
+    logging.info('Input size {}, crop size {}'.format(
+        input_size, crop_size))
 
     # model = CustomSequential()  # to log the input image for debugging
     # model = tf.keras.Sequential()
@@ -147,7 +126,6 @@ def get_model(
     # Sequential block of augmentations
     x = get_augmentation_layers(
         crop_size=crop_size,
-        resize_size=resize_size,
         always_augment=always_augment)(inputs)
 
     tf.summary.image(
@@ -215,10 +193,10 @@ def load_weights(model, checkpoint_loc, expect_partial=False):
     load_status.assert_existing_objects_matched()
 
 
-def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, output_dim=34, expect_partial=False, channels=1, always_augment=True, dropout_rate=0.2):
+def load_model(checkpoint_loc, include_top, input_size, crop_size, output_dim=34, expect_partial=False, channels=1, always_augment=True, dropout_rate=0.2):
     """    
     Utility wrapper for the common task of defining the GZ DECaLS model and then loading a pretrained checkpoint.
-    resize_size must match the pretrained model used.
+    crop_size must match the pretrained model used.
     output_dim must match if ``include_top=True``
     ``input_size`` and ``crop_size`` can vary as image will be resized anyway, but be careful deviating from training procedure.
 
@@ -226,8 +204,7 @@ def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, 
         checkpoint_loc (str): path to checkpoint e.g. /path/checkpoints/checkpoint (where checkpoints includes checkpoint.index etc)
         include_top (bool, optional): If True, include head used for GZ DECaLS: global pooling and dense layer.
         input_size (int): Length of initial image e.g. 300 (assumed square)
-        crop_size (int): Length to randomly crop image. See ``add_augmentation_layers``.
-        resize_size (int): Length to resize image. See ``add_augmentation_layers``.
+        crop_size (int): Length to randomly crop image. See ``get_augmentation_layers``.
         output_dim (int, optional): Dimension of head dense layer. No effect when include_top=False. Defaults to 34.
         expect_partial (bool, optional): If True, do not raise partial match error when loading weights (likely for optimizer state). Defaults to False.
 
@@ -239,7 +216,6 @@ def load_model(checkpoint_loc, include_top, input_size, crop_size, resize_size, 
         output_dim=output_dim,
         input_size=input_size,
         crop_size=crop_size,
-        resize_size=resize_size,
         include_top=include_top,
         channels=channels,
         always_augment=always_augment,
