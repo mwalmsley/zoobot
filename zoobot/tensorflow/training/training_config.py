@@ -10,6 +10,8 @@ from zoobot.tensorflow.estimators import custom_callbacks
 class Trainer():
 
     def __init__(
+        # this doesn't really need to be a class, 
+        # but it's kinda nice to break up the training instructions from the model/dataset
             self,
             epochs=1500,  # rely on earlystopping callback
             min_epochs=0,
@@ -104,9 +106,9 @@ class Trainer():
             model.fit(
                 train_dataset,
                 validation_data=val_dataset,
-                epochs=2,
+                epochs=self.epochs,
                 callbacks=callbacks,
-                verbose=1
+                verbose=verbose
             )
 
 
