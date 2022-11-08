@@ -112,7 +112,7 @@ def train(
     )
 
     # specify augmentations
-    transforms = augmentations.default_albumentation_transforms(
+    train_transforms = augmentations.default_albumentation_transforms(
         # no need to specify greyscale here
         # tensorflow will greyscale in get_image_dataset i.e. on load, while pytorch doesn't so needs specifying here
         # may refactor to avoid inconsistency 
@@ -120,12 +120,19 @@ def train(
         crop_ratio_bounds=crop_ratio_bounds,
         resize_after_crop=resize_after_crop
     )
+    # TODO should be clearer, not magic 1's (e.g. default_train_transforms, etc.)
+    # TODO if always_augment, use train augments at test time (TODO rename this too)
+    inference_transforms = augmentations.default_albumentation_transforms(
+        crop_scale_bounds=(1., 1.),
+        crop_ratio_bounds=(1., 1.),
+        resize_after_crop=resize_after_crop
+    )
     # apply augmentations
-    train_dataset = augmentations.add_augmentations_to_dataset(train_dataset, transforms)
-    if always_augment:
-        logging.warning('always_augment=True, applying augmentations to val and test datasets')
-        val_dataset = augmentations.add_augmentations_to_dataset(val_dataset, transforms)
-        test_dataset = augmentations.add_augmentations_to_dataset(test_dataset, transforms)
+    train_dataset = augmentations.add_augmentations_to_dataset(train_dataset, train_transforms)
+    # if always_augment:
+        # logging.warning('always_augment=True, applying augmentations to val and test datasets')
+    val_dataset = augmentations.add_augmentations_to_dataset(val_dataset, inference_transforms)
+    test_dataset = augmentations.add_augmentations_to_dataset(test_dataset, inference_transforms)
 
     # batch, shuffle, prefetch
     train_dataset = train_dataset.shuffle(5000).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
@@ -172,15 +179,15 @@ def train(
     )
     model.summary()
 
-    train_config = training_config.TrainConfig(
+    trainer = training_config.Trainer(
+        # parameters for how to train e.g. epochs, patience
         log_dir=save_dir,
         epochs=epochs,
         patience=patience
     )
 
-    best_trained_model = training_config.train_estimator(
+    best_trained_model = trainer.fit(
         model,
-        train_config,  # parameters for how to train e.g. epochs, patience
         train_dataset,
         val_dataset,
         eager=eager

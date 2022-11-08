@@ -15,7 +15,7 @@ nvidia-smi
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
-DATA_DIR=/share/nas2/walml/repos/_data/decals_dr5
+DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
 
 RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
@@ -30,6 +30,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
+    --wandb \
     $COLOR_STRING \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
@@ -41,6 +42,7 @@ $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
+    --wandb \
     $COLOR_STRING \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING

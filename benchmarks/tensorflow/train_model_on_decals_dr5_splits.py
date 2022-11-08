@@ -49,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpus', default=2, type=int)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true')
-    # parser.add_argument('--wandb', default=False, action='store_true')
+    parser.add_argument('--wandb', default=False, action='store_true')
     parser.add_argument('--eager', default=False, action='store_true',
                         help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
     parser.add_argument('--debug', default=False, action='store_true')
@@ -65,8 +65,12 @@ if __name__ == '__main__':
 
     # use the setup() methods in galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
     # TODO could refactor to immediately give the canonical datasets from galaxy_datasets.tensorflow.datasets?
-    canonical_train_catalog, _ = gz_decals.setup(root=args.data_dir, train=True, download=True)
-    canonical_test_catalog, _ = gz_decals.setup(root=args.data_dir, train=False, download=True)
+    if args.debug:
+        download = False
+    else:
+        download = True
+    canonical_train_catalog, _ = gz_decals.setup(root=args.data_dir, train=True, download=download)
+    canonical_test_catalog, _ = gz_decals.setup(root=args.data_dir, train=False, download=download)
 
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # could add random_state
     test_catalog = canonical_test_catalog.copy()
@@ -81,15 +85,15 @@ if __name__ == '__main__':
     else:
         epochs = args.epochs
 
-    # if args.wandb:
+    if args.wandb:
     # root_logdir must match tensorboard logdir, not full logdir (aka root for /checkpoint, /tensorboard..)
     # tensorboard logdir is /tensorboard as per training_config.py
-    wandb.tensorboard.patch(root_logdir=os.path.join(args.save_dir, 'tensorboard'))
-    wandb.init(
-        sync_tensorboard=True,
-        project='zoobot-benchmarks',
-        name=os.path.basename(args.save_dir)
-    )
+        wandb.tensorboard.patch(root_logdir=os.path.join(args.save_dir, 'tensorboard'))
+        wandb.init(
+            sync_tensorboard=True,
+            project='zoobot-benchmarks',
+            name=os.path.basename(args.save_dir)
+        )
     #   with TensorFlow, doesn't need to be passed as arg
     # comment out if not desired to use wandb
 

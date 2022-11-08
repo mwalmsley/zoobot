@@ -1,70 +1,36 @@
 import logging
 
-import numpy as np
 import tensorflow as tf
 
 from zoobot.tensorflow.estimators import efficientnet_standard, efficientnet_custom, custom_layers
 
+# https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
+# for Functional, must be wrapped in Lambda layer
+class LogHistogram(tf.keras.layers.Layer):
+    def __init__(self, name, description=None):
+        super(LogHistogram, self).__init__()
+        self.log_name = name  # 'name' is taken
+        self.description = description
+    def call(self, data):
+        tf.summary.histogram(name=self.log_name, data=data, description=self.description)
+        return data
+class LogScalar(tf.keras.layers.Layer):
+    def __init__(self, name, description=None):
+        super(LogScalar, self).__init__()
+        self.log_name = name  # 'name' is taken
+        self.description = description
+    def call(self, data):
+        tf.summary.scalar(name=self.log_name, data=data, description=self.description)
+        return data
+class LogImage(tf.keras.layers.Layer):
+    def __init__(self, name, description=None):
+        super(LogImage, self).__init__()
+        self.log_name = name  # 'name' is taken
+        self.description = description
+    def call(self, data):
+        tf.summary.image(name=self.log_name, data=data, description=self.description)
+        return data
 
-# class CustomSequential(tf.keras.Sequential):
-
-#     def __init__(self):
-#         super().__init__()
-#         self.step = 0
-
-#     def call(self, x, training):
-#         """
-#         Override tf.keras.Sequential to optionally save image data to tensorboard.
-#         Slow but useful for debugging.
-#         Not used by default (see get_model). I suggest only uncommenting when you want to debug.
-#         """
-#         tf.summary.image('model_input', x, step=self.step)
-#         tf.summary.histogram('model_input', x, step=self.step)
-#         return super().call(x, training)
-
-
-def get_augmentation_layers(crop_size, always_augment=False):
-    """
-    
-    The following augmentations are applied, in order:
-        - Random rotation (aliased)
-        - Random flip (horizontal and/or vertical)
-        - Random crop (not centered) down to ``(crop_size, crop_size)``
-
-    Designed for use with tf Functional API
-
-    TODO I would prefer to refactor this so augmentations are separate from the model, as with pytorch.
-    But it's not a high priority change.
-
-    Recent changes:
-    - resize_size option removed. Do in preprocessing step instead.
-    - Switching to albumentations (for consistent API with PyTorch)
-
-    Args:
-        crop_size (int): desired length of image after random crop (assumed square)
-        always_augment (bool, optional): If True, augmentations also happen at test time. Defaults to False.
-
-    Returns:
-        (tf.keras.Sequential): applying augmentations with e.g. x_aug = model(x)
-    """
-
-    model = tf.keras.Sequential(name='augmentations')
-
-    if always_augment:
-        rotation_layer = custom_layers.PermaRandomRotation
-        flip_layer = custom_layers.PermaRandomFlip
-        crop_layer = custom_layers.PermaRandomCrop
-    else:
-        rotation_layer = tf.keras.layers.experimental.preprocessing.RandomRotation
-        flip_layer = tf.keras.layers.experimental.preprocessing.RandomFlip
-        crop_layer = tf.keras.layers.experimental.preprocessing.RandomCrop
-
-    # np.pi fails with tf 2.5
-    model.add(rotation_layer(0.5, fill_mode='reflect'))  # rotation range +/- 0.25 * 2pi i.e. +/- 90*.
-    model.add(flip_layer())
-    model.add(crop_layer(crop_size, crop_size))
-
-    return model
 
 
 def get_model(
@@ -99,7 +65,6 @@ def get_model(
     Returns:
         tf.keras.Model: trainable efficientnet model including augmentations and optional head
     """
-
     logging.info('Input size {} (should match resize_after_crop)'.format(
         input_size))
 
@@ -110,15 +75,10 @@ def get_model(
 
     inputs = tf.keras.Input(shape=input_shape, name='preprocessed_image_batch')
 
-
-    # model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
-
-    tf.summary.image(
+    x = LogImage(
         name='images_as_input',
-        data=inputs,
-        max_outputs=3,
         description='Images passed to Zoobot'
-    )
+    )(inputs)
 
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
@@ -127,9 +87,8 @@ def get_model(
         # further kwargs will be passed to get_effnet
         use_imagenet_weights=use_imagenet_weights,
     )
-    x = effnet(inputs)  # hopefully supports functional
-    tf.summary.histogram(name='embedding', data=x)
-
+    x = effnet(x)
+    x = LogHistogram(name='embedding')(x)
 
     # Functional head
     if include_top:
@@ -137,7 +96,7 @@ def get_model(
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)
         x = efficientnet_custom.custom_top_dirichlet(output_dim)(x)  # inplace
-        tf.summary.histogram(name='dirichlet_outputs', data=x)
+        x = LogHistogram(name='dirichlet_outputs')(x)
 
     model = tf.keras.Model(inputs=inputs, outputs=x, name="zoobot")
 
