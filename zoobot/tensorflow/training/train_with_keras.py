@@ -127,6 +127,11 @@ def train(
         val_dataset = augmentations.add_augmentations_to_dataset(val_dataset, transforms)
         test_dataset = augmentations.add_augmentations_to_dataset(test_dataset, transforms)
 
+    # batch, shuffle, prefetch
+    train_dataset = train_dataset.shuffle(5000).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    val_dataset = val_dataset.batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    test_dataset = test_dataset.batch(batch_size)
+
     with context_manager:
 
         if mixed_precision:
