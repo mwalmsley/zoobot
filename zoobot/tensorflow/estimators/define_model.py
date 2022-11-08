@@ -11,24 +11,27 @@ class LogHistogram(tf.keras.layers.Layer):
         super(LogHistogram, self).__init__()
         self.log_name = name  # 'name' is taken
         self.description = description
-    def call(self, data):
-        tf.summary.histogram(name=self.log_name, data=data, description=self.description)
+    def call(self, data, training):
+        if training:
+            tf.summary.histogram(name=self.log_name, data=data, description=self.description)
         return data
 class LogScalar(tf.keras.layers.Layer):
     def __init__(self, name, description=None):
         super(LogScalar, self).__init__()
         self.log_name = name  # 'name' is taken
         self.description = description
-    def call(self, data):
-        tf.summary.scalar(name=self.log_name, data=data, description=self.description)
+    def call(self, data, training):
+        if training:
+            tf.summary.scalar(name=self.log_name, data=data, description=self.description)
         return data
 class LogImage(tf.keras.layers.Layer):
     def __init__(self, name, description=None):
         super(LogImage, self).__init__()
         self.log_name = name  # 'name' is taken
         self.description = description
-    def call(self, data):
-        tf.summary.image(name=self.log_name, data=data, description=self.description)
+    def call(self, data, training):
+        if training:
+            tf.summary.image(name=self.log_name, data=data, description=self.description)
         return data
 
 
