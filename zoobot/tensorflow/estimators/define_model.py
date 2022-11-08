@@ -70,8 +70,6 @@ def get_augmentation_layers(crop_size, always_augment=False):
 def get_model(
     output_dim,
     input_size,
-    crop_size,
-    resize_size,
     weights_loc=None,
     include_top=True,
     expect_partial=False,
@@ -93,7 +91,6 @@ def get_model(
     Args:
         output_dim (int): Dimension of head dense layer. No effect when include_top=False.
         input_size (int): Length of initial image e.g. 300 (assumed square)
-        crop_size (int): Length to randomly crop image. See :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
         weights_loc (str, optional): If str, load weights from efficientnet checkpoint at this location. Defaults to None.
         include_top (bool, optional): If True, include head used for GZ DECaLS: global pooling and dense layer. Defaults to True.
         expect_partial (bool, optional): If True, do not raise partial match error when loading weights (likely for optimizer state). Defaults to False.
@@ -103,8 +100,8 @@ def get_model(
         tf.keras.Model: trainable efficientnet model including augmentations and optional head
     """
 
-    logging.info('Input size {}, crop size {}'.format(
-        input_size, crop_size))
+    logging.info('Input size {} (should match resize_after_crop)'.format(
+        input_size))
 
     # model = CustomSequential()  # to log the input image for debugging
     # model = tf.keras.Sequential()
@@ -117,31 +114,15 @@ def get_model(
     # model.add(tf.keras.layers.InputLayer(input_shape=input_shape))
 
     tf.summary.image(
-        name='images_before_augmentation',
+        name='images_as_input',
         data=inputs,
         max_outputs=3,
         description='Images passed to Zoobot'
     )
 
-    # Sequential block of augmentations
-    x = get_augmentation_layers(
-        crop_size=crop_size,
-        always_augment=always_augment)(inputs)
-
-    tf.summary.image(
-        name='images_after_augmentation',
-        data=x,
-        max_outputs=3,
-        description='Images after applying tf.keras augmentations within Zoobot'
-    )
-
-    # Functional-created Model of EfficientNet
-    shape_after_preprocessing_layers = (resize_size, resize_size, channels)
-    logging.info('Model expects input of {}, adjusted to {} after preprocessing'.format(input_shape, shape_after_preprocessing_layers))
-
     # now headless
     effnet = efficientnet_custom.define_headless_efficientnet(
-        input_shape=shape_after_preprocessing_layers,
+        input_shape=input_shape,
         get_effnet=get_effnet,
         # further kwargs will be passed to get_effnet
         use_imagenet_weights=use_imagenet_weights,
