@@ -41,7 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', dest='data_dir', type=str)
     parser.add_argument('--architecture', dest='architecture_name',
                         type=str, default='efficientnet')
-    parser.add_argument('--resize-size', dest='resize_size',
+    parser.add_argument('--resize-after-crop', dest='resize_after_crop',
                         type=int, default=224)
     parser.add_argument('--epochs', dest='epochs', type=int, default=1000)
     parser.add_argument('--batch-size', dest='batch_size',
@@ -106,7 +106,7 @@ if __name__ == '__main__':
         epochs=epochs,
         dropout_rate=0.2,
         color=args.color,
-        resize_size=224,
+        resize_after_crop=args.resize_after_crop,
         mixed_precision=args.mixed_precision,
         patience=20
     )
