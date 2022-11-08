@@ -91,9 +91,12 @@ def train(
     file_format = example_image_loc.split('.')[-1]
 
     # format is [{label_col: 0, label_col: 12}, {label_col: 3, label_col: 14}, ...]
-    train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
-    val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
-    test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
+    # train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
+    # val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
+    # test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
+    train_labels = train_catalog[schema.label_cols].values
+    val_labels = val_catalog[schema.label_cols].values
+    test_labels = test_catalog[schema.label_cols].values
 
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
