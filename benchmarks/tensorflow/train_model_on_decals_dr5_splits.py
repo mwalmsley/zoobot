@@ -6,7 +6,7 @@ import tensorflow as tf
 import wandb
 from sklearn.model_selection import train_test_split
 
-from pytorch_galaxy_datasets.prepared_datasets import decals_dr5_setup
+from galaxy_datasets.prepared_datasets import gz_decals
 
 from zoobot.shared import label_metadata, schemas
 from zoobot.tensorflow.training import train_with_keras
@@ -63,9 +63,10 @@ if __name__ == '__main__':
     schema = schemas.Schema(question_answer_pairs, dependencies)
     logging.info('Schema: {}'.format(schema))
 
-    # use the setup() methods in pytorch_galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
-    canonical_train_catalog, _ = decals_dr5_setup(root=args.data_dir, train=True, download=True)
-    canonical_test_catalog, _ = decals_dr5_setup(root=args.data_dir, train=False, download=True)
+    # use the setup() methods in galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
+    # TODO could refactor to immediately give the canonical datasets from galaxy_datasets.tensorflow.datasets?
+    canonical_train_catalog, _ = gz_decals.setup(root=args.data_dir, train=True, download=True)
+    canonical_test_catalog, _ = gz_decals.setup(root=args.data_dir, train=False, download=True)
 
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # could add random_state
     test_catalog = canonical_test_catalog.copy()
