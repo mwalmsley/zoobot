@@ -67,7 +67,7 @@ class Trainer():
                 write_graph=False,
                 # profile_batch='2,10',
                 profile_batch=0,   # i.e. disable profiling
-                update_freq='epoch'
+                update_freq=100  # must be an integer, else logging within define_model.py will fail
             ),
             tf.keras.callbacks.ModelCheckpoint(
                 filepath=checkpoint_name,
