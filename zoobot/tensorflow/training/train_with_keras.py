@@ -113,7 +113,9 @@ def train(
 
     # specify augmentations
     transforms = augmentations.default_albumentation_transforms(
-        # no need to specify greyscale here, may refactor 
+        # no need to specify greyscale here
+        # tensorflow will greyscale in get_image_dataset i.e. on load, while pytorch doesn't so needs specifying here
+        # may refactor to avoid inconsistency 
         crop_scale_bounds=crop_scale_bounds,
         crop_ratio_bounds=crop_ratio_bounds,
         resize_after_crop=resize_after_crop
