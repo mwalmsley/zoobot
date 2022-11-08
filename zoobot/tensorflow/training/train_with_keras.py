@@ -99,13 +99,13 @@ def train(
     logging.info('Example labels: {}'.format(train_labels[0]))
 
     train_dataset = galaxy_dataset.get_image_dataset(
-        train_image_paths, file_format, requested_img_size, labels=train_labels, check_valid_paths=True, greyscale=greyscale
+        train_image_paths, file_format, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
     val_dataset = galaxy_dataset.get_image_dataset(
-        val_image_paths, file_format, requested_img_size, labels=val_labels, check_valid_paths=True, greyscale=greyscale
+        val_image_paths, file_format, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
     test_dataset = galaxy_dataset.get_image_dataset(
-        test_image_paths, file_format, requested_img_size, labels=test_labels, check_valid_paths=True, greyscale=greyscale
+        test_image_paths, file_format, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
 
     # specify augmentations
