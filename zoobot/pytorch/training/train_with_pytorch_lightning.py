@@ -34,7 +34,7 @@ def train_default_zoobot_from_scratch(
     # data and augmentation parameters
     # datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
-    resize_size=224,
+    resize_after_crop=224,
     crop_scale_bounds=(0.7, 0.8),
     crop_ratio_bounds=(0.9, 1.1),
     # hardware parameters
@@ -124,7 +124,7 @@ def train_default_zoobot_from_scratch(
         #   augmentations parameters
         album=False,
         greyscale=not color,
-        resize_size=resize_size,
+        resize_after_crop=resize_after_crop,
         crop_scale_bounds=crop_scale_bounds,
         crop_ratio_bounds=crop_ratio_bounds,
         #   hardware parameters

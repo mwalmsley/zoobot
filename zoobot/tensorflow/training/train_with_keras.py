@@ -6,10 +6,9 @@ from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
 
-from zoobot.tensorflow.data_utils import image_datasets
 from zoobot.tensorflow.training import training_config, losses, custom_metrics
-from zoobot.tensorflow.estimators import preprocess, define_model
-
+from zoobot.tensorflow.estimators import define_model
+from galaxy_datasets.tensorflow import galaxy_dataset, augmentations
 
 def train(
     # absolutely crucial arguments
@@ -29,11 +28,10 @@ def train(
     patience=8,
     # augmentation parameters
     color=False,
-    # TODO I dislike this confusion/duplication - adjust when refactoring augmentations
-    img_size_to_load=300,  # resizing on load *before* augmentations, will skip if given same size as on disk
-    resize_size=224,  # resizing *during* augmentations, will skip if given appropriate crop
-    # ideally, set shard_img_size * crop_factor ~= resize_size to skip resizing
-    crop_factor=0.75,
+    requested_img_size=None,
+    crop_scale_bounds=(0.7, 0.8),
+    crop_ratio_bounds=(0.9, 1.1),
+    resize_after_crop=224,
     always_augment=False,
     # hardware parameters
     mixed_precision=True,
@@ -65,14 +63,6 @@ def train(
         logging.warning(
             'Training on color images, not converting to greyscale')
         channels = 3
-
-    preprocess_config = preprocess.PreprocessingConfig(
-        label_cols=schema.label_cols,
-        input_size=img_size_to_load,
-        make_greyscale=greyscale,
-        # False for tfrecords with 0-1 floats, True for png/jpg with 0-255 uints
-        # normalise_from_uint8=False
-    )
 
     assert save_dir is not None
     if not os.path.isdir(save_dir):
@@ -108,22 +98,29 @@ def train(
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
-    raw_train_dataset = image_datasets.get_image_dataset(
-        train_image_paths, file_format, img_size_to_load, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
+    train_dataset = galaxy_dataset.get_image_dataset(
+        train_image_paths, file_format, requested_img_size, labels=train_labels, check_valid_paths=True, greyscale=greyscale
     )
-    raw_val_dataset = image_datasets.get_image_dataset(
-        val_image_paths, file_format, img_size_to_load, batch_size, labels=val_labels, check_valid_paths=True, shuffle=True, drop_remainder=False
+    val_dataset = galaxy_dataset.get_image_dataset(
+        val_image_paths, file_format, requested_img_size, labels=val_labels, check_valid_paths=True, greyscale=greyscale
     )
-    raw_test_dataset = image_datasets.get_image_dataset(
-        test_image_paths, file_format, img_size_to_load, batch_size, labels=test_labels, check_valid_paths=True, shuffle=False, drop_remainder=False
+    test_dataset = galaxy_dataset.get_image_dataset(
+        test_image_paths, file_format, requested_img_size, labels=test_labels, check_valid_paths=True, greyscale=greyscale
     )
 
-    train_dataset = preprocess.preprocess_dataset(
-        raw_train_dataset, preprocess_config)
-    val_dataset = preprocess.preprocess_dataset(
-        raw_val_dataset, preprocess_config)
-    test_dataset = preprocess.preprocess_dataset(
-        raw_test_dataset, preprocess_config)
+    # specify augmentations
+    transforms = augmentations.default_albumentation_transforms(
+        # no need to specify greyscale here, may refactor 
+        crop_scale_bounds=crop_scale_bounds,
+        crop_ratio_bounds=crop_ratio_bounds,
+        resize_after_crop=resize_after_crop
+    )
+    # apply augmentations
+    train_dataset = augmentations.add_augmentations_to_dataset(train_dataset, transforms)
+    if always_augment:
+        logging.warning('always_augment=True, applying augmentations to val and test datasets')
+        val_dataset = augmentations.add_augmentations_to_dataset(val_dataset, transforms)
+        test_dataset = augmentations.add_augmentations_to_dataset(test_dataset, transforms)
 
     with context_manager:
 
@@ -139,11 +136,8 @@ def train(
 
         model = define_model.get_model(
             output_dim=len(schema.label_cols),
-            input_size=img_size_to_load,
-            crop_size=int(img_size_to_load * crop_factor),
-            resize_size=resize_size,  # ideally, matches crop size
+            input_size=resize_after_crop,
             channels=channels,
-            always_augment=always_augment,
             dropout_rate=dropout_rate
         )
 

@@ -130,7 +130,6 @@ if __name__ == '__main__':
         output_dim=len(schema.label_cols),
         input_size=initial_size, 
         crop_size=int(initial_size * 0.75),
-        resize_size=resize_size,
         channels=channels,
         always_augment=always_augment,
         dropout_rate=args.dropout_rate

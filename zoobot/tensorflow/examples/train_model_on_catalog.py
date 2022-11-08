@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # how to train
     parser.add_argument('--epochs', dest='epochs', type=int, 
         help='Supports multiple space-separated paths')
-    parser.add_argument('--resize-size', dest='resize_size',
+    parser.add_argument('--resize-after-crop', dest='resize-after-crop',
                         type=int, default=224)
     parser.add_argument('--batch-size', dest='batch_size',
                         default=128, type=int)
@@ -130,7 +130,6 @@ if __name__ == '__main__':
         patience=args.patience,
         # augmentation parameters
         color=args.color,
-        resize_size=args.resize_size,
         always_augment=args.always_augment,
         # hardware params
         mixed_precision=args.mixed_precision,

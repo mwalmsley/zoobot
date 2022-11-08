@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--data-dir', dest='data_dir', type=str)
     parser.add_argument('--architecture', dest='architecture_name', default='efficientnet', type=str)
-    parser.add_argument('--resize-size', dest='resize_size',
+    parser.add_argument('--resize--after-crop', dest='resize_after_crop',
                         type=int, default=224)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--batch-size', dest='batch_size',
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         patience=20, # increased as 8 seemed to stop too early (~300 epochs)
         # augmentation parameters
         color=args.color,
-        resize_size=args.resize_size,
+        resize_after_crop=args.resize_after_crop,
         # hardware parameters
         nodes=1,
         gpus=args.gpus,

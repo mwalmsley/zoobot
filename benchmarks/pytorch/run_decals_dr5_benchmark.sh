@@ -27,7 +27,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
-    --resize-size 224 \
+    --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     $COLOR_STRING \
@@ -38,7 +38,7 @@ $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
-    --resize-size 224 \
+    --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     $COLOR_STRING \
