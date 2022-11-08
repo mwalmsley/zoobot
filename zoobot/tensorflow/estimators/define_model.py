@@ -127,7 +127,7 @@ def get_model(
         # further kwargs will be passed to get_effnet
         use_imagenet_weights=use_imagenet_weights,
     )
-    x = effnet(x)  # hopefully supports functional
+    x = effnet(inputs)  # hopefully supports functional
     tf.summary.histogram(name='embedding', data=x)
 
 
