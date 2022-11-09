@@ -37,7 +37,6 @@ def train_default_zoobot_from_scratch(
     crop_scale_bounds=(0.7, 0.8),
     crop_ratio_bounds=(0.9, 1.1),
     # hardware parameters
-    accelerator='auto',
     nodes=1,
     gpus=2,
     num_workers=4,
@@ -79,6 +78,11 @@ def train_default_zoobot_from_scratch(
         assert gpus == 2
         logging.info('Using multi-node training')
         # this hangs silently on Manchester's slurm cluster - perhaps you will have more success?
+
+    if gpus > 0:
+        accelerator = 'gpu'
+    else:
+        accelerator = 'cpu'
 
     precision = 32
     if mixed_precision:

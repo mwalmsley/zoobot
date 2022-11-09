@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--batch-size', dest='batch_size',
                         default=256, type=int)
-    parser.add_argument('--gpus', default=1, type=int)
+    parser.add_argument('--gpus', dest='gpus', default=1, type=int)
     parser.add_argument('--mixed-precision', dest='mixed_precision',
                         default=False, action='store_true')
     parser.add_argument('--debug', dest='debug',
