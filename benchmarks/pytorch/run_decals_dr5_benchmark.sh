@@ -42,7 +42,6 @@ $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
-    --wandb \
     $COLOR_STRING \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING

@@ -265,7 +265,7 @@ def get_plain_pytorch_zoobot_model(
     if include_top:
         assert output_dim is not None
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
-        if always_augment:
+        if always_augment:  # TODO this is terrible naming, need to change!
             logging.info('Using test-time dropout')
             dropout_layer = custom_layers.PermaDropout
         else:
