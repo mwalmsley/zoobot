@@ -33,6 +33,8 @@ if __name__ == '__main__':
                         default=False, action='store_true')
     parser.add_argument('--debug', dest='debug',
                         default=False, action='store_true')
+    parser.add_argument('--wandb', dest='wandb',
+                        default=False, action='store_true')
     args = parser.parse_args()
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
@@ -58,16 +60,17 @@ if __name__ == '__main__':
     else:
         epochs = 1000
 
-    wandb_logger = WandbLogger(
-        project='zoobot-benchmarks',
-        name=os.path.basename(args.save_dir),
-        log_model=True
-    )
-    wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(10))
-    wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(10))
-    wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
-
-    # or set wandb_logger = None to not use wandb
+    if args.wandb:
+        wandb_logger = WandbLogger(
+            project='zoobot-benchmarks',
+            name=os.path.basename(args.save_dir),
+            log_model=True
+        )
+        wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(10))
+        wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(10))
+        wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
+    else:
+        wandb_logger = None
 
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
