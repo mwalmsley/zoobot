@@ -121,7 +121,6 @@ def train_default_zoobot_from_scratch(
         # can take either a catalog (and split it), or a pre-split catalog
         **catalogs_to_use,
         #   augmentations parameters
-        album=False,
         greyscale=not color,
         crop_scale_bounds=crop_scale_bounds,
         crop_ratio_bounds=crop_ratio_bounds,
