@@ -2,6 +2,7 @@ import logging
 import os
 import argparse
 
+import numpy as np
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
 
@@ -72,6 +73,8 @@ if __name__ == '__main__':
     else:
         wandb_logger = None
 
+    random_state = np.random.randint(0, 1000)
+
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
         schema=schema,
@@ -91,5 +94,6 @@ if __name__ == '__main__':
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
         prefetch_factor=4,
-        num_workers=11  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
+        num_workers=11,  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
+        random_state=random_state
     )

@@ -42,13 +42,13 @@ def train_default_zoobot_from_scratch(
     num_workers=4,
     prefetch_factor=4,
     mixed_precision=False,
-    # replication parameters
-    random_state=42,
+    # checkpointing / logging
     wandb_logger=None,
-    # checkpointing
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
-    save_top_k=3
+    save_top_k=3,
+    # replication parameters
+    random_state=42
 ):
 
     slurm_debugging_logs()

@@ -1,7 +1,7 @@
 
 import logging
 
-import  tensorflow as tf
+import tensorflow as tf
 
 from zoobot.tensorflow.estimators import efficientnet_standard
 
@@ -25,6 +25,7 @@ def define_headless_efficientnet(input_shape=None, get_effnet=efficientnet_stand
 
 
     if use_imagenet_weights:
+        logging.warning('Using imagenet weights - not recommended!')
         weights = 'imagenet'  # split variable names to be clear this isn't one of my checkpoints to load
     else:
         weights = None
@@ -56,49 +57,4 @@ def custom_top_dirichlet(output_dim):
     Returns:
         (tf.keras.layers.Dense): suitable for predicting Dirichlet distributions, as above.
     """
-    # model.add(tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 20. + .2))  # one params per answer, 1-20 range (mebe fractionally worse)
     return tf.keras.layers.Dense(output_dim, activation=lambda x: tf.nn.sigmoid(x) * 100. + 1.)  # one params per answer, 1-100 range
-
-
-# def custom_top_multinomial(model, output_dim, schema, batch_size):
-#     model.add(tf.keras.layers.Dense(output_dim))
-#     model.add(tf.keras.layers.Lambda(lambda x: tf.concat([tf.nn.softmax(x[:, q[0]:q[1]+1]) for q in schema.question_index_groups], axis=1), output_shape=[batch_size, output_dim]))        
-
-# def custom_top_beta(model, output_dim, schema):
-#     model.add(tf.keras.layers.Dense(output_dim * 2, activation=lambda x: tf.nn.sigmoid(x) * 100. + 1.))  # two params, 1-100 range
-    # model.add(tf.keras.layers.Reshape((output_dim, 2)))  # as dimension 2
-
-
-
-# def custom_top_dirichlet_reparam(model, output_dim, schema):
-
-#     dense_units = (len(schema.answers) + len(schema.questions))
-#     model.add(tf.keras.layers.Dense(
-#         dense_units, 
-#         # kernel_initializer=tf.keras.initializers.Ones(),
-#         # bias_initializer=tf.keras.initializers.Zeros(),
-#         activation=None
-#         # bias_constraint=tf.keras.constraints.NonNeg(),
-#         # kernel_constraint=tf.keras.constraints.NonNeg()
-#         ))  # one m per answer, one s per question
-
-#     # keras functional model, split architecture
-#     x = tf.keras.layers.InputLayer(input_shape=dense_units)  # not including batch in shape, but still has (unknown) batch dim
-#     # not really a for loop, just constructing the graph
-#     n_answers = len(schema.answers)
-#     alpha_list = []
-#     for q_n in range(len(schema.question_index_groups)):
-#         q_indices = schema.question_index_groups[q_n]
-#         q_start = q_indices[0]
-#         q_end = q_indices[1]
-#         q_mean = 1e-8 + tf.nn.softmax(x[:, q_start:q_end+1])
-#         # might also use a softmax here to constrain to (0.01, 10) or similar. Currently any pos. value (via abs or relu)
-#         q_precision = tf.expand_dims(0.01 + tf.math.abs(x[:, n_answers + q_n]), axis=1)  # expand_dims to avoid slicing axis 1 away
-#         # q_precision = tf.expand_dims(0.01 + x[:, n_answers + q_n], axis=1)  # expand_dims to avoid slicing axis 1 away
-#         q_alpha = q_mean * q_precision
-#         alpha_list.append(q_alpha)
-#     alpha = tf.concat(alpha_list, axis=1)
-#     # print(x.shape, alpha.shape)
-#     top_model = tf.keras.Model(inputs=x, outputs=alpha)
-
-#     model.add(top_model)

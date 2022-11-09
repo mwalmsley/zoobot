@@ -1,27 +1,5 @@
-# import logging
-
 import torch
 from torch import nn, Tensor
-
-# from zoobot.pytorch.estimators import efficientnet_standard
-
-
-# def define_headless_efficientnet(input_channels=None, get_effnet=efficientnet_standard.efficientnet_b0, use_imagenet_weights=False):
-#     """
-#     Define efficientnet model to train.
-#     Thin wrapper around ``get_effnet``, an efficientnet creation function from ``efficientnet_standard``, that ensures the appropriate args.
-
-#     Additional keyword arguments are passed to ``get_effnet``.
-
-#     Args:
-#         input_channels (tuple, optional): Expected input shape e.g. (224, 224, 1). Defaults to None.
-#         get_effnet (function, optional): Efficientnet creation function from ``efficientnet_standard``. Defaults to efficientnet_b0.
-    
-#     Returns:
-#         [type]: [description]
-#     """
-#     logging.info('Building efficientnet to expect input {}, after any preprocessing layers'.format(input_channels))
-
 
 
 def custom_top_dirichlet(input_dim, output_dim):

@@ -113,4 +113,5 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         mixed_precision=args.mixed_precision,
         patience=20
+        # random state has no effect here as catalogs already split and tf not sesed
     )
