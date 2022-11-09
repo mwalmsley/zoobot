@@ -38,8 +38,8 @@ def train(
     gpus=2,
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
     # replication parameters
-    random_state=42,  # TODO not yet implemented except for catalog split (not used in benchmarks)
-):
+    random_state=42  # TODO not yet implemented except for catalog split (not used in benchmarks)
+) -> tf.keras.Model:
 
     # get the image paths, divide into train/val/test if not explicitly passed above
     if catalog is not None:
