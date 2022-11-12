@@ -29,8 +29,7 @@ setuptools.setup(
             'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
             'simplejpeg',
             'albumentations',
-            'pyro-ppl == 1.8.0',
-            'pytorch-galaxy-datasets == 0.0.1'
+            'pyro-ppl == 1.8.0'
         ],
         'tensorflow': [
             'tensorflow >= 2.10.0',
@@ -64,6 +63,7 @@ setuptools.setup(
         'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
-        'setuptools==59.5.0'  # wandb logger incompatibility
+        'setuptools==59.5.0',  # wandb logger incompatibility
+        'galaxy-datasets==0.0.2'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
     ]
 )
