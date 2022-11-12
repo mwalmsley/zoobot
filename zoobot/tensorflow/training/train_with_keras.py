@@ -8,7 +8,9 @@ import tensorflow as tf
 
 from zoobot.tensorflow.training import training_config, losses, custom_metrics
 from zoobot.tensorflow.estimators import define_model
-from galaxy_datasets.tensorflow import galaxy_dataset, augmentations
+from galaxy_datasets.tensorflow import get_image_dataset, add_transforms_to_dataset
+from galaxy_datasets.transforms import default_transforms
+
 
 def train(
     # absolutely crucial arguments
@@ -101,18 +103,18 @@ def train(
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
-    train_dataset = galaxy_dataset.get_image_dataset(
-        train_image_paths, file_format, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+    train_dataset = get_image_dataset(
+        train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
-    val_dataset = galaxy_dataset.get_image_dataset(
-        val_image_paths, file_format, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+    val_dataset = get_image_dataset(
+        val_image_paths, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
-    test_dataset = galaxy_dataset.get_image_dataset(
-        test_image_paths, file_format, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+    test_dataset = get_image_dataset(
+        test_image_paths, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
 
     # specify augmentations
-    train_transforms = augmentations.default_albumentation_transforms(
+    train_transforms = default_transforms(
         # no need to specify greyscale here
         # tensorflow will greyscale in get_image_dataset i.e. on load, while pytorch doesn't so needs specifying here
         # may refactor to avoid inconsistency 
@@ -122,17 +124,17 @@ def train(
     )
     # TODO should be clearer, not magic 1's (e.g. default_train_transforms, etc.)
     # TODO if always_augment, use train augments at test time (TODO rename this too)
-    inference_transforms = augmentations.default_albumentation_transforms(
+    inference_transforms = default_transforms(
         crop_scale_bounds=(1., 1.),
         crop_ratio_bounds=(1., 1.),
         resize_after_crop=resize_after_crop
     )
     # apply augmentations
-    train_dataset = augmentations.add_augmentations_to_dataset(train_dataset, train_transforms)
+    train_dataset = add_transforms_to_dataset(train_dataset, train_transforms)
     # if always_augment:
         # logging.warning('always_augment=True, applying augmentations to val and test datasets')
-    val_dataset = augmentations.add_augmentations_to_dataset(val_dataset, inference_transforms)
-    test_dataset = augmentations.add_augmentations_to_dataset(test_dataset, inference_transforms)
+    val_dataset = add_transforms_to_dataset(val_dataset, inference_transforms)
+    test_dataset = add_transforms_to_dataset(test_dataset, inference_transforms)
 
     # batch, shuffle, prefetch
     train_dataset = train_dataset.shuffle(5000).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)

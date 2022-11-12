@@ -6,7 +6,7 @@ import tensorflow as tf
 import wandb
 from sklearn.model_selection import train_test_split
 
-from galaxy_datasets.prepared_datasets import gz_decals
+from galaxy_datasets import gz_decals
 
 from zoobot.shared import label_metadata, schemas
 from zoobot.tensorflow.training import train_with_keras
@@ -69,8 +69,8 @@ if __name__ == '__main__':
         download = False
     else:
         download = True
-    canonical_train_catalog, _ = gz_decals.setup(root=args.data_dir, train=True, download=download)
-    canonical_test_catalog, _ = gz_decals.setup(root=args.data_dir, train=False, download=download)
+    canonical_train_catalog, _ = gz_decals(root=args.data_dir, train=True, download=download)
+    canonical_test_catalog, _ = gz_decals(root=args.data_dir, train=False, download=download)
 
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # could add random_state
     test_catalog = canonical_test_catalog.copy()
