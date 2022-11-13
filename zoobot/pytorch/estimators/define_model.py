@@ -226,7 +226,7 @@ def get_plain_pytorch_zoobot_model(
     drop_connect_rate=0.2,
     get_architecture=efficientnet_standard.efficientnet_b0,
     representation_dim=1280  # or 2048 for resnet
-    ):
+    ) -> nn.Sequential:
     """
     Create a trainable efficientnet model.
     First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
@@ -275,7 +275,7 @@ def get_plain_pytorch_zoobot_model(
         # TODO could optionally add a bottleneck layer here
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
 
-    if weights_loc:
+    if weights_loc is not None:
         raise NotImplementedError
     #     load_weights(model, weights_loc, expect_partial=expect_partial)
 

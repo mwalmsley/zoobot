@@ -29,7 +29,8 @@ setuptools.setup(
             'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
             'simplejpeg',
             'albumentations',
-            'pyro-ppl == 1.8.0'
+            'pyro-ppl == 1.8.0',
+            'einops'
         ],
         'tensorflow': [
             'tensorflow >= 2.10.0',
