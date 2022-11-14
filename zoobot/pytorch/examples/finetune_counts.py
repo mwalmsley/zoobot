@@ -105,4 +105,4 @@ if __name__ == '__main__':
 
 
     test_catalog = datamodule.test_catalog  # auto-split within datamodule. pull out again.
-    predict_on_catalog(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), batch_size=batch_size)
+    predict_on_catalog.predict(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), batch_size=batch_size, devices=1)
