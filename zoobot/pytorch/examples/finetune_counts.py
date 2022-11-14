@@ -105,4 +105,6 @@ if __name__ == '__main__':
 
 
     test_catalog = datamodule.test_catalog  # auto-split within datamodule. pull out again.
-    predict_on_catalog.predict(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), batch_size=batch_size, devices=1)
+    datamodule_kwargs = {'batch_size': batch_size}
+    trainer_kwargs = {'devices': 1, 'accelerator': 'gpu'}
+    predict_on_catalog.predict(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), datamodule_kwargs=datamodule_kwargs, trainer_kwargs=trainer_kwargs)
