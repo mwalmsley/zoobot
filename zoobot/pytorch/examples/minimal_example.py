@@ -35,9 +35,7 @@ if __name__ == '__main__':
     resize_size = 64  # set to 64 to train quickly, ideally 224 (or more) for good performance
     num_workers = 4  # set <= num cpus
 
-    question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
-    dependencies = label_metadata.decals_ortho_dependencies
-    schema = schemas.Schema(question_answer_pairs, dependencies)
+    schema = schemas.decals_dr5_ortho_schema
     logging.info('Schema: {}'.format(schema))
 
     # use the setup() methods in pytorch_galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs

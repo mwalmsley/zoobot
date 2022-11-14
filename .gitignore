@@ -158,3 +158,5 @@ data/example_images/advanced_old
 data/external
 *.jpg
 *.tar.gz
+data/example_images/cosmic_dawn
+data/cosmic_dawn*.parquet
