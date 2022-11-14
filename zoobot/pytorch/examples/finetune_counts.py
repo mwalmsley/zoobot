@@ -47,14 +47,19 @@ if __name__ == '__main__':
       devices = 2
       batch_size = 128
       prog_bar = False
+      max_galaxies = None
     else:  # local testing
       repo_dir = '/home/walml/repos'
       accelerator = 'cpu'
       devices = None
       batch_size = 64 
       prog_bar = True
+      max_galaxies = 1024
 
     df = pd.read_parquet(os.path.join(repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_with_file_locs.parquet'))
+  
+    if max_galaxies is not None:
+        df = df.sample(max_galaxies)
 
     datamodule = GalaxyDataModule(
       label_cols=schema.label_cols,
@@ -105,6 +110,7 @@ if __name__ == '__main__':
 
 
     test_catalog = datamodule.test_catalog  # auto-split within datamodule. pull out again.
+    assert len(test_catalog) > 0
     datamodule_kwargs = {'batch_size': batch_size}
-    trainer_kwargs = {'devices': 1, 'accelerator': 'gpu'}
+    trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
     predict_on_catalog.predict(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), label_cols=schema.label_cols, datamodule_kwargs=datamodule_kwargs, trainer_kwargs=trainer_kwargs)
