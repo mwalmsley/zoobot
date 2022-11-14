@@ -1,5 +1,6 @@
 import logging
 import os
+from trace import Trace
 from urllib.parse import urlparse
 
 import pandas as pd
@@ -8,7 +9,7 @@ import numpy as np
 from zoobot.pytorch.training import finetune
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 from zoobot.pytorch.estimators import define_model
-
+from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared.schemas import cosmic_dawn_ortho_schema
 
 if __name__ == '__main__':
@@ -44,13 +45,14 @@ if __name__ == '__main__':
       repo_dir = '/share/nas2/walml/repos'
       accelerator = 'gpu'
       devices = 2
-      batch_size = 256  # Cam, you may need to reduce this by factor of 2 if you get CUDA out-of-memory erroys
+      batch_size = 128
+      prog_bar = False
     else:  # local testing
       repo_dir = '/home/walml/repos'
       accelerator = 'cpu'
       devices = None
       batch_size = 64 
-
+      prog_bar = True
 
     df = pd.read_parquet(os.path.join(repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_with_file_locs.parquet'))
 
@@ -58,6 +60,7 @@ if __name__ == '__main__':
       label_cols=schema.label_cols,
       catalog=df,
       batch_size=batch_size
+      # default_augs
     )
 
     # datamodule.setup()
@@ -76,11 +79,12 @@ if __name__ == '__main__':
         },
         'finetune': {
             'encoder_dim': 1280,
-            'n_epochs': 100,
+            'n_epochs': 1,
             'n_layers': 0,
             'label_dim': len(schema.label_cols),
             'label_mode': 'count',
-            'schema': schema
+            'schema': schema,
+            'prog_bar': prog_bar
         }
     }
 
@@ -96,5 +100,9 @@ if __name__ == '__main__':
     """
     encoder = model.get_submodule('model.0')  # includes avgpool and head
 
-    finetune.run_finetuning(config, encoder, datamodule, logger=None, save_dir=os.path.join(repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}'))
+    save_dir = os.path.join(repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
+    _, model = finetune.run_finetuning(config, encoder, datamodule, logger=None, save_dir=save_dir)
 
+
+    test_catalog = datamodule.test_catalog  # auto-split within datamodule. pull out again.
+    predict_on_catalog(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), batch_size=batch_size)

@@ -8,7 +8,7 @@ import torch
 import pytorch_lightning as pl
 
 from zoobot.shared import save_predictions
-from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
+from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 
 def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str, datamodule_kwargs, trainer_kwargs):
