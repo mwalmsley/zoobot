@@ -190,7 +190,7 @@ def dirichlet_loss(y, y_pred, question_index_groups):
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
 
-def run_finetuning(config, encoder, datamodule, logger, save_dir):
+def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
     
     checkpoint = ModelCheckpoint(
         monitor='finetuning/val_loss',

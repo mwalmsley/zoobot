@@ -1,4 +1,5 @@
 import logging
+import os
 
 import pandas as pd
 
@@ -8,26 +9,25 @@ from zoobot.pytorch.estimators import define_model
 
 if __name__ == '__main__':
 
-
     logging.basicConfig(level=logging.INFO)
 
-    df = pd.read_csv('data/example_ring_catalog_basic.csv')
-    # # paths = list(df['local_png_loc'])
-    # # labels = list(df['ring'].astype(int))
-    # # logging.info('Labels: \n{}'.format(pd.value_counts(labels))) 
-    # df['file_loc'] = df['local_png_loc'].str.replace('.png', '.jpg')
-    # del df['local_png_loc']
-    # df.to_csv('/home/walml/repos/zoobot/data/temp.csv', index=False)
+    zoobot_dir = '/home/walml/repos/zoobot'  # TODO set to directory where you cloned Zoobot
 
+    # TODO you can update these to suit own data
+    label_col = 'ring'  # name of column in catalog with binary (0 or 1) labels for your classes
+    catalog_loc = os.path.join(zoobot_dir, 'data/example_ring_catalog_basic.csv')  # includes label_col column (here, 'ring') with labels
+    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
+    save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
 
+    df = pd.read_csv(catalog_loc)
 
     datamodule = GalaxyDataModule(
-      label_cols=['ring'],
+      label_cols=[label_col],
       catalog=df,
       batch_size=32
     )
 
-    # datamodule.setup()
+    datamodule.setup()
     # for images, labels in datamodule.train_dataloader():
     #   print(images.shape)
     #   print(labels.shape)
@@ -35,19 +35,20 @@ if __name__ == '__main__':
 
     config = {
         'trainer': {
-        #   'devices': 1,
-          'accelerator': 'cpu'
+            'devices': 1,
+            'accelerator': 'cpu'
         },
         'finetune': {
-            'dim': 1280,  # TODO rename
+            'encoder_dim': 1280,
+            'label_dim': 2,
             'n_epochs': 100,
             'n_layers': 2,
-            'n_classes': 2
+            'label_mode': 'classification',
+            'prog_bar': True
         }
     }
 
-    ckpt_loc = '/home/walml/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt'
-    model = define_model.ZoobotLightningModule.load_from_checkpoint(ckpt_loc)  # or .best_model_path, eventually
+    model = define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_loc)  # or .best_model_path, eventually
 
     """
     Model:  ZoobotLightningModule(
@@ -56,21 +57,6 @@ if __name__ == '__main__':
     (model): Sequential(
       (0): EfficientNet(
     """
-    # TODO self properties needed
-    # 0 and 1 are self.Accuracy
-    # print('Model: ', list(model.modules())[0])
-    # zoobot = list(model.modules())[0]
-    # print('Model: ', list(zoobot.modules())[0])
-
-    # for name, _ in model.named_modules():
-    #   print(name)
-
     encoder = model.get_submodule('model.0')  # includes avgpool and head
-    # print(encoder)
 
-
-    # encoder = define_model.get_plain_pytorch_zoobot_model(output_dim=1280, include_top=False)
-    # TODO remove top?
-
-    finetune.run_finetuning(config, encoder, datamodule, logger=None)
-
+    finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
