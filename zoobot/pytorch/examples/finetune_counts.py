@@ -48,7 +48,7 @@ if __name__ == '__main__':
     if os.path.isdir('/share/nas2'):  # cluster running
       repo_dir = '/share/nas2/walml/repos'
       accelerator = 'gpu'
-      devices = 2
+      devices = 1
       batch_size = 128
       prog_bar = False
       max_galaxies = None
@@ -73,7 +73,7 @@ if __name__ == '__main__':
       # default_augs
     )
 
-    # datamodule.setup()
+    datamodule.setup()
     # for images, labels in datamodule.train_dataloader():
     #   print(images.shape)
     #   print(labels.shape)

@@ -214,7 +214,7 @@ def run_finetuning(config, encoder, datamodule, logger, save_dir):
 
     trainer.fit(model, datamodule)
 
-    trainer.test(model, dataloaders=datamodule)
+    # trainer.test(model, dataloaders=datamodule)
 
     return checkpoint, model
 

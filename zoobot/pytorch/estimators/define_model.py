@@ -102,8 +102,8 @@ class GenericLightningModule(pl.LightningModule):
     def predict_step(self, batch, batch_idx, dataloader_idx=0):
         # https://pytorch-lightning.readthedocs.io/en/stable/common/lightning_module.html#inference
         # this calls forward, while avoiding the need for e.g. model.eval(), torch.no_grad()
-        x, _ = batch  # _ is labels
-        return self(x)
+        # x, y = batch  # would be usual format, but here, batch does not include labels
+        return self(batch)
 
 
     def configure_optimizers(self):
