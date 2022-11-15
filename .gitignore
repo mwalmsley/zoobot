@@ -160,3 +160,5 @@ data/external
 *.tar.gz
 data/example_images/cosmic_dawn
 data/cosmic_dawn*.parquet
+
+results
