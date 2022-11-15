@@ -60,3 +60,4 @@ if __name__ == '__main__':
     encoder = model.get_submodule('model.0')  # includes avgpool and head
 
     finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
+    # can now use this saved checkpoint to make predictions on new data. Well done!

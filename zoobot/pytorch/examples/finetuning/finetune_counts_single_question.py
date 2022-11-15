@@ -4,18 +4,22 @@ import os
 import pandas as pd
 import numpy as np
 
-from zoobot.pytorch.training import finetune
+from galaxy_datasets import gz_rings
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
+
+from zoobot.pytorch.training import finetune
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
-from zoobot.shared.schemas import cosmic_dawn_ortho_schema
+from zoobot.shared.schemas import gz_rings_schema
 
 """
-Example for finetuning Zoobot on counts of volunteer responses.
+Example for finetuning Zoobot on counts of volunteer responses to a single question.
+Useful for finetuning on GZ Mobile responses.
 
-This currently uses unpublished (hence private, for now) GZ Cosmic Dawn data
-I will update this to be a simpler example using GZ Rings
+For a simpler example doing binary classification (i.e. on labels which are 0 or 1),
+see finetune_counts_binary_classification.py
 
+This currently uses unpublished (hence private, for now) GZ Rings data (collected with GZ Mobile)
 """
 
 
@@ -23,7 +27,9 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    schema = cosmic_dawn_ortho_schema
+
+
+    schema = gz_rings_schema
 
     if os.path.isdir('/share/nas2'):  # run on cluster
         repo_dir = '/share/nas2/walml/repos'
@@ -40,14 +46,23 @@ if __name__ == '__main__':
         prog_bar = True
         max_galaxies = 256
 
-    # TODO not yet made public
-    # pd.DataFrame with columns 'id_str' (unique id), 'file_loc' (path to image),
-    # and label_cols (e.g. smooth-or-featured-cd_smooth) with count responses
-    df = pd.read_parquet(os.path.join(
-        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_with_file_locs_ortho.parquet'))
-    # sometimes auto-cast to float, which causes issue when saving hdf5
-    df['id_str'] = df['id_str'].astype(str)
+    checkpoint_loc = os.path.join(repo_dir, 'zoobot/data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
 
+    save_dir = os.path.join(
+        repo_dir, f'zoobot/results/pytorch/finetune/finetune_counts_single_question')
+    
+
+    # TODO not yet made public
+    # df includes columns 'id_str' (unique id), 'file_loc' (path to image),
+    # and label_cols with count responses (here 'ring_yes' and 'ring_no')
+    # (we already have the label_cols via the schema, as schema.label_cols)
+    df, _ = gz_rings(
+        root=os.path.join(repo_dir, 'pytorch-galaxy-datasets/roots/gz_rings'),
+        train=True,
+        download=False
+    )
+
+    # make any modifications to the catalog here 
     if max_galaxies is not None:
         df = df.sample(max_galaxies)
 
@@ -67,7 +82,7 @@ if __name__ == '__main__':
         'finetune': {
             'encoder_dim': 1280,
             'n_epochs': 50,
-            'n_layers': 2,
+            'n_layers': 2,  # min 0 (i.e. just train the output layer). max 4 (i.e. all layers)
             'label_dim': len(schema.label_cols),
             'label_mode': 'count',
             'schema': schema,
@@ -75,11 +90,8 @@ if __name__ == '__main__':
         }
     }
 
-    # TODO not yet made public
-    ckpt_loc = os.path.join(
-        repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
     model = define_model.ZoobotLightningModule.load_from_checkpoint(
-        ckpt_loc)  # or .best_model_path, eventually
+        checkpoint_loc)  # or .best_model_path, eventually
 
     """
     Model:  ZoobotLightningModule(
@@ -90,14 +102,11 @@ if __name__ == '__main__':
     """
     encoder = model.get_submodule('model.0')  # includes avgpool and head
 
-    save_dir = os.path.join(
-        repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
-    
     # key method
     _, model = finetune.run_finetuning(
-        config, encoder, datamodule, logger=None, save_dir=save_dir)
+        config, encoder, datamodule, save_dir, logger=None)
 
-    # now save predictions on test set to evaluate performance
+    # demonstrate saving predictions using test set
   
     # auto-split within datamodule. pull out again.
     test_catalog = datamodule.test_catalog

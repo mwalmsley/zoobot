@@ -11,11 +11,15 @@ from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared.schemas import cosmic_dawn_ortho_schema
 
 """
-Example for finetuning Zoobot on counts of volunteer responses.
+Example for finetuning Zoobot on counts of volunteer responses throughout a complex decision tree.
+Useful if you are running a Galaxy Zoo campaign with many questions and answers.
+Probably you are in the GZ collaboration if so!
+
+For simpler examples, see:
+- finetune_binary_classification.py to finetune on class (0 or 1) labels
+- finetune_counts_single_question.py to finetune on answer counts (e.g. 12 volunteers said Yes, 4 said No) for a single question 
 
 This currently uses unpublished (hence private, for now) GZ Cosmic Dawn data
-I will update this to be a simpler example using GZ Rings
-
 """
 
 
@@ -95,7 +99,7 @@ if __name__ == '__main__':
     
     # key method
     _, model = finetune.run_finetuning(
-        config, encoder, datamodule, logger=None, save_dir=save_dir)
+        config, encoder, datamodule, save_dir=save_dir, logger=None)
 
     # now save predictions on test set to evaluate performance
   

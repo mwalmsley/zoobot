@@ -266,6 +266,7 @@ decals_dr5_ortho_schema = Schema(label_metadata.decals_dr5_ortho_pairs , label_m
 decals_all_campaigns_ortho_schema = Schema(label_metadata.decals_all_campaigns_ortho_pairs , label_metadata.decals_ortho_dependencies)
 gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs , label_metadata.gz2_ortho_dependencies)
 cosmic_dawn_ortho_schema = Schema(label_metadata.cosmic_dawn_ortho_pairs , label_metadata.cosmic_dawn_ortho_dependencies)
+gz_rings_schema = Schema(label_metadata.rings_pairs, label_metadata.rings_dependencies)
 # note that as this is a call to Schema (and Question and Answer), any logging within those will 
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
