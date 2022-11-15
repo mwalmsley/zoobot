@@ -21,12 +21,16 @@ if __name__ == '__main__':
 
     # temp - tweak catalog to include file_loc and renamed columns
 
-    # # slightly updated from the first version sent to Cam
+    # slightly updated from the first version sent to Cam
     # df = pd.read_parquet('data/gz_cosmic_dawn_early_aggregation.parquet')
+    # renamer = {}
     # for question in schema.questions:
+    #   renamer[question.text.replace('-cd', '') + '_total-votes'] = question.text + '_total-votes'
     #   for answer in question.answers:
-    #     renamer = {answer.text.replace('-cd', ''): answer.text}
-    #     df = df.rename(columns=renamer)
+    #     renamer[answer.text.replace('-cd', '')] = answer.text
+    #     renamer[answer.text.replace('-cd', '') + '_fraction'] = answer.text + '_fraction'
+    # print(renamer)
+    # df = df.rename(columns=renamer)
 
     # for label_col in schema.label_cols:
     #   assert label_col in df.columns.values, 'Missing {}'.format(label_col)
@@ -54,9 +58,10 @@ if __name__ == '__main__':
       devices = None
       batch_size = 64 
       prog_bar = True
-      max_galaxies = 1024
+      max_galaxies = 256
 
     df = pd.read_parquet(os.path.join(repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_with_file_locs.parquet'))
+    df['id_str'] = df['id_str'].astype(str)  # sometimes auto-cast to float, which causes issue when saving hdf5
   
     if max_galaxies is not None:
         df = df.sample(max_galaxies)
@@ -113,4 +118,4 @@ if __name__ == '__main__':
     assert len(test_catalog) > 0
     datamodule_kwargs = {'batch_size': batch_size}
     trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
-    predict_on_catalog.predict(test_catalog, model, n_samples=1, save_loc=os.path.join(save_dir, 'test_predictions.csv'), label_cols=schema.label_cols, datamodule_kwargs=datamodule_kwargs, trainer_kwargs=trainer_kwargs)
+    predict_on_catalog.predict(test_catalog, model, n_samples=1, label_cols=schema.label_cols, save_loc=os.path.join(save_dir, 'test_predictions.csv'), datamodule_kwargs=datamodule_kwargs, trainer_kwargs=trainer_kwargs)

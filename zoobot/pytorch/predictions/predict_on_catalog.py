@@ -11,12 +11,12 @@ from zoobot.shared import save_predictions
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 
-def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str, datamodule_kwargs, trainer_kwargs):
+def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str,datamodule_kwargs={}, trainer_kwargs={}):
 
-    image_id_strs = list(catalog['id_str'])
+    image_id_strs = list(catalog['id_str'].astype(str))
 
     predict_datamodule = GalaxyDataModule(
-        label_cols=label_cols,
+        label_cols=None,  # not using label_cols to load labels, we're only using it to name our predictions
         predict_catalog=catalog,  # no need to specify the other catalogs
         # will use the default transforms unless overridden with datamodule_kwargs
         # 
@@ -25,6 +25,10 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     # with this stage arg, will only use predict_catalog 
     # crucial to specify the stage, or will error (as missing other catalogs)
     predict_datamodule.setup(stage='predict')  
+    # for images in predict_datamodule.predict_dataloader():
+    #     print(images)
+    #     print(images.shape)
+
 
     # set up trainer (again)
     trainer = pl.Trainer(
