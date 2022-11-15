@@ -1,28 +1,17 @@
 import logging
 import os
-import copy
-import shutil
 import time
-from functools import partial
-from typing import List
 
 import tensorflow as tf
-import pandas as pd
-import matplotlib
-import numpy as np
 
-from zoobot.tensorflow.estimators import preprocess, efficientnet_standard, efficientnet_custom, custom_layers, define_model, custom_callbacks
-from zoobot.shared import schemas
+from zoobot.tensorflow.estimators import custom_callbacks
 
-# augmentations now done via keras Input layers instead - see define_model.py
-# globals shared between train and test input configurations
-# MAX_SHIFT = 30  # not implemented
-# MAX_SHEAR = np.pi/4.  # not implemented
-# ZOOM = (1/1.65, 1/1.4)  # keras interprets zoom the other way around to normal humans, for some reason: zoom < 1 = magnification
+# similar style to PyTorch Lightning
+class Trainer():
 
-
-class TrainConfig():
     def __init__(
+        # this doesn't really need to be a class, 
+        # but it's kinda nice to break up the training instructions from the model/dataset
             self,
             epochs=1500,  # rely on earlystopping callback
             min_epochs=0,
@@ -43,86 +32,90 @@ class TrainConfig():
         return dict([(key, value) for (key, value) in self.__dict__.items() if key not in excluded_keys])
 
 
-    # don't decorate, this is session creation point
+    def fit(self, model, train_dataset, val_dataset, extra_callbacks=[], eager=False, verbose=2):
+        """
+        Train and evaluate a model.
 
-def train_estimator(model, train_config, train_dataset, val_dataset, extra_callbacks=[], eager=False, verbose=2):
-    """
-    Train and evaluate a model.
+        Includes tensorboard logging (to log_dir/tensorboard).
+        Includes checkpointing (named log_dir/checkpoint), with the rolling best val loss checkpoint saved.
+        Includes early stopping according to train_config.patience.
 
-    Includes tensorboard logging (to log_dir/tensorboard).
-    Includes checkpointing (named log_dir/checkpoint), with the rolling best val loss checkpoint saved.
-    Includes early stopping according to train_config.patience.
+        Args:
+            model (tf.keras.Model): model to train. Must already be compiled with model.compile(loss, optimizer)
+            train_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
+            val_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
+            extra_callbacks (list): any extra callbacks to use when training the model. See e.g. tf.keras.callbacks.
+            eager (bool, optional): If True, train in eager mode - slow, but helpful for debugging. Defaults to False.
+            verbose (int, optional): 1 for progress bar, useful for local training. 2 for one line per epoch, useful for scripts. Defaults to 2.
 
-    Args:
-        model (tf.keras.Model): model to train. Must already be compiled with model.compile(loss, optimizer)
-        train_config (TrainConfig): parameters controlling training procedure e.g. epochs, early stopping
-        train_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
-        val_dataset (tf.data.Dataset): yielding batched tuples of (galaxy images, labels)
-        extra_callbacks (list): any extra callbacks to use when training the model. See e.g. tf.keras.callbacks.
-        eager (bool, optional): If True, train in eager mode - slow, but helpful for debugging. Defaults to False.
-        verbose (int, optional): 1 for progress bar, useful for local training. 2 for one line per epoch, useful for scripts. Defaults to 2.
+        Returns:
+            None
+        """
 
-    Returns:
-        None
-    """
+        if not os.path.isdir(self.log_dir):
+            os.mkdir(self.log_dir)
 
-    if not os.path.isdir(train_config.log_dir):
-        os.mkdir(train_config.log_dir)
+        # will create a multi-file checkpoint like {checkpoint.index, checkpoint.data.00000-00001, ...}
+        checkpoint_name = os.path.join(self.log_dir, 'checkpoint')
 
-    # will create a multi-file checkpoint like {checkpoint.index, checkpoint.data.00000-00001, ...}
-    checkpoint_name = os.path.join(train_config.log_dir, 'checkpoint')
+        tensorboard_dir = os.path.join(self.log_dir, 'tensorboard')
+        callbacks = [
+            tf.keras.callbacks.TensorBoard(
+                log_dir=tensorboard_dir,
+                # explicitly disable various slow logging options - enable these if you like
+                # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
+                histogram_freq=0,  # don't log all the internal histograms, possibly slow
+                write_images=False,  # this actually writes the weights, terrible name
+                write_graph=False,
+                # profile_batch='2,10',
+                profile_batch=0,   # i.e. disable profiling
+                update_freq=100  # must be an integer, else logging within define_model.py will fail
+            ),
+            tf.keras.callbacks.ModelCheckpoint(
+                filepath=checkpoint_name,
+                monitor='val_loss',
+                mode='min',
+                save_freq=self.save_freq,
+                save_best_only=True,
+                save_weights_only=True),
+            tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=self.patience),
+            tf.keras.callbacks.TerminateOnNaN()
+            # custom_callbacks.VisualizeImages()
+        ] + extra_callbacks
+        # TODO https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ReduceLROnPlateau
 
-    callbacks = [
-        tf.keras.callbacks.TensorBoard(
-            log_dir=os.path.join(train_config.log_dir, 'tensorboard'),
-            histogram_freq=0,  # don't log all the internal histograms, possibly slow
-            write_images=False,  # this actually writes the weights, terrible name
-            write_graph=False,
-            # profile_batch='2,10' 
-            profile_batch=0   # i.e. disable profiling
-        ),
-        tf.keras.callbacks.ModelCheckpoint(
-            filepath=checkpoint_name,
-            monitor='val_loss',
-            mode='min',
-            save_freq=train_config.save_freq,
-            save_best_only=True,
-            save_weights_only=True),
-        tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=train_config.patience),
-        tf.keras.callbacks.TerminateOnNaN(),
-        custom_callbacks.UpdateStepCallback(
-            batch_size=next(iter(train_dataset))[0].shape[0]  # grab the first batch, 0th tuple element (the images), 0th dimension, to check the batch size
-        )
-    ] + extra_callbacks
+        # https://www.tensorflow.org/tensorboard/scalars_and_keras
+        # automatically logs (train/validation)/epoch_loss
+        # adds into tensorboard_dir, which also has train/val subfolders
+        fit_summary_writer = tf.summary.create_file_writer(os.path.join(tensorboard_dir, 'writer'))
+        # pylint: disable=not-context-manager
+        with fit_summary_writer.as_default(): 
+            # pylint: enable=not-context-manager
+            # for debugging
+            if eager:
+                logging.warning('Running in eager mode')
+                model.run_eagerly = True
+            # https://www.tensorflow.org/api_docs/python/tf/keras/Model
 
-    # attribute used by the callbacks to track the current step when writing to tensorboard.
-    model.step = tf.Variable(
-      0, dtype=tf.int64, name='model_step', trainable=False
-    )
+            # import numpy as np
+            # tf.summary.image(name='example', data=np.random.rand(16, 64, 64, 1), step=0)
 
-    # https://www.tensorflow.org/tensorboard/scalars_and_keras
-    fit_summary_writer = tf.summary.create_file_writer(os.path.join(train_config.log_dir, 'manual_summaries'))
-    # pylint: disable=not-context-manager
-    with fit_summary_writer.as_default(): 
-        # pylint: enable=not-context-manager
-        # for debugging
-        if eager:
-            logging.warning('Running in eager mode')
-            model.run_eagerly = True
-        # https://www.tensorflow.org/api_docs/python/tf/keras/Model
+            # print(callbacks)
+            # exit()
 
-        model.fit(
-            train_dataset,
-            validation_data=val_dataset.repeat(2),  # reduce variance from dropout, augs
-            epochs=train_config.epochs,
-            callbacks=callbacks,
-            verbose=verbose
-        )
+            model.fit(
+                train_dataset,
+                validation_data=val_dataset,
+                epochs=self.epochs,
+                callbacks=callbacks,
+                verbose=verbose
+            )
 
-    logging.info('All epochs completed - finishing gracefully')
-    # note that the BEST model is saved as the latest checkpoint, but self.model is the LAST model after training completes
-    # to set self.model to the best model, load the latest checkpoint 
-    logging.info('Loading and returning (best) model')
-    model.load_weights(checkpoint_name)  # inplace
 
-    return model
+        logging.info('All epochs completed - finishing gracefully')
+        # note that the BEST model is saved as the latest checkpoint, but self.model is the LAST model after training completes
+        # to set self.model to the best model, load the latest checkpoint 
+        logging.info('Loading and returning (best) model')
+        model.load_weights(checkpoint_name)  # inplace
+
+        return model

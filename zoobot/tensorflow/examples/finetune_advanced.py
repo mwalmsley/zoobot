@@ -134,7 +134,6 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
       pretrained_checkpoint,
       requested_img_size,
       crop_size,
-      resize_size,
       channels,  # careful, 1 for decals checkpoint or 3 for imagenet checkpoint
       expect_partial=True
     ) 
@@ -146,7 +145,6 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
     #   output_dim=None,
     #   input_size=requested_img_size,
     #   crop_size=crop_size,
-    #   resize_size=resize_size,
     #   weights_loc=None,
     #   include_top=False,
     #   channels=channels,
@@ -159,7 +157,6 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
     #   output_dim=None,
     #   input_size=requested_img_size,
     #   crop_size=crop_size,
-    #   resize_size=resize_size,
     #   weights_loc=None,
     #   include_top=False,
     #   channels=channels,
@@ -277,7 +274,7 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
 
   
 
-def get_headless_model(pretrained_checkpoint, requested_img_size, crop_size, resize_size, channels, expect_partial=False):
+def get_headless_model(pretrained_checkpoint, requested_img_size, crop_size, channels, expect_partial=False):
   # get headless model (inc. augmentations)
   logging.info('Loading pretrained model from {}'.format(pretrained_checkpoint))
   return define_model.load_model(
@@ -285,7 +282,6 @@ def get_headless_model(pretrained_checkpoint, requested_img_size, crop_size, res
     include_top=False,  # do not include the head used for GZ DECaLS - we will add our own head
     input_size=requested_img_size,  # the preprocessing above did not change size
     crop_size=crop_size,  # model augmentation layers apply a crop...
-    resize_size=resize_size,  # ...and then apply a resize
     output_dim=None , # headless so no effect
     channels=channels,
     expect_partial=expect_partial

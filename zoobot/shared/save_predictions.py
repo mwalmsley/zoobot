@@ -47,5 +47,9 @@ def prediction_to_row(prediction: np.ndarray, id_str: str, label_cols: List):
     }
     for n in range(len(label_cols)):
         answer = label_cols[n]
-        row[answer + '_pred'] = json.dumps(list(prediction[n].astype(float)))
+        answer_pred = prediction[n].astype(float)  # (n_samples,) shape
+        if len(answer_pred) == 1:  # i.e. if only one sample
+            row[answer + '_pred'] = answer_pred.squeeze()  # converts to scalar 
+        else:
+            row[answer + '_pred'] = json.dumps(list(answer_pred))
     return row

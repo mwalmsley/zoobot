@@ -7,7 +7,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
-from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
+from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.estimators import define_model
 
@@ -28,29 +28,27 @@ def train_default_zoobot_from_scratch(
     patience=8,
     # model hparams
     architecture_name='efficientnet',  # recently changed
-    batch_size=256,
+    batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     # data and augmentation parameters
-    # datamodule_class=GalaxyDataModule,  # generic catalog of galaxies, will not download itself. Can replace with any datamodules from pytorch_galaxy_datasets
     color=False,
-    resize_size=224,
+    resize_after_crop=224,
     crop_scale_bounds=(0.7, 0.8),
     crop_ratio_bounds=(0.9, 1.1),
     # hardware parameters
-    accelerator='auto',
     nodes=1,
     gpus=2,
     num_workers=4,
     prefetch_factor=4,
     mixed_precision=False,
-    # replication parameters
-    random_state=42,
+    # checkpointing / logging
     wandb_logger=None,
-    # checkpointing
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
-    save_top_k=3
+    save_top_k=3,
+    # replication parameters
+    random_state=42
 ):
 
     slurm_debugging_logs()
@@ -80,6 +78,11 @@ def train_default_zoobot_from_scratch(
         assert gpus == 2
         logging.info('Using multi-node training')
         # this hangs silently on Manchester's slurm cluster - perhaps you will have more success?
+
+    if gpus > 0:
+        accelerator = 'gpu'
+    else:
+        accelerator = 'cpu'
 
     precision = 32
     if mixed_precision:
@@ -122,11 +125,10 @@ def train_default_zoobot_from_scratch(
         # can take either a catalog (and split it), or a pre-split catalog
         **catalogs_to_use,
         #   augmentations parameters
-        album=False,
         greyscale=not color,
-        resize_size=resize_size,
         crop_scale_bounds=crop_scale_bounds,
         crop_ratio_bounds=crop_ratio_bounds,
+        resize_after_crop=resize_after_crop,
         #   hardware parameters
         batch_size=batch_size, # on 2xA100s, 256 with DDP, 512 with distributed (i.e. split batch)
         num_workers=num_workers,
@@ -149,7 +151,7 @@ def train_default_zoobot_from_scratch(
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
-            monitor="val/supervised_loss",
+            monitor="validation/epoch_loss",
             save_weights_only=True,
             mode='min',
             # custom filename for checkpointing due to / in metric
@@ -159,7 +161,7 @@ def train_default_zoobot_from_scratch(
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
         ),
-        EarlyStopping(monitor='val/supervised_loss', patience=patience, check_finite=True)
+        EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
     ]
 
     trainer = pl.Trainer(

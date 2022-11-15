@@ -32,8 +32,8 @@ class GenericLightningModule(pl.LightningModule):
         # these are ignored unless output dim = 2
         self.train_accuracy = Accuracy()
         self.val_accuracy = Accuracy()
-        self.log_on_step = True
-        # useful for debugging, best when log_every_n_steps is fairly large
+        self.log_on_step = False
+        # self.log_on_step is useful for debugging, but slower - best when log_every_n_steps is fairly large
 
 
     def forward(self, x):
@@ -45,43 +45,70 @@ class GenericLightningModule(pl.LightningModule):
 
         # true, pred convention as with sklearn
         # self.loss_func returns shape of (galaxy, question), mean to ()
-        loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("train/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True)
+        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
+        # if hasattr(self, 'schema'):
+        self.log_loss_per_question(multiq_loss, prefix='train')
+
+        loss = torch.mean(torch.sum(multiq_loss, axis=1))
+        self.log("train/epoch_loss", loss, on_epoch=True, on_step=False,prog_bar=True, logger=True)
+        if self.log_on_step:
+            # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
+            self.log("train/step_loss", loss, on_epoch=False, on_step=True, prog_bar=True, logger=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
             self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
+    def log_loss_per_question(self, multiq_loss, prefix):
+        # log questions individually
+        # TODO need schema attribute or similar to have access to question names, this will do for now
+        for question_n in range(multiq_loss.shape[1]):
+            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
+
     def validation_step(self, batch, batch_idx):
-        # identical to training_step except for log
+        # identical to training_step except for log prefix TODO refactor?
         x, labels = batch
         predictions = self(x)
-        loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("val/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+
+        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
+        # if hasattr(self, 'schema'):
+        self.log_loss_per_question(multiq_loss, prefix='validation')
+
+        loss = torch.mean(torch.sum(multiq_loss, axis=1))
+        # TODO what is sync_dist doing here?
+        self.log("validation/epoch_loss", loss, on_epoch=True, on_step=False, prog_bar=True, logger=True, sync_dist=True)
+
+        if self.log_on_step:
+            self.log("validation/step_loss", loss, on_epoch=False, on_step=True, prog_bar=True, logger=True, sync_dist=True)
         if predictions.shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
-            self.log("val_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
+            self.log("validation_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
         return loss
 
     def test_step(self, batch, batch_idx):
         # similarly
         x, labels = batch
         predictions = self(x)
-        loss = torch.mean(self.loss_func(predictions, labels))
-        self.log("test/supervised_loss", loss, on_step=self.log_on_step, on_epoch=True, prog_bar=True, logger=True, sync_dist=True)
+
+        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
+        # if hasattr(self, 'schema'):
+        self.log_loss_per_question(multiq_loss, prefix='test')
+
+        loss = torch.mean(torch.sum(multiq_loss, axis=1))
+        self.log("test/epoch_loss", loss, on_epoch=True, on_step=False, prog_bar=True, logger=True, sync_dist=True)
         return loss
 
     
     def predict_step(self, batch, batch_idx, dataloader_idx=0):
         # https://pytorch-lightning.readthedocs.io/en/stable/common/lightning_module.html#inference
         # this calls forward, while avoiding the need for e.g. model.eval(), torch.no_grad()
-        x, _ = batch  # _ is labels
-        return self(x)
+        # x, y = batch  # would be usual format, but here, batch does not include labels
+        return self(batch)
 
 
     def configure_optimizers(self):
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
-        return torch.optim.Adam(self.parameters(), lr=0.001, betas=(0.9, 0.999))  
+        return torch.optim.Adam(self.parameters(), lr=1e-3, betas=(0.9, 0.999))  
 
 
 class ZoobotLightningModule(GenericLightningModule):
@@ -142,9 +169,18 @@ def get_loss_func(question_index_groups):
     # This just adds schema.question_index_groups as an arg to the usual (labels, preds) loss arg format
     # Would use lambda but multi-gpu doesn't support as lambda can't be pickled
 
-    # accept (labels, preds), return losses of shape (batch)
-    def loss_func(preds, labels):  # pytorch convention is preds, labels
-        return losses.calculate_multiquestion_loss(labels, preds, question_index_groups)  # my and sklearn convention is labels, preds
+    # accept (labels, preds), return losses of shape (batch, question)
+    def loss_func(preds, labels, sum_over_questions=False):
+        # pytorch convention is preds, labels for loss func
+        # my and sklearn convention is labels, preds for loss func
+
+        # multiquestion_loss returns loss of shape (batch, question)
+        # torch.sum(multiquestion_loss, axis=1) gives loss of shape (batch). Equiv. to non-log product of question likelihoods.
+        multiq_loss = losses.calculate_multiquestion_loss(labels, preds, question_index_groups)
+        if sum_over_questions:
+            return torch.sum(multiq_loss, axis=1)
+        else:
+            return multiq_loss
     return loss_func
 
 
@@ -190,7 +226,7 @@ def get_plain_pytorch_zoobot_model(
     drop_connect_rate=0.2,
     get_architecture=efficientnet_standard.efficientnet_b0,
     representation_dim=1280  # or 2048 for resnet
-    ):
+    ) -> nn.Sequential:
     """
     Create a trainable efficientnet model.
     First layers are galaxy-appropriate augmentation layers - see :meth:`zoobot.estimators.define_model.add_augmentation_layers`.
@@ -229,7 +265,7 @@ def get_plain_pytorch_zoobot_model(
     if include_top:
         assert output_dim is not None
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
-        if always_augment:
+        if always_augment:  # TODO this is terrible naming, need to change!
             logging.info('Using test-time dropout')
             dropout_layer = custom_layers.PermaDropout
         else:
@@ -239,7 +275,7 @@ def get_plain_pytorch_zoobot_model(
         # TODO could optionally add a bottleneck layer here
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
 
-    if weights_loc:
+    if weights_loc is not None:
         raise NotImplementedError
     #     load_weights(model, weights_loc, expect_partial=expect_partial)
 

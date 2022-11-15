@@ -29,13 +29,12 @@ setuptools.setup(
             'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
             'simplejpeg',
             'albumentations',
-            'pyro-ppl == 1.8.0',
-            'pytorch-galaxy-datasets == 0.0.1'
+            'pyro-ppl == 1.8.0'
         ],
         'tensorflow': [
-            'tensorflow >= 2.8',
+            'tensorflow >= 2.10.0',
             'keras_applications',
-            'tensorflow_probability >= 0.11',
+            'tensorflow_probability >= 0.18.0',
             'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
         'utilities': [
@@ -63,6 +62,8 @@ setuptools.setup(
         'pyarrow',  # to read parquet, which is very handy for big datasets
         'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
-        'wandb'
+        'wandb',
+        'setuptools==59.5.0',  # wandb logger incompatibility
+        'galaxy-datasets==0.0.2'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
     ]
 )

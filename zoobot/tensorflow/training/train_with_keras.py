@@ -1,14 +1,14 @@
 import os
 import logging
 import contextlib
-from random import random
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
 
-from zoobot.tensorflow.data_utils import image_datasets
-from zoobot.tensorflow.training import training_config, losses
-from zoobot.tensorflow.estimators import preprocess, define_model
+from zoobot.tensorflow.training import training_config, losses, custom_metrics
+from zoobot.tensorflow.estimators import define_model
+from galaxy_datasets.tensorflow import get_image_dataset, add_transforms_to_dataset
+from galaxy_datasets.transforms import default_transforms
 
 
 def train(
@@ -21,27 +21,26 @@ def train(
     val_catalog=None,
     test_catalog=None,
     # model training parameters
-    # TODO architecture_name=, only EfficientNet is currenty implemented
-    batch_size=256,
+    architecture_name='efficientnet',  # only EfficientNet is currenty implemented
+    batch_size=128,
     dropout_rate=0.2,
     # TODO drop_connect_rate not implemented
     epochs=1000,
     patience=8,
     # augmentation parameters
     color=False,
-    # TODO I dislike this confusion/duplication - adjust when refactoring augmentations
-    img_size_to_load=300,  # resizing on load *before* augmentations, will skip if given same size as on disk
-    resize_size=224,  # resizing *during* augmentations, will skip if given appropriate crop
-    # ideally, set shard_img_size * crop_factor ~= resize_size to skip resizing
-    crop_factor=0.75,
+    requested_img_size=None,
+    crop_scale_bounds=(0.7, 0.8),
+    crop_ratio_bounds=(0.9, 1.1),
+    resize_after_crop=224,
     always_augment=False,
     # hardware parameters
     mixed_precision=True,
     gpus=2,
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
     # replication parameters
-    random_state=42,  # TODO not yet implemented
-) -> tf.keras.Sequential:
+    random_state=42  # TODO not yet implemented except for catalog split (not used in benchmarks)
+) -> tf.keras.Model:
 
     # get the image paths, divide into train/val/test if not explicitly passed above
     if catalog is not None:
@@ -66,14 +65,6 @@ def train(
             'Training on color images, not converting to greyscale')
         channels = 3
 
-    preprocess_config = preprocess.PreprocessingConfig(
-        label_cols=schema.label_cols,
-        input_size=img_size_to_load,
-        make_greyscale=greyscale,
-        # False for tfrecords with 0-1 floats, True for png/jpg with 0-255 uints
-        # normalise_from_uint8=False
-    )
-
     assert save_dir is not None
     if not os.path.isdir(save_dir):
         os.mkdir(save_dir)
@@ -84,10 +75,14 @@ def train(
         # strategy = tf.distribute.MultiWorkerMirroredStrategy()  # one or more machines. Not tested - you'll need to set this up for your own cluster.
         context_manager = strategy.scope()
         logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
+          # MirroredStrategy causes loss to decrease by factor of num_gpus.
+          # Multiply by gpu_loss_factor to keep loss consistent.
+        gpu_loss_factor = gpus
     else:
         logging.info('Using single or no GPU, not distributed')
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
+        gpu_loss_factor = 1  # do nothing
 
     train_image_paths = list(train_catalog['file_loc'])
     val_image_paths = list(val_catalog['file_loc'])
@@ -97,29 +92,53 @@ def train(
     file_format = example_image_loc.split('.')[-1]
 
     # format is [{label_col: 0, label_col: 12}, {label_col: 3, label_col: 14}, ...]
-    train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
-    val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
-    test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
+    # train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
+    # val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
+    # test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
+    train_labels = train_catalog[schema.label_cols].values
+    val_labels = val_catalog[schema.label_cols].values
+    test_labels = test_catalog[schema.label_cols].values
 
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
-    raw_train_dataset = image_datasets.get_image_dataset(
-        train_image_paths, file_format, img_size_to_load, batch_size, labels=train_labels, check_valid_paths=True, shuffle=True, drop_remainder=True
+    train_dataset = get_image_dataset(
+        train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
-    raw_val_dataset = image_datasets.get_image_dataset(
-        val_image_paths, file_format, img_size_to_load, batch_size, labels=val_labels, check_valid_paths=True, shuffle=True, drop_remainder=False
+    val_dataset = get_image_dataset(
+        val_image_paths, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
-    raw_test_dataset = image_datasets.get_image_dataset(
-        test_image_paths, file_format, img_size_to_load, batch_size, labels=test_labels, check_valid_paths=True, shuffle=False, drop_remainder=False
+    test_dataset = get_image_dataset(
+        test_image_paths, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
     )
 
-    train_dataset = preprocess.preprocess_dataset(
-        raw_train_dataset, preprocess_config)
-    val_dataset = preprocess.preprocess_dataset(
-        raw_val_dataset, preprocess_config)
-    test_dataset = preprocess.preprocess_dataset(
-        raw_test_dataset, preprocess_config)
+    # specify augmentations
+    train_transforms = default_transforms(
+        # no need to specify greyscale here
+        # tensorflow will greyscale in get_image_dataset i.e. on load, while pytorch doesn't so needs specifying here
+        # may refactor to avoid inconsistency 
+        crop_scale_bounds=crop_scale_bounds,
+        crop_ratio_bounds=crop_ratio_bounds,
+        resize_after_crop=resize_after_crop
+    )
+    # TODO should be clearer, not magic 1's (e.g. default_train_transforms, etc.)
+    # TODO if always_augment, use train augments at test time (TODO rename this too)
+    inference_transforms = default_transforms(
+        crop_scale_bounds=(1., 1.),
+        crop_ratio_bounds=(1., 1.),
+        resize_after_crop=resize_after_crop
+    )
+    # apply augmentations
+    train_dataset = add_transforms_to_dataset(train_dataset, train_transforms)
+    # if always_augment:
+        # logging.warning('always_augment=True, applying augmentations to val and test datasets')
+    val_dataset = add_transforms_to_dataset(val_dataset, inference_transforms)
+    test_dataset = add_transforms_to_dataset(test_dataset, inference_transforms)
+
+    # batch, shuffle, prefetch
+    train_dataset = train_dataset.shuffle(5000).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    val_dataset = val_dataset.batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    test_dataset = test_dataset.batch(batch_size)
 
     with context_manager:
 
@@ -131,13 +150,12 @@ def train(
             )
             tf.keras.mixed_precision.set_global_policy('mixed_float16')
 
+        # TODO use architecture_name here
+
         model = define_model.get_model(
             output_dim=len(schema.label_cols),
-            input_size=img_size_to_load,
-            crop_size=int(img_size_to_load * crop_factor),
-            resize_size=resize_size,  # ideally, matches crop size
+            input_size=resize_after_crop,
             channels=channels,
-            always_augment=always_augment,
             dropout_rate=dropout_rate
         )
 
@@ -145,23 +163,32 @@ def train(
             schema.question_index_groups)
         # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
         # so do it here instead
-        def loss(x, y): return multiquestion_loss(x, y) / batch_size
+        def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
+
+        # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu
+        extra_metrics = [
+            # custom_metrics.LossPerQuestion(
+            #     name='loss_per_question',
+            #     question_index_groups=schema.question_index_groups
+            # )
+        ]
 
     model.compile(
         loss=loss,
-        optimizer=tf.keras.optimizers.Adam()
+        optimizer=tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999),
+        metrics=extra_metrics
     )
     model.summary()
 
-    train_config = training_config.TrainConfig(
+    trainer = training_config.Trainer(
+        # parameters for how to train e.g. epochs, patience
         log_dir=save_dir,
         epochs=epochs,
         patience=patience
     )
 
-    best_trained_model = training_config.train_estimator(
+    best_trained_model = trainer.fit(
         model,
-        train_config,  # parameters for how to train e.g. epochs, patience
         train_dataset,
         val_dataset,
         eager=eager

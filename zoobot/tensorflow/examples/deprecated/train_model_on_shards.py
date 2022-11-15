@@ -19,7 +19,7 @@ if __name__ == '__main__':
     Example use:
 
     python zoobot/tensorflow/examples/train_model_on_shards.py \
-        --experiment-dir /will/save/model/here \
+        --save-dir /will/save/model/here \
         --shard-img-size 300 \
         --resize-size 224 \
         --train-dir /dir/with/training/tfrecords \
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     logging.info('GPUs: {}'.format(physical_devices))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--experiment-dir', dest='save_dir', type=str)
+    parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--shard-img-size',
                         dest='shard_img_size', type=int, default=300)
     parser.add_argument('--resize-size', dest='resize_size',
