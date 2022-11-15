@@ -90,7 +90,7 @@ if __name__ == '__main__':
         'finetune': {
             'encoder_dim': 1280,
             'n_epochs': 50,
-            'n_layers': 0,
+            'n_layers': 2,
             'label_dim': len(schema.label_cols),
             'label_mode': 'count',
             'schema': schema,
