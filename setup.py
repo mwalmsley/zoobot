@@ -30,7 +30,6 @@ setuptools.setup(
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0'
-            # 'einops'
         ],
         'tensorflow': [
             'tensorflow >= 2.10.0',

@@ -1,7 +1,6 @@
 import os
 import logging
 import contextlib
-from random import random
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf

@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
 
-from galaxy_datasets import gz_decals
+from galaxy_datasets import gz_decals_5
 
 from zoobot.shared import label_metadata, schemas
 from zoobot.pytorch.training import train_with_pytorch_lightning
@@ -44,8 +44,8 @@ if __name__ == '__main__':
     logging.info('Schema: {}'.format(schema))
 
     # use the gz_decals() methods in galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
-    canonical_train_catalog, _ = gz_decals(root=args.data_dir, train=True, download=True)
-    canonical_test_catalog, _ = gz_decals(root=args.data_dir, train=False, download=True)
+    canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=True)
+    canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=True)
 
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)
     test_catalog = canonical_test_catalog.copy()
