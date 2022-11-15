@@ -4,6 +4,9 @@ import logging
 from functools import partial
 
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
+
 import torch
 from torch import Tensor
 import torch.nn.functional as F
@@ -188,8 +191,8 @@ def dirichlet_loss(y, y_pred, question_index_groups):
 
 
 def run_finetuning(config, encoder, datamodule, logger, save_dir):
-
-    checkpoint = pl.callbacks.ModelCheckpoint(
+    
+    checkpoint = ModelCheckpoint(
         monitor='finetuning/val_loss',
         every_n_epochs=1,
         save_on_train_epoch_end=True,
@@ -201,10 +204,16 @@ def run_finetuning(config, encoder, datamodule, logger, save_dir):
         save_top_k=1
     )
 
+    early_stopping = EarlyStopping(
+      monitor='finetuning/val_loss',
+      mode='min',
+      patience=5
+    )
+
     ## Initialise pytorch lightning trainer ##
     trainer = pl.Trainer(
         logger=logger,
-        callbacks=[checkpoint],
+        callbacks=[checkpoint, early_stopping],
         max_epochs=config["finetune"]["n_epochs"],
         **config["trainer"],
     )
