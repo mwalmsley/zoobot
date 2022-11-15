@@ -86,7 +86,7 @@ Most importantly, when training a model, your chosen ``schema`` is used to creat
     # loading the dicts saved in label_metadata
     # (did you know you can access any variable with this pattern, not just functions?)
     question_answer_pairs = label_metadata.decals_pairs
-    dependencies = label_metadata.gz2_and_decals_dependencies
+    dependencies = label_metadata.gz2_and_decals_ortho_dependencies
 
     # creating a Schema object from those dicts
     schema = schemas.Schema(question_answer_pairs, dependencies)
