@@ -95,7 +95,6 @@ def get_model(
     # Functional head
     if include_top:
         assert output_dim is not None
-        x = tf.keras.layers.GlobalAveragePooling2D()(x)
         x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)
         x = efficientnet_custom.custom_top_dirichlet(output_dim)(x)  # inplace
         x = LogHistogram(name='dirichlet_outputs')(x)
