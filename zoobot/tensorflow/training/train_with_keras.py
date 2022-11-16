@@ -172,7 +172,7 @@ def train(
 
     model.compile(
         loss=loss,
-        optimizer=tf.keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999),
         metrics=extra_metrics
     )
     model.summary()

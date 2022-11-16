@@ -4,7 +4,6 @@ import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras import layers, regularizers
 
 from zoobot.tensorflow.training import training_config
 from zoobot.tensorflow.transfer_learning import utils  # TODO move
