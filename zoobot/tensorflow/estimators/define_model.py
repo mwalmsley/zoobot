@@ -44,7 +44,6 @@ def get_model(
     expect_partial=False,
     channels=1,
     use_imagenet_weights=False,
-    always_augment=True,
     dropout_rate=0.2,
     get_effnet=efficientnet_standard.EfficientNetB0
     ):
@@ -136,7 +135,7 @@ def load_weights(model, checkpoint_loc, expect_partial=False):
     load_status.assert_existing_objects_matched()
 
 
-def load_model(checkpoint_loc, include_top, input_size, crop_size, output_dim=34, expect_partial=False, channels=1, always_augment=True, dropout_rate=0.2):
+def load_model(checkpoint_loc, include_top, input_size, output_dim=34, expect_partial=False, channels=1, dropout_rate=0.2):
     """    
     Utility wrapper for the common task of defining the GZ DECaLS model and then loading a pretrained checkpoint.
     crop_size must match the pretrained model used.
@@ -158,10 +157,8 @@ def load_model(checkpoint_loc, include_top, input_size, crop_size, output_dim=34
     model = get_model(
         output_dim=output_dim,
         input_size=input_size,
-        crop_size=crop_size,
         include_top=include_top,
         channels=channels,
-        always_augment=always_augment,
         dropout_rate=dropout_rate
     )
     load_weights(model, checkpoint_loc, expect_partial=expect_partial)

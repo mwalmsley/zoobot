@@ -88,9 +88,6 @@ def train(
     val_image_paths = list(val_catalog['file_loc'])
     test_image_paths = list(test_catalog['file_loc'])
 
-    example_image_loc = train_image_paths[0]
-    file_format = example_image_loc.split('.')[-1]
-
     # format is [{label_col: 0, label_col: 12}, {label_col: 3, label_col: 14}, ...]
     # train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
     # val_labels = val_catalog[schema.label_cols].to_dict(orient='records')

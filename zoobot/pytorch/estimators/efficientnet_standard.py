@@ -1,6 +1,7 @@
 # https://pytorch.org/vision/main/_modules/torchvision/models/efficientnet.html
 # lightly modified from standard pytorch implementation
 
+import logging
 import copy
 import math
 from functools import partial
@@ -106,6 +107,7 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
         self.avgpool = nn.AdaptiveAvgPool2d(1)
 
         if include_top:  # should never be true for Zoobot
+            logging.warning('Building EffNet with default top - almost certainly a bad idea for classifying GZ galaxies!')
             self.head = nn.Sequential(
                 # TODO replace with PermaDropout via self.training
                 nn.Dropout(p=dropout, inplace=True),

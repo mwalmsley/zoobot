@@ -4,19 +4,17 @@
 # - Mike
 
 import collections
-import time
-import logging
-import os
-import math
-import string
-import collections
 import glob
+import logging
+import math
+import os
+import string
+import time
 from functools import partial
 
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
-
 from keras_applications.imagenet_utils import _obtain_input_shape
 
 # use my custom layers to have dropout always on
@@ -319,22 +317,88 @@ def EfficientNet(width_coefficient,
                                       data_format=backend.image_data_format(),
                                       require_flatten=False,  # changed from include_top in original code
                                       weights=weights)
+    input_name = 'input_img'
 
     if input_tensor is None:
-        img_input = layers.Input(shape=input_shape)
+        img_input = layers.Input(shape=input_shape, name='input_img')
     else:
         if backend.backend() == 'tensorflow':
             from tensorflow.python.keras.backend import is_keras_tensor
         else:
             is_keras_tensor = backend.is_keras_tensor
         if not is_keras_tensor(input_tensor):
-            img_input = layers.Input(tensor=input_tensor, shape=input_shape)
+            img_input = layers.Input(tensor=input_tensor, shape=input_shape, name='input_img')
         else:
             img_input = input_tensor
 
     bn_axis = 3 if backend.image_data_format() == 'channels_last' else 1
     activation = get_swish(**kwargs)
 
+    stem, stem_output = get_stem(img_input, width_coefficient, depth_divisor, bn_axis, activation)
+
+    blocks, blocks_output = get_blocks(stem_output.shape[1:], blocks_args, width_coefficient, depth_coefficient, depth_divisor, drop_connect_rate, activation)
+
+    # Build top
+    # TODO is this in PyTorch version?
+    final_part, _ = get_final_part_of_encoder(blocks_output.shape[1:], width_coefficient, depth_divisor, bn_axis, activation)
+
+    # if include_top:  
+    assert not include_top
+
+    #     x = final_part_output
+    #     # this is NEVER true with Zoobot. 
+    #     # `define_model.get_model(include_top=True)` will build my own top, not this. 
+    #     # Left for comparison only!
+
+    #     logging.warning('Building EffNet with default top - almost certainly a bad idea for classifying GZ galaxies!')
+        
+    #     if dropout_rate and dropout_rate > 0:
+    #         x = layers.Dropout(dropout_rate, name='top_dropout')(x)
+    #         # I use constantly-on dropout instead
+    #         # top layer dropout needs to be high to do anything much
+    #         # x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)  
+    #     x = layers.Dense(classes,
+    #                      activation='softmax',
+    #                      kernel_initializer=DENSE_KERNEL_INITIALIZER,
+    #                      name='probs')(x)
+
+
+    # Ensure that the model takes into account
+    # any potential predecessors of `input_tensor`.
+    if input_tensor is not None:
+        inputs = keras_utils.get_source_inputs(input_tensor)
+    else:
+        inputs = img_input
+
+    # Create model
+    x = stem(img_input)
+    x = blocks(x)
+    x = final_part(x)
+    model = models.Model(inputs, x, name=model_name)
+
+
+
+    # Load weights.
+    # if weights == 'imagenet':
+    #     logging.warning('Loading pretrained imagenet weights')
+    #     if include_top:
+    #         file_name = model_name + '_weights_tf_dim_ordering_tf_kernels_autoaugment.h5'
+    #         file_hash = IMAGENET_WEIGHTS_HASHES[model_name][0]
+    #     else:
+    #         file_name = model_name + '_weights_tf_dim_ordering_tf_kernels_autoaugment_notop.h5'
+    #         file_hash = IMAGENET_WEIGHTS_HASHES[model_name][1]
+    #     weights_path = tf.keras.utils.get_file(
+    #         file_name,
+    #         IMAGENET_WEIGHTS_PATH + file_name,
+    #         cache_subdir='imagenet',
+    #         file_hash=file_hash,
+    #     )
+    #     model.load_weights(weights_path)
+
+    return model
+
+
+def get_stem(img_input, width_coefficient, depth_divisor, bn_axis, activation):
     # Build stem
     x = img_input
     x = layers.Conv2D(round_filters(32, width_coefficient, depth_divisor), 3,
@@ -345,6 +409,13 @@ def EfficientNet(width_coefficient,
                       name='stem_conv')(x)
     x = layers.BatchNormalization(axis=bn_axis, name='stem_bn')(x)
     x = layers.Activation(activation, name='stem_activation')(x)
+    stem = tf.keras.Model(inputs=img_input, outputs=x, name='stem')
+    return stem, x
+
+def get_blocks(input_shape, blocks_args, width_coefficient, depth_coefficient, depth_divisor, drop_connect_rate, activation):
+
+    block_input = tf.keras.Input(input_shape)
+    x = block_input
 
     # Build blocks
     num_blocks_total = sum(block_args.num_repeat for block_args in blocks_args)
@@ -383,7 +454,14 @@ def EfficientNet(width_coefficient,
                                   prefix=block_prefix)
                 block_num += 1
 
-    # Build top
+    blocks = tf.keras.Model(inputs=block_input, outputs=x, name='blocks')
+    return blocks, x
+
+def get_final_part_of_encoder(input_shape, width_coefficient, depth_divisor, bn_axis, activation):
+
+    final_input = tf.keras.Input(input_shape)
+    x = final_input
+
     x = layers.Conv2D(round_filters(1280, width_coefficient, depth_divisor), 1,
                       padding='same',
                       use_bias=False,
@@ -391,55 +469,12 @@ def EfficientNet(width_coefficient,
                       name='top_conv')(x)
     x = layers.BatchNormalization(axis=bn_axis, name='top_bn')(x)
     x = layers.Activation(activation, name='top_activation')(x)
-    if include_top:  
-        # this is NEVER true with Zoobot. 
-        # `define_model.get_model(include_top=True)` will build my own top, not this. 
-        # Left for comparison only!
 
-        x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
-        if dropout_rate and dropout_rate > 0:
-            x = layers.Dropout(dropout_rate, name='top_dropout')(x)
-            # I use constantly-on dropout instead
-            # top layer dropout needs to be high to do anything much
-            # x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)  
-        x = layers.Dense(classes,
-                         activation='softmax',
-                         kernel_initializer=DENSE_KERNEL_INITIALIZER,
-                         name='probs')(x)
-    else:
-        if pooling == 'avg':
-            x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
-        elif pooling == 'max':
-            x = layers.GlobalMaxPooling2D(name='max_pool')(x)
+    # moved outside of top, like in pytorch version
+    # I feel this is more intuitive - base model is now an encoder with no extra dims
+    x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
 
-    # Ensure that the model takes into account
-    # any potential predecessors of `input_tensor`.
-    if input_tensor is not None:
-        inputs = keras_utils.get_source_inputs(input_tensor)
-    else:
-        inputs = img_input
-
-    # Create model
-    model = models.Model(inputs, x, name=model_name)
-
-    # Load weights.
-    if weights == 'imagenet':
-        logging.warning('Loading pretrained imagenet weights')
-        if include_top:
-            file_name = model_name + '_weights_tf_dim_ordering_tf_kernels_autoaugment.h5'
-            file_hash = IMAGENET_WEIGHTS_HASHES[model_name][0]
-        else:
-            file_name = model_name + '_weights_tf_dim_ordering_tf_kernels_autoaugment_notop.h5'
-            file_hash = IMAGENET_WEIGHTS_HASHES[model_name][1]
-        weights_path = tf.keras.utils.get_file(
-            file_name,
-            IMAGENET_WEIGHTS_PATH + file_name,
-            cache_subdir='imagenet',
-            file_hash=file_hash,
-        )
-        model.load_weights(weights_path)
-
-    return model
+    return tf.keras.Model(inputs=final_input, outputs=x, name='final_encoder_part'), x
 
 
 def EfficientNetB0(
@@ -497,3 +532,11 @@ def EfficientNetB7(
         pooling=pooling, classes=classes,
         **kwargs
     )
+
+
+if __name__ == '__main__':
+
+    model = EfficientNetB0(include_top=False)
+    print(model.summary())
+
+    # print(model.get_layer(name='blocks').summary())
