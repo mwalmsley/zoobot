@@ -101,13 +101,8 @@ def get_model(
         x = LogHistogram(name='dirichlet_outputs')(x)
 
     model = tf.keras.Model(inputs=inputs, outputs=x, name="zoobot")
-
-    # # will be updated by callback
-    # model.step = tf.Variable(
-    #     0, dtype=tf.int64, name='model_step', trainable=False)
-
+ 
     if weights_loc:
-        # raise NotImplementedError
         load_weights(model, weights_loc, expect_partial=expect_partial)
 
     return model

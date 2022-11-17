@@ -23,7 +23,7 @@ RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/tensorflow/dr5
 
 ARCHITECTURE='efficientnet'
-BATCH_SIZE=128
+BATCH_SIZE=256
 
 echo $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_decals_dr5_splits.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \

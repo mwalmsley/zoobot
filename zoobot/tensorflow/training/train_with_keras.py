@@ -75,9 +75,17 @@ def train(
         # strategy = tf.distribute.MultiWorkerMirroredStrategy()  # one or more machines. Not tested - you'll need to set this up for your own cluster.
         context_manager = strategy.scope()
         logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
+        # each GPU will calculate loss (hence gradients) for that device's sub-batch
+        # within that sub-batch, loss uses tf.keras.reduction setting, which was SUM
+        # so per-device loss would be 2x smaller with 2 devices (smaller b)
+        # unclear if loss is averaged or summed?
+        # gradients are summed across devices
+        #
+
           # MirroredStrategy causes loss to decrease by factor of num_gpus.
           # Multiply by gpu_loss_factor to keep loss consistent.
-        gpu_loss_factor = gpus
+        assert strategy.num_replicas_in_sync == gpus
+        gpu_loss_factor = strategy.num_replicas_in_sync
     else:
         logging.info('Using single or no GPU, not distributed')
         # does nothing, just a convenience for clean code
@@ -157,7 +165,9 @@ def train(
         )
 
         multiquestion_loss = losses.get_multiquestion_loss(
-            schema.question_index_groups)
+            schema.question_index_groups
+            # reduction=tf.keras.losses.Reduction.NONE
+        )
         # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
         # so do it here instead
         def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size

@@ -45,7 +45,7 @@ if __name__ == '__main__':
                         type=int, default=224)
     parser.add_argument('--epochs', dest='epochs', type=int, default=1000)
     parser.add_argument('--batch-size', dest='batch_size',
-                        default=512, type=int)
+                        default=128, type=int)
     parser.add_argument('--gpus', default=2, type=int)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true')

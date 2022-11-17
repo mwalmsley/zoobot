@@ -109,6 +109,7 @@ class Trainer():
                 epochs=self.epochs,
                 callbacks=callbacks,
                 verbose=verbose
+                # batch_size not needed when providing tf.data.Datasets
             )
 
 

@@ -1,7 +1,9 @@
 import logging
 import os
 
-from pytorch_lightning.plugins.training_type import DDPPlugin
+from pytorch_lightning.strategies.ddp import DDPStrategy
+
+# from pytorch_lightning.plugins.training_type import DDPPlugin
 # https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -69,9 +71,7 @@ def train_default_zoobot_from_scratch(
 
     strategy = None
     if (gpus is not None) and (gpus > 1):
-        # only works as plugins, not strategy
-        # strategy = 'ddp'
-        strategy = DDPPlugin(find_unused_parameters=False)
+        strategy = DDPStrategy(find_unused_parameters=False, static_graph=True)
         logging.info('Using multi-gpu training')
 
     if nodes > 1:
@@ -180,7 +180,7 @@ def train_default_zoobot_from_scratch(
     logging.info((trainer.training_type_plugin, trainer.world_size,
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
-    trainer.fit(lightning_model, datamodule)
+    trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
