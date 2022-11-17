@@ -6,7 +6,6 @@ import copy
 import math
 from functools import partial
 from typing import Callable, Optional, List, Sequence
-from xml.etree.ElementInclude import include
 
 import torch
 from torch import nn, Tensor
@@ -15,8 +14,6 @@ from torchvision._internally_replaced_utils import load_state_dict_from_url
 from torchvision.ops.misc import ConvNormActivation
 
 from torchvision.models.efficientnet import MBConvConfig, MBConv
-from zmq import device
-
 
 class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer to do that one level up
     def __init__(
