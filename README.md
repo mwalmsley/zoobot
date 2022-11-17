@@ -1,8 +1,9 @@
 # Zoobot
 
+[![Downloads](https://pepy.tech/badge/zoobot)](https://pepy.tech/project/zoobot)
 [![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/)
 ![build](https://github.com/mwalmsley/zoobot/actions/workflows/run_CI.yml/badge.svg)
-![publiish](https://github.com/mwalmsley/zoobot/actions/workflows/python-publish.yml/badge.svg)
+![publish](https://github.com/mwalmsley/zoobot/actions/workflows/python-publish.yml/badge.svg)
 [![PyPI](https://badge.fury.io/py/zoobot.svg)](https://badge.fury.io/py/zoobot)
 [![DOI](https://zenodo.org/badge/343787617.svg)](https://zenodo.org/badge/latestdoi/343787617)
 <a href="https://ascl.net/2203.027"><img src="https://img.shields.io/badge/ascl-2203.027-blue.svg?colorB=262255" alt="ascl:2203.027" /></a>
