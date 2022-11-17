@@ -38,8 +38,8 @@ class GenericLightningModule(pl.LightningModule):
 
     def forward(self, x):
         return self.model.forward(x)
-
-    def training_step(self, batch, batch_idx):
+    
+    def make_step(self, batch, batch_idx, step_name):
         x, labels = batch
         predictions = self(x)  # by default, these are Dirichlet concentrations
 
@@ -47,56 +47,29 @@ class GenericLightningModule(pl.LightningModule):
         # self.loss_func returns shape of (galaxy, question), mean to ()
         multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
         # if hasattr(self, 'schema'):
-        self.log_loss_per_question(multiq_loss, prefix='train')
+        self.log_loss_per_question(multiq_loss, prefix=step_name)
 
         loss = torch.mean(torch.sum(multiq_loss, axis=1))
-        self.log("train/epoch_loss", loss, on_epoch=True, on_step=False,prog_bar=True, logger=True)
-        if self.log_on_step:
-            # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
-            self.log("train/step_loss", loss, on_epoch=False, on_step=True, prog_bar=True, logger=True)
-        if predictions.shape[1] == 2:  # will only do for binary classifications
-            # logging.info(predictions.shape, labels.shape)
-            self.log("train_accuracy", self.train_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
-        return loss
+      
+        return {'loss': loss, 'predictions': predictions, 'labels': labels}
 
-    def log_loss_per_question(self, multiq_loss, prefix):
-        # log questions individually
-        # TODO need schema attribute or similar to have access to question names, this will do for now
-        for question_n in range(multiq_loss.shape[1]):
-            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
+    def training_step(self, batch, batch_idx):
+        return self.make_step(batch, batch_idx, step_name='train')
+
+    def training_step_end(self, outputs):
+        self.log_outputs(outputs, step_name='train')
 
     def validation_step(self, batch, batch_idx):
-        # identical to training_step except for log prefix TODO refactor?
-        x, labels = batch
-        predictions = self(x)
+        return self.make_step(batch, batch_idx, step_name='validation')
 
-        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
-        # if hasattr(self, 'schema'):
-        self.log_loss_per_question(multiq_loss, prefix='validation')
-
-        loss = torch.mean(torch.sum(multiq_loss, axis=1))
-        # TODO what is sync_dist doing here?
-        self.log("validation/epoch_loss", loss, on_epoch=True, on_step=False, prog_bar=True, logger=True, sync_dist=True)
-
-        if self.log_on_step:
-            self.log("validation/step_loss", loss, on_epoch=False, on_step=True, prog_bar=True, logger=True, sync_dist=True)
-        if predictions.shape[1] == 2:  # will only do for binary classifications
-            # logging.info(predictions.shape, labels.shape)
-            self.log("validation_accuracy", self.val_accuracy(predictions, torch.argmax(labels, dim=1, keepdim=False)), prog_bar=True)
-        return loss
+    def validation_step_end(self, outputs):
+        self.log_outputs(outputs, step_name='validation')
 
     def test_step(self, batch, batch_idx):
-        # similarly
-        x, labels = batch
-        predictions = self(x)
+        return self.make_step(batch, batch_idx, step_name='test')
 
-        multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
-        # if hasattr(self, 'schema'):
-        self.log_loss_per_question(multiq_loss, prefix='test')
-
-        loss = torch.mean(torch.sum(multiq_loss, axis=1))
-        self.log("test/epoch_loss", loss, on_epoch=True, on_step=False, prog_bar=True, logger=True, sync_dist=True)
-        return loss
+    def test_step_end(self, outputs):
+         self.log_outputs(outputs, step_name='test')
 
     
     def predict_step(self, batch, batch_idx, dataloader_idx=0):
@@ -109,6 +82,25 @@ class GenericLightningModule(pl.LightningModule):
     def configure_optimizers(self):
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
         return torch.optim.Adam(self.parameters(), lr=1e-3, betas=(0.9, 0.999))  
+
+
+    def log_outputs(self, outputs, step_name):
+        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True)
+        if self.log_on_step:
+            # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
+            self.log(
+                "{}/step_loss".format(step_name), outputs['loss'], on_epoch=False, on_step=True, prog_bar=True, logger=True)
+        if outputs['predictions'].shape[1] == 2:  # will only do for binary classifications
+            # logging.info(predictions.shape, labels.shape)
+            self.log(
+                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True)
+
+
+    def log_loss_per_question(self, multiq_loss, prefix):
+        # log questions individually
+        # TODO need schema attribute or similar to have access to question names, this will do for now
+        for question_n in range(multiq_loss.shape[1]):
+            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
 
 
 class ZoobotLightningModule(GenericLightningModule):
