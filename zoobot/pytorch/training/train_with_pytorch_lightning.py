@@ -71,7 +71,7 @@ def train_default_zoobot_from_scratch(
 
     strategy = None
     if (gpus is not None) and (gpus > 1):
-        strategy = DDPStrategy(find_unused_parameters=False, static_graph=True)
+        strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
         logging.info('Using multi-gpu training')
 
     if nodes > 1:
