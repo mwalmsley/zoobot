@@ -85,12 +85,12 @@ def train(
           # MirroredStrategy causes loss to decrease by factor of num_gpus.
           # Multiply by gpu_loss_factor to keep loss consistent.
         assert strategy.num_replicas_in_sync == gpus
-        gpu_loss_factor = strategy.num_replicas_in_sync
+        # gpu_loss_factor = strategy.num_replicas_in_sync
     else:
         logging.info('Using single or no GPU, not distributed')
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
-        gpu_loss_factor = 1  # do nothing
+        # gpu_loss_factor = 1  # do nothing
 
     train_image_paths = list(train_catalog['file_loc'])
     val_image_paths = list(val_catalog['file_loc'])
@@ -164,13 +164,23 @@ def train(
             dropout_rate=dropout_rate
         )
 
+        # reduction=None will give per-example loss. Still summed (probability-multiplied) across questions.
         multiquestion_loss = losses.get_multiquestion_loss(
-            schema.question_index_groups
-            # reduction=tf.keras.losses.Reduction.NONE
+            schema.question_index_groups,
+            reduction=tf.keras.losses.Reduction.NONE
         )
         # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
         # so do it here instead
-        def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
+        # def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
+
+        # TF actually has a built-in for this which just automatically gets num_replicas and does 
+        """
+        per_replica_batch_size = per_example_loss.shape[0]
+        global_batch_size = per_replica_batch_size * num_replicas
+        return reduce_sum(per_example_loss) / global_batch_size
+        """
+        def loss(x, y): tf.nn.compute_average_loss(per_example_loss=multiquestion_loss(x, y))  
+
 
         # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu
         extra_metrics = [
@@ -198,7 +208,8 @@ def train(
         model,
         train_dataset,
         val_dataset,
-        eager=eager
+        eager=eager,
+        verbose=1
     )
 
     # unsure if this will work
