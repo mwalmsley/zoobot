@@ -181,7 +181,7 @@ def mb_conv_block(inputs, block_args, activation, drop_rate=None, prefix='', ):
                           use_bias=False,
                           kernel_initializer=CONV_KERNEL_INITIALIZER,
                           name=prefix + 'expand_conv')(inputs)
-        x = BatchNormalizationDummy(axis=bn_axis, name=prefix + 'expand_bn')(x)
+        x = layers.BatchNormalization(axis=bn_axis, name=prefix + 'expand_bn')(x)
         x = layers.Activation(activation, name=prefix + 'expand_activation')(x)
     else:
         x = inputs
@@ -193,7 +193,7 @@ def mb_conv_block(inputs, block_args, activation, drop_rate=None, prefix='', ):
                                use_bias=False,
                                depthwise_initializer=CONV_KERNEL_INITIALIZER,
                                name=prefix + 'dwconv')(x)
-    x = BatchNormalizationDummy(axis=bn_axis, name=prefix + 'bn')(x)
+    x = layers.BatchNormalization(axis=bn_axis, name=prefix + 'bn')(x)
     x = layers.Activation(activation, name=prefix + 'activation')(x)
 
     # Squeeze and Excitation phase
@@ -235,7 +235,7 @@ def mb_conv_block(inputs, block_args, activation, drop_rate=None, prefix='', ):
                       use_bias=False,
                       kernel_initializer=CONV_KERNEL_INITIALIZER,
                       name=prefix + 'project_conv')(x)
-    x = BatchNormalizationDummy(axis=bn_axis, name=prefix + 'project_bn')(x)
+    x = layers.BatchNormalization(axis=bn_axis, name=prefix + 'project_bn')(x)
     if block_args.id_skip and all(
             s == 1 for s in block_args.strides
     ) and block_args.input_filters == block_args.output_filters:
@@ -320,14 +320,14 @@ def EfficientNet(width_coefficient,
     input_name = 'input_img'
 
     if input_tensor is None:
-        img_input = layers.Input(shape=input_shape, name='input_img')
+        img_input = layers.Input(shape=input_shape, name=input_name)
     else:
         if backend.backend() == 'tensorflow':
             from tensorflow.python.keras.backend import is_keras_tensor
         else:
             is_keras_tensor = backend.is_keras_tensor
         if not is_keras_tensor(input_tensor):
-            img_input = layers.Input(tensor=input_tensor, shape=input_shape, name='input_img')
+            img_input = layers.Input(tensor=input_tensor, shape=input_shape, name=input_name)
         else:
             img_input = input_tensor
 
@@ -407,7 +407,7 @@ def get_stem(img_input, width_coefficient, depth_divisor, bn_axis, activation):
                       use_bias=False,
                       kernel_initializer=CONV_KERNEL_INITIALIZER,
                       name='stem_conv')(x)
-    x = BatchNormalizationDummy(axis=bn_axis, name='stem_bn')(x)
+    x = layers.BatchNormalization(axis=bn_axis, name='stem_bn')(x)
     x = layers.Activation(activation, name='stem_activation')(x)
     stem = tf.keras.Model(inputs=img_input, outputs=x, name='stem')
     return stem, x
@@ -468,7 +468,7 @@ def get_final_part_of_encoder(input_shape, width_coefficient, depth_divisor, bn_
                       use_bias=False,
                       kernel_initializer=CONV_KERNEL_INITIALIZER,
                       name='top_conv')(x)
-    x = BatchNormalizationDummy(axis=bn_axis, name='top_bn')(x)
+    x = layers.BatchNormalization(axis=bn_axis, name='top_bn')(x)
     x = layers.Activation(activation, name='top_activation')(x)
 
     # moved outside of top, like in pytorch version
@@ -480,13 +480,13 @@ def get_final_part_of_encoder(input_shape, width_coefficient, depth_divisor, bn_
 
 
 # layer to replace batchnorm which does nothing and has no trainable parameters
-class BatchNormalizationDummy(tf.keras.layers.Layer):
+# class BatchNormalizationDummy(tf.keras.layers.Layer):
 
-    def __init__(self, axis=None, trainable=True, name=None, dtype=None, dynamic=False, **kwargs):
-        super().__init__(trainable, name, dtype, dynamic, **kwargs)
+#     def __init__(self, axis=None, trainable=True, name=None, dtype=None, dynamic=False, **kwargs):
+#         super().__init__(trainable, name, dtype, dynamic, **kwargs)
 
-    def forward(self, x):
-        return x
+#     def forward(self, x):
+#         return x
 
 def EfficientNetB0(
         include_top=True,
@@ -1186,4 +1186,9 @@ ________________________________________________________________________________
     shapes match pytorch
     avg_pool rather than *adaptive* avg_pool - possibly just adaptive as in any input shape?
     batchnorm listed as twice as many params in TF (5120 vs 2560)
+
+    There are 4 params per input feature in batch norm: 
+        beta and gamma (momentum), trainable
+        mean and variance (statistics), which update but are not directly optimised
+    I think torchsummary considers statistics non-trainable while keras.Summary considers trainable
     """

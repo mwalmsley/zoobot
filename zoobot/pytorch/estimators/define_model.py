@@ -265,15 +265,15 @@ def get_plain_pytorch_zoobot_model(
     if include_top:
         assert output_dim is not None
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
-        if always_augment:  # TODO this is terrible naming, need to change!
-            logging.info('Using test-time dropout')
-            dropout_layer = custom_layers.PermaDropout
-        else:
-            logging.info('Not using test-time dropout')
-            dropout_layer = torch.nn.Dropout
+        # if always_augment:  # TODO this is terrible naming, need to change!
+        # logging.info('Using test-time dropout')
+        # dropout_layer = custom_layers.PermaDropout
+        # else:
+        logging.info('Not using test-time dropout')
+        dropout_layer = torch.nn.Dropout
         modules_to_use.append(dropout_layer(dropout_rate))
         # TODO could optionally add a bottleneck layer here
-        modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))  # unlike tf version, not inplace
+        modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))
 
     if weights_loc is not None:
         raise NotImplementedError

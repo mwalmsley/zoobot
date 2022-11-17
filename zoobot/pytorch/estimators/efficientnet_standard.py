@@ -165,8 +165,8 @@ def _efficientnet(
         bneck_conf(6, 3, 1, 192, 320, 1),
     ]
     model = EfficientNet(
-        inverted_residual_setting, dropout, include_top, input_channels, stochastic_depth_prob, 
-        norm_layer=nn.Identity)
+        inverted_residual_setting, dropout, include_top, input_channels, stochastic_depth_prob)
+        # norm_layer=nn.Identity)
     if use_imagenet_weights:
         assert include_top  # otherwise not sure if weights will load as I've changed code
         if model_urls.get(arch, None) is None:
@@ -544,3 +544,6 @@ Total params: 3,964,956
 Trainable params: 3,964,956
 Non-trainable params: 0
 """
+
+# pytorch does vastly worse without batchnorm (doesn't train properly
+# tensorflow still does exactly the same
