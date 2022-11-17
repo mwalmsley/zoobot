@@ -167,11 +167,13 @@ def train(
         # reduction=None will give per-example loss. Still summed (probability-multiplied) across questions.
         multiquestion_loss = losses.get_multiquestion_loss(
             schema.question_index_groups,
+            sum_over_questions=True,
             reduction=tf.keras.losses.Reduction.NONE
         )
         # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
         # so do it here instead
-        # def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
+        # get the average loss, averaging over global batch size (as we add gradients)
+        def loss(x, y): return tf.reduce_sum(multiquestion_loss(x, y)) / batch_size
 
         # TF actually has a built-in for this which just automatically gets num_replicas and does 
         """
@@ -179,7 +181,7 @@ def train(
         global_batch_size = per_replica_batch_size * num_replicas
         return reduce_sum(per_example_loss) / global_batch_size
         """
-        def loss(x, y): return tf.nn.compute_average_loss(per_example_loss=multiquestion_loss(x, y))  
+        # def loss(x, y): return tf.nn.compute_average_loss(per_example_loss=multiquestion_loss(x, y), global_batch_size=batch_size)  
 
 
         # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu

@@ -3,7 +3,7 @@ import tensorflow_probability as tfp
 
 
 
-def get_multiquestion_loss(question_index_groups, reduction=tf.keras.losses.Reduction.SUM):
+def get_multiquestion_loss(question_index_groups, sum_over_questions=True, reduction=tf.keras.losses.Reduction.SUM):
     """
     Get subclass of tf.keras.losses.Loss which wraps ``calculate_multiquestion_loss`` and sums over batch.
 
@@ -21,7 +21,7 @@ def get_multiquestion_loss(question_index_groups, reduction=tf.keras.losses.Redu
     class MultiquestionLoss(tf.keras.losses.Loss):
 
         def call(self, labels, predictions):
-            return calculate_multiquestion_loss(labels, predictions, question_index_groups)
+            return calculate_multiquestion_loss(labels, predictions, question_index_groups, sum_over_questions)
 
     return MultiquestionLoss(reduction=reduction) 
 
@@ -60,6 +60,7 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups, sum
         return total_loss
     else:
         return total_loss_with_question_dim
+        # has shape (batch_size) to be aggregated outside this func (take a global batch mean)
         # for distributed context, be very careful about device batch size vs. global batch size and consequences for summing/averaging
 
 

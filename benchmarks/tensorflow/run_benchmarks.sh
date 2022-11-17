@@ -9,10 +9,10 @@ TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/tensorflow/run_decals_dr5_be
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
-# sbatch --job-name=dr5_tf_min_b256_$RANDOM --export=GPUS=1 $TRAIN_JOB
+sbatch --job-name=dr5_tf_min_b64_$RANDOM --export=GPUS=1 $TRAIN_JOB
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
-sbatch --job-name=dr5_tf_gr_newred_1gpu_$RANDOM --export=GPUS=1 $TRAIN_JOB
+# sbatch --job-name=dr5_tf_gr_newred_1gpu_$RANDOM --export=GPUS=1 $TRAIN_JOB
 # sbatch --job-name=dr5_tf_co_nobn_$RANDOM --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color $TRAIN_JOB
 
 echo 'TensorFlow jobs submitted'
