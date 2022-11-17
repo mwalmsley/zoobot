@@ -179,7 +179,7 @@ def train(
         global_batch_size = per_replica_batch_size * num_replicas
         return reduce_sum(per_example_loss) / global_batch_size
         """
-        def loss(x, y): tf.nn.compute_average_loss(per_example_loss=multiquestion_loss(x, y))  
+        def loss(x, y): return tf.nn.compute_average_loss(per_example_loss=multiquestion_loss(x, y))  
 
 
         # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu

@@ -54,6 +54,7 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups, sum
         q_losses.append(q_loss)
     
     total_loss_with_question_dim = tf.stack(q_losses, axis=1)
+
     if sum_over_questions:
         total_loss = tf.reduce_sum(total_loss_with_question_dim, axis=1)  # sum (prob-multiply) across questions
         return total_loss
