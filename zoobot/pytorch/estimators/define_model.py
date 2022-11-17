@@ -49,6 +49,9 @@ class GenericLightningModule(pl.LightningModule):
         # if hasattr(self, 'schema'):
         self.log_loss_per_question(multiq_loss, prefix=step_name)
 
+        # sum over questions and take a per-device mean
+        # for DDP strategy, batch size is constant (batches are not divided, data pool is divided)
+        # so this will be the global per-example mean
         loss = torch.mean(torch.sum(multiq_loss, axis=1))
       
         return {'loss': loss, 'predictions': predictions, 'labels': labels}
