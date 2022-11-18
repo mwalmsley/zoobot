@@ -9,10 +9,10 @@ TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/pytorch/run_decals_dr5_bench
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
-# sbatch --job-name=dr5_py_min_$RANDOM --export=GPUS=1 $TRAIN_JOB
+sbatch --job-name=dr5_py_2bhalflr_min_$RANDOM --export=GPUS=1 $TRAIN_JOB
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
-sbatch --job-name=dr5_py_gr_dp_$RANDOM --export=GPUS=2 $TRAIN_JOB
+# sbatch --job-name=dr5_py_gr_dp_$RANDOM --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2 $TRAIN_JOB
 # sbatch --job-name=dr5_py_co_nobn_$RANDOM --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color $TRAIN_JOB
 
 echo 'PyTorch jobs submitted'
