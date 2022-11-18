@@ -2,6 +2,7 @@ import logging
 import os
 
 from pytorch_lightning.strategies.ddp import DDPStrategy
+from pytorch_lightning.strategies.dp import DataParallelStrategy
 
 # from pytorch_lightning.plugins.training_type import DDPPlugin
 # https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
@@ -71,7 +72,8 @@ def train_default_zoobot_from_scratch(
 
     strategy = None
     if (gpus is not None) and (gpus > 1):
-        strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
+        # strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
+        strategy = DataParallelStrategy()  # static_graph=True TODO
         logging.info('Using multi-gpu training')
 
     if nodes > 1:
@@ -85,10 +87,10 @@ def train_default_zoobot_from_scratch(
         accelerator = 'cpu'
 
     precision = 32
-    if mixed_precision:
-        logging.info(
-            'Training with automatic mixed precision. Will reduce memory footprint but may cause training instability for e.g. resnet')
-        precision = 16
+    # if mixed_precision:
+    #     logging.info(
+    #         'Training with automatic mixed precision. Will reduce memory footprint but may cause training instability for e.g. resnet')
+    #     precision = 16
 
     assert num_workers > 0
 

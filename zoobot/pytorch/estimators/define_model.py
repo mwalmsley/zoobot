@@ -84,7 +84,7 @@ class GenericLightningModule(pl.LightningModule):
 
     def configure_optimizers(self):
         # torch and tf defaults are the same (now), but be explicit anyway just for clarity
-        return torch.optim.Adam(self.parameters(), lr=5e-4, betas=(0.9, 0.999))  
+        return torch.optim.Adam(self.parameters(), lr=1e-3, betas=(0.9, 0.999))  
 
 
     def log_outputs(self, outputs, step_name):
