@@ -184,10 +184,10 @@ def train_default_zoobot_from_scratch(
 
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
-    # trainer.test(
-    #     datamodule=datamodule,
-    #     ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-    # )
+    trainer.test(
+        datamodule=datamodule,
+        ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+    )
     # no need to provide model, trainer tracks this
 
     # explicitly update the model weights to the best checkpoint before returning
