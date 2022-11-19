@@ -184,9 +184,18 @@ def train_default_zoobot_from_scratch(
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
+    test_trainer =  pl.Trainer(
+        accelerator=accelerator,
+        devices=1,
+        precision=precision,
+        logger=wandb_logger,
+        default_root_dir=save_dir
+    )
+
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
-    trainer.test(
+    test_trainer.test(
+        model=lightning_model,
         datamodule=datamodule,
         ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
