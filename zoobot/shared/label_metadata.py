@@ -196,7 +196,7 @@ cosmic_dawn_ortho_pairs = {
     'merging-cd': ['_none', '_minor-disturbance', '_major-disturbance', '_merger'],
     'clumps-cd': ['_yes', '_no'],
     'problem-cd': ['_star', '_artifact', '_zoom'],
-    'artifact-cd': ['_non-star', '_satellite', '_scattered', '_diffraction', '_ray', '_saturation', '_other']
+    'artifact-cd': ['_satellite', '_scattered', '_diffraction', '_ray', '_saturation', '_other']
 }
 
 cosmic_dawn_ortho_dependencies = {
