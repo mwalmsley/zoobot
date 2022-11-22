@@ -17,7 +17,7 @@ Probably you are in the GZ collaboration if so!
 
 For simpler examples, see:
 - finetune_binary_classification.py to finetune on class (0 or 1) labels
-- finetune_counts_single_question.py to finetune on answer counts (e.g. 12 volunteers said Yes, 4 said No) for a single question 
+- finetune_counts_single_question.py to finetune on answer counts (e.g. 12 volunteers said Yes, 4 said No) for a single question
 
 This currently uses unpublished (hence private, for now) GZ Cosmic Dawn data
 """
@@ -64,6 +64,13 @@ if __name__ == '__main__':
     datamodule.setup()
 
     config = {
+        'checkpoint': {
+            'file_template': "{epoch}",
+            'save_top_k': 1
+        },
+        'early_stopping': {
+            'patience': 5
+        },
         'trainer': {
             'devices': devices,
             'accelerator': accelerator
@@ -96,13 +103,13 @@ if __name__ == '__main__':
 
     save_dir = os.path.join(
         repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
-    
+
     # key method
     _, model = finetune.run_finetuning(
         config, encoder, datamodule, save_dir=save_dir, logger=None)
 
     # now save predictions on test set to evaluate performance
-  
+
     # auto-split within datamodule. pull out again.
     test_catalog = datamodule.test_catalog
     assert len(test_catalog) > 0
