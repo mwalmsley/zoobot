@@ -49,7 +49,7 @@ def train_default_zoobot_from_scratch(
     wandb_logger=None,
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
-    save_top_k=3,
+    save_top_k=1,  # changed to 1 to allow for 'best' restore, see https://github.com/Lightning-AI/lightning/issues/9944
     # replication parameters
     random_state=42
 ):
