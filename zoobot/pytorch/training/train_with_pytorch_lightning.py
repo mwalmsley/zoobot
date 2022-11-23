@@ -49,7 +49,7 @@ def train_default_zoobot_from_scratch(
     wandb_logger=None,
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
-    save_top_k=1,  # changed to 1 to allow for 'best' restore, see https://github.com/Lightning-AI/lightning/issues/9944
+    save_top_k=3,  # changed to 1 to allow for 'best' restore, see https://github.com/Lightning-AI/lightning/issues/9944
     # replication parameters
     random_state=42
 ):
@@ -150,8 +150,8 @@ def train_default_zoobot_from_scratch(
         architecture_name=architecture_name
     )
 
-    callbacks = [
-        ModelCheckpoint(
+    # used later for checkpoint_callback.best_model_path
+    checkpoint_callback = ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
             monitor="validation/epoch_loss",
             save_weights_only=True,
@@ -162,9 +162,10 @@ def train_default_zoobot_from_scratch(
             # avoid extra folders from the checkpoint name
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
-        ),
-        EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
-    ]
+        )
+    early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
+
+    callbacks = [checkpoint_callback, early_stopping_callback]
 
     trainer = pl.Trainer(
         log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
@@ -194,10 +195,11 @@ def train_default_zoobot_from_scratch(
 
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
+    logging.info(f'Testing on {checkpoint_callback.best_model_path}')
     test_trainer.test(
         model=lightning_model,
         datamodule=datamodule,
-        ckpt_path='best'  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+        ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
     )
     # no need to provide model, trainer tracks this
 
