@@ -2,7 +2,7 @@ import logging
 import os
 
 from pytorch_lightning.strategies.ddp import DDPStrategy
-from pytorch_lightning.strategies.dp import DataParallelStrategy
+# from pytorch_lightning.strategies.dp import DataParallelStrategy
 
 # from pytorch_lightning.plugins.training_type import DDPPlugin
 # https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
@@ -29,6 +29,7 @@ def train_default_zoobot_from_scratch(
     # training parameters
     epochs=1000,
     patience=8,
+    learning_rate=5e-4,
     # model hparams
     architecture_name='efficientnet',  # recently changed
     batch_size=128,
@@ -49,7 +50,7 @@ def train_default_zoobot_from_scratch(
     wandb_logger=None,
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
-    save_top_k=3,  # changed to 1 to allow for 'best' restore, see https://github.com/Lightning-AI/lightning/issues/9944
+    save_top_k=3,
     # replication parameters
     random_state=42
 ):
@@ -122,6 +123,20 @@ def train_default_zoobot_from_scratch(
             'test_catalog': test_catalog
         }
 
+    wandb_logger.log_hyperparams({
+        'random_state': random_state,
+        'epochs': epochs,
+        'accelerator': accelerator,
+        'precision': precision,
+        'batch_size': batch_size,
+        'greyscale': not color,
+        'crop_scale_bounds': crop_scale_bounds,
+        'crop_ratio_bounds': crop_ratio_bounds,
+        'resize_after_crop': resize_after_crop,
+        'num_workers': num_workers,
+        'prefetch_factor': prefetch_factor
+    })
+
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
         # can take either a catalog (and split it), or a pre-split catalog
@@ -138,6 +153,7 @@ def train_default_zoobot_from_scratch(
     )
     datamodule.setup()
 
+    # these args are automatically logged
     lightning_model = define_model.ZoobotLightningModule(
         output_dim=len(schema.label_cols),
         question_index_groups=schema.question_index_groups,
@@ -147,7 +163,8 @@ def train_default_zoobot_from_scratch(
         always_augment=True,
         dropout_rate=dropout_rate,
         drop_connect_rate=drop_connect_rate,
-        architecture_name=architecture_name
+        architecture_name=architecture_name,
+        learning_rate=learning_rate
     )
 
     # used later for checkpoint_callback.best_model_path

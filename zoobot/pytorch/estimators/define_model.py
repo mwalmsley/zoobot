@@ -83,8 +83,7 @@ class GenericLightningModule(pl.LightningModule):
 
 
     def configure_optimizers(self):
-        # torch and tf defaults are the same (now), but be explicit anyway just for clarity
-        return torch.optim.Adam(self.parameters(), lr=5e-4, betas=(0.9, 0.999))  
+        return torch.optim.Adam(self.parameters(), lr=self.learning_rate, betas=self.betas)  
 
 
     def log_outputs(self, outputs, step_name):
@@ -122,7 +121,9 @@ class ZoobotLightningModule(GenericLightningModule):
         always_augment=True,
         dropout_rate=0.2,
         drop_connect_rate=0.2,
-        architecture_name="efficientnet"  # recently changed from model_architecture
+        architecture_name="efficientnet",  # recently changed from model_architecture
+        learning_rate=5e-4,
+        betas=(0.9, 0.999)
         ):
 
         # now, finally, can pass only standard variables as hparams to save
@@ -138,6 +139,11 @@ class ZoobotLightningModule(GenericLightningModule):
 
         logging.info('Generic __init__ complete - moving to Zoobot __init__')
 
+        # set attributes for learning rate, betas, used by self.configure_optimizers()
+        self.learning_rate = learning_rate
+        self.betas = betas
+
+        # define model architecture
         get_architecture, representation_dim = select_base_architecture_func_from_name(architecture_name)
 
         self.loss_func = get_loss_func(question_index_groups)
