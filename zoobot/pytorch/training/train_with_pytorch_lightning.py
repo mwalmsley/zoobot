@@ -127,6 +127,7 @@ def train_default_zoobot_from_scratch(
         'random_state': random_state,
         'epochs': epochs,
         'accelerator': accelerator,
+        'gpus': gpus,
         'precision': precision,
         'batch_size': batch_size,
         'greyscale': not color,
@@ -212,7 +213,12 @@ def train_default_zoobot_from_scratch(
 
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
-    logging.info(f'Testing on {checkpoint_callback.best_model_path}')
+    logging.info(f'Testing on {checkpoint_callback.best_model_path} with single GPU')
+    test_trainer.validate(
+        model=lightning_model,
+        datamodule=datamodule,
+        ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+    )
     test_trainer.test(
         model=lightning_model,
         datamodule=datamodule,
