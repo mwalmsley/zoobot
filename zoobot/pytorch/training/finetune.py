@@ -1,6 +1,7 @@
 # Based on Inigo's BYOL FT step
 # https://github.com/inigoval/finetune/blob/main/finetune.py
 import logging
+import warnings
 from functools import partial
 
 import pytorch_lightning as pl
@@ -17,7 +18,7 @@ from zoobot.pytorch.estimators import efficientnet_custom
 from zoobot.pytorch.training import losses
 
 
-class FineTune(pl.LightningModule):
+class FinetunedZoobotLightningModule(pl.LightningModule):
 
     def __init__(
         self,
@@ -28,6 +29,7 @@ class FineTune(pl.LightningModule):
         n_layers=0,  # how many layers deep to FT
         batch_size=1024,
         lr_decay=0.75,
+        dropout_prob=0.5,
         prog_bar=True,
         seed=42,
         label_mode='classification',  # or 'counts'
@@ -35,12 +37,22 @@ class FineTune(pl.LightningModule):
     ):
         super().__init__()
 
+        # adds to model.hparams
+        # necessary if you want to reload!
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            # this raises a warning that encoder is already a Module hence saved in checkpoint hence no need to save as hparam
+            # true - except we need it to instantiate this class, so it's really handy to have saved as well
+            # therefore ignore the warning
+            self.save_hyperparameters() 
+
         self.encoder = encoder
         self.n_layers = n_layers
         self.freeze = True if n_layers == 0 else False
 
         self.batch_size = batch_size
         self.lr_decay = lr_decay
+        self.dropout_prob = dropout_prob
         self.n_epochs = n_epochs
 
         # by default
@@ -50,17 +62,20 @@ class FineTune(pl.LightningModule):
 
         if label_mode == 'classification':
             logging.info('Using classification head and cross-entropy loss')
-            self.head = torch.nn.Linear(
-                in_features=encoder_dim, out_features=label_dim)
+            self.head = LinearClassifier(input_dim=encoder_dim, output_dim=label_dim, dropout_prob=self.dropout_prob)
             self.label_smoothing = 0.1 if self.freeze else 0
-            self.loss = cross_entropy_loss
+            self.loss = partial(cross_entropy_loss, label_smoothing=self.label_smoothing)
             self.train_acc = tm.Accuracy(average="micro", threshold=0)
             self.val_acc = tm.Accuracy(average="micro", threshold=0)
             self.test_acc = tm.Accuracy(average="micro", threshold=0)
         elif label_mode in ['counts', 'count']:
-            logging.info('Using dirichlet head and dirichlet (count) loss')
-            self.head = efficientnet_custom.custom_top_dirichlet(
-                input_dim=encoder_dim, output_dim=label_dim)
+            logging.info('Using dropout+dirichlet head and dirichlet (count) loss')
+            self.head = torch.nn.Sequential(
+              torch.nn.Dropout(p=self.dropout_prob),
+              efficientnet_custom.custom_top_dirichlet(
+                  input_dim=encoder_dim, output_dim=label_dim)
+            )
+
             self.loss = partial(
                 dirichlet_loss, question_index_groups=schema.question_index_groups)
         else:
@@ -170,13 +185,15 @@ class FineTune(pl.LightningModule):
 
 # https://github.com/inigoval/byol/blob/1da1bba7dc5cabe2b47956f9d7c6277decd16cc7/byol_main/networks/models.py#L29
 class LinearClassifier(torch.nn.Module):
-    def __init__(self, input_dim, output_dim):
+    def __init__(self, input_dim, output_dim, dropout_prob=0.5):
         super(LinearClassifier, self).__init__()
         self.linear = torch.nn.Linear(input_dim, output_dim)
+        self.dropout = torch.nn.Dropout(p=dropout_prob)
 
     def forward(self, x):
-        logits = self.linear(x)
-        return logits.softmax(dim=-1)
+        x = self.dropout(x)
+        x = self.linear(x)
+        return F.softmax(x, dim=1)
         # loss should be F.cross_entropy
 
 
@@ -192,7 +209,7 @@ def dirichlet_loss(y, y_pred, question_index_groups):
 
 def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
     
-    checkpoint = ModelCheckpoint(
+    checkpoint_callback = ModelCheckpoint(
         monitor='finetuning/val_loss',
         every_n_epochs=1,
         save_on_train_epoch_end=True,
@@ -204,7 +221,7 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
         save_top_k=1
     )
 
-    early_stopping = EarlyStopping(
+    early_stopping_callback = EarlyStopping(
       monitor='finetuning/val_loss',
       mode='min',
       patience=5
@@ -213,19 +230,19 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
     ## Initialise pytorch lightning trainer ##
     trainer = pl.Trainer(
         logger=logger,
-        callbacks=[checkpoint, early_stopping],
+        callbacks=[checkpoint_callback, early_stopping_callback],
         max_epochs=config["finetune"]["n_epochs"],
         **config["trainer"],
     )
 
-    model = FineTune(encoder, batch_size=datamodule.batch_size,
+    model = FinetunedZoobotLightningModule(encoder, batch_size=datamodule.batch_size,
                      **config["finetune"])
 
     trainer.fit(model, datamodule)
 
     # trainer.test(model, dataloaders=datamodule)
 
-    return checkpoint, model
+    return checkpoint_callback.best_model_path, model
 
 
 

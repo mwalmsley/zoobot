@@ -57,9 +57,9 @@ if __name__ == '__main__':
     # and label_cols with count responses (here 'ring_yes' and 'ring_no')
     # (we already have the label_cols via the schema, as schema.label_cols)
     df, _ = gz_rings(
-        root=os.path.join(repo_dir, 'pytorch-galaxy-datasets/roots/gz_rings'),
+        root=os.path.join(repo_dir, 'galaxy-datasets/roots/gz_rings'),
         train=True,
-        download=False
+        download=True
     )
 
     # make any modifications to the catalog here 
