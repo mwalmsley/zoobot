@@ -57,7 +57,7 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
-        epochs = 10
+        epochs = 1
     else:
         epochs = 1000
 
