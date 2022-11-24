@@ -197,8 +197,8 @@ def train_default_zoobot_from_scratch(
         max_epochs=epochs,
         default_root_dir=save_dir,
         track_grad_norm=1,  # L1-norm aka average gradient
-        sync_batchnorm=True  # new
-        # replace_sampler_ddp=False,  # next experiment
+        # sync_batchnorm=True  # new
+        replace_sampler_ddp=False  # next experiment
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size,
@@ -206,7 +206,7 @@ def train_default_zoobot_from_scratch(
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
-    test_trainer =  pl.Trainer(
+    test_trainer = pl.Trainer(
         accelerator=accelerator,
         devices=1,
         precision=precision,
