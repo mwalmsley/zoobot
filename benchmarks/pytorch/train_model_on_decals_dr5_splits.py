@@ -40,8 +40,8 @@ if __name__ == '__main__':
     parser.add_argument('--seed', dest='random_state', default=42, type=int)
     args = parser.parse_args()
 
-    # random_state = args.random_state
-    random_state = np.random.randint(0, 10000)
+    random_state = args.random_state
+    # random_state = np.random.randint(0, 10000)
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
     dependencies = label_metadata.decals_ortho_dependencies
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
-        epochs = 1
+        epochs = 2
     else:
         epochs = 1000
 
