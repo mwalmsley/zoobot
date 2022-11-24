@@ -195,8 +195,8 @@ def train_default_zoobot_from_scratch(
         logger=wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir,
-        profiler='advanced'
+        default_root_dir=save_dir
+        # profiler='advanced'
         # track_grad_norm=1,  # L1-norm aka average gradient
         # sync_batchnorm=True  # new
         # replace_sampler_ddp=False  # next experiment
