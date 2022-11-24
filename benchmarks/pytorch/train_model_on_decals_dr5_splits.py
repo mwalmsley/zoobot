@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
+import wandb
 
 from galaxy_datasets import gz_decals_5
 
@@ -95,5 +96,8 @@ if __name__ == '__main__':
         wandb_logger=wandb_logger,
         prefetch_factor=4,
         num_workers=11,  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
-        random_state=random_state
+        random_state=random_state,
+        learning_rate=1e-3,
     )
+
+    wandb.finish()
