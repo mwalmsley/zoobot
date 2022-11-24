@@ -37,7 +37,11 @@ if __name__ == '__main__':
                         default=False, action='store_true')
     parser.add_argument('--wandb', dest='wandb',
                         default=False, action='store_true')
+    parser.add_argument('--seed', dest='random_state', default=42, type=int)
     args = parser.parse_args()
+
+    # random_state = args.random_state
+    random_state = np.random.randint(0, 10000)
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
     dependencies = label_metadata.decals_ortho_dependencies
@@ -48,8 +52,11 @@ if __name__ == '__main__':
     canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=True)
     canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=True)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
     test_catalog = canonical_test_catalog.copy()
+
+    logging.warning(val_catalog.iloc[0]['id_str'])
+    # exit()
 
     # debug mode
     if args.debug:
@@ -73,8 +80,6 @@ if __name__ == '__main__':
         wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
     else:
         wandb_logger = None
-
-    random_state = np.random.randint(0, 1000)
 
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,

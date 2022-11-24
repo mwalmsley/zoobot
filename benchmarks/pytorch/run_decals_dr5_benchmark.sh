@@ -31,6 +31,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \
+    --seed $SEED \
     $COLOR_STRING \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
@@ -43,6 +44,7 @@ $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \
+    --seed $SEED \
     $COLOR_STRING \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
