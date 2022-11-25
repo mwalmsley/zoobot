@@ -1,6 +1,7 @@
 # Based on Inigo's BYOL FT step
 # https://github.com/inigoval/finetune/blob/main/finetune.py
 import logging
+import os
 import warnings
 from functools import partial
 
@@ -56,7 +57,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
             # this raises a warning that encoder is already a Module hence saved in checkpoint hence no need to save as hparam
             # true - except we need it to instantiate this class, so it's really handy to have saved as well
             # therefore ignore the warning
-            self.save_hyperparameters() 
+            self.save_hyperparameters()
 
         self.encoder = encoder
         self.n_layers = n_layers
@@ -210,23 +211,23 @@ def dirichlet_loss(y, y_pred, question_index_groups):
 
 
 def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
-    
+
     checkpoint_callback = ModelCheckpoint(
         monitor='finetuning/val_loss',
         every_n_epochs=1,
         save_on_train_epoch_end=True,
         auto_insert_metric_name=False,
         verbose=True,
-        dirpath=save_dir,
-        filename="{epoch}",
+        dirpath=os.path.join(save_dir, 'checkpoints'),
+        filename=config["checkpoint"]["file_template"],
         save_weights_only=True,
-        save_top_k=1
+        save_top_k=config["checkpoint"]["save_top_k"]
     )
 
     early_stopping_callback = EarlyStopping(
       monitor='finetuning/val_loss',
       mode='min',
-      patience=15
+      patience=config["early_stopping"]["patience"]
     )
 
     ## Initialise pytorch lightning trainer ##
@@ -259,8 +260,6 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
 
 
 
-
-    
 
 # def investigate_structure():
 
