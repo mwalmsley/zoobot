@@ -38,17 +38,18 @@ if __name__ == '__main__':
         max_galaxies = None
     else:  # test locally
         repo_dir = '/home/walml/repos'
-        accelerator = 'cpu'
+        accelerator = 'gpu'
         devices = None
-        batch_size = 64
+        batch_size = 32
         prog_bar = True
-        max_galaxies = 256
+        # max_galaxies = 256
+        max_galaxies = None
 
     # TODO not yet made public
     # pd.DataFrame with columns 'id_str' (unique id), 'file_loc' (path to image),
     # and label_cols (e.g. smooth-or-featured-cd_smooth) with count responses
     df = pd.read_parquet(os.path.join(
-        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_with_file_locs_ortho.parquet'))
+        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_ortho_with_file_locs.parquet'))
     # sometimes auto-cast to float, which causes issue when saving hdf5
     df['id_str'] = df['id_str'].astype(str)
 
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         },
         'finetune': {
             'encoder_dim': 1280,
-            'n_epochs': 50,
+            'n_epochs': 100,
             'n_layers': 2,
             'label_dim': len(schema.label_cols),
             'label_mode': 'count',
@@ -96,10 +97,14 @@ if __name__ == '__main__':
 
     save_dir = os.path.join(
         repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
-    
+
+    # can do logger=None or, to use wandb:
+    from pytorch_lightning.loggers import WandbLogger
+    logger = WandbLogger(project='finetune', name='full_tree_example')
+
     # key method
     _, model = finetune.run_finetuning(
-        config, encoder, datamodule, save_dir=save_dir, logger=None)
+        config, encoder, datamodule, save_dir=save_dir, logger=logger)
 
     # now save predictions on test set to evaluate performance
   
