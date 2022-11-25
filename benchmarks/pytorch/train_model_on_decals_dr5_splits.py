@@ -45,7 +45,7 @@ if __name__ == '__main__':
     random_state = np.random.randint(0, 10000)
 
     # already manually seeding the random bits below, but just in case
-    pl.seed_everything(random_state)
+    # pl.seed_everything(random_state)
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
     dependencies = label_metadata.decals_ortho_dependencies
