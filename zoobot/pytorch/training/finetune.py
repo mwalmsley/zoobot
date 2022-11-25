@@ -13,10 +13,20 @@ import torch
 from torch import Tensor
 import torch.nn.functional as F
 import torchmetrics as tm
-# from einops import rearrange
 
 from zoobot.pytorch.estimators import efficientnet_custom
 from zoobot.pytorch.training import losses
+
+# https://discuss.pytorch.org/t/how-to-freeze-bn-layers-while-training-the-rest-of-network-mean-and-var-wont-freeze/89736/7
+# I do this recursively and only for BatchNorm2d (not dropout, which I still want active)
+def freeze_batchnorm_layers(model):
+      for name, child in (model.named_children()):
+        if isinstance(child, torch.nn.BatchNorm2d):
+            logging.info('freezing {} {}'.format(child, name))
+            child.eval()  # no grads, no param updates, no statistic updates
+        else:
+          freeze_batchnorm_layers(child)  # recurse
+
 
 
 class FinetunedZoobotLightningModule(pl.LightningModule):
@@ -31,6 +41,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         batch_size=1024,
         lr_decay=0.75,
         dropout_prob=0.5,
+        freeze_batchnorm=True,
         prog_bar=True,
         seed=42,
         label_mode='classification',  # or 'counts'
@@ -38,7 +49,8 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
     ):
         super().__init__()
 
-        # adds to model.hparams
+        # adds every __init__ arg to model.hparams
+        # will also add to wandb if using logging=wandb, I think
         # necessary if you want to reload!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -60,6 +72,11 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         self.train_acc = None
         self.val_acc = None
         self.test_acc = None
+
+        self.freeze_batchnorm = freeze_batchnorm
+
+        if self.freeze_batchnorm:
+            freeze_batchnorm_layers(self.encoder)  # inplace
 
         if label_mode == 'classification':
             logging.info('Using classification head and cross-entropy loss')
@@ -88,28 +105,14 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
 
     def forward(self, x: Tensor) -> Tensor:
         x = self.encoder(x)
-        # x = rearrange(x, "b c h w -> b (c h w)")
         x = self.head(x)
         return x
-
-    # def on_fit_start(self):
-
-    #     # Log size of data-sets
-    #     # TODO review if this works for mine
-    #     # logging_params = {key: len(value) for key, value in self.trainer.datamodule.data.items()}
-    #     # self.logger.log_hyperparams(logging_params)
-    #     if self.logger is not None:
-    #         # hopefully this exists?
-    #         self.logger.log({'train_dataset_size': len(
-    #             self.trainer.train_datamodule())})
 
     def training_step(self, batch, batch_idx):
         # Load data and targets
         x, y = batch
         y_pred = self.forward(x)
-        # self.train_acc(y_pred, y)
         loss = self.loss(y, y_pred)
-        # self.log("finetuning/train_acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=self.prog_bar)
         return {'loss': loss, 'preds': y_pred, 'targets': y}
 
     def on_train_batch_end(self, outputs, *args) -> None:
@@ -123,7 +126,6 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
         x, y = batch
         y_pred = self.forward(x)
-        # self.val_acc(y_pred, y)
         loss = self.loss(y, y_pred)
         return {'loss': loss, 'preds': y_pred, 'targets': y}
 
@@ -152,7 +154,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
     def configure_optimizers(self):
         if self.freeze:
             params = self.head.parameters()
-            # adam not adamW
+            # using adam not adamW for now - TODO config/hparam?
             return torch.optim.Adam(params, lr=1e-4)
         else:
             # lr = 0.001 * self.batch_size / 256
@@ -241,14 +243,10 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
 
     trainer.fit(model, datamodule)
 
+    # when ready (don't peek often, you'll overfit)
     # trainer.test(model, dataloaders=datamodule)
 
     return checkpoint_callback.best_model_path, model
-
-
-
-
-
 
 
 
