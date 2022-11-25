@@ -137,7 +137,7 @@ def train_default_zoobot_from_scratch(
         'resize_after_crop': resize_after_crop,
         'num_workers': num_workers,
         'prefetch_factor': prefetch_factor,
-        'seeded_externally': True
+        'seeded_externally': False
     })
 
     datamodule = GalaxyDataModule(

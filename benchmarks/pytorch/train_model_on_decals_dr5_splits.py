@@ -40,8 +40,9 @@ if __name__ == '__main__':
     parser.add_argument('--seed', dest='random_state', default=42, type=int)
     args = parser.parse_args()
 
-    random_state = args.random_state
-    # random_state = np.random.randint(0, 10000)
+    # random_state = args.random_state
+    import numpy as np
+    random_state = np.random.randint(0, 10000)
 
     # already manually seeding the random bits below, but just in case
     pl.seed_everything(random_state)
