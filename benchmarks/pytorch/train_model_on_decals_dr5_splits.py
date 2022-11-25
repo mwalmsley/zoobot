@@ -2,9 +2,9 @@ import logging
 import os
 import argparse
 
-import numpy as np
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
+import pytorch_lightning as pl
 import wandb
 
 from galaxy_datasets import gz_decals_5
@@ -42,6 +42,9 @@ if __name__ == '__main__':
 
     random_state = args.random_state
     # random_state = np.random.randint(0, 10000)
+
+    # already manually seeding the random bits below, but just in case
+    pl.seed_everything(random_state)
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
     dependencies = label_metadata.decals_ortho_dependencies

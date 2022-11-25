@@ -57,6 +57,7 @@ def train_default_zoobot_from_scratch(
 
     slurm_debugging_logs()
 
+    # redundant when already called before this, but no harm doing twice
     pl.seed_everything(random_state)
 
     assert save_dir is not None
@@ -135,7 +136,8 @@ def train_default_zoobot_from_scratch(
         'crop_ratio_bounds': crop_ratio_bounds,
         'resize_after_crop': resize_after_crop,
         'num_workers': num_workers,
-        'prefetch_factor': prefetch_factor
+        'prefetch_factor': prefetch_factor,
+        'seeded_externally': True
     })
 
     datamodule = GalaxyDataModule(
