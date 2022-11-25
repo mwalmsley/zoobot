@@ -4,7 +4,7 @@ import argparse
 
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
-import pytorch_lightning as pl
+# import pytorch_lightning as pl
 import wandb
 
 from galaxy_datasets import gz_decals_5
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=True)
     canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=True)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # , random_state=random_state
     test_catalog = canonical_test_catalog.copy()
 
     logging.warning(val_catalog.iloc[0]['id_str'])
