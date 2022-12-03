@@ -163,8 +163,8 @@ def train(
             reduction=tf.keras.losses.Reduction.NONE
         )
         # NONE reduction over loss, to be clear about how it's reduced vs. batch size
-        # get the average loss, averaging over global batch size (as TF *sums* gradients)
-        def loss(x, y): return tf.reduce_sum(multiquestion_loss(x, y)) / batch_size        
+        # get the average loss, averaging over subbatch size (as TF *sums* gradients)
+        def loss(x, y): return tf.reduce_sum(multiquestion_loss(x, y)) / (batch_size/gpus)        
         """
         TF actually has a built-in for this which just automatically gets num_replicas and does 
 
