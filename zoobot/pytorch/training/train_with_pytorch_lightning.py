@@ -1,12 +1,9 @@
 import logging
 import os
+from typing import Tuple
 
-from pytorch_lightning.strategies.ddp import DDPStrategy
-# from pytorch_lightning.strategies.dp import DataParallelStrategy
-
-# from pytorch_lightning.plugins.training_type import DDPPlugin
-# https://github.com/PyTorchLightning/pytorch-lightning/blob/1.1.6/pytorch_lightning/plugins/ddp_plugin.py
 import pytorch_lightning as pl
+from pytorch_lightning.strategies.ddp import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
@@ -15,9 +12,7 @@ from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 from zoobot.pytorch.estimators import define_model
 
 
-# convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations
-# does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
-def train_default_zoobot_from_scratch(
+def train_default_zoobot_from_scratch(    
     # absolutely crucial arguments
     save_dir: str,  # save model here
     schema,  # answer these questions
@@ -26,15 +21,15 @@ def train_default_zoobot_from_scratch(
     train_catalog=None,
     val_catalog=None,
     test_catalog=None,
-    # training parameters
+    # training time parameters
     epochs=1000,
     patience=8,
-    learning_rate=5e-4,
     # model hparams
     architecture_name='efficientnet',  # recently changed
     batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
+    learning_rate=5e-4,
     # data and augmentation parameters
     color=False,
     resize_after_crop=224,
@@ -53,8 +48,13 @@ def train_default_zoobot_from_scratch(
     save_top_k=3,
     # replication parameters
     random_state=42
-):
+) -> Tuple(pl.LightningModule, pl.Trainer):
+    """
+    Convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations.
+    Does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
+    """
 
+    # some optional logging.debug calls recording cluster environment
     slurm_debugging_logs()
 
     # redundant when already called before this, but no harm doing twice
@@ -75,13 +75,12 @@ def train_default_zoobot_from_scratch(
     strategy = None
     if (gpus is not None) and (gpus > 1):
         strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
-        # strategy = DataParallelStrategy()  # static_graph=True TODO
         logging.info('Using multi-gpu training')
 
     if nodes > 1:
         assert gpus == 2
         logging.info('Using multi-node training')
-        # this hangs silently on Manchester's slurm cluster - perhaps you will have more success?
+        # this hangs silently on Manchester's slurm cluster, perhaps due to wandb - perhaps you will have more success?
 
     if gpus > 0:
         accelerator = 'gpu'
@@ -144,12 +143,12 @@ def train_default_zoobot_from_scratch(
         label_cols=schema.label_cols,
         # can take either a catalog (and split it), or a pre-split catalog
         **catalogs_to_use,
-        #   augmentations parameters
+        # augmentations parameters
         greyscale=not color,
         crop_scale_bounds=crop_scale_bounds,
         crop_ratio_bounds=crop_ratio_bounds,
         resize_after_crop=resize_after_crop,
-        #   hardware parameters
+        # hardware parameters
         batch_size=batch_size, # on 2xA100s, 256 with DDP, 512 with distributed (i.e. split batch)
         num_workers=num_workers,
         prefetch_factor=prefetch_factor
@@ -179,7 +178,7 @@ def train_default_zoobot_from_scratch(
             # custom filename for checkpointing due to / in metric
             filename=checkpoint_file_template,
             # https://pytorch-lightning.readthedocs.io/en/stable/api/pytorch_lightning.callbacks.ModelCheckpoint.html#pytorch_lightning.callbacks.ModelCheckpoint.params.auto_insert_metric_name
-            # avoid extra folders from the checkpoint name
+            # avoids extra folders from the checkpoint name
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
         )
@@ -198,10 +197,6 @@ def train_default_zoobot_from_scratch(
         callbacks=callbacks,
         max_epochs=epochs,
         default_root_dir=save_dir
-        # profiler='advanced'
-        # track_grad_norm=1,  # L1-norm aka average gradient
-        # sync_batchnorm=True  # new
-        # replace_sampler_ddp=False  # next experiment
     )
 
     logging.info((trainer.training_type_plugin, trainer.world_size,
@@ -217,20 +212,22 @@ def train_default_zoobot_from_scratch(
         default_root_dir=save_dir
     )
 
+    best_model_path = trainer.checkpoint_callback.best_model_path
+
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
-    logging.info(f'Testing on {checkpoint_callback.best_model_path} with single GPU')
-    test_trainer.validate(
-        model=lightning_model,
-        datamodule=datamodule,
-        ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-    )
-    test_trainer.test(
-        model=lightning_model,
-        datamodule=datamodule,
-        ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-    )
-    # no need to provide model, trainer tracks this
+    if test_catalog is not None:
+        logging.info(f'Testing on {checkpoint_callback.best_model_path} with single GPU. Be careful not to overfit your choices to the test data...')
+        test_trainer.validate(
+            model=lightning_model,
+            datamodule=datamodule,
+            ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+        )
+        test_trainer.test(
+            model=lightning_model,
+            datamodule=datamodule,
+            ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
+        )
 
     # explicitly update the model weights to the best checkpoint before returning
     # (assumes only one checkpoint callback, very likely in practice)
@@ -238,9 +235,8 @@ def train_default_zoobot_from_scratch(
     # more broadly, this allows for tracking hparams
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
     # to make this work, ZoobotLightningModule can only take "normal" parameters (e.g. not custom objects) so has quite a few args
-    checkpoint_to_load = trainer.checkpoint_callback.best_model_path
-    logging.info('Returning model from checkpoint: {}'.format(checkpoint_to_load))
-    define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_to_load)  # or .best_model_path, eventually
+    logging.info('Returning model from checkpoint: {}'.format(best_model_path))
+    define_model.ZoobotLightningModule.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 

@@ -40,11 +40,9 @@ if __name__ == '__main__':
     parser.add_argument('--seed', dest='random_state', default=42, type=int)
     args = parser.parse_args()
 
-    # random_state = args.random_state
-    import numpy as np
-    random_state = np.random.randint(0, 10000)
+    random_state = args.random_state
 
-    # already manually seeding the random bits below, but just in case
+    # already manually seeding the random bits below. alternatively, can call:
     # pl.seed_everything(random_state)
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
@@ -59,8 +57,7 @@ if __name__ == '__main__':
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # , random_state=random_state
     test_catalog = canonical_test_catalog.copy()
 
-    logging.warning(val_catalog.iloc[0]['id_str'])
-    # exit()
+    logging.info('First val galaxy: {}'.format(val_catalog.iloc[0]['id_str']))
 
     # debug mode
     if args.debug:
@@ -94,7 +91,7 @@ if __name__ == '__main__':
         architecture_name=args.architecture_name,
         batch_size=args.batch_size,
         epochs=epochs,  # rely on early stopping
-        patience=20, # increased as 8 seemed to stop too early (~300 epochs)
+        patience=10,
         # augmentation parameters
         color=args.color,
         resize_after_crop=args.resize_after_crop,
