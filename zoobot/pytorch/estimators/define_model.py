@@ -92,7 +92,7 @@ class GenericLightningModule(pl.LightningModule):
                 min_lr=1e-6,
                 patience=self.scheduler_params.get('patience', 5)
             )
-            return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'val/supervised_loss_epoch'}
+            return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/epoch_loss'}
         else:
             logging.info('No scheduler used')
             return optimizer  # no scheduler
