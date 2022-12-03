@@ -83,7 +83,19 @@ class GenericLightningModule(pl.LightningModule):
 
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.learning_rate, betas=self.betas)  
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate, betas=self.betas)  
+        if self.scheduler_params.get('name', None) == 'plateau':
+            logging.info(f'Using Plateau scheduler with {self.scheduler_params}')
+            # TODO could generalise this if needed
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+                optimizer, 
+                min_lr=1e-6,
+                patience=self.scheduler_params.get('patience', 5)
+            )
+            return [optimizer], [scheduler]  # lighting convention
+        else:
+            logging.info('No scheduler used')
+            return optimizer  # no scheduler
 
 
     def log_outputs(self, outputs, step_name):
@@ -123,7 +135,8 @@ class ZoobotLightningModule(GenericLightningModule):
         drop_connect_rate=0.2,
         architecture_name="efficientnet",  # recently changed from model_architecture
         learning_rate=1e-3,  # PyTorch default
-        betas=(0.9, 0.999)  # PyTorch default
+        betas=(0.9, 0.999),  # PyTorch default
+        scheduler_params={}  # no scheduler by default
         ):
 
         # now, finally, can pass only standard variables as hparams to save
@@ -140,8 +153,10 @@ class ZoobotLightningModule(GenericLightningModule):
         logging.info('Generic __init__ complete - moving to Zoobot __init__')
 
         # set attributes for learning rate, betas, used by self.configure_optimizers()
+        # TODO refactor to optimizer params
         self.learning_rate = learning_rate
         self.betas = betas
+        self.scheduler_params = scheduler_params
 
         # define model architecture
         get_architecture, representation_dim = select_base_architecture_func_from_name(architecture_name)

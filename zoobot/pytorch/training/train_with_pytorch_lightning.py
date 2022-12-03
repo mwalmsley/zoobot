@@ -30,6 +30,8 @@ def train_default_zoobot_from_scratch(
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     learning_rate=1e-3,
+    betas=(0.9, 0.999),
+    scheduler_params={},
     # data and augmentation parameters
     color=False,
     resize_after_crop=224,
@@ -166,7 +168,9 @@ def train_default_zoobot_from_scratch(
         dropout_rate=dropout_rate,
         drop_connect_rate=drop_connect_rate,
         architecture_name=architecture_name,
-        learning_rate=learning_rate
+        learning_rate=learning_rate,
+        betas=betas,
+        scheduler_params=scheduler_params
     )
 
     # used later for checkpoint_callback.best_model_path
