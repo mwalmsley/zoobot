@@ -14,6 +14,6 @@ SEED=$RANDOM
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
 sbatch --job-name=dr5_py_gr_$SEED --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
-sbatch --job-name=dr5_py_co_$SEED --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=dr5_py_co_$SEED --export=MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
 
 echo 'PyTorch jobs submitted'
