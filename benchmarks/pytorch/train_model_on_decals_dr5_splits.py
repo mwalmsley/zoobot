@@ -2,9 +2,10 @@ import logging
 import os
 import argparse
 
-import numpy as np
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
+# import pytorch_lightning as pl
+import wandb
 
 from galaxy_datasets import gz_decals_5
 
@@ -36,7 +37,13 @@ if __name__ == '__main__':
                         default=False, action='store_true')
     parser.add_argument('--wandb', dest='wandb',
                         default=False, action='store_true')
+    parser.add_argument('--seed', dest='random_state', default=42, type=int)
     args = parser.parse_args()
+
+    random_state = args.random_state
+
+    # already manually seeding the random bits below. alternatively, can call:
+    # pl.seed_everything(random_state)
 
     question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
     dependencies = label_metadata.decals_ortho_dependencies
@@ -47,8 +54,11 @@ if __name__ == '__main__':
     canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=True)
     canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=True)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)
+    # crucial to seed this, either directly or with pl.seed_everything
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
     test_catalog = canonical_test_catalog.copy()
+
+    logging.info('First val galaxy: {}'.format(val_catalog.iloc[0]['id_str']))
 
     # debug mode
     if args.debug:
@@ -57,7 +67,7 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
-        epochs = 10
+        epochs = 2
     else:
         epochs = 1000
 
@@ -67,13 +77,11 @@ if __name__ == '__main__':
             name=os.path.basename(args.save_dir),
             log_model=True
         )
-        wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(10))
-        wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(10))
-        wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
+        wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(5))
+        wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(5))
+        wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(5))
     else:
         wandb_logger = None
-
-    random_state = np.random.randint(0, 1000)
 
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
@@ -84,7 +92,7 @@ if __name__ == '__main__':
         architecture_name=args.architecture_name,
         batch_size=args.batch_size,
         epochs=epochs,  # rely on early stopping
-        patience=20, # increased as 8 seemed to stop too early (~300 epochs)
+        patience=10,
         # augmentation parameters
         color=args.color,
         resize_after_crop=args.resize_after_crop,
@@ -95,5 +103,8 @@ if __name__ == '__main__':
         wandb_logger=wandb_logger,
         prefetch_factor=4,
         num_workers=11,  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
-        random_state=random_state
+        random_state=random_state,
+        learning_rate=1e-3,
     )
+
+    wandb.finish()

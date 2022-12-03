@@ -3,7 +3,7 @@ import tensorflow_probability as tfp
 
 
 
-def get_multiquestion_loss(question_index_groups, reduction=tf.keras.losses.Reduction.SUM):
+def get_multiquestion_loss(question_index_groups, sum_over_questions=True, reduction=tf.keras.losses.Reduction.SUM):
     """
     Get subclass of tf.keras.losses.Loss which wraps ``calculate_multiquestion_loss`` and sums over batch.
 
@@ -21,12 +21,12 @@ def get_multiquestion_loss(question_index_groups, reduction=tf.keras.losses.Redu
     class MultiquestionLoss(tf.keras.losses.Loss):
 
         def call(self, labels, predictions):
-            return calculate_multiquestion_loss(labels, predictions, question_index_groups)
+            return calculate_multiquestion_loss(labels, predictions, question_index_groups, sum_over_questions)
 
     return MultiquestionLoss(reduction=reduction) 
 
 
-def calculate_multiquestion_loss(labels, predictions, question_index_groups):
+def calculate_multiquestion_loss(labels, predictions, question_index_groups, sum_over_questions=True):
     """
     The full decision tree loss used for training GZ DECaLS models
 
@@ -53,11 +53,15 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups):
 
         q_losses.append(q_loss)
     
-    total_loss = tf.stack(q_losses, axis=1)
+    total_loss_with_question_dim = tf.stack(q_losses, axis=1)
 
-    return total_loss  # leave the reduce_sum to the tf.keras.losses.Loss base class, loss should keep the batch size. 
-    # https://www.tensorflow.org/api_docs/python/tf/keras/losses/Loss will auto-reduce (sum) over the batch anyway
-    # with MirroredStrategy, only losses.reduction.SUM is supported, hence I divide this by the batch size manually in train_with_keras.py
+    if sum_over_questions:
+        total_loss = tf.reduce_sum(total_loss_with_question_dim, axis=1)  # sum (prob-multiply) across questions
+        return total_loss
+    else:
+        return total_loss_with_question_dim
+        # has shape (batch_size) to be aggregated outside this func (take a global batch mean)
+        # for distributed context, be very careful about device batch size vs. global batch size and consequences for summing/averaging
 
 
 

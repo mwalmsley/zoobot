@@ -16,7 +16,8 @@ def custom_top_dirichlet(input_dim, output_dim):
         output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
     """
     return nn.Sequential(
-        LinearWithCustomInit(in_features=input_dim, out_features=output_dim),
+        # LinearWithCustomInit(in_features=input_dim, out_features=output_dim),
+        nn.Linear(in_features=input_dim, out_features=output_dim, ),
         ScaledSigmoid()
     )
 

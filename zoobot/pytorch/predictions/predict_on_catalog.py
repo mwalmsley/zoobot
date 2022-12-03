@@ -33,6 +33,7 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     # set up trainer (again)
     trainer = pl.Trainer(
         max_epochs=-1,  # does nothing in this context, suppresses warning
+        inference_mode=True,  # no grads needed
         **trainer_kwargs  # e.g. gpus
     )
 

@@ -43,17 +43,19 @@ if __name__ == '__main__':
                         type=str, default='efficientnet')
     parser.add_argument('--resize-after-crop', dest='resize_after_crop',
                         type=int, default=224)
-    parser.add_argument('--epochs', dest='epochs', type=int, default=1000)
     parser.add_argument('--batch-size', dest='batch_size',
-                        default=512, type=int)
+                        default=128, type=int)
     parser.add_argument('--gpus', default=2, type=int)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--mixed-precision', dest='mixed_precision', default=False, action='store_true')
     parser.add_argument('--wandb', default=False, action='store_true')
+    parser.add_argument('--seed', dest='random_state', default=42, type=int)
     parser.add_argument('--eager', default=False, action='store_true',
                         help='Use TensorFlow eager mode. Great for debugging, but significantly slower to train.'),
     parser.add_argument('--debug', default=False, action='store_true')
     args = parser.parse_args()
+
+    random_state = args.random_state
 
     if not os.path.isdir(args.save_dir):
         os.mkdir(args.save_dir)
@@ -72,7 +74,7 @@ if __name__ == '__main__':
     canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=download)
     canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=download)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # could add random_state
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
     test_catalog = canonical_test_catalog.copy()
 
     # debug mode
@@ -81,9 +83,9 @@ if __name__ == '__main__':
         train_catalog = train_catalog.sample(5000).reset_index(drop=True)
         val_catalog = val_catalog.sample(5000).reset_index(drop=True)
         test_catalog = test_catalog.sample(5000).reset_index(drop=True)
-        epochs = 10
+        epochs = 2
     else:
-        epochs = args.epochs
+        epochs = 1000
 
     if args.wandb:
     # root_logdir must match tensorboard logdir, not full logdir (aka root for /checkpoint, /tensorboard..)
@@ -112,6 +114,7 @@ if __name__ == '__main__':
         color=args.color,
         resize_after_crop=args.resize_after_crop,
         mixed_precision=args.mixed_precision,
-        patience=20
-        # random state has no effect here as catalogs already split and tf not sesed
+        patience=20,
+        # random state has no effect here yet as catalogs already split and tf not seeded
+        random_state=random_state
     )

@@ -33,7 +33,8 @@ def train(
     crop_scale_bounds=(0.7, 0.8),
     crop_ratio_bounds=(0.9, 1.1),
     resize_after_crop=224,
-    always_augment=False,
+    always_augment=False,  # TODO deprecated for now
+    # TODO specify test_time_dropout
     # hardware parameters
     mixed_precision=True,
     gpus=2,
@@ -75,23 +76,22 @@ def train(
         # strategy = tf.distribute.MultiWorkerMirroredStrategy()  # one or more machines. Not tested - you'll need to set this up for your own cluster.
         context_manager = strategy.scope()
         logging.info('Replicas: {}'.format(strategy.num_replicas_in_sync))
-          # MirroredStrategy causes loss to decrease by factor of num_gpus.
-          # Multiply by gpu_loss_factor to keep loss consistent.
-        gpu_loss_factor = gpus
+        # each GPU will calculate loss (hence gradients) for that device's sub-batch
+        # within that sub-batch, loss uses tf.keras.reduction setting
+        # I chose NONE (i.e. no reduction) and do subbatch_loss/full_batch_size (not sub-batch size)
+        # this means the absolute loss and summed gradients don't change with more devices
+        # TODO blog post on this    
+        assert strategy.num_replicas_in_sync == gpus
     else:
         logging.info('Using single or no GPU, not distributed')
         # does nothing, just a convenience for clean code
         context_manager = contextlib.nullcontext()
-        gpu_loss_factor = 1  # do nothing
 
     train_image_paths = list(train_catalog['file_loc'])
     val_image_paths = list(val_catalog['file_loc'])
     test_image_paths = list(test_catalog['file_loc'])
 
     # format is [{label_col: 0, label_col: 12}, {label_col: 3, label_col: 14}, ...]
-    # train_labels = train_catalog[schema.label_cols].to_dict(orient='records')
-    # val_labels = val_catalog[schema.label_cols].to_dict(orient='records')
-    # test_labels = test_catalog[schema.label_cols].to_dict(orient='records')
     train_labels = train_catalog[schema.label_cols].values
     val_labels = val_catalog[schema.label_cols].values
     test_labels = test_catalog[schema.label_cols].values
@@ -156,14 +156,30 @@ def train(
             dropout_rate=dropout_rate
         )
 
+        # reduction=None will give per-example loss. Still summed (probability-multiplied) across questions.
         multiquestion_loss = losses.get_multiquestion_loss(
-            schema.question_index_groups)
-        # SUM reduction over loss, cannot divide by batch size on replicas when distributed training
-        # so do it here instead
-        def loss(x, y): return gpu_loss_factor * multiquestion_loss(x, y) / batch_size
+            schema.question_index_groups,
+            sum_over_questions=True,
+            reduction=tf.keras.losses.Reduction.NONE
+        )
+        # NONE reduction over loss, to be clear about how it's reduced vs. batch size
+        # get the average loss, averaging over global batch size (as TF *sums* gradients)
+        def loss(x, y): return tf.reduce_sum(multiquestion_loss(x, y)) / batch_size        
+        """
+        TF actually has a built-in for this which just automatically gets num_replicas and does 
+
+        per_replica_batch_size = per_example_loss.shape[0]
+        global_batch_size = per_replica_batch_size * num_replicas
+        return reduce_sum(per_example_loss) / global_batch_size
+
+        but it's simple enough here that I'll just do it explicitly
+        """
+        # def loss(x, y): return tf.nn.compute_average_loss(per_example_loss=multiquestion_loss(x, y), global_batch_size=batch_size)  
+
 
         # be careful to define this within the context_manager, so it is also mirrored if on multi-gpu
         extra_metrics = [
+            # this currently only works on 1 GPU - see Keras issue
             # custom_metrics.LossPerQuestion(
             #     name='loss_per_question',
             #     question_index_groups=schema.question_index_groups
@@ -172,7 +188,7 @@ def train(
 
     model.compile(
         loss=loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001, beta_1=0.9, beta_2=0.999),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3, beta_1=0.9, beta_2=0.999),
         metrics=extra_metrics
     )
     model.summary()
@@ -188,10 +204,12 @@ def train(
         model,
         train_dataset,
         val_dataset,
-        eager=eager
+        eager=eager,
+        verbose=1
     )
 
-    # unsure if this will work
-    best_trained_model.evaluate(test_dataset)
+    if test_catalog is not None:
+        logging.info('Evaluating on test dataset - be careful not to overfit your choices')
+        best_trained_model.evaluate(test_dataset)
 
     return best_trained_model
