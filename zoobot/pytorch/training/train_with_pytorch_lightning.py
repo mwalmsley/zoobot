@@ -122,7 +122,7 @@ def train_default_zoobot_from_scratch(
         catalogs_to_use = {
             'train_catalog': train_catalog,
             'val_catalog': val_catalog,
-            'test_catalog': test_catalog
+            'test_catalog': test_catalog  # may be None
         }
 
     wandb_logger.log_hyperparams({
