@@ -187,25 +187,26 @@ def train(
         ]
 
     # https://docs.wandb.ai/guides/track/config#efficient-initialization
-    wandb.config.update({
-        'random_state': random_state,
-        'epochs': epochs,
-        'gpus': gpus,
-        'precision': mixed_precision,
-        'batch_size': batch_size,
-        'greyscale': not color,
-        'crop_scale_bounds': crop_scale_bounds,
-        'crop_ratio_bounds': crop_ratio_bounds,
-        'resize_after_crop': resize_after_crop,
-        'framework': 'tensorflow',
-        # tf doesn't automatically log model init args
-        'architecture_name': architecture_name,  # only EfficientNet is currenty implemented
-        'batch_size': batch_size,
-        'dropout_rate': dropout_rate,
-        # TODO drop_connect_rate not implemented
-        'epochs': epochs,
-        'patience': patience
-    })
+    if wandb.run is not None:  # user might not be using wandb
+        wandb.config.update({
+            'random_state': random_state,
+            'epochs': epochs,
+            'gpus': gpus,
+            'precision': mixed_precision,
+            'batch_size': batch_size,
+            'greyscale': not color,
+            'crop_scale_bounds': crop_scale_bounds,
+            'crop_ratio_bounds': crop_ratio_bounds,
+            'resize_after_crop': resize_after_crop,
+            'framework': 'tensorflow',
+            # tf doesn't automatically log model init args
+            'architecture_name': architecture_name,  # only EfficientNet is currenty implemented
+            'batch_size': batch_size,
+            'dropout_rate': dropout_rate,
+            # TODO drop_connect_rate not implemented
+            'epochs': epochs,
+            'patience': patience
+        })
 
 
     model.compile(
