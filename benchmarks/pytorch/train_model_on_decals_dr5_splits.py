@@ -76,9 +76,9 @@ if __name__ == '__main__':
             name=os.path.basename(args.save_dir),
             log_model=True
         )
-        wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(10))
-        wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(10))
-        wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(10))
+        wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(5))
+        wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(5))
+        wandb_logger.log_text(key="test_catalog", dataframe=train_catalog.sample(5))
     else:
         wandb_logger = None
 
