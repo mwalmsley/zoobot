@@ -45,6 +45,7 @@ def get_model(
     channels=1,
     use_imagenet_weights=False,
     dropout_rate=0.2,
+    test_time_dropout=True,
     get_effnet=efficientnet_standard.EfficientNetB0
     ):
     """
@@ -95,8 +96,13 @@ def get_model(
     # Functional head
     if include_top:
         assert output_dim is not None
-        # x = custom_layers.PermaDropout(dropout_rate, name='top_dropout')(x)
-        x = tf.keras.layers.Dropout(dropout_rate, name='top_dropout')(x)
+        if test_time_dropout:
+            logging.info('Using test-time dropout')
+            dropout_layer = custom_layers.PermaDropout
+        else:
+            logging.info('Not using test-time dropout')
+            dropout_layer = tf.keras.layers.Dropout
+        x = dropout_layer(dropout_rate, name='top_dropout')(x)
         x = efficientnet_custom.custom_top_dirichlet(output_dim)(x)
         x = LogHistogram(name='dirichlet_outputs')(x)
 

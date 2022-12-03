@@ -54,7 +54,8 @@ if __name__ == '__main__':
     canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=True)
     canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=True)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1)  # , random_state=random_state
+    # crucial to seed this, either directly or with pl.seed_everything
+    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
     test_catalog = canonical_test_catalog.copy()
 
     logging.info('First val galaxy: {}'.format(val_catalog.iloc[0]['id_str']))

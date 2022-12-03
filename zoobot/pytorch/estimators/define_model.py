@@ -118,12 +118,12 @@ class ZoobotLightningModule(GenericLightningModule):
         include_top=True,
         channels=1,
         use_imagenet_weights=False,
-        always_augment=True,
+        test_time_dropout=True,
         dropout_rate=0.2,
         drop_connect_rate=0.2,
         architecture_name="efficientnet",  # recently changed from model_architecture
-        learning_rate=5e-4,
-        betas=(0.9, 0.999)
+        learning_rate=1e-3,  # PyTorch default
+        betas=(0.9, 0.999)  # PyTorch default
         ):
 
         # now, finally, can pass only standard variables as hparams to save
@@ -131,7 +131,7 @@ class ZoobotLightningModule(GenericLightningModule):
             output_dim,
             question_index_groups,
             channels,
-            always_augment,
+            test_time_dropout,
             dropout_rate,
             drop_connect_rate,
             architecture_name  # TODO can add any more specific params if needed
@@ -154,7 +154,7 @@ class ZoobotLightningModule(GenericLightningModule):
             include_top=include_top,
             channels=channels,
             use_imagenet_weights=use_imagenet_weights,
-            always_augment=always_augment,
+            test_time_dropout=test_time_dropout,
             dropout_rate=dropout_rate,
             drop_connect_rate=drop_connect_rate,
             get_architecture=get_architecture,
@@ -222,7 +222,7 @@ def get_plain_pytorch_zoobot_model(
     include_top=True,
     channels=1,
     use_imagenet_weights=False,
-    always_augment=True,
+    test_time_dropout=True,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     get_architecture=efficientnet_standard.efficientnet_b0,
@@ -266,12 +266,12 @@ def get_plain_pytorch_zoobot_model(
     if include_top:
         assert output_dim is not None
         # modules_to_use.append(tf.keras.layers.GlobalAveragePooling2D())  # included already in standard effnet in pytorch version - "AdaptiveAvgPool2d"
-        # if always_augment:  # TODO this is terrible naming, need to change!
-        # logging.info('Using test-time dropout')
-        # dropout_layer = custom_layers.PermaDropout
-        # else:
-        logging.info('Not using test-time dropout')
-        dropout_layer = torch.nn.Dropout
+        if test_time_dropout:
+            logging.info('Using test-time dropout')
+            dropout_layer = custom_layers.PermaDropout
+        else:
+            logging.info('Not using test-time dropout')
+            dropout_layer = torch.nn.Dropout
         modules_to_use.append(dropout_layer(dropout_rate))
         # TODO could optionally add a bottleneck layer here
         modules_to_use.append(efficientnet_custom.custom_top_dirichlet(representation_dim, output_dim))

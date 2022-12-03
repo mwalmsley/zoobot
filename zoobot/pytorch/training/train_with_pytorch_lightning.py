@@ -29,7 +29,7 @@ def train_default_zoobot_from_scratch(
     batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
-    learning_rate=5e-4,
+    learning_rate=1e-3,
     # data and augmentation parameters
     color=False,
     resize_after_crop=224,
@@ -162,7 +162,7 @@ def train_default_zoobot_from_scratch(
         include_top=True,
         channels=channels,
         use_imagenet_weights=False,
-        always_augment=True,
+        test_time_dropout=True,
         dropout_rate=dropout_rate,
         drop_connect_rate=drop_connect_rate,
         architecture_name=architecture_name,
