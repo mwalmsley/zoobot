@@ -4,7 +4,7 @@ import contextlib
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
-
+import wandb  # for direct manual hparam logging
 from zoobot.tensorflow.training import training_config, losses, custom_metrics
 from zoobot.tensorflow.estimators import define_model
 from galaxy_datasets.tensorflow import get_image_dataset, add_transforms_to_dataset
@@ -185,6 +185,28 @@ def train(
             #     question_index_groups=schema.question_index_groups
             # )
         ]
+
+    # https://docs.wandb.ai/guides/track/config#efficient-initialization
+    wandb.config.update({
+        'random_state': random_state,
+        'epochs': epochs,
+        'gpus': gpus,
+        'precision': mixed_precision,
+        'batch_size': batch_size,
+        'greyscale': not color,
+        'crop_scale_bounds': crop_scale_bounds,
+        'crop_ratio_bounds': crop_ratio_bounds,
+        'resize_after_crop': resize_after_crop,
+        'framework': 'tensorflow',
+        # tf doesn't automatically log model init args
+        'architecture_name': architecture_name,  # only EfficientNet is currenty implemented
+        'batch_size': batch_size,
+        'dropout_rate': dropout_rate,
+        # TODO drop_connect_rate not implemented
+        'epochs': epochs,
+        'patience': patience
+    })
+
 
     model.compile(
         loss=loss,
