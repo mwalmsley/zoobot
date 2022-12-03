@@ -48,7 +48,7 @@ def train_default_zoobot_from_scratch(
     save_top_k=3,
     # replication parameters
     random_state=42
-) -> Tuple(pl.LightningModule, pl.Trainer):
+) -> Tuple[pl.LightningModule, pl.Trainer]:
     """
     Convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations.
     Does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
