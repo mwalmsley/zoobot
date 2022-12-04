@@ -32,7 +32,7 @@ class Trainer():
         return dict([(key, value) for (key, value) in self.__dict__.items() if key not in excluded_keys])
 
 
-    def fit(self, model, train_dataset, val_dataset, test_dataset=None, extra_callbacks=[], eager=False, verbose=2):
+    def fit(self, model: tf.keras.Model, train_dataset, val_dataset, test_dataset=None, extra_callbacks=[], eager=False, verbose=2):
         """
         Train and evaluate a model.
 
@@ -124,7 +124,15 @@ class Trainer():
 
         if test_dataset is not None:
             logging.info('Evaluating on test dataset - be careful not to overfit your choices')
-            model.evaluate(test_dataset, callbacks=[tensorboard_callback])
+            metrics = model.evaluate(
+                test_dataset,
+                callbacks=[tensorboard_callback],
+                verbose=verbose
+            )
+            logging.info(metrics)
+            logging.info(model.metrics_names)
+            import wandb
+            wandb.log(dict(zip(model.metrics_names, metrics)))
         else:
             logging.info('Skipping test evaluation')
 
