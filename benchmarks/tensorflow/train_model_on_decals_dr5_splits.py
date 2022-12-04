@@ -2,42 +2,14 @@ import logging
 import argparse
 import os
 
-# importing this file wil cause hassles for anyone else, only use as script
-
-
-
-
 import tensorflow as tf
-# import keras
 import wandb
 from sklearn.model_selection import train_test_split
 
-# from galaxy_datasets import gz_decals_5
+from galaxy_datasets import gz_decals_5
 
-# from zoobot.shared import label_metadata, schemas
-# from zoobot.tensorflow.training import train_with_keras
-
-# import absl
-# import astunparse
-# import flatbuffers
-# import gast
-# # import google-pasta, 
-# # import grpcio
-# import h5py
-
-# # import libclang
-# import numpy
-# # import einsum
-# import packaging
-# # import protobuf
-# import setuptools
-# import six
-# import tensorboard
-# # import tensorflow-estimator
-# # import tensorflow-io-gcs-filesystem
-# import termcolor
-# # import typing-extensions
-# import wrapt
+from zoobot.shared import label_metadata, schemas
+from zoobot.tensorflow.training import train_with_keras
 
 
 if __name__ == '__main__':
@@ -48,11 +20,6 @@ if __name__ == '__main__':
     This will automatically download GZ DECaLS DR5, which is ~220k galaxies and ~11GB.
     I use pytorch-galaxy-datasets as convenient downloader, but am actually using tensorflow otherwise
     """
-
-
-    # loggers = [logging.getLogger()]  # get the root logger
-    # loggers = loggers + [logging.getLogger(name) for name in logging.root.manager.loggerDict]
-    # print(loggers)
 
     logging.basicConfig(
         format='%(levelname)s:%(message)s',

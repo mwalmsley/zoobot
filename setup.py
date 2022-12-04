@@ -20,7 +20,7 @@ setuptools.setup(
         "Environment :: GPU :: NVIDIA CUDA"
     ],
     packages=setuptools.find_packages(),
-    python_requires=">=3.9",  # handy for logging.basicConfig(force=True). 3.10 TBD
+    python_requires=">=3.7",  # 3.9 used for benchmarking, most reliable
     extras_require={
         'pytorch': [
             'torch == 1.10.1',
