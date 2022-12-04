@@ -8,7 +8,7 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --exclude=compute-0-7,compute-0-5,compute-0-1,compute-0-0
+#SBATCH --exclude=compute-0-7,compute-0-6,compute-0-1,compute-0-0
 pwd; hostname; date
 
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
