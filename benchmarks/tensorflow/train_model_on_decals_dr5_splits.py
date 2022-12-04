@@ -3,8 +3,8 @@ import argparse
 import os
 
 # import tensorflow as tf
-# import wandb
-# from sklearn.model_selection import train_test_split
+import wandb
+from sklearn.model_selection import train_test_split
 
 # from galaxy_datasets import gz_decals_5
 
