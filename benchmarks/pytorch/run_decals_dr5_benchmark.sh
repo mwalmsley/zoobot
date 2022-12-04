@@ -14,7 +14,7 @@ pwd; hostname; date
 nvidia-smi
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
-PYTHON=/share/nas2/walml/miniconda3/envs/zoobot39/bin/python
+PYTHON=/share/nas2/walml/miniconda3/envs/zoobot37_torch/bin/python
 DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
 
 RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
