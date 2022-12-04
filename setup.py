@@ -32,7 +32,7 @@ setuptools.setup(
             'pyro-ppl == 1.8.0'
         ],
         'tensorflow': [
-            'tensorflow >= 2.10.0',
+            'tensorflow >= 2.11.0',
             'keras_applications',
             'tensorflow_probability >= 0.18.0',
             'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
