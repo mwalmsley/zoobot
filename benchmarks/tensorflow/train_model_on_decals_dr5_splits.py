@@ -2,9 +2,9 @@ import logging
 import argparse
 import os
 
-import tensorflow as tf
-import wandb
-from sklearn.model_selection import train_test_split
+# import tensorflow as tf
+# import wandb
+# from sklearn.model_selection import train_test_split
 
 # from galaxy_datasets import gz_decals_5
 
@@ -27,6 +27,8 @@ if __name__ == '__main__':
     )
 
     logging.info('Hello world')
+    logging.warning('Hello world')
+    logging.critical('Hello world')
 
     import time
     time.sleep(1)
