@@ -26,8 +26,8 @@ or where you definitely won't change zoobot itself (e.g. in production at Zooniv
 
 ## Zoobot/TensorFlow with GPU
 
-    conda create --name zoobot37_tf python==3.7
-    conda activate zoobot37_tf
+    conda create --name zoobot38_tf python==3.8
+    conda activate zoobot38_tf
 
 Install CUDA:
 
