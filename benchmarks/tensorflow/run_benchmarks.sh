@@ -10,7 +10,7 @@ SEED=$RANDOM
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
-sbatch --job-name=dr5_tf_min_$SEED --export=GPUS=1,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=dr5_tf_min_$SEED --export=GPUS=1,SEED=$SEED $TRAIN_JOB
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
 sbatch --job-name=dr5_tf_gr_$SEED --export=GPUS=2,SEED=$SEED $TRAIN_JOB

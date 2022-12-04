@@ -30,8 +30,8 @@ class GenericLightningModule(pl.LightningModule):
 
     def setup_metrics(self):
         # these are ignored unless output dim = 2
-        self.train_accuracy = Accuracy()
-        self.val_accuracy = Accuracy()
+        self.train_accuracy = Accuracy(task='binary')
+        self.val_accuracy = Accuracy(task='binary')
         self.log_on_step = False
         # self.log_on_step is useful for debugging, but slower - best when log_every_n_steps is fairly large
 
