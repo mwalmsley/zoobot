@@ -8,8 +8,8 @@ from sklearn.model_selection import train_test_split
 
 from galaxy_datasets import gz_decals_5
 
-from zoobot.shared import label_metadata, schemas
-from zoobot.tensorflow.training import train_with_keras
+# from zoobot.shared import label_metadata, schemas
+# from zoobot.tensorflow.training import train_with_keras
 
 
 if __name__ == '__main__':
@@ -25,6 +25,12 @@ if __name__ == '__main__':
         format='%(levelname)s:%(message)s',
         level=logging.INFO
     )
+
+    logging.info('Hello world')
+
+    import time
+    time.sleep(1)
+    exit()
 
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
