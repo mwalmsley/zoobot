@@ -6,7 +6,7 @@ import tensorflow as tf
 import wandb
 from sklearn.model_selection import train_test_split
 
-from galaxy_datasets import gz_decals_5
+# from galaxy_datasets import gz_decals_5
 
 # from zoobot.shared import label_metadata, schemas
 # from zoobot.tensorflow.training import train_with_keras
@@ -30,6 +30,7 @@ if __name__ == '__main__':
 
     import time
     time.sleep(1)
+    print('exiting')
     exit()
 
     # useful to avoid errors on small GPU
