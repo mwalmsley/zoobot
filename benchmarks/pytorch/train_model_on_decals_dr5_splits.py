@@ -4,7 +4,6 @@ import argparse
 
 from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
-# import pytorch_lightning as pl
 import wandb
 
 from galaxy_datasets import gz_decals_5

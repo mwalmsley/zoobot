@@ -3,6 +3,7 @@ import argparse
 import os
 
 import tensorflow as tf
+tf.config.optimizer.set_jit(False)
 import wandb
 from sklearn.model_selection import train_test_split
 
