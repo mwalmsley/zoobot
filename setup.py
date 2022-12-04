@@ -38,7 +38,7 @@ setuptools.setup(
             'torchmetrics == 0.11.0'
         ],
         'tensorflow': [
-            'tensorflow >= 2.11.0',
+            'tensorflow >= 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             # for GPU, you will also need cudatoolkit=11.2 and cudnn=8.1.0 (note - 11.3 NOT supported by TF)
             # https://www.tensorflow.org/install/pip#step-by-step_instructions
             'keras_applications',

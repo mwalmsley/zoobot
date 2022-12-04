@@ -47,8 +47,8 @@ $PYTHON $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_decals_dr5_splits.py \
     --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
+    --wandb \
     --seed $SEED \
     $COLOR_STRING \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
-    # --wandb \
