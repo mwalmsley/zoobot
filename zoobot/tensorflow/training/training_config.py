@@ -129,11 +129,11 @@ class Trainer():
                 callbacks=[tensorboard_callback],
                 verbose=verbose
             )
-            # logging.info(metrics)
-            # logging.info(model.metrics_names)
+            logging.info(metrics)
+            logging.info(model.metrics_names)
             import wandb
             # wandb.log(dict(zip(model.metrics_names, metrics)))
-            wandb.log('test/epoch_loss', metrics)
+            wandb.log({'test/epoch_loss': metrics})
         else:
             logging.info('Skipping test evaluation')
 
