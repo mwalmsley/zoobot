@@ -11,27 +11,27 @@ from sklearn.model_selection import train_test_split
 # from zoobot.shared import label_metadata, schemas
 # from zoobot.tensorflow.training import train_with_keras
 
-import absl
-import astunparse
-import flatbuffers
-import gast
-# import google-pasta, 
-# import grpcio
-import h5py
-import keras
-# import libclang
-import numpy
-# import einsum
-import packaging
-# import protobuf
-import setuptools
-import six
-import tensorboard
-# import tensorflow-estimator
-# import tensorflow-io-gcs-filesystem
-import termcolor
-# import typing-extensions
-import wrapt
+# import absl
+# import astunparse
+# import flatbuffers
+# import gast
+# # import google-pasta, 
+# # import grpcio
+# import h5py
+# import keras
+# # import libclang
+# import numpy
+# # import einsum
+# import packaging
+# # import protobuf
+# import setuptools
+# import six
+# import tensorboard
+# # import tensorflow-estimator
+# # import tensorflow-io-gcs-filesystem
+# import termcolor
+# # import typing-extensions
+# import wrapt
 
 
 if __name__ == '__main__':
