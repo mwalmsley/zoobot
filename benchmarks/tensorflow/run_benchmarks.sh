@@ -6,7 +6,7 @@ TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/tensorflow/run_decals_dr5_be
 SEED=$RANDOM
 
 # debug mode
-sbatch --job-name=dr5_tf_debug_$SEED --export=GPUS=1,DEBUG_STRING='--debug' $TRAIN_JOB
+sbatch --job-name=dr5_tf_debug_$SEED --export=GPUS=1,SEED=$SEED,DEBUG_STRING='--debug' $TRAIN_JOB
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
