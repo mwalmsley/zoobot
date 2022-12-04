@@ -1,17 +1,14 @@
 import logging
-import argparse
-import os
+# import argparse
+# import os
 
 # importing this file wil cause hassles for anyone else, only use as script
-logging.basicConfig(
-    format='%(levelname)s:%(message)s',
-    level=logging.INFO
-)
+
 
 import tensorflow as tf
 # tf.get_logger().setLevel('INFO')
-import wandb
-from sklearn.model_selection import train_test_split
+# import wandb
+# from sklearn.model_selection import train_test_split
 
 # from galaxy_datasets import gz_decals_5
 
@@ -50,15 +47,26 @@ if __name__ == '__main__':
     I use pytorch-galaxy-datasets as convenient downloader, but am actually using tensorflow otherwise
     """
 
+    import logging
+
+    logging.basicConfig(
+        format='%(levelname)s:%(message)s',
+        level=logging.INFO
+    )
+
+    loggers = [logging.getLogger()]  # get the root logger
+    loggers = loggers + [logging.getLogger(name) for name in logging.root.manager.loggerDict]
+    print(loggers)
 
 
-    logging.info('Hello world')
-    logging.warning('Hello world')
-    logging.critical('Hello world')
 
-    import time
-    time.sleep(1)
-    print('exiting')
+    # logging.info('Hello world')
+    # logging.warning('Hello world')
+    # logging.critical('Hello world')
+
+    # import time
+    # time.sleep(1)
+    # print('exiting')
     exit()
 
     # useful to avoid errors on small GPU
