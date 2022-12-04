@@ -102,7 +102,7 @@ Contributions are welcome and will be credited in any future work.
 ### Note on Environments
 
 
-I recommend installing in a virtual environment like anaconda.  For example, `conda create --name zoobot python=3.7`, then `conda activate zoobot`.
+I recommend installing in a virtual environment like anaconda.  For example, `conda create --name zoobot python=3.9`, then `conda activate zoobot`.
 Do not install packages directly with anaconda itself (e.g. `conda install tensorflow`) as Anaconda may install older versions.
 Use pip instead, as above. Python 3.7 or greater is required.
 
