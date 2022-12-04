@@ -25,9 +25,9 @@ setuptools.setup(
         'pytorch': [
             # A100 GPU currently only seems to support cuda 11.3 on manchester cluster, let's stick with this version for now
             # very latest version wants cuda 11.6
-            'torch == 1.12.1',
-            'torchvision == 0.13.2',
-            'torchaudio == 0.12.1',
+            # 'torch == 1.12.1',
+            # 'torchvision == 0.13.2',
+            # 'torchaudio == 0.12.1',
             # for GPU, you will also need e.g. cudatoolkit=11.3, 11.6
             # https://pytorch.org/get-started/previous-versions/#v1121
             # 'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
@@ -36,7 +36,6 @@ setuptools.setup(
             'albumentations',
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0'
-            
         ],
         'tensorflow': [
             'tensorflow >= 2.11.0',
