@@ -75,7 +75,7 @@ if __name__ == '__main__':
         wandb_logger = WandbLogger(
             project='zoobot-benchmarks',
             name=os.path.basename(args.save_dir),
-            log_model=True
+            log_model=False
         )
         wandb_logger.log_text(key="train_catalog", dataframe=train_catalog.sample(5))
         wandb_logger.log_text(key="val_catalog", dataframe=train_catalog.sample(5))

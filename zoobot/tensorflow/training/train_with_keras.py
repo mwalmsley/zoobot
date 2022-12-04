@@ -227,12 +227,9 @@ def train(
         model,
         train_dataset,
         val_dataset,
+        test_dataset,
         eager=eager,
-        verbose=1
+        verbose=2
     )
-
-    if test_catalog is not None:
-        logging.info('Evaluating on test dataset - be careful not to overfit your choices')
-        best_trained_model.evaluate(test_dataset)
 
     return best_trained_model

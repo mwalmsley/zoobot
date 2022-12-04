@@ -32,7 +32,7 @@ class Trainer():
         return dict([(key, value) for (key, value) in self.__dict__.items() if key not in excluded_keys])
 
 
-    def fit(self, model, train_dataset, val_dataset, extra_callbacks=[], eager=False, verbose=2):
+    def fit(self, model, train_dataset, val_dataset, test_dataset=None, extra_callbacks=[], eager=False, verbose=2):
         """
         Train and evaluate a model.
 
@@ -59,8 +59,7 @@ class Trainer():
         checkpoint_name = os.path.join(self.log_dir, 'checkpoint')
 
         tensorboard_dir = os.path.join(self.log_dir, 'tensorboard')
-        callbacks = [
-            tf.keras.callbacks.TensorBoard(
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(
                 log_dir=tensorboard_dir,
                 # explicitly disable various slow logging options - enable these if you like
                 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
@@ -70,14 +69,18 @@ class Trainer():
                 # profile_batch='2,10',
                 profile_batch=0,   # i.e. disable profiling
                 update_freq=100  # must be an integer, else logging within define_model.py will fail
-            ),
-            tf.keras.callbacks.ModelCheckpoint(
+            )
+        checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
                 filepath=checkpoint_name,
                 monitor='val_loss',
                 mode='min',
                 save_freq=self.save_freq,
                 save_best_only=True,
-                save_weights_only=True),
+                save_weights_only=True)
+            
+        callbacks = [
+            tensorboard_callback,
+            checkpoint_callback,
             tf.keras.callbacks.EarlyStopping(restore_best_weights=True, patience=self.patience),
             tf.keras.callbacks.TerminateOnNaN()
             # custom_callbacks.VisualizeImages()
@@ -118,5 +121,11 @@ class Trainer():
         # to set self.model to the best model, load the latest checkpoint 
         logging.info('Loading and returning (best) model')
         model.load_weights(checkpoint_name)  # inplace
+
+        if test_dataset is not None:
+            logging.info('Evaluating on test dataset - be careful not to overfit your choices')
+            model.evaluate(test_dataset, callbacks=[tensorboard_callback])
+        else:
+            logging.info('Skipping test evaluation')
 
         return model
