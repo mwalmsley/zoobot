@@ -92,7 +92,7 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
         lastconv_input_channels = inverted_residual_setting[-1].out_channels
         lastconv_output_channels = 4 * lastconv_input_channels
         layers.append(
-            ConvNormActivation(
+            Conv2dNormActivation(
                 lastconv_input_channels,
                 lastconv_output_channels,
                 kernel_size=1,

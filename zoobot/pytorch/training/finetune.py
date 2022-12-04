@@ -291,12 +291,12 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
 Sequential(
   (0): MBConv(
     (block): Sequential(
-      (0): ConvNormActivation(
+      (0): Conv2dNormActivation(
         (0): Conv2d(80, 480, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(480, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
       )
-      (1): ConvNormActivation(
+      (1): Conv2dNormActivation(
         (0): Conv2d(480, 480, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=480, bias=False)
         (1): BatchNorm2d(480, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
@@ -308,7 +308,7 @@ Sequential(
         (activation): SiLU(inplace=True)
         (scale_activation): Sigmoid()
       )
-      (3): ConvNormActivation(
+      (3): Conv2dNormActivation(
         (0): Conv2d(480, 112, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
       )
@@ -317,12 +317,12 @@ Sequential(
   )
   (1): MBConv(
     (block): Sequential(
-      (0): ConvNormActivation(
+      (0): Conv2dNormActivation(
         (0): Conv2d(112, 672, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
       )
-      (1): ConvNormActivation(
+      (1): Conv2dNormActivation(
         (0): Conv2d(672, 672, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=672, bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
@@ -334,7 +334,7 @@ Sequential(
         (activation): SiLU(inplace=True)
         (scale_activation): Sigmoid()
       )
-      (3): ConvNormActivation(
+      (3): Conv2dNormActivation(
         (0): Conv2d(672, 112, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
       )
@@ -343,12 +343,12 @@ Sequential(
   )
   (2): MBConv(
     (block): Sequential(
-      (0): ConvNormActivation(
+      (0): Conv2dNormActivation(
         (0): Conv2d(112, 672, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
       )
-      (1): ConvNormActivation(
+      (1): Conv2dNormActivation(
         (0): Conv2d(672, 672, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=672, bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
@@ -360,7 +360,7 @@ Sequential(
         (activation): SiLU(inplace=True)
         (scale_activation): Sigmoid()
       )
-      (3): ConvNormActivation(
+      (3): Conv2dNormActivation(
         (0): Conv2d(672, 112, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
       )
