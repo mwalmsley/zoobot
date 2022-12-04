@@ -1,4 +1,5 @@
 import os
+os.environ['TF_XLA_FLAGS'] = '--tf_xla_auto_jit=-1'
 import logging
 import contextlib
 from sklearn.model_selection import train_test_split
