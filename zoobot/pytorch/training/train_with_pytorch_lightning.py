@@ -203,7 +203,7 @@ def train_default_zoobot_from_scratch(
         default_root_dir=save_dir
     )
 
-    logging.info((trainer.training_type_plugin, trainer.world_size,
+    logging.info((trainer.strategy, trainer.world_size,
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
