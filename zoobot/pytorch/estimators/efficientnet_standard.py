@@ -11,7 +11,7 @@ import torch
 from torch import nn, Tensor
 
 from torchvision._internally_replaced_utils import load_state_dict_from_url
-from torchvision.ops.misc import ConvNormActivation
+from torchvision.ops import Conv2dNormActivation
 
 from torchvision.models.efficientnet import MBConvConfig, MBConv
 
@@ -60,7 +60,7 @@ class EfficientNet(nn.Module):  # could make lightning, but I think it's clearer
         # building first layer
         firstconv_output_channels = inverted_residual_setting[0].input_channels
         layers.append(
-            ConvNormActivation(
+            Conv2dNormActivation(
                 # added input_channels as an
                 input_channels, firstconv_output_channels, kernel_size=3, stride=2, norm_layer=norm_layer, activation_layer=nn.SiLU
             )

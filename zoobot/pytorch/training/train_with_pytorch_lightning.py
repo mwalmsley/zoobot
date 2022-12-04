@@ -86,8 +86,10 @@ def train_default_zoobot_from_scratch(
 
     if gpus > 0:
         accelerator = 'gpu'
+        devices = gpus
     else:
         accelerator = 'cpu'
+        devices = None  # all
 
     precision = 32
     if mixed_precision:
@@ -193,7 +195,7 @@ def train_default_zoobot_from_scratch(
     trainer = pl.Trainer(
         log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
         accelerator=accelerator,
-        gpus=gpus,  # per node
+        devices=devices,  # per node
         num_nodes=nodes,
         strategy=strategy,
         precision=precision,
