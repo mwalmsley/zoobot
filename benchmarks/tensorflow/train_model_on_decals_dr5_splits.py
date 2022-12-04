@@ -2,7 +2,8 @@ import logging
 import argparse
 import os
 
-# import tensorflow as tf
+import tensorflow as tf
+tf.get_logger().setLevel('INFO')
 import wandb
 from sklearn.model_selection import train_test_split
 
@@ -11,28 +12,28 @@ from sklearn.model_selection import train_test_split
 # from zoobot.shared import label_metadata, schemas
 # from zoobot.tensorflow.training import train_with_keras
 
-import absl
-import astunparse
-import flatbuffers
-import gast
-# import google-pasta, 
-# import grpcio
-import h5py
+# import absl
+# import astunparse
+# import flatbuffers
+# import gast
+# # import google-pasta, 
+# # import grpcio
+# import h5py
 
-# import libclang
-import numpy
-# import einsum
-import packaging
-# import protobuf
-import setuptools
-import six
-import tensorboard
-# import tensorflow-estimator
-# import tensorflow-io-gcs-filesystem
-import termcolor
-# import typing-extensions
-import wrapt
-# import keras
+# # import libclang
+# import numpy
+# # import einsum
+# import packaging
+# # import protobuf
+# import setuptools
+# import six
+# import tensorboard
+# # import tensorflow-estimator
+# # import tensorflow-io-gcs-filesystem
+# import termcolor
+# # import typing-extensions
+# import wrapt
+# # import keras
 
 if __name__ == '__main__':
 
