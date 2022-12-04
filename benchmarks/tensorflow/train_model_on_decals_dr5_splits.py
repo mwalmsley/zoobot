@@ -30,10 +30,10 @@ if __name__ == '__main__':
     logging.warning('Hello world')
     logging.critical('Hello world')
 
-    import time
-    time.sleep(1)
-    print('exiting')
-    exit()
+    # import time
+    # time.sleep(1)
+    # print('exiting')
+    # exit()
 
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
