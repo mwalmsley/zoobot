@@ -40,6 +40,7 @@ def train(
     mixed_precision=True,
     gpus=2,
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
+    check_valid_paths=True,  # checks all images exist. Can disable for start speed on large datasets (100k+)
     # replication parameters
     random_state=42  # TODO not yet implemented except for catalog split (not used in benchmarks)
 ) -> tf.keras.Model:
@@ -100,11 +101,7 @@ def train(
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
-    # TODO consider if should check if all paths are valid only for small-ish datasets, for speed?
-    # check_valid_paths = len(train_image_paths) < 50000
-    # logging.info(f'Will check if paths valid: {check_valid_paths}')
-    check_valid_paths = True
-
+    logging.info(f'Will check if paths valid: {check_valid_paths}')
     train_dataset = get_image_dataset(
         train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
