@@ -57,11 +57,12 @@ if __name__ == '__main__':
     from foundation.datasets import mixed  # not yet public
     import pandas as pd
 
-    label_cols, (temp_train_catalog, temp_val_catalog, canonical_test_catalog) = mixed.everything_all_dirichlet_with_rings(args.data_dir, args.debug, download=download, use_cache=True)
+    label_cols, (temp_train_catalog, temp_val_catalog, _) = mixed.everything_all_dirichlet_with_rings(args.data_dir, args.debug, download=download, use_cache=True)
     canonical_train_catalog = pd.concat([temp_train_catalog, temp_val_catalog], axis=0)
 
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
-    test_catalog = canonical_test_catalog.copy()
+    # here I'm going to ignore the test catalog
+    train_catalog, hidden_catalog = train_test_split(canonical_train_catalog, test_size=1./3., random_state=random_state)
+    val_catalog, test_catalog = train_test_split(hidden_catalog, test_size=2./3., random_state=random_state)
 
     schema = mixed.mixed_schema()
     logging.info('Schema: {}'.format(schema))
@@ -94,7 +95,7 @@ if __name__ == '__main__':
         schema=schema,
         train_catalog=train_catalog,
         val_catalog=val_catalog,
-        # test_catalog=test_catalog,  # test catalog not used for now, too early
+        test_catalog=test_catalog,  # actually still from canonical train, for good practice
         batch_size=args.batch_size,
         architecture_name=args.architecture_name,
         eager=args.eager,
