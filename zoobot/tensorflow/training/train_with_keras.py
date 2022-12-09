@@ -100,9 +100,10 @@ def train(
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
-    # by default, check if all paths are valid only for small-ish datasets (50k, for now)
-    check_valid_paths = len(train_image_paths) < 50000
-    logging.info(f'Will check if paths valid: {check_valid_paths}')
+    # TODO consider if should check if all paths are valid only for small-ish datasets, for speed?
+    # check_valid_paths = len(train_image_paths) < 50000
+    # logging.info(f'Will check if paths valid: {check_valid_paths}')
+    check_valid_paths = True
 
     train_dataset = get_image_dataset(
         train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
