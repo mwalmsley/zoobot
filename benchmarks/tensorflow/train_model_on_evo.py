@@ -57,7 +57,7 @@ if __name__ == '__main__':
     from foundation.datasets import mixed  # not yet public
     import pandas as pd
 
-    label_cols, (temp_train_catalog, temp_val_catalog, canonical_test_catalog) = mixed.everything_all_dirichlet_with_rings(args.data_dir, args.debug, download=download, use_cache=False)
+    label_cols, (temp_train_catalog, temp_val_catalog, canonical_test_catalog) = mixed.everything_all_dirichlet_with_rings(args.data_dir, args.debug, download=download, use_cache=True)
     canonical_train_catalog = pd.concat([temp_train_catalog, temp_val_catalog], axis=0)
 
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
