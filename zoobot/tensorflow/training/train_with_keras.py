@@ -100,14 +100,18 @@ def train(
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
+    # by default, check if all paths are valid only for small-ish datasets (50k, for now)
+    check_valid_paths = len(train_image_paths < 50000)
+    logging.info(f'Will check if paths valid: {check_valid_paths}')
+
     train_dataset = get_image_dataset(
-        train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+        train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
     val_dataset = get_image_dataset(
-        val_image_paths, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+        val_image_paths, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
     test_dataset = get_image_dataset(
-        test_image_paths, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+        test_image_paths, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
 
     # specify augmentations
