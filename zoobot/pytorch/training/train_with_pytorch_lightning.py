@@ -90,6 +90,7 @@ def train_default_zoobot_from_scratch(
                 # from lightning_lite.plugins.environments import SLURMEnvironment
                 from zoobot.pytorch import manchester
                 logging.warning('Using custom slurm environment')
+                # https://pytorch-lightning.readthedocs.io/en/stable/clouds/cluster_advanced.html#enable-auto-wall-time-resubmitions
                 plugins = [manchester.ManchesterEnvironment(auto_requeue=False)]
 
     if gpus > 0:
