@@ -5,20 +5,20 @@
 #SBATCH --time=72:00:00                                # Time limit hrs:min:sec
 #SBATCH --constraint=A100 
 
-# multi-node mode (new, specific to my cluster, may hang)
-#SBATCH --nodes=2
-#SBATCH --ntasks-per-node=2
-#SBATCH --mem=25gb
-#SBATCH --cpus-per-task=12
-GPUS=2
-NODES=2   
+# # multi-node mode (new, specific to my cluster, may hang)
+# #SBATCH --nodes=2
+# #SBATCH --ntasks-per-node=2
+# #SBATCH --mem=25gb
+# #SBATCH --cpus-per-task=12
+# GPUS=2
+# NODES=2   
 
 # single node mode (more reliable)
-# SBATCH --mem=0 
-# SBATCH --exclusive   # only one task per node
-# SBATCH --ntasks 1
-# SBATCH --cpus-per-task=24
-# NODES=1
+#SBATCH --mem=0 
+#SBATCH --exclusive   # only one task per node
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task=24
+NODES=1
 
 pwd; hostname; date
 
