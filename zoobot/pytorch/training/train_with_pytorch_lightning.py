@@ -87,8 +87,10 @@ def train_default_zoobot_from_scratch(
             # https://slurm.schedmd.com/srun.html#OPT_SLURM_STEP_TASKS_PER_NODE
             if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
                 os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
-                from lightning_lite.plugins.environments import SLURMEnvironment
-                plugins = [SLURMEnvironment]
+                # from lightning_lite.plugins.environments import SLURMEnvironment
+                from zoobot.pytorch import manchester
+                logging.warning('Using custom slurm environment')
+                plugins = [manchester.ManchesterEnvironment(auto_requeue=False)]
 
     if gpus > 0:
         accelerator = 'gpu'
@@ -273,15 +275,15 @@ def train_default_zoobot_from_scratch(
 def slurm_debugging_logs():
     # https://hpcc.umd.edu/hpcc/help/slurmenv.html
     # logging.info(os.environ)
-    logging.debug(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
-    logging.debug(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
-    logging.debug(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
+    logging.info(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
+    logging.info(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
+    logging.info(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
     # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
     # disable slurm detection by pl
     # this is not necessary for single machine, but might be for multi-node
     # may help stop tasks getting left on gpu after slurm exit?
     # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
-    logging.debug(os.getenv("NODE_RANK", 'No NODE_RANK'))
-    logging.debug(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
-    logging.debug(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
+    logging.info(os.getenv("NODE_RANK", 'No NODE_RANK'))
+    logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
+    logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
