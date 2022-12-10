@@ -3,6 +3,7 @@ import logging
 from lightning_lite.plugins.environments import SLURMEnvironment
 
 # https://pytorch-lightning.readthedocs.io/en/stable/_modules/lightning_lite/plugins/environments/slurm.html#SLURMEnvironment
+# https://github.com/Lightning-AI/lightning/blob/9c20cad40e4142f8a5e945fe26e919e598f2bd56/src/lightning_lite/plugins/environments/slurm.py
 class ManchesterEnvironment(SLURMEnvironment):
 
     def __init__(self, auto_requeue: bool = True, requeue_signal=None) -> None:
