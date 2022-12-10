@@ -31,8 +31,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    # slurm_nodelist = "compute-0-[0,9]" # 70015 port 0,9 works
-    slurm_nodelist = "compute-0-[0,11]"  # 70016 port
+    # slurm_nodelist = "compute-0-[0,9]" # 0,9 works
+    slurm_nodelist = "compute-0-[0,11]"  # 0,11 hangs
     # 70017 8-9 works
 
     env = ManchesterEnvironment()

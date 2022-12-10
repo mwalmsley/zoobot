@@ -5,20 +5,20 @@
 #SBATCH --time=72:00:00                                # Time limit hrs:min:sec
 #SBATCH --constraint=A100 
 
-# multi-node mode (new, specific to my cluster, may hang)
-#SBATCH --nodes=2
-#SBATCH --ntasks-per-node=2
-#SBATCH --mem=25gb
-#SBATCH --cpus-per-task=12
-GPUS=2
-NODES=2   
+# # multi-node mode (new, specific to my cluster, may hang)
+# #SBATCH --nodes=2
+# #SBATCH --ntasks-per-node=2
+# #SBATCH --mem=25gb
+# #SBATCH --cpus-per-task=12
+# GPUS=2
+# NODES=2   
 
-# # single node mode (more reliable)
-# #SBATCH --mem=0 
-# #SBATCH --exclusive   # only one task per node
-# #SBATCH --ntasks 1
-# #SBATCH --cpus-per-task=24
-# NODES=1
+# single node mode (more reliable)
+#SBATCH --mem=0 
+#SBATCH --exclusive   # only one task per node
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task=24
+NODES=1
 
 pwd; hostname; date
 
@@ -35,8 +35,8 @@ EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
 
 ARCHITECTURE='efficientnetb4'
 # b0: 1024 is max for dual A100 GPU with MP. 512 single gpu or MP.
-# b4: 64 is max for dual A100 with MP.
-BATCH_SIZE=128  
+# b4: 64 is max for dual A100 with MP. Multi-node should allow more, but currently OOM - maybe nodes need a restart?
+BATCH_SIZE=64  
 
 echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
