@@ -24,6 +24,8 @@ pwd; hostname; date
 
 nvidia-smi
 
+export NCCL_DEBUG=INFO
+
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_torch/bin/python
 DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
