@@ -36,7 +36,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
 
-$PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
+srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
