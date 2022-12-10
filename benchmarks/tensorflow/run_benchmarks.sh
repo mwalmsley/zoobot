@@ -17,6 +17,6 @@ sbatch --job-name=dr5_tf_gr_$SEED --export=DATASET=gz_decals_dr5,MIXED_PRECISION
 sbatch --job-name=dr5_tf_co_$SEED --export=DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
 
 # new - all galaxies
-sbatch --job-name=evo_tf_gr_$SEED --export=DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=evo_tf_gr_$SEED --export=DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 echo 'TensorFlow jobs submitted'

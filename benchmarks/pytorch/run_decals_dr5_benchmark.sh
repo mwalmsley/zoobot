@@ -21,13 +21,13 @@ RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
 EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
 
 ARCHITECTURE='efficientnet'
-BATCH_SIZE=256  # 512 is max for single A100 GPU with MP, 256 without MP
+BATCH_SIZE=64  # 512 is max for single A100 GPU with MP, 256 without MP
 
 echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop 380 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \
@@ -40,7 +40,7 @@ $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop 380 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \
