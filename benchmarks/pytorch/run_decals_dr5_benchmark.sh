@@ -10,7 +10,7 @@
 #SBATCH --ntasks-per-node=2
 #SBATCH --mem=25gb
 #SBATCH --cpus-per-task=12
-GPUS=1
+GPUS=2
 NODES=2   
 
 # single node mode (more reliable)
