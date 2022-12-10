@@ -66,15 +66,6 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
-    logging.info('Hello world')
-    logging.warning('Hello world')
-    logging.critical('Hello world')
-
-    # import time
-    # time.sleep(1)
-    # print('exiting')
-    # exit()
-
     # useful to avoid errors on small GPU
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
@@ -138,7 +129,7 @@ if __name__ == '__main__':
         wandb.tensorboard.patch(root_logdir=os.path.join(args.save_dir, 'tensorboard'))
         wandb.init(
             sync_tensorboard=True,
-            project='zoobot-benchmarks',
+            project=f'zoobot-benchmarks-{args.dataset}',
             name=os.path.basename(args.save_dir)
         )
     #   with TensorFlow, doesn't need to be passed as arg
