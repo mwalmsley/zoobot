@@ -30,6 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', dest='batch_size',
                         default=256, type=int)  # 64 from sweep
     parser.add_argument('--gpus', dest='gpus', default=1, type=int)
+    parser.add_argument('--nodes', dest='nodes', default=1, type=int)
     parser.add_argument('--mixed-precision', dest='mixed_precision',
                         default=False, action='store_true')
     parser.add_argument('--debug', dest='debug',
@@ -98,6 +99,7 @@ if __name__ == '__main__':
         # hardware parameters
         nodes=1,
         gpus=args.gpus,
+        nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
         prefetch_factor=4,

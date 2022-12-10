@@ -75,14 +75,18 @@ def train_default_zoobot_from_scratch(
         channels = 1
 
     strategy = None
+
     if (gpus is not None) and (gpus > 1):
         strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
         logging.info('Using multi-gpu training')
-
-    if nodes > 1:
-        assert gpus == 2
-        logging.info('Using multi-node training')
-        # this hangs silently on Manchester's slurm cluster, perhaps due to wandb - perhaps you will have more success?
+        if nodes > 1:  # I assume nobody is doing multi-node cpu training...
+            logging.info('Using multi-node training')  # purely for your info
+            # this is only needed for multi-node training
+            # our cluster sets TASKS_PER_NODE not NTASKS_PER_NODE
+            # (with srun, SLURM_STEP_TASKS_PER_NODE)
+            # https://slurm.schedmd.com/srun.html#OPT_SLURM_STEP_TASKS_PER_NODE
+            if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
+                os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
 
     if gpus > 0:
         accelerator = 'gpu'
@@ -132,6 +136,7 @@ def train_default_zoobot_from_scratch(
         'epochs': epochs,
         'accelerator': accelerator,
         'gpus': gpus,
+        'nodes': nodes,
         'precision': precision,
         'batch_size': batch_size,
         'greyscale': not color,
