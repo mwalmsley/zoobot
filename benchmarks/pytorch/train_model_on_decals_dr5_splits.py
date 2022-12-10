@@ -40,13 +40,16 @@ if __name__ == '__main__':
     parser.add_argument('--seed', dest='random_state', default=42, type=int)
     args = parser.parse_args()
 
+    logging.basicConfig(level=logging.INFO)
+
     random_state = args.random_state
 
     # temp
     if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
         os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
 
-    print([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
+    logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
+    logging.info(os.environ.get('WORLD_SIZE', None))
 
     # already manually seeding the random bits below. alternatively, can call:
     # pl.seed_everything(random_state)
