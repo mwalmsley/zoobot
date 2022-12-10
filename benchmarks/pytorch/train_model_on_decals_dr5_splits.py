@@ -97,7 +97,6 @@ if __name__ == '__main__':
         color=args.color,
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
-        nodes=1,
         gpus=args.gpus,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
