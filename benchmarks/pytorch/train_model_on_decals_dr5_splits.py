@@ -44,12 +44,12 @@ if __name__ == '__main__':
 
     random_state = args.random_state
 
-    # temp
-    if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
-        os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
-
-    logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
-    logging.info(os.environ.get('WORLD_SIZE', None))
+    if args.nodes > 1:
+        # at Manchester, our slurm cluster sets TASKS not NTASKS, which then confuses lightning
+        if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
+            os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
+        # log the rest to help debug
+        logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
 
     # already manually seeding the random bits below. alternatively, can call:
     # pl.seed_everything(random_state)
