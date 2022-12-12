@@ -1,10 +1,11 @@
 import os
+os.environ['TF_XLA_FLAGS'] = '--tf_xla_auto_jit=-1'
 import logging
 import contextlib
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
-
+import wandb  # for direct manual hparam logging
 from zoobot.tensorflow.training import training_config, losses, custom_metrics
 from zoobot.tensorflow.estimators import define_model
 from galaxy_datasets.tensorflow import get_image_dataset, add_transforms_to_dataset
@@ -39,6 +40,7 @@ def train(
     mixed_precision=True,
     gpus=2,
     eager=False,  # tf-specific. Enable eager mode. Set True for easier debugging but slower training
+    check_valid_paths=True,  # checks all images exist. Can disable for start speed on large datasets (100k+)
     # replication parameters
     random_state=42  # TODO not yet implemented except for catalog split (not used in benchmarks)
 ) -> tf.keras.Model:
@@ -99,14 +101,15 @@ def train(
     logging.info('Example path: {}'.format(train_image_paths[0]))
     logging.info('Example labels: {}'.format(train_labels[0]))
 
+    logging.info(f'Will check if paths valid: {check_valid_paths}')
     train_dataset = get_image_dataset(
-        train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+        train_image_paths, labels=train_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
     val_dataset = get_image_dataset(
-        val_image_paths, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+        val_image_paths, labels=val_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
     test_dataset = get_image_dataset(
-        test_image_paths, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=True, greyscale=greyscale
+        test_image_paths, labels=test_labels, requested_img_size=requested_img_size, check_valid_paths=check_valid_paths, greyscale=greyscale
     )
 
     # specify augmentations
@@ -163,8 +166,8 @@ def train(
             reduction=tf.keras.losses.Reduction.NONE
         )
         # NONE reduction over loss, to be clear about how it's reduced vs. batch size
-        # get the average loss, averaging over global batch size (as TF *sums* gradients)
-        def loss(x, y): return tf.reduce_sum(multiquestion_loss(x, y)) / batch_size        
+        # get the average loss, averaging over subbatch size (as TF *sums* gradients)
+        def loss(x, y): return tf.reduce_sum(multiquestion_loss(x, y)) / (batch_size/gpus)        
         """
         TF actually has a built-in for this which just automatically gets num_replicas and does 
 
@@ -186,10 +189,34 @@ def train(
             # )
         ]
 
+    # https://docs.wandb.ai/guides/track/config#efficient-initialization
+    if wandb.run is not None:  # user might not be using wandb
+        wandb.config.update({
+            'random_state': random_state,
+            'epochs': epochs,
+            'gpus': gpus,
+            'precision': mixed_precision,
+            'batch_size': batch_size,
+            'greyscale': not color,
+            'crop_scale_bounds': crop_scale_bounds,
+            'crop_ratio_bounds': crop_ratio_bounds,
+            'resize_after_crop': resize_after_crop,
+            'framework': 'tensorflow',
+            # tf doesn't automatically log model init args
+            'architecture_name': architecture_name,  # only EfficientNet is currenty implemented
+            'batch_size': batch_size,
+            'dropout_rate': dropout_rate,
+            # TODO drop_connect_rate not implemented
+            'epochs': epochs,
+            'patience': patience
+        })
+
+
     model.compile(
         loss=loss,
         optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3, beta_1=0.9, beta_2=0.999),
-        metrics=extra_metrics
+        metrics=extra_metrics,
+        jit_compile=False  # don't use XLA, it fails on multi-GPU. Might consider on one GPU.
     )
     model.summary()
 
@@ -204,12 +231,9 @@ def train(
         model,
         train_dataset,
         val_dataset,
+        test_dataset,
         eager=eager,
-        verbose=1
+        verbose=2
     )
-
-    if test_catalog is not None:
-        logging.info('Evaluating on test dataset - be careful not to overfit your choices')
-        best_trained_model.evaluate(test_dataset)
 
     return best_trained_model

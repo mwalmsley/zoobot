@@ -30,6 +30,8 @@ def train_default_zoobot_from_scratch(
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     learning_rate=1e-3,
+    betas=(0.9, 0.999),
+    scheduler_params={},
     # data and augmentation parameters
     color=False,
     resize_after_crop=224,
@@ -73,19 +75,30 @@ def train_default_zoobot_from_scratch(
         channels = 1
 
     strategy = None
+    plugins = None
     if (gpus is not None) and (gpus > 1):
         strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
         logging.info('Using multi-gpu training')
-
-    if nodes > 1:
-        assert gpus == 2
-        logging.info('Using multi-node training')
-        # this hangs silently on Manchester's slurm cluster, perhaps due to wandb - perhaps you will have more success?
+        if nodes > 1:  # I assume nobody is doing multi-node cpu training...
+            logging.info('Using multi-node training')  # purely for your info
+            # this is only needed for multi-node training
+            # our cluster sets TASKS_PER_NODE not NTASKS_PER_NODE
+            # (with srun, SLURM_STEP_TASKS_PER_NODE)
+            # https://slurm.schedmd.com/srun.html#OPT_SLURM_STEP_TASKS_PER_NODE
+            if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
+                os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
+                # from lightning_lite.plugins.environments import SLURMEnvironment
+                from zoobot.pytorch import manchester
+                logging.warning('Using custom slurm environment')
+                # https://pytorch-lightning.readthedocs.io/en/stable/clouds/cluster_advanced.html#enable-auto-wall-time-resubmitions
+                plugins = [manchester.ManchesterEnvironment(auto_requeue=False)]
 
     if gpus > 0:
         accelerator = 'gpu'
+        devices = gpus
     else:
         accelerator = 'cpu'
+        devices = None  # all
 
     precision = 32
     if mixed_precision:
@@ -120,7 +133,7 @@ def train_default_zoobot_from_scratch(
         catalogs_to_use = {
             'train_catalog': train_catalog,
             'val_catalog': val_catalog,
-            'test_catalog': test_catalog
+            'test_catalog': test_catalog  # may be None
         }
 
     wandb_logger.log_hyperparams({
@@ -128,6 +141,7 @@ def train_default_zoobot_from_scratch(
         'epochs': epochs,
         'accelerator': accelerator,
         'gpus': gpus,
+        'nodes': nodes,
         'precision': precision,
         'batch_size': batch_size,
         'greyscale': not color,
@@ -136,7 +150,7 @@ def train_default_zoobot_from_scratch(
         'resize_after_crop': resize_after_crop,
         'num_workers': num_workers,
         'prefetch_factor': prefetch_factor,
-        'seeded_externally': 'no_split_seed'
+        'framework': 'pytorch'
     })
 
     datamodule = GalaxyDataModule(
@@ -166,7 +180,9 @@ def train_default_zoobot_from_scratch(
         dropout_rate=dropout_rate,
         drop_connect_rate=drop_connect_rate,
         architecture_name=architecture_name,
-        learning_rate=learning_rate
+        learning_rate=learning_rate,
+        betas=betas,
+        scheduler_params=scheduler_params
     )
 
     # used later for checkpoint_callback.best_model_path
@@ -189,17 +205,18 @@ def train_default_zoobot_from_scratch(
     trainer = pl.Trainer(
         log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
         accelerator=accelerator,
-        gpus=gpus,  # per node
+        devices=devices,  # per node
         num_nodes=nodes,
         strategy=strategy,
         precision=precision,
         logger=wandb_logger,
         callbacks=callbacks,
         max_epochs=epochs,
-        default_root_dir=save_dir
+        default_root_dir=save_dir,
+        plugins=plugins
     )
 
-    logging.info((trainer.training_type_plugin, trainer.world_size,
+    logging.info((trainer.strategy, trainer.world_size,
                  trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
@@ -259,15 +276,15 @@ def train_default_zoobot_from_scratch(
 def slurm_debugging_logs():
     # https://hpcc.umd.edu/hpcc/help/slurmenv.html
     # logging.info(os.environ)
-    logging.debug(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
-    logging.debug(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
-    logging.debug(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
+    logging.info(os.getenv("SLURM_JOB_ID", 'No SLURM_JOB_ID'))
+    logging.info(os.getenv("SLURM_JOB_NAME", 'No SLURM_JOB_NAME'))
+    logging.info(os.getenv("SLURM_NTASKS", 'No SLURM_NTASKS'))
     # https://github.com/PyTorchLightning/pytorch-lightning/blob/d5fa02e7985c3920e72e268ece1366a1de96281b/pytorch_lightning/trainer/connectors/slurm_connector.py#L29
     # disable slurm detection by pl
     # this is not necessary for single machine, but might be for multi-node
     # may help stop tasks getting left on gpu after slurm exit?
     # del os.environ["SLURM_NTASKS"]  # only exists if --ntasks specified
 
-    logging.debug(os.getenv("NODE_RANK", 'No NODE_RANK'))
-    logging.debug(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
-    logging.debug(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))
+    logging.info(os.getenv("NODE_RANK", 'No NODE_RANK'))
+    logging.info(os.getenv("LOCAL_RANK", 'No LOCAL_RANK'))
+    logging.info(os.getenv("WORLD_SIZE", 'No WORLD_SIZE'))

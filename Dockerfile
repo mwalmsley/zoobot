@@ -25,7 +25,9 @@ RUN ln -s /usr/local/bin/pip3 /usr/bin/pip
 # install dependencies
 COPY README.md .
 COPY setup.py .
-RUN pip install -U .[pytorch]
+# container already has CUDA 11.3 so can directly install these with pip, hopefully?
+RUN pip install torch == 1.12.1 torchvision == 0.13.2 torchaudio == 0.12.1
+RUN pip install -U .[pytorch_gpu]
 
 # install zoobot package code
 COPY . .

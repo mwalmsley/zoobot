@@ -1,14 +1,10 @@
 import logging
 import os
 
-import pandas as pd
-import numpy as np
-
 from galaxy_datasets import gz_rings
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.training import finetune
-from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared.schemas import gz_rings_schema
 
@@ -26,8 +22,6 @@ This currently uses unpublished (hence private, for now) GZ Rings data (collecte
 if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
-
-
 
     schema = gz_rings_schema
 
@@ -90,17 +84,7 @@ if __name__ == '__main__':
         }
     }
 
-    model = define_model.ZoobotLightningModule.load_from_checkpoint(
-        checkpoint_loc)  # or .best_model_path, eventually
-
-    """
-    Model:  ZoobotLightningModule(
-    (train_accuracy): Accuracy()
-    (val_accuracy): Accuracy()
-    (model): Sequential(
-      (0): EfficientNet(
-    """
-    encoder = model.get_submodule('model.0')  # includes avgpool and head
+    encoder = finetune.load_encoder(checkpoint_loc)
 
     # key method
     _, model = finetune.run_finetuning(

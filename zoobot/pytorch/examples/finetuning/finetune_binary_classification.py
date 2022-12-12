@@ -5,7 +5,7 @@ import pandas as pd
 
 from zoobot.pytorch.training import finetune
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
-from zoobot.pytorch.estimators import define_model
+
 
 if __name__ == '__main__':
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
       batch_size=32
     )
 
-    datamodule.setup()
+    # datamodule.setup()
     # for images, labels in datamodule.train_dataloader():
     #   print(images.shape)
     #   print(labels.shape)
@@ -49,18 +49,9 @@ if __name__ == '__main__':
         }
     }
 
-    model = define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_loc)  # or .best_model_path, eventually
+    encoder = finetune.load_encoder(checkpoint_loc)
 
-    """
-    Model:  ZoobotLightningModule(
-    (train_accuracy): Accuracy()
-    (val_accuracy): Accuracy()
-    (model): Sequential(
-      (0): EfficientNet(
-    """
-    encoder = model.get_submodule('model.0')  # includes avgpool and head
-
-    best_checkpoint_path, _model = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
+    _model, best_checkpoint_path = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
 
     # can now use this model or saved checkpoint to make predictions on new data. Well done!
 

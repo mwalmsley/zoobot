@@ -30,8 +30,8 @@ class GenericLightningModule(pl.LightningModule):
 
     def setup_metrics(self):
         # these are ignored unless output dim = 2
-        self.train_accuracy = Accuracy()
-        self.val_accuracy = Accuracy()
+        self.train_accuracy = Accuracy(task='binary')
+        self.val_accuracy = Accuracy(task='binary')
         self.log_on_step = False
         # self.log_on_step is useful for debugging, but slower - best when log_every_n_steps is fairly large
 
@@ -83,26 +83,38 @@ class GenericLightningModule(pl.LightningModule):
 
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.learning_rate, betas=self.betas)  
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate, betas=self.betas)  
+        if self.scheduler_params.get('name', None) == 'plateau':
+            logging.info(f'Using Plateau scheduler with {self.scheduler_params}')
+            # TODO could generalise this if needed
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+                optimizer, 
+                min_lr=1e-6,
+                patience=self.scheduler_params.get('patience', 5)
+            )
+            return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/epoch_loss'}
+        else:
+            logging.info('No scheduler used')
+            return optimizer  # no scheduler
 
 
     def log_outputs(self, outputs, step_name):
-        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True)
+        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True, sync_dist=True)
         if self.log_on_step:
             # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
             self.log(
-                "{}/step_loss".format(step_name), outputs['loss'], on_epoch=False, on_step=True, prog_bar=True, logger=True)
+                "{}/step_loss".format(step_name), outputs['loss'], on_epoch=False, on_step=True, prog_bar=True, logger=True, sync_dist=True)
         if outputs['predictions'].shape[1] == 2:  # will only do for binary classifications
             # logging.info(predictions.shape, labels.shape)
             self.log(
-                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True)
+                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True, sync_dist=True)
 
 
     def log_loss_per_question(self, multiq_loss, prefix):
         # log questions individually
         # TODO need schema attribute or similar to have access to question names, this will do for now
         for question_n in range(multiq_loss.shape[1]):
-            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False)
+            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, sync_dist=True)
 
 
 class ZoobotLightningModule(GenericLightningModule):
@@ -123,7 +135,8 @@ class ZoobotLightningModule(GenericLightningModule):
         drop_connect_rate=0.2,
         architecture_name="efficientnet",  # recently changed from model_architecture
         learning_rate=1e-3,  # PyTorch default
-        betas=(0.9, 0.999)  # PyTorch default
+        betas=(0.9, 0.999),  # PyTorch default
+        scheduler_params={}  # no scheduler by default
         ):
 
         # now, finally, can pass only standard variables as hparams to save
@@ -140,8 +153,10 @@ class ZoobotLightningModule(GenericLightningModule):
         logging.info('Generic __init__ complete - moving to Zoobot __init__')
 
         # set attributes for learning rate, betas, used by self.configure_optimizers()
+        # TODO refactor to optimizer params
         self.learning_rate = learning_rate
         self.betas = betas
+        self.scheduler_params = scheduler_params
 
         # define model architecture
         get_architecture, representation_dim = select_base_architecture_func_from_name(architecture_name)

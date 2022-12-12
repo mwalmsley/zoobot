@@ -77,7 +77,6 @@ if __name__ == '__main__':
             'accelerator': accelerator
         },
         'finetune': {
-            'encoder_dim': 1280,
             'n_epochs': 100,
             'n_layers': 2,
             'label_dim': len(schema.label_cols),
@@ -90,17 +89,7 @@ if __name__ == '__main__':
     # TODO not yet made public
     ckpt_loc = os.path.join(
         repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
-    model = define_model.ZoobotLightningModule.load_from_checkpoint(
-        ckpt_loc)  # or .best_model_path, eventually
-
-    """
-    Model:  ZoobotLightningModule(
-    (train_accuracy): Accuracy()
-    (val_accuracy): Accuracy()
-    (model): Sequential(
-      (0): EfficientNet(
-    """
-    encoder = model.get_submodule('model.0')  # includes avgpool and head
+    encoder = finetune.load_encoder(ckpt_loc)
 
     save_dir = os.path.join(
         repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
@@ -110,7 +99,7 @@ if __name__ == '__main__':
     logger = WandbLogger(project='finetune', name='full_tree_example')
 
     # key method
-    _, model = finetune.run_finetuning(
+    model, _ = finetune.run_finetuning(
         config, encoder, datamodule, save_dir=save_dir, logger=logger)
 
     # now save predictions on test set to evaluate performance

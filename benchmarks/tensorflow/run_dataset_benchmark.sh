@@ -8,26 +8,41 @@
 #SBATCH --exclusive   # only one task per node
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task=24
-#SBATCH --exclude=compute-0-7,compute-0-5,compute-0-1,compute-0-0
+#SBATCH --exclude=compute-0-0
 pwd; hostname; date
 
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
+# export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
+export LD_LIBRARY_PATH=/share/nas2/walml/miniconda3/envs/zoobot38_tf/lib/
+
 
 nvidia-smi
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
-PYTHON=/share/nas2/walml/miniconda3/envs/zoobot/bin/python
-DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
+PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_tf/bin/python
 
-RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
-EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/tensorflow/dr5
+
+if  [ "$DATASET" = "gz_decals_dr5" ]; 
+then
+    DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
+    RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
+    EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/tensorflow/dr5
+fi
+
+if [ "$DATASET" = "gz_evo" ]; 
+then
+    DATA_DIR=/share/nas2/walml/repos/_data
+    RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
+    EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/tensorflow/evo
+fi
+
 
 ARCHITECTURE='efficientnet'
 BATCH_SIZE=256
 
-echo $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_decals_dr5_splits.py \
+echo $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
+    --dataset $DATASET \
     --architecture $ARCHITECTURE \
     --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
@@ -38,9 +53,10 @@ echo $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_decals_dr5_splits.py \
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
 
-$PYTHON $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_decals_dr5_splits.py \
+$PYTHON $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
+    --dataset $DATASET \
     --architecture $ARCHITECTURE \
     --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \

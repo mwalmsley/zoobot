@@ -16,6 +16,7 @@ import torchmetrics as tm
 
 from zoobot.pytorch.estimators import efficientnet_custom
 from zoobot.pytorch.training import losses
+from zoobot.pytorch.estimators import define_model
 
 # https://discuss.pytorch.org/t/how-to-freeze-bn-layers-while-training-the-rest-of-network-mean-and-var-wont-freeze/89736/7
 # I do this recursively and only for BatchNorm2d (not dropout, which I still want active)
@@ -34,8 +35,8 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
     def __init__(
         self,
         encoder: pl.LightningModule,
-        encoder_dim: int,
         label_dim: int,
+        encoder_dim=1280,  # as per current Zooot
         n_epochs=100,  # TODO early stopping
         n_layers=0,  # how many layers deep to FT
         batch_size=1024,
@@ -83,9 +84,9 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
             self.head = LinearClassifier(input_dim=encoder_dim, output_dim=label_dim, dropout_prob=self.dropout_prob)
             self.label_smoothing = 0.1 if self.freeze else 0
             self.loss = partial(cross_entropy_loss, label_smoothing=self.label_smoothing)
-            self.train_acc = tm.Accuracy(average="micro", threshold=0)
-            self.val_acc = tm.Accuracy(average="micro", threshold=0)
-            self.test_acc = tm.Accuracy(average="micro", threshold=0)
+            self.train_acc = tm.Accuracy(task='binary', average="micro")
+            self.val_acc = tm.Accuracy(task='binary', average="micro")
+            self.test_acc = tm.Accuracy(task='binary', average="micro")
         elif label_mode in ['counts', 'count']:
             logging.info('Using dropout+dirichlet head and dirichlet (count) loss')
             self.head = torch.nn.Sequential(
@@ -196,7 +197,7 @@ class LinearClassifier(torch.nn.Module):
     def forward(self, x):
         x = self.dropout(x)
         x = self.linear(x)
-        return F.softmax(x, dim=1)
+        return F.softmax(x, dim=1)[:, 0]
         # loss should be F.cross_entropy
 
 
@@ -210,7 +211,34 @@ def dirichlet_loss(y, y_pred, question_index_groups):
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
 
-def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
+def run_finetuning(custom_config, encoder, datamodule, save_dir, logger=None):
+
+    default_config = {
+      'finetune': {
+          'label_dim': 2,
+          'label_mode': 'classification',
+          'n_epochs': 100,
+          'prog_bar': True
+      },
+      'checkpoint': {
+          'file_template': "{epoch}",
+          'save_top_k': 1
+      },
+      'early_stopping': {
+          'patience': 10
+      },
+      'trainer': {
+          'devices': None,
+          'accelerator': 'cpu'
+        },
+    }
+
+    # config is not nested, just key:dict
+    config = default_config.copy()
+    for key, value in custom_config.items():
+        assert isinstance(key, str)
+        assert isinstance(value, dict)
+        config[key].update(value)  # inplace
 
     checkpoint_callback = ModelCheckpoint(
         monitor='finetuning/val_loss',
@@ -246,15 +274,23 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
     # when ready (don't peek often, you'll overfit)
     # trainer.test(model, dataloaders=datamodule)
 
-    return checkpoint_callback.best_model_path, model
+    return model, checkpoint_callback.best_model_path
 
 
 
 
+def load_encoder(checkpoint_loc: str) -> pl.LightningModule:
 
-
-
-
+    model = define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_loc)  # or .best_model_path, eventually
+    """
+    Model:  ZoobotLightningModule(
+    (train_accuracy): Accuracy()
+    (val_accuracy): Accuracy()
+    (model): Sequential(
+      (0): EfficientNet(
+    """
+    encoder = model.get_submodule('model.0')  # includes avgpool and head
+    return encoder
 
 
 
@@ -291,12 +327,12 @@ def run_finetuning(config, encoder, datamodule, save_dir, logger=None):
 Sequential(
   (0): MBConv(
     (block): Sequential(
-      (0): ConvNormActivation(
+      (0): Conv2dNormActivation(
         (0): Conv2d(80, 480, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(480, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
       )
-      (1): ConvNormActivation(
+      (1): Conv2dNormActivation(
         (0): Conv2d(480, 480, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=480, bias=False)
         (1): BatchNorm2d(480, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
@@ -308,7 +344,7 @@ Sequential(
         (activation): SiLU(inplace=True)
         (scale_activation): Sigmoid()
       )
-      (3): ConvNormActivation(
+      (3): Conv2dNormActivation(
         (0): Conv2d(480, 112, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
       )
@@ -317,12 +353,12 @@ Sequential(
   )
   (1): MBConv(
     (block): Sequential(
-      (0): ConvNormActivation(
+      (0): Conv2dNormActivation(
         (0): Conv2d(112, 672, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
       )
-      (1): ConvNormActivation(
+      (1): Conv2dNormActivation(
         (0): Conv2d(672, 672, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=672, bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
@@ -334,7 +370,7 @@ Sequential(
         (activation): SiLU(inplace=True)
         (scale_activation): Sigmoid()
       )
-      (3): ConvNormActivation(
+      (3): Conv2dNormActivation(
         (0): Conv2d(672, 112, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
       )
@@ -343,12 +379,12 @@ Sequential(
   )
   (2): MBConv(
     (block): Sequential(
-      (0): ConvNormActivation(
+      (0): Conv2dNormActivation(
         (0): Conv2d(112, 672, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
       )
-      (1): ConvNormActivation(
+      (1): Conv2dNormActivation(
         (0): Conv2d(672, 672, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2), groups=672, bias=False)
         (1): BatchNorm2d(672, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         (2): SiLU(inplace=True)
@@ -360,7 +396,7 @@ Sequential(
         (activation): SiLU(inplace=True)
         (scale_activation): Sigmoid()
       )
-      (3): ConvNormActivation(
+      (3): Conv2dNormActivation(
         (0): Conv2d(672, 112, kernel_size=(1, 1), stride=(1, 1), bias=False)
         (1): BatchNorm2d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
       )
