@@ -93,13 +93,13 @@ Download the code using git:
 
 And then pick one of the three commands below to install Zoobot and either PyTorch or TensorFlow
 
-    # Zoobot with PyTorch and a GPU. Requires CUDA 11.3 - see above
+    # Zoobot with PyTorch and a GPU. Requires CUDA 11.3.
     pip install -e "zoobot[pytorch_cu113]" --extra-index-url https://download.pytorch.org/whl/cu113
 
-    # OR Zoobot with PyTorch, no CUDA/GPU
-    pip install -e "zoobot[pytorch_cpu]" torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cpu
+    # OR Zoobot with PyTorch and no GPU
+    pip install -e "zoobot[pytorch_cpu]" --extra-index-url https://download.pytorch.org/whl/cpu
 
-    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2 - see above
+    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2.
     pip install -e "zoobot[tensorflow]
 
 
