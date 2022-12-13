@@ -108,8 +108,8 @@ def run_finetuning(config, encoder, train_dataset, val_dataset, test_dataset, sa
 def linear_classifier(input_dim, output_dim):
     return tf.keras.Sequential([
       # TODO move pooling
-      layers.InputLayer(input_shape=(input_dim)),  # base model dim after GlobalAveragePooling (ignoring batch)
-      layers.Dense(output_dim, name='logits')  # output should be N neurons w/ softmax for N-class classification
+      tf.keras.layers.InputLayer(input_shape=(input_dim)),  # base model dim after GlobalAveragePooling (ignoring batch)
+      tf.keras.layers.Dense(output_dim, name='logits')  # output should be N neurons w/ softmax for N-class classification
       # layers.Dense(3, activation="softmax", name="softmax_output")  # ...or 
     ])
 
