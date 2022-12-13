@@ -72,13 +72,13 @@ Next, or if you don't need a GPU, install Zoobot itself.
 
 Install PyTorch 1.12.1 or Tensorflow 2.10.0 and compatible CUDA drivers. I highly recommend using [conda](https://docs.conda.io/en/latest/miniconda.html) to do this. Conda will handle both creating a new virtual environment (`conda create`) and installing CUDA (`cudatoolkit`, `cudnn`)
 
-PyTorch 1.12.1 with CUDA 11.3:
+CUDA 11.3 for PyTorch:
 
     conda create --name zoobot38_torch python==3.8
     conda activate zoobot38_torch
-    conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.3 -c pytorch
+    conda install cudatoolkit=10.2
 
-or TensorFlow 2.10.0 with CUDA 11.2:
+CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
 
     conda create --name zoobot38_tf python==3.8
     conda activate zoobot38_tf
@@ -91,14 +91,20 @@ Download the code using git:
 
     git clone git@github.com:mwalmsley/zoobot.git
 
+And then pick one of the three commands below to install Zoobot and either PyTorch or TensorFlow
+
+    # Zoobot with PyTorch and a GPU. Requires CUDA 11.3 - see above
+    pip install -e "zoobot[pytorch_cu113]" --extra-index-url https://download.pytorch.org/whl/cu113
+
+    # OR Zoobot with PyTorch, no CUDA/GPU
+    pip install -e "zoobot[pytorch_cpu]" torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cpu
+
+    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2 - see above
+    pip install -e "zoobot[tensorflow]
+
+
 And then install the downloaded Zoobot code using pip [editable mode](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs)...
 
-    pip install -e "zoobot[option]"
-
-...replacing `option` with one of the following:
-
-- `pytorch_cpu` or `tensorflow_cpu` if you are *not* using a GPU. Installs PyTorch/TensorFlow.
-- `pytorch_gpu` or `tensorflow_gpu` if you *are* using a GPU. Does not install PyTorch/TensorFlow/CUDA.
 
 To use a GPU, you must have already installed PyTorch or TensorFlow with a compatible CUDA version. Follow the steps above.
 
