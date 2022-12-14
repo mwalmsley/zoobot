@@ -50,7 +50,7 @@ setuptools.setup(
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
-            'tensorflow_probability >= 0.18.0',
+            'tensorflow_probability == 0.18.0',  # 0.19 requires tf 2.11
             'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
         # for GPU, you will also need cudatoolkit=11.2 and cudnn=8.1.0 (note - 11.3 NOT supported by TF)

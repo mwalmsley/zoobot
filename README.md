@@ -76,7 +76,7 @@ CUDA 11.3 for PyTorch:
 
     conda create --name zoobot38_torch python==3.8
     conda activate zoobot38_torch
-    conda install cudatoolkit=10.2
+    conda install -c conda-forge cudatoolkit=11.3
 
 CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
 
