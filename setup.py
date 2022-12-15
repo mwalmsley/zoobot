@@ -26,7 +26,7 @@ setuptools.setup(
             # A100 GPU currently only seems to support cuda 11.3 on manchester cluster, let's stick with this version for now
             # very latest version wants cuda 11.6
             'torch == 1.12.1+cpu',
-            'torchvision == 0.13.2+cpu',
+            'torchvision == 0.13.1+cpu',
             'torchaudio == 0.12.1',
             'pytorch-lightning==1.8.3.post1',  # tensorboard/protobuf issue fixed now
             'simplejpeg',
@@ -39,7 +39,7 @@ setuptools.setup(
         # https://pytorch.org/get-started/previous-versions/#v1121
         'pytorch_cu113': [
             'torch == 1.12.1+cu113',
-            'torchvision == 0.13.2+cu113',
+            'torchvision == 0.13.1+cu113',
             'torchaudio == 0.12.1',
             'pytorch-lightning==1.8.3.post1',
             'simplejpeg',
