@@ -106,7 +106,8 @@ if __name__ == '__main__':
     if args.debug:
         download = False
     else:
-        download = True
+        # download = True  # for first use
+        download = False  # for speed afterwards
 
     if args.dataset == 'gz_decals_dr5':
         schema, (train_catalog, val_catalog, test_catalog) = get_gz_decals_dr5_benchmark_dataset(args.data_dir, random_state, download=download)
