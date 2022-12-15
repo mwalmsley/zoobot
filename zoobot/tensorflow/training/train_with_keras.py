@@ -214,7 +214,7 @@ def train(
 
     model.compile(
         loss=loss,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3, beta_1=0.9, beta_2=0.999),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=3e-4, beta_1=0.9, beta_2=0.999),
         metrics=extra_metrics,
         jit_compile=False  # don't use XLA, it fails on multi-GPU. Might consider on one GPU.
     )
@@ -233,7 +233,7 @@ def train(
         val_dataset,
         test_dataset,
         eager=eager,
-        verbose=2
+        verbose=1
     )
 
     return best_trained_model

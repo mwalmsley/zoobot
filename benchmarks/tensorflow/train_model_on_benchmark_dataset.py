@@ -38,8 +38,8 @@ def get_gz_evo_benchmark_dataset(data_dir, random_state, download=False, debug=F
 
     from foundation.datasets import mixed  # not yet public. import will fail if you're not me.
 
-    # temporarily, everything *but* hubble
-    # datasets=['gz_desi', 'gz_candels', 'gz2', 'gz_rings']
+    # temporarily, everything *but* hubble, for Ben
+    datasets = ['gz_desi', 'gz_candels', 'gz2', 'gz_rings']
 
     _, (temp_train_catalog, temp_val_catalog, _) = mixed.everything_all_dirichlet_with_rings(data_dir, debug, download=download, use_cache=True, datasets=datasets)
     canonical_train_catalog = pd.concat([temp_train_catalog, temp_val_catalog], axis=0)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
         eager=args.eager,
         gpus=args.gpus,
         epochs=epochs,
-        dropout_rate=0.2,
+        dropout_rate=0.5,
         color=args.color,
         resize_after_crop=args.resize_after_crop,
         mixed_precision=args.mixed_precision,
