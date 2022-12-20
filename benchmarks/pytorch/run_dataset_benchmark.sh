@@ -48,7 +48,7 @@ ARCHITECTURE='efficientnet'
 # b4: 64 is max for dual A100 with MP. Multi-node should allow more, but currently OOM - maybe nodes need a restart?
 BATCH_SIZE=32  
 
-echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
+echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --dataset $DATASET \
@@ -63,7 +63,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
 
-srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
+srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --dataset $DATASET \
