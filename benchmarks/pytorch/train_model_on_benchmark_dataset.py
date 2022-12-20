@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     if args.wandb:
         wandb_logger = WandbLogger(
-            project='zoobot-benchmarks-{args.dataset}',
+            project=f'zoobot-benchmarks-{args.dataset}',
             name=os.path.basename(args.save_dir),
             log_model=False
         )
