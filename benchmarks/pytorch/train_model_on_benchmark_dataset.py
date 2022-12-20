@@ -49,6 +49,13 @@ if __name__ == '__main__':
         # log the rest to help debug
         logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
 
+    if args.debug:
+        download = False
+    else:
+        # download = True  # for first use
+        download = False  # for speed afterwards
+
+
     if args.dataset == 'gz_decals_dr5':
         schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_decals_dr5_benchmark_dataset(args.data_dir, random_state, download=download)
     elif args.dataset == 'gz_evo':
