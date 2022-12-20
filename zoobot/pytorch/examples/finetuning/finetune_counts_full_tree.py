@@ -79,14 +79,14 @@ if __name__ == '__main__':
             'save_top_k': 1
         },
         'early_stopping': {
-            'patience': 15
+            'patience': 10
         },
         'trainer': {
             'devices': devices,
             'accelerator': accelerator
         },
         'finetune': {
-            'n_epochs': 1,
+            'n_epochs': 100,
             'n_layers': 2,
             'label_dim': len(schema.label_cols),
             'label_mode': 'count',
