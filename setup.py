@@ -25,8 +25,8 @@ setuptools.setup(
         'pytorch_cpu': [
             # A100 GPU currently only seems to support cuda 11.3 on manchester cluster, let's stick with this version for now
             # very latest version wants cuda 11.6
-            'torch == 1.12.1',
-            'torchvision == 0.13.2',
+            'torch == 1.12.1+cpu',
+            'torchvision == 0.13.1+cpu',
             'torchaudio == 0.12.1',
             'pytorch-lightning==1.8.3.post1',  # tensorboard/protobuf issue fixed now
             'simplejpeg',
@@ -37,28 +37,24 @@ setuptools.setup(
         # as above but without pytorch itself
         # for GPU, you will also need e.g. cudatoolkit=11.3, 11.6
         # https://pytorch.org/get-started/previous-versions/#v1121
-        'pytorch_gpu': [
+        'pytorch_cu113': [
+            'torch == 1.12.1+cu113',
+            'torchvision == 0.13.1+cu113',
+            'torchaudio == 0.12.1',
             'pytorch-lightning==1.8.3.post1',
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0'
         ],
-        'tensorflow_cpu': [
+        'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
-            'tensorflow_probability >= 0.18.0',
+            'tensorflow_probability == 0.18.0',  # 0.19 requires tf 2.11
             'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
-        # as above but without TensorFlow itself
         # for GPU, you will also need cudatoolkit=11.2 and cudnn=8.1.0 (note - 11.3 NOT supported by TF)
         # https://www.tensorflow.org/install/pip#step-by-step_instructions
-        'tensorflow_gpu': [
-            # 'tensorflow == 2.10.0',  # actually can install tensorflow like this but let's be consistent with Torch
-            'keras_applications',
-            'tensorflow_probability >= 0.18.0',
-            'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
-        ],
         'utilities': [
             'seaborn',  # for nice plots
             'boto3',    # for AWs s3 access
