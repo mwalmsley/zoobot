@@ -61,6 +61,7 @@ if __name__ == '__main__':
     train_catalog, val_catalog = train_test_split(train_and_val_catalog, test_size=0.1/0.7)
     test_catalog = df.query('in_test')
 
+    resize_after_crop = 300  # must match how checkpoint below was trained
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
         train_catalog=train_catalog,
@@ -68,7 +69,7 @@ if __name__ == '__main__':
         test_catalog=test_catalog,
         batch_size=batch_size,
         # uses default_augs
-        resize_after_crop=380  # must match how checkpoint below was trained
+        resize_after_crop=resize_after_crop  
     )
     datamodule.setup()
 
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     # auto-split within datamodule. pull out again.
     test_catalog = datamodule.test_catalog
     assert len(test_catalog) > 0
-    datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': 300}
+    datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': resize_after_crop}
     trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
     predict_on_catalog.predict(
         test_catalog,
