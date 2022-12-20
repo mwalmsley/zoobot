@@ -6,7 +6,6 @@ import numpy as np
 
 from zoobot.pytorch.training import finetune
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
-from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared.schemas import cosmic_dawn_ortho_schema
 
@@ -33,14 +32,14 @@ if __name__ == '__main__':
         repo_dir = '/share/nas2/walml/repos'
         accelerator = 'gpu'
         devices = 1
-        batch_size = 128
+        batch_size = 64  
         prog_bar = False
         max_galaxies = None
     else:  # test locally
         repo_dir = '/home/walml/repos'
         accelerator = 'gpu'
         devices = None
-        batch_size = 32
+        batch_size = 16 # 32 with resize=224, 16 at 380
         prog_bar = True
         # max_galaxies = 256
         max_galaxies = None
@@ -59,8 +58,9 @@ if __name__ == '__main__':
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
         catalog=df,
-        batch_size=batch_size
+        batch_size=batch_size,
         # uses default_augs
+        resize_after_crop=380  # must match how checkpoint below was trained
     )
     datamodule.setup()
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
             'accelerator': accelerator
         },
         'finetune': {
-            'n_epochs': 100,
+            'n_epochs': 1,
             'n_layers': 2,
             'label_dim': len(schema.label_cols),
             'label_mode': 'count',
@@ -88,8 +88,9 @@ if __name__ == '__main__':
 
     # TODO not yet made public
     ckpt_loc = os.path.join(
-        repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
+        repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_31180/checkpoints/epoch=75-step=97508.ckpt')
     encoder = finetune.load_encoder(ckpt_loc)
+
 
     save_dir = os.path.join(
         repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     # auto-split within datamodule. pull out again.
     test_catalog = datamodule.test_catalog
     assert len(test_catalog) > 0
-    datamodule_kwargs = {'batch_size': batch_size}
+    datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': 380}
     trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
     predict_on_catalog.predict(
         test_catalog,

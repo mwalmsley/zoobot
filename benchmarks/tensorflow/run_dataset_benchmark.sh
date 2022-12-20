@@ -14,12 +14,10 @@ pwd; hostname; date
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 export LD_LIBRARY_PATH=/share/nas2/walml/miniconda3/envs/zoobot38_tf/lib/
 
-
 nvidia-smi
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_tf/bin/python
-
 
 if  [ "$DATASET" = "gz_decals_dr5" ]; 
 then

@@ -2,15 +2,11 @@ import logging
 import os
 import argparse
 
-from sklearn.model_selection import train_test_split
 from pytorch_lightning.loggers import WandbLogger
 import wandb
 
-from galaxy_datasets import gz_decals_5
-
-from galaxy_datasets.shared import label_metadata
-from zoobot.shared import schemas
 from zoobot.pytorch.training import train_with_pytorch_lightning
+from zoobot.shared import benchmark_datasets
 
 
 if __name__ == '__main__':
@@ -24,6 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--save-dir', dest='save_dir', type=str)
     parser.add_argument('--data-dir', dest='data_dir', type=str)
+    parser.add_argument('--dataset', dest='dataset', type=str, help='dataset to use, either "gz_decals_dr5" or "gz_evo"')
     parser.add_argument('--architecture', dest='architecture_name', default='efficientnet', type=str)
     parser.add_argument('--resize-after-crop', dest='resize_after_crop',
                         type=int, default=224)  # 380 from sweep
@@ -52,21 +49,13 @@ if __name__ == '__main__':
         # log the rest to help debug
         logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
 
-    # already manually seeding the random bits below. alternatively, can call:
-    # pl.seed_everything(random_state)
+    if args.dataset == 'gz_decals_dr5':
+        schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_decals_dr5_benchmark_dataset(args.data_dir, random_state, download=download)
+    elif args.dataset == 'gz_evo':
+        schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_evo_benchmark_dataset(args.data_dir, random_state, download=download)
+    else:
+        raise ValueError(f'Dataset {args.dataset} not recognised: should be "gz_decals_dr5" or "gz_evo"')
 
-    question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # decals dr5 only
-    dependencies = label_metadata.decals_ortho_dependencies
-    schema = schemas.Schema(question_answer_pairs, dependencies)
-    logging.info('Schema: {}'.format(schema))
-
-    # use the gz_decals() methods in galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
-    canonical_train_catalog, _ = gz_decals_5(root=args.data_dir, train=True, download=True)
-    canonical_test_catalog, _ = gz_decals_5(root=args.data_dir, train=False, download=True)
-
-    # crucial to seed this, either directly or with pl.seed_everything
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
-    test_catalog = canonical_test_catalog.copy()
 
     logging.info('First val galaxy: {}'.format(val_catalog.iloc[0]['id_str']))
 
@@ -83,7 +72,7 @@ if __name__ == '__main__':
 
     if args.wandb:
         wandb_logger = WandbLogger(
-            project='zoobot-benchmarks',
+            project='zoobot-benchmarks-{args.dataset}',
             name=os.path.basename(args.save_dir),
             log_model=False
         )
