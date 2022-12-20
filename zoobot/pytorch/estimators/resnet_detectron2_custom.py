@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     from zoobot.pytorch.training import losses
     from galaxy_datasets.shared import label_metadata
-from zoobot.shared import schemas
+    from zoobot.shared import schemas
     from zoobot.pytorch.estimators import define_model
 
     question_answer_pairs = label_metadata.decals_all_campaigns_ortho_pairs
