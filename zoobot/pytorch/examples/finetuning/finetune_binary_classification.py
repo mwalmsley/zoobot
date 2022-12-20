@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     encoder = finetune.load_encoder(checkpoint_loc)
 
-    _model, best_checkpoint_path = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
+    _finetuned_model, best_checkpoint_path = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
 
     # can now use this model or saved checkpoint to make predictions on new data. Well done!
 
