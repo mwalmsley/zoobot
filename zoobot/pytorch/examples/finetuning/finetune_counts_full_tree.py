@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     # TODO not yet made public
     ckpt_loc = os.path.join(
-        repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_31180/checkpoints/epoch=75-step=97508.ckpt')
+        repo_dir, 'gz-decals-classifiers/results/pytorch/desi/_desi_pytorch_v4_posthp_train_all_test_dr8_m1/checkpoints/epoch=48-step=215159.ckpt')
     encoder = finetune.load_encoder(ckpt_loc)
 
 
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     # auto-split within datamodule. pull out again.
     test_catalog = datamodule.test_catalog
     assert len(test_catalog) > 0
-    datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': 380}
+    datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': 300}
     trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
     predict_on_catalog.predict(
         test_catalog,
