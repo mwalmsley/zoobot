@@ -27,7 +27,8 @@ if __name__ == '__main__':
     import numpy as np
 
     from zoobot.pytorch.training import losses
-    from zoobot.shared import label_metadata, schemas
+    from galaxy_datasets.shared import label_metadata
+from zoobot.shared import schemas
     from zoobot.pytorch.estimators import define_model
 
     channels = 3

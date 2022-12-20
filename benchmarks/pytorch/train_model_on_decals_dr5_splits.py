@@ -8,7 +8,8 @@ import wandb
 
 from galaxy_datasets import gz_decals_5
 
-from zoobot.shared import label_metadata, schemas
+from galaxy_datasets.shared import label_metadata
+from zoobot.shared import schemas
 from zoobot.pytorch.training import train_with_pytorch_lightning
 
 
