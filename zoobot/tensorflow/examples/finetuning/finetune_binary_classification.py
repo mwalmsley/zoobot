@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # TODO you can update these to suit own data
     label_cols = ['ring', 'not_ring']  # name of column in catalog with binary (0 or 1) labels for your classes
     catalog_loc = os.path.join(zoobot_dir, 'data/example_ring_catalog_basic.csv')  # includes label_cols column (here, 'ring') with labels
-    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_tf_gr_18845/checkpoint')
+    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_tf_gr_31253/checkpoint')
     save_dir = os.path.join(zoobot_dir, 'results/tensorflow/finetune/finetune_binary_classification')
 
     img_size = 224
@@ -51,6 +51,7 @@ if __name__ == '__main__':
     test_dataset = get_image_dataset(
         test_image_paths, labels=test_labels, requested_img_size=img_size, greyscale=True
     )
+
 
     # specify augmentations to use
     train_transforms = default_transforms()
@@ -100,5 +101,20 @@ if __name__ == '__main__':
     # print(encoder.get_layer('headless_efficientnet').get_layer('efficientnet-b0').summary())
 
     
-    finetune.run_finetuning(config, encoder, train_dataset, val_dataset, test_dataset, save_dir)
+    model = finetune.run_finetuning(config, encoder, train_dataset, val_dataset, test_dataset, save_dir)
     # can now use this saved checkpoint to make predictions on new data. Well done!
+
+    from zoobot.tensorflow.predictions import predict_on_dataset
+
+    prediction_dataset = get_image_dataset(
+        test_image_paths,  # TODO replace these with paths to images you want to make predictions on
+        include_id_str=True,  # sets dataset to yield batches of (image, id_str) or (image, label, id_str)
+        labels=None, # labels=None, plus the above include_id_str=True, means dataset will yield (image, id_str)
+        requested_img_size=img_size, greyscale=True
+    )
+    prediction_dataset = prediction_dataset.batch(32, drop_remainder=False)  # no other transforms needed
+    # for images, id_strs in prediction_dataset.take(1):
+    #     print(images.shape)
+    #     print(id_strs)
+
+    predict_on_dataset.predict(prediction_dataset, model, n_samples=1, label_cols=label_cols, save_loc=os.path.join(save_dir, 'predictions.csv'))

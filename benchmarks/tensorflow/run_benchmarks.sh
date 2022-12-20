@@ -10,11 +10,11 @@ SEED=$RANDOM
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
-sbatch --job-name=dr5_tf_min_$SEED --export=DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=dr5_tf_min_$SEED --export=DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED $TRAIN_JOB
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
 sbatch --job-name=dr5_tf_gr_$SEED --export=DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
-sbatch --job-name=dr5_tf_co_$SEED --export=DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=dr5_tf_co_$SEED --export=DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
 
 # new - all galaxies
 # sbatch --job-name=evo_tf_gr_$SEED --export=DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
