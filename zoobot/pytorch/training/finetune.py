@@ -41,6 +41,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         n_layers=0,  # how many layers deep to FT
         batch_size=1024,
         lr_decay=0.75,
+        learning_rate=1e-4,
         dropout_prob=0.5,
         freeze_batchnorm=True,
         prog_bar=True,
@@ -65,6 +66,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         self.freeze = True if n_layers == 0 else False
 
         self.batch_size = batch_size
+        self.learning_rate = learning_rate
         self.lr_decay = lr_decay
         self.dropout_prob = dropout_prob
         self.n_epochs = n_epochs
@@ -156,10 +158,10 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         if self.freeze:
             params = self.head.parameters()
             # using adam not adamW for now - TODO config/hparam?
-            return torch.optim.Adam(params, lr=1e-4)
+            return torch.optim.Adam(params, lr=self.learning_rate)
         else:
             # lr = 0.001 * self.batch_size / 256
-            lr = 1e-4
+            lr = self.learning_rate
             params = [{"params": self.head.parameters(), "lr": lr}]
 
             # this bit is specific to Zoobot EffNet
