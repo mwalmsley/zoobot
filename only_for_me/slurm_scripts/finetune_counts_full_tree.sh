@@ -16,4 +16,4 @@ nvidia-smi
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_torch/bin/python
 
-$PYTHON $ZOOBOT_DIR/zoobot/pytorch/examples/finetune_counts_full_tree.py
+$PYTHON $ZOOBOT_DIR/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py
