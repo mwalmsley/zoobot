@@ -3,6 +3,7 @@ import os
 
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from zoobot.pytorch.training import finetune
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
@@ -48,16 +49,23 @@ if __name__ == '__main__':
     # pd.DataFrame with columns 'id_str' (unique id), 'file_loc' (path to image),
     # and label_cols (e.g. smooth-or-featured-cd_smooth) with count responses
     df = pd.read_parquet(os.path.join(
-        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_ortho_with_file_locs.parquet'))
+        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_ortho_with_file_locs_and_coords.parquet'))
     # sometimes auto-cast to float, which causes issue when saving hdf5
     df['id_str'] = df['id_str'].astype(str)
 
     if max_galaxies is not None:
         df = df.sample(max_galaxies)
 
+    # temporary manual split based on RA - see cosmic-dawn_early_catalog.py
+    train_and_val_catalog = df[~df['in_test']]
+    train_catalog, val_catalog = train_test_split(train_and_val_catalog, test_size=0.1/0.7)
+    test_catalog = df.query('in_test')
+
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
-        catalog=df,
+        train_catalog=train_catalog,
+        val_catalog=val_catalog,
+        test_catalog=test_catalog,
         batch_size=batch_size,
         # uses default_augs
         resize_after_crop=380  # must match how checkpoint below was trained
