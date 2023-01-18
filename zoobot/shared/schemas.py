@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from zoobot.shared import label_metadata
+from galaxy_datasets.shared import label_metadata
 
 
 class Question():

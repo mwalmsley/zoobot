@@ -26,7 +26,13 @@ def predict(ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_co
 
     # to make sure images and id_str line up, load id_str back out from dataset
     id_str_ds = ds.map(lambda _, id_str: id_str)
-    image_id_strs = [id_str.numpy().decode('utf-8') for id_str_batch in id_str_ds for id_str in id_str_batch]
+    try:
+        image_id_strs = [id_str.numpy().decode('utf-8') for id_str_batch in id_str_ds for id_str in id_str_batch]
+    except AttributeError:
+        raise AttributeError(
+            'Dataset does not appear to be yielding batches of (images, id strings). \
+            Check with dataset.take(1). Make sure you create the dataset with include_id_str=True and labels=None'
+        )
 
     logging.info('Beginning predictions')
     start = datetime.datetime.fromtimestamp(time.time())

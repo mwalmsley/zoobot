@@ -48,8 +48,10 @@ def prediction_to_row(prediction: np.ndarray, id_str: str, label_cols: List):
     for n in range(len(label_cols)):
         answer = label_cols[n]
         answer_pred = prediction[n].astype(float)  # (n_samples,) shape
-        if len(answer_pred) == 1:  # i.e. if only one sample
-            row[answer + '_pred'] = answer_pred.squeeze()  # converts to scalar 
+        if isinstance(answer_pred, float) or isinstance(answer_pred, np.float64):
+            row[answer + '_pred'] = answer_pred  # it's a scalar already, life is good
+        elif len(answer_pred) == 1:  # i.e. if only one sample
+            row[answer + '_pred'] = answer_pred.squeeze()  # it's a scalar in disguise, make it a scalar 
         else:
-            row[answer + '_pred'] = json.dumps(list(answer_pred))
+            row[answer + '_pred'] = json.dumps(list(answer_pred))  # it's not a scalar, write as json
     return row

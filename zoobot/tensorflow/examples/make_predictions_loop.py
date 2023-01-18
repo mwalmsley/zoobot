@@ -9,7 +9,7 @@ from zoobot.shared import schemas
 from zoobot.tensorflow.data_utils import image_datasets
 from zoobot.tensorflow.estimators import define_model, preprocess
 from zoobot.tensorflow.predictions import predict_on_tfrecords, predict_on_dataset
-from zoobot.shared import label_metadata
+from galaxy_datasets.shared import label_metadata
 
 """
 This script is the more advanced (yet more useful) version of make_predictions.py

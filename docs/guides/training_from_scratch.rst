@@ -80,7 +80,8 @@ Most importantly, when training a model, your chosen ``schema`` is used to creat
     # when training a model
     # see zoobot/tensorflow/examples/train_model.py, see zoobot/pytorch/examples/train_model.py
 
-    from zoobot.shared import label_metadata, schemas
+    from galaxy_datasets.shared import label_metadata
+    from zoobot.shared import schemas
     from zoobot.tensorflow.training import losses  # or pytorch.training, equivalently
 
     # loading the dicts saved in label_metadata

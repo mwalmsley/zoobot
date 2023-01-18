@@ -3,10 +3,10 @@ import os
 
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from zoobot.pytorch.training import finetune
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
-from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared.schemas import cosmic_dawn_ortho_schema
 
@@ -33,14 +33,14 @@ if __name__ == '__main__':
         repo_dir = '/share/nas2/walml/repos'
         accelerator = 'gpu'
         devices = 1
-        batch_size = 128
+        batch_size = 64  
         prog_bar = False
         max_galaxies = None
     else:  # test locally
         repo_dir = '/home/walml/repos'
         accelerator = 'gpu'
         devices = None
-        batch_size = 32
+        batch_size = 16 # 32 with resize=224, 16 at 380
         prog_bar = True
         # max_galaxies = 256
         max_galaxies = None
@@ -49,18 +49,27 @@ if __name__ == '__main__':
     # pd.DataFrame with columns 'id_str' (unique id), 'file_loc' (path to image),
     # and label_cols (e.g. smooth-or-featured-cd_smooth) with count responses
     df = pd.read_parquet(os.path.join(
-        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_ortho_with_file_locs.parquet'))
+        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_ortho_with_file_locs_and_coords.parquet'))
     # sometimes auto-cast to float, which causes issue when saving hdf5
     df['id_str'] = df['id_str'].astype(str)
 
     if max_galaxies is not None:
         df = df.sample(max_galaxies)
 
+    # temporary manual split based on RA - see cosmic-dawn_early_catalog.py
+    train_and_val_catalog = df[~df['in_test']]
+    train_catalog, val_catalog = train_test_split(train_and_val_catalog, test_size=0.1/0.7)
+    test_catalog = df.query('in_test')
+
+    resize_after_crop = 300  # must match how checkpoint below was trained
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
-        catalog=df,
-        batch_size=batch_size
+        train_catalog=train_catalog,
+        val_catalog=val_catalog,
+        test_catalog=test_catalog,
+        batch_size=batch_size,
         # uses default_augs
+        resize_after_crop=resize_after_crop  
     )
     datamodule.setup()
 
@@ -70,7 +79,7 @@ if __name__ == '__main__':
             'save_top_k': 1
         },
         'early_stopping': {
-            'patience': 15
+            'patience': 10
         },
         'trainer': {
             'devices': devices,
@@ -88,8 +97,9 @@ if __name__ == '__main__':
 
     # TODO not yet made public
     ckpt_loc = os.path.join(
-        repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
+        repo_dir, 'gz-decals-classifiers/results/pytorch/desi/_desi_pytorch_v4_posthp_train_all_test_dr8_m1/checkpoints/epoch=48-step=215159.ckpt')
     encoder = finetune.load_encoder(ckpt_loc)
+
 
     save_dir = os.path.join(
         repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
@@ -107,7 +117,7 @@ if __name__ == '__main__':
     # auto-split within datamodule. pull out again.
     test_catalog = datamodule.test_catalog
     assert len(test_catalog) > 0
-    datamodule_kwargs = {'batch_size': batch_size}
+    datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': resize_after_crop}
     trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
     predict_on_catalog.predict(
         test_catalog,

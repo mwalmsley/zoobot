@@ -1,9 +1,8 @@
 import logging
 import os
 
-import pandas as pd
-
 from zoobot.pytorch.training import finetune
+from galaxy_datasets import demo_rings
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 
@@ -13,18 +12,29 @@ if __name__ == '__main__':
 
     zoobot_dir = '/home/walml/repos/zoobot'  # TODO set to directory where you cloned Zoobot
 
-    # TODO you can update these to suit own data
-    label_col = 'ring'  # name of column in catalog with binary (0 or 1) labels for your classes
-    label_cols = [label_col]  # To support more complicated labels, Zoobot expects a list of columns. A list with one element works fine.
-    catalog_loc = os.path.join(zoobot_dir, 'data/example_ring_catalog_basic.csv')  # includes label_col column (here, 'ring') with labels
-    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
-    save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
+    # load in catalogs of images and labels to finetune on
+    # each catalog should be a dataframe with columns of "id_str", "file_loc", and any labels
+    # here I'm using galaxy-datasets to download some premade data - check it out for examples
+    data_dir = '/home/walml/repos/galaxy-datasets/roots/demo_rings'
+    train_catalog, label_cols = demo_rings(root=data_dir, download=True, train=True)
+    test_catalog, _ = demo_rings(root=data_dir, download=True, train=False)
 
-    df = pd.read_csv(catalog_loc)
+
+    # wondering about "label_cols"? 
+    # This is a list of catalog columns which should be used as labels
+    # Here:   label_cols = ['ring']
+    # For binary classification, the label column should have binary (0 or 1) labels for your classes
+    # To support more complicated labels, Zoobot expects a list of columns. A list with one element works fine.
+   
+    # load a pretrained checkpoint saved here
+    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
+    
+    # save the finetuning results here
+    save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
 
     datamodule = GalaxyDataModule(
       label_cols=label_cols,
-      catalog=df,
+      catalog=train_catalog,
       batch_size=32
     )
 
@@ -51,7 +61,7 @@ if __name__ == '__main__':
 
     encoder = finetune.load_encoder(checkpoint_loc)
 
-    _model, best_checkpoint_path = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
+    _finetuned_model, best_checkpoint_path = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
 
     # can now use this model or saved checkpoint to make predictions on new data. Well done!
 
@@ -62,7 +72,7 @@ if __name__ == '__main__':
     from zoobot.pytorch.predictions import predict_on_catalog
 
     predict_on_catalog.predict(
-      df.sample(128),
+      test_catalog,
       finetuned_model,
       n_samples=1,
       label_cols=label_cols,
@@ -79,7 +89,7 @@ if __name__ == '__main__':
     predict_trainer = pl.Trainer(devices=1, max_epochs=-1)
     predict_datamodule = GalaxyDataModule(
       label_cols=None,  # important, else you will get "conv2d() received an invalid combination of arguments"
-      predict_catalog=df.sample(64),
+      predict_catalog=test_catalog,
       batch_size=32
     )
     preds = predict_trainer.predict(finetuned_model, predict_datamodule)

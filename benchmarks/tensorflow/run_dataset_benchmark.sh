@@ -14,12 +14,10 @@ pwd; hostname; date
 # export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/share/apps/cudnn_8_1_0/cuda/lib64
 export LD_LIBRARY_PATH=/share/nas2/walml/miniconda3/envs/zoobot38_tf/lib/
 
-
 nvidia-smi
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_tf/bin/python
-
 
 if  [ "$DATASET" = "gz_decals_dr5" ]; 
 then
@@ -37,14 +35,14 @@ fi
 
 
 ARCHITECTURE='efficientnet'
-BATCH_SIZE=256
+BATCH_SIZE=64  # equivalent to 32 on PyTorch, with 2 GPUs
 
 echo $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop 300 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \
@@ -58,7 +56,7 @@ $PYTHON $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_benchmark_dataset.py \
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop 300 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \

@@ -6,7 +6,8 @@ import pandas as pd
 import tensorflow as tf
 import wandb
 
-from zoobot.shared import label_metadata, schemas
+from galaxy_datasets.shared import label_metadata
+from zoobot.shared import schemas
 from zoobot.tensorflow.training import train_with_keras
 
 

@@ -28,21 +28,32 @@ export NCCL_DEBUG=INFO
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_torch/bin/python
-DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
 
-RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
-EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
+if  [ "$DATASET" = "gz_decals_dr5" ]; 
+then
+    DATA_DIR=/share/nas2/walml/repos/_data/gz_decals
+    RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
+    EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/dr5
+fi
 
-ARCHITECTURE='efficientnetb4'
+if [ "$DATASET" = "gz_evo" ]; 
+then
+    DATA_DIR=/share/nas2/walml/repos/_data
+    RESULTS_DIR=/share/nas2/walml/repos/gz-decals-classifiers/results
+    EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/evo
+fi
+
+ARCHITECTURE='efficientnet'
 # b0: 1024 is max for dual A100 GPU with MP. 512 single gpu or MP.
 # b4: 64 is max for dual A100 with MP. Multi-node should allow more, but currently OOM - maybe nodes need a restart?
-BATCH_SIZE=64  
+BATCH_SIZE=32  
 
-echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
+echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
+    --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 380 \
+    --resize-after-crop 300 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \
@@ -52,11 +63,12 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py 
     $MIXED_PRECISION_STRING \
     $DEBUG_STRING
 
-srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_decals_dr5_splits.py \
+srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
+    --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 380 \
+    --resize-after-crop 300 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \
