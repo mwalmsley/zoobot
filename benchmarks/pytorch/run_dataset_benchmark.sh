@@ -43,17 +43,16 @@ then
     EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/evo
 fi
 
+
 ARCHITECTURE='efficientnet'
-# b0: 1024 is max for dual A100 GPU with MP. 512 single gpu or MP.
-# b4: 64 is max for dual A100 with MP. Multi-node should allow more, but currently OOM - maybe nodes need a restart?
-BATCH_SIZE=32  
+BATCH_SIZE=256  
 
 echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 300 \
+    --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \

@@ -35,14 +35,14 @@ fi
 
 
 ARCHITECTURE='efficientnet'
-BATCH_SIZE=64  # equivalent to 32 on PyTorch, with 2 GPUs
+BATCH_SIZE=512  # equivalent to 256 on PyTorch, with 2 GPUs
 
 echo $ZOOBOT_DIR/benchmarks/tensorflow/train_model_on_benchmark_dataset.py \
     --save-dir $EXPERIMENT_DIR/$SLURM_JOB_NAME \
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 300 \
+    --resize-after-crop 224 \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --wandb \

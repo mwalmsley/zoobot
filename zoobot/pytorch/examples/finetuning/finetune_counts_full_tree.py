@@ -38,7 +38,7 @@ if __name__ == '__main__':
         max_galaxies = None
     else:  # test locally
         repo_dir = '/home/walml/repos'
-        accelerator = 'gpu'
+        accelerator = 'cpu'
         devices = None
         batch_size = 16 # 32 with resize=224, 16 at 380
         prog_bar = True
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     if max_galaxies is not None:
         df = df.sample(max_galaxies)
 
-    # temporary manual split based on RA - see cosmic-dawn_early_catalog.py
+    # temporary manual split based on RA - see gz-downloads repo, cosmic-dawn_early_catalog.py
     train_and_val_catalog = df[~df['in_test']]
     train_catalog, val_catalog = train_test_split(train_and_val_catalog, test_size=0.1/0.7)
     test_catalog = df.query('in_test')

@@ -23,10 +23,10 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', dest='dataset', type=str, help='dataset to use, either "gz_decals_dr5" or "gz_evo"')
     parser.add_argument('--architecture', dest='architecture_name', default='efficientnet', type=str)
     parser.add_argument('--resize-after-crop', dest='resize_after_crop',
-                        type=int, default=224)  # 380 from sweep
+                        type=int, default=224)
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--batch-size', dest='batch_size',
-                        default=256, type=int)  # 64 from sweep
+                        default=256, type=int)
     parser.add_argument('--gpus', dest='gpus', default=1, type=int)
     parser.add_argument('--nodes', dest='nodes', default=1, type=int)
     parser.add_argument('--mixed-precision', dest='mixed_precision',
@@ -110,7 +110,7 @@ if __name__ == '__main__':
         prefetch_factor=4,
         num_workers=11,  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
         random_state=random_state,
-        learning_rate=3e-4,  # new default, from sweep
+        learning_rate=1e-3,
     )
 
     wandb.finish()
