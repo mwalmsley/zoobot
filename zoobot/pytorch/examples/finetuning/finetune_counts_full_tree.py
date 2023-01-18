@@ -40,7 +40,7 @@ if __name__ == '__main__':
         repo_dir = '/home/walml/repos'
         accelerator = 'cpu'
         devices = None
-        batch_size = 16 # 32 with resize=224, 16 at 380
+        batch_size = 32 # 32 with resize=224, 16 at 380
         prog_bar = True
         # max_galaxies = 256
         max_galaxies = None
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # pd.DataFrame with columns 'id_str' (unique id), 'file_loc' (path to image),
     # and label_cols (e.g. smooth-or-featured-cd_smooth) with count responses
     df = pd.read_parquet(os.path.join(
-        repo_dir, 'zoobot/data/gz_cosmic_dawn_early_aggregation_ortho_with_file_locs_and_coords.parquet'))
+        repo_dir, 'zoobot/data/gz_cosmic_dawn_aggregation_latest_ortho_with_file_locs_and_coords.parquet'))
     # sometimes auto-cast to float, which causes issue when saving hdf5
     df['id_str'] = df['id_str'].astype(str)
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     train_catalog, val_catalog = train_test_split(train_and_val_catalog, test_size=0.1/0.7)
     test_catalog = df.query('in_test')
 
-    resize_after_crop = 300  # must match how checkpoint below was trained
+    resize_after_crop = 224  # must match how checkpoint below was trained
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
         train_catalog=train_catalog,
@@ -97,7 +97,8 @@ if __name__ == '__main__':
 
     # TODO not yet made public
     ckpt_loc = os.path.join(
-        repo_dir, 'gz-decals-classifiers/results/pytorch/desi/_desi_pytorch_v4_posthp_train_all_test_dr8_m1/checkpoints/epoch=48-step=215159.ckpt')
+        # repo_dir, 'gz-decals-classifiers/results/pytorch/desi/_desi_pytorch_v4_posthp_train_all_test_dr8_m1/checkpoints/epoch=48-step=215159.ckpt')  # bad hparams
+        repo_dir, 'gz-decals-classifiers/results/pytorch/desi/_desi_pytorch_v5_posthp_train_all_test_dr8_decals_hparams_m5/checkpoints/epoch=36-step=20313.ckpt')  # decals hparams
     encoder = finetune.load_encoder(ckpt_loc)
 
 
