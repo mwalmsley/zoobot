@@ -43,8 +43,6 @@ then
     EXPERIMENT_DIR=$RESULTS_DIR/benchmarks/pytorch/evo
 fi
 
-
-ARCHITECTURE='efficientnet'
 BATCH_SIZE=256  
 
 echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py \
