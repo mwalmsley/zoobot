@@ -17,10 +17,10 @@ SEED=$RANDOM
 # sbatch --job-name=dr5_py_co_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
 
 # new - all galaxies
-# sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 # and in color with resnet / no MP, for specific project
 # might need batch size = 128 to allow for no MP
-sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=resnet_torchvision,BATCH_SIZE=256,DATASET=gz_evo,COLOR_STRING=--color,GPUS=2,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=resnet_torchvision,BATCH_SIZE=256,DATASET=gz_evo,COLOR_STRING=--color,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 echo 'PyTorch jobs submitted'
