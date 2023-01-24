@@ -1,15 +1,17 @@
-
+import logging
 
 import torch
 import torchvision
 
 
-def get_resnet(input_channels, use_imagenet_weights=False, include_top=False):  # only colour supported
+def get_resnet(input_channels, use_imagenet_weights=False, include_top=False, **ignored_kwargs):  # only colour supported
     # https://pytorch.org/vision/stable/_modules/torchvision/models/resnet.html#resnet50 see here - could paste and adapt for greyscale if needed
     if not input_channels == 3:
         raise ValueError('torchvision resnet only supports color (without altering their code) - input_channels must be 3, not {}'.format(input_channels))
     assert include_top == False
     model_with_head = torchvision.models.resnet50(pretrained=use_imagenet_weights, progress=False)
+
+    logging.warning(f'get_resnet passed additional keyword arguments which could not be interpreted - these will be ignored. {ignored_kwargs}')
 
     modules = list(model_with_head.children())[:-1] # last layer is the linear layer (drop), penultimate is adaptive pooling (keep)
     modules.append(torch.nn.Flatten(1))
