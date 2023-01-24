@@ -19,7 +19,7 @@ SEED=$RANDOM
 # new - all galaxies
 # sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=efficientnet,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 
-# and in color with resnet, for specific project
-sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=resnet_torchvision,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,COLOR_STRING=--color,GPUS=2,SEED=$SEED $TRAIN_JOB
+# and in color with resnet / no MP, for specific project
+sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=resnet_torchvision,DATASET=gz_evo,COLOR_STRING=--color,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 echo 'PyTorch jobs submitted'
