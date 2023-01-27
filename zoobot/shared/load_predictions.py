@@ -83,7 +83,7 @@ def load_hdf5s(hdf5_locs: List):
                 logging.info('Using label columns {} from first hdf5 {}'.format(template_label_cols, loc))
             else:
                 these_label_cols = f['label_cols'].asstr()[:]
-                if these_label_cols != template_label_cols:
+                if any(these_label_cols != template_label_cols):
                     raise ValueError('Label columns {} of hdf5 {} do not match first label columns {}'.format(loc, f['label_cols'], template_label_cols))
 
 
