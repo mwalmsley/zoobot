@@ -167,7 +167,7 @@ def train_default_zoobot_from_scratch(
         num_workers=num_workers,
         prefetch_factor=prefetch_factor
     )
-    datamodule.setup()
+    datamodule.setup(stage='fit')
 
     # these args are automatically logged
     lightning_model = define_model.ZoobotLightningModule(
