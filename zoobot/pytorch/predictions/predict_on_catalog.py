@@ -11,7 +11,7 @@ from zoobot.shared import save_predictions
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 
-def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str,datamodule_kwargs={}, trainer_kwargs={}):
+def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str, datamodule_kwargs={}, trainer_kwargs={}):
 
     image_id_strs = list(catalog['id_str'].astype(str))
 

@@ -1,7 +1,6 @@
 import tensorflow as tf
-import numpy as np
 
-from zoobot.tensorflow.stats import dirichlet_stats
+from zoobot.tensorflow.stats import dirichlet_stats  # this is the only TF import
 
 
 def get_expected_votes_ml(concentrations, question, votes_for_base_question: int, schema, round_votes):

@@ -1,4 +1,3 @@
-from cProfile import label
 import logging
 import os
 from typing import List
@@ -58,6 +57,7 @@ def load_hdf5s(hdf5_locs: List):
     Returns:
         pd.DataFrame: with rows of id_str, hdf5_loc, indexed like predictions (below)
         np.array: model predictions, usually dirichlet concentrations, like (galaxy, answer, forward pass)
+        list: semantic names of answers (e.g. ['smooth-or-featured-dr8_smooth', ...])
     """
 
     if isinstance(hdf5_locs, str):
@@ -75,8 +75,8 @@ def load_hdf5s(hdf5_locs: List):
                 'id_str': f['id_str'].asstr()[:],
                 'hdf5_loc': [os.path.basename(loc) for _ in these_predictions]
         }
-            predictions.append(these_predictions)
-            prediction_metadata.append(these_prediction_metadata)
+            predictions.append(these_predictions)  # will create a list where each element is 3D predictions stored in each hdf5
+            prediction_metadata.append(these_prediction_metadata)  # also track id_str, similarly
 
             if template_label_cols is None:  # first file to load, use this as the expected template
                 template_label_cols = f['label_cols'].asstr()[:]
@@ -86,6 +86,9 @@ def load_hdf5s(hdf5_locs: List):
                 if these_label_cols != template_label_cols:
                     raise ValueError('Label columns {} of hdf5 {} do not match first label columns {}'.format(loc, f['label_cols'], template_label_cols))
 
+
+    # there is no assumption that id_str is unique, or attempt to group predictions by id_str
+    # it just maps a set of hdf5 files, each with predictions, to a df of id_str and those loaded predictions (matching row-wise)
 
     predictions = np.concatenate(predictions, axis=0)
     prediction_metadata = {
