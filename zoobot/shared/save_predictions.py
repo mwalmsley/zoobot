@@ -6,10 +6,10 @@ import pandas as pd
 import h5py
 
 
-def predictions_to_hdf5(predictions, id_str, label_cols, save_loc):
+def predictions_to_hdf5(predictions, id_str, label_cols, save_loc, compression="gzip"):
     assert save_loc.endswith('.hdf5')
     with h5py.File(save_loc, "w") as f:
-        f.create_dataset(name='predictions', data=predictions)
+        f.create_dataset(name='predictions', data=predictions, compression=compression)
         # https://docs.h5py.org/en/stable/special.html#h5py.string_dtype
         dt = h5py.string_dtype(encoding='utf-8')
         # predictions_dset.attrs['label_cols'] = label_cols  # would be more conventional but is a little awkward
