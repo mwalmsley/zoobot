@@ -267,6 +267,14 @@ decals_all_campaigns_ortho_schema = Schema(label_metadata.decals_all_campaigns_o
 gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs , label_metadata.gz2_ortho_dependencies)
 cosmic_dawn_ortho_schema = Schema(label_metadata.cosmic_dawn_ortho_pairs , label_metadata.cosmic_dawn_ortho_dependencies)
 gz_rings_schema = Schema(label_metadata.rings_pairs, label_metadata.rings_dependencies)
+desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies)  # for DESI data release prediction users, not for ML training - no -dr5, -dr8, etc
 # note that as this is a call to Schema (and Question and Answer), any logging within those will 
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
+
+# temp for debugging
+# print(label_metadata.desi_pairs)
+# print(label_metadata.desi_dependencies)
+
+# print(desi_schema.questions)
+# print(desi_schema.answers)
