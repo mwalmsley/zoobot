@@ -1,6 +1,100 @@
 import numpy as np
 from scipy.stats import beta
 
+
+def expected_value_of_dirichlet_mixture(concentrations, schema):
+    # badly named vs posteriors, actually gives predicted vote fractions of answers...
+    # mean probability (including dropout) of an answer being given. 
+    # concentrations has (batch, answer, ...) shape where extra dims are distributions (e.g. galaxies, answer, model, pass)
+
+    # collapse trailing dims
+    concentrations = concentrations.reshape(concentrations.shape[0], concentrations.shape[1], -1)
+
+    p_of_answers = []
+    for q in schema.questions:
+        concentrations_by_q = concentrations[:, q.start_index:q.end_index+1]  # trailing dims are distributions
+        for answer_index in range(len(q.answers)):
+            # first mean is per distribution
+            # second .mean() is average p for all distributions
+            mean_of_each_distribution = get_beta_mean(concentrations=concentrations_by_q, answer_index=answer_index)  # (galaxies, distributions)
+            # print(mean_of_each_distribution.shape)
+            p_of_answers.append(mean_of_each_distribution.mean(axis=1))  # now (galaxies)
+
+    p_of_answers = np.stack(p_of_answers, axis=1)
+    return p_of_answers
+
+
+def get_beta_mean(concentrations, answer_index):
+    # concentrations shape (galaxy, answer, distribution)
+    concentrations_a = concentrations[:, answer_index]
+    concentrations_sum = concentrations.sum(axis=1)
+    return concentrations_a / concentrations_sum   # (galaxy, distribution)
+
+
+
+# Prob given q is asked
+# get prob_of_answers = expected_value_of_dirichlet_mixture(concentrations, schema)
+def get_expected_votes_ml(prob_of_answers, question, votes_for_base_question: int, schema, round_votes):
+    # (send all prob_of_answers not per-question prob, they are all potentially relevant)
+    prev_q = question.asked_after
+    if prev_q is None:
+        expected_votes = np.ones(len(prob_of_answers)) * votes_for_base_question
+    else:
+        joint_p_of_asked = schema.joint_p(prob_of_answers, prev_q.text)  # prob of getting the answer needed to ask this question
+        expected_votes = joint_p_of_asked * votes_for_base_question
+    if round_votes:
+        return np.round(expected_votes)
+    else:
+        return expected_votes
+
+
+def get_expected_votes_human(label_df, question, votes_for_base_question: int, schema, round_votes):
+    # might be better called "get galaxies where at least half of humans actually answered that question, in the labels"
+    
+
+    answer_fractions = label_df[[a + '_fraction' for a in schema.label_cols]].values
+    # some will be nan as fractions are often nan (as 0 of 0)
+
+    prev_q = question.asked_after
+    if prev_q is None:
+        expected_votes = np.ones(len(label_df)) * votes_for_base_question
+    else:
+        # prob of getting the answer needed to ask this question - the product of the (perhaps expected, but here, actual) dependent vote fractions
+        joint_p_of_asked = schema.joint_p(answer_fractions, prev_q.text)  
+        # for humans, its just votes_for_base_question * the product of all the fractions leading to that q
+        expected_votes = joint_p_of_asked * votes_for_base_question
+    if round_votes:
+        return np.round(expected_votes)
+    else:
+        return expected_votes
+
+
+
+
+# class DirichletEqualMixture():
+
+#     def __init__(self, concentrations) -> None:
+        
+#         # concentrations should be shape (galaxy, answer, distributions...)
+
+#         
+
+#         self._concentrations = concentrations
+
+#         # create stats object to do all the work
+#         self._dist = dirichlet(self._concentrations)
+
+#     def pdf(self, x):
+#         return self._dist.pdf(x)
+
+#     def mean(self):
+#         return self._dist.mean()
+
+
+
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.dirichlet.html
+
+
 # for single distribution/model
 # def get_confidence_interval_around_mode(concentrations, question_indices, answer_index, interval_width=0.95, gridsize=20):
     
@@ -96,10 +190,11 @@ def get_confidence_interval(grid, pdf, cdf, interval_width=.95):  # grid (100), 
     # print(loc_of_expected)
     # print(loc_of_expected.shape)  (galaxy), values of grid_loc (aimed at grid dimension)
 
-    # print(cdf.shape)  # galaxy, grid
-    # transpose to slice cdf by grid_loc values
-    # then take diagonal for first grid_loc value being for first galaxy, ...
-    cdf_at_loc_of_expected = cdf.T[loc_of_expected].diagonal()
+    # iterating through the ith element of loc_of_expected, k, we want to select [i, k] from cdf
+    # can do this with multi-dim integer array indexing
+    # https://numpy.org/devdocs/user/basics.indexing.html#integer-array-indexing
+    grid_indices = np.arange(len(loc_of_expected)), loc_of_expected   # NOT a list, or broadcasts to extra dim
+    cdf_at_loc_of_expected = cdf[grid_indices]
 
     lower_cdf_value = cdf_at_loc_of_expected - interval_width/2.
     upper_cdf_value = cdf_at_loc_of_expected + interval_width/2.
@@ -128,8 +223,7 @@ def test_beta_cdf_on_grid():
     question_indices = [0, 2]
     answer_index = 1
     concentrations = np.expand_dims(np.array([[2., 2., 4.], [4., 4., 2.], [4., 4., 2.], [4., 4., 2.]]), axis=2)  # (galaxy=4, answer=3, distribution=1)
-    # print(concentrations.shape)
-    # exit()
+
 
     grid, pdf, cdf = beta_mixture_on_grid(concentrations, question_indices, answer_index, gridsize=1000)
     print(grid.shape, pdf.shape, cdf.shape)
@@ -139,9 +233,6 @@ def test_beta_cdf_on_grid():
     with np.printoptions(precision=3):
         print(lower_fracs)
         print(upper_fracs)
-
-
-# def test_get_confidence_interval_around_mode():
 
 #     question_indices = [0, 2]
 #     answer_index = 1
@@ -153,14 +244,16 @@ def test_beta_cdf_on_grid():
 #     # if lower bound 0: upper bound 0.5207, 0.65506
 #     # works well for large gridsize (>100)
 
+def test_dirichlet_mixture():
+    concentrations = np.expand_dims(np.array([[2., 2., 4.], [4., 4., 2.], [4., 4., 2.], [4., 4., 2.]]), axis=2)
 
-#     lower_fracs, upper_fracs = get_confidence_interval_around_mode(concentrations, question_indices, answer_index, gridsize=100)
-
-#     with np.printoptions(precision=3):
-#         print(lower_fracs)
-#         print(upper_fracs)
+    mixture = DirichletEqualMixture(concentrations)
+    print(mixture.mean())
 
 
 if __name__ == '__main__':
 
-    test_beta_cdf_on_grid()
+    # test_beta_cdf_on_grid()
+
+    test_dirichlet_mixture()
+
