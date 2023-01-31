@@ -1,5 +1,6 @@
 import json
 from typing import List
+import logging
 
 import numpy as np
 import pandas as pd
@@ -7,6 +8,7 @@ import h5py
 
 
 def predictions_to_hdf5(predictions, id_str, label_cols, save_loc, compression="gzip"):
+    logging.info(f'Saving predictions to {save_loc}')
     assert save_loc.endswith('.hdf5')
     with h5py.File(save_loc, "w") as f:
         f.create_dataset(name='predictions', data=predictions, compression=compression)

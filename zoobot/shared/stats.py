@@ -137,28 +137,40 @@ def get_expected_votes_human(label_df, question, votes_for_base_question: int, s
 #     return grid.squeeze()[index_of_lower], grid.squeeze()[index_of_higher]
 
 
-# TODO for q in...
-# supports trailing dimensions for more distributions
-def beta_mixture_on_grid(concentrations, question_indices, answer_index, gridsize=100):
-    # concentration (galaxy, answer_index, (distribution dims))
+def get_confidence_intervals(concentrations, schema, interval_width=.9, gridsize=100):
 
-    # flatten trailing dists
+    # collapse trailing dims
     concentrations = concentrations.reshape(concentrations.shape[0], concentrations.shape[1], -1)
-    # (galaxy, answer_index, distribution)
+
+    lower_edges = []
+    upper_edges = []
+    for q in schema.questions:
+        concentrations_q = concentrations[:, q.start_index:q.end_index+1]
+        for answer_index in range(len(q.answers)):
+            grid, pdf, cdf = beta_mixture_on_grid(concentrations_q, answer_index, gridsize=gridsize)
+            lower_edge, upper_edge = get_confidence_interval_from_binned_dist(grid, pdf, cdf, interval_width=interval_width)
+            lower_edges.append(lower_edge)
+            upper_edges.append(upper_edge)
+
+    lower_edges = np.stack(lower_edges, axis=1)
+    upper_edges = np.stack(upper_edges, axis=1)
+
+    return lower_edges, upper_edges
+
+
+# supports trailing dimensions for more distributions
+def beta_mixture_on_grid(concentrations_q, answer_index, gridsize=100):
+    # concentration (galaxy, answer_index, distribution), any extra distribution dims already flattened
 
     # reshape to have distribution in leading dim
-    concentrations = concentrations.transpose(2, 0, 1)
+    concentrations_q = concentrations_q.transpose(2, 0, 1)
     # (distribution, galaxy, answer_index)
-    # print(concentrations.shape)
-    # exit()
 
-    concentrations_q = concentrations[:, :, question_indices[0]:question_indices[1]+1]
-    concentrations_a = concentrations[:, :, answer_index]
-    concentrations_sum = concentrations_q.sum(axis=2)
+    concentrations_a = concentrations_q[:, :, answer_index]
+    concentrations_q_sum = concentrations_q.sum(axis=2)
     # dirichlet of this or not this is equivalent to beta distribution with concentrations (this, sum_of_not_this)
-    concentrations_not_a = concentrations_sum - concentrations_a
+    concentrations_not_a = concentrations_q_sum - concentrations_a
 
-    # print(concentrations_a.shape, concentrations_not_a.shape)
     # (distribution, galaxy)
 
     dist_with_extra_dim = beta(a=np.expand_dims(concentrations_a, -1), b=np.expand_dims(concentrations_not_a, -1))
@@ -167,8 +179,7 @@ def beta_mixture_on_grid(concentrations, question_indices, answer_index, gridsiz
     pdf_grid = dist_with_extra_dim.pdf(grid)
     # normalise over grid dimension
     pdf_grid = pdf_grid / np.sum(pdf_grid, axis=2, keepdims=True)
-    print(pdf_grid.shape)
-    # print(pdf_grid.shape) # (distribution, galaxy, grid) 
+    # (distribution, galaxy, grid) 
 
     # take mean over distribution dim (0th)
     mean_pdf = pdf_grid.mean(axis=0)
@@ -180,15 +191,13 @@ def beta_mixture_on_grid(concentrations, question_indices, answer_index, gridsiz
     return grid.squeeze(), mean_pdf, cdf
 
 
-def get_confidence_interval(grid, pdf, cdf, interval_width=.95):  # grid (100), pdf/cdf (4, 100)
+def get_confidence_interval_from_binned_dist(grid, pdf, cdf, interval_width=.95):  # grid (100), pdf/cdf (4, 100)
 
-    expected_value = np.mean(grid * pdf, axis=1)  # (4)
+    expected_value = np.sum(grid.reshape(1, -1) * pdf, axis=1)  # (galaxies)
     # print(expected_value.shape)
-    # print(expected_value)
 
     loc_of_expected = np.argmin(np.abs(grid.reshape(1, -1) - expected_value.reshape(-1, 1)), axis=1)
-    # print(loc_of_expected)
-    # print(loc_of_expected.shape)  (galaxy), values of grid_loc (aimed at grid dimension)
+    # (galaxy), values of grid_loc (aimed at grid dimension)
 
     # iterating through the ith element of loc_of_expected, k, we want to select [i, k] from cdf
     # can do this with multi-dim integer array indexing
@@ -213,6 +222,7 @@ def get_confidence_interval(grid, pdf, cdf, interval_width=.95):  # grid (100), 
     index_of_lower = np.argmin(np.abs(cdf - lower_cdf_value.reshape(-1, 1)), axis=1)
     index_of_higher = np.argmin(np.abs(cdf - upper_cdf_value.reshape(-1, 1)), axis=1)
 
+    # each of shape (galaxy)
     return grid.squeeze()[index_of_lower], grid.squeeze()[index_of_higher]
 
 
@@ -228,7 +238,7 @@ def test_beta_cdf_on_grid():
     grid, pdf, cdf = beta_mixture_on_grid(concentrations, question_indices, answer_index, gridsize=1000)
     print(grid.shape, pdf.shape, cdf.shape)
 
-    lower_fracs, upper_fracs = get_confidence_interval(grid, pdf, cdf)
+    lower_fracs, upper_fracs = get_confidence_interval_from_binned_dist(grid, pdf, cdf)
 
     with np.printoptions(precision=3):
         print(lower_fracs)
@@ -244,16 +254,16 @@ def test_beta_cdf_on_grid():
 #     # if lower bound 0: upper bound 0.5207, 0.65506
 #     # works well for large gridsize (>100)
 
-def test_dirichlet_mixture():
-    concentrations = np.expand_dims(np.array([[2., 2., 4.], [4., 4., 2.], [4., 4., 2.], [4., 4., 2.]]), axis=2)
+# def test_dirichlet_mixture():
+#     concentrations = np.expand_dims(np.array([[2., 2., 4.], [4., 4., 2.], [4., 4., 2.], [4., 4., 2.]]), axis=2)
 
-    mixture = DirichletEqualMixture(concentrations)
-    print(mixture.mean())
+#     mixture = DirichletEqualMixture(concentrations)
+#     print(mixture.mean())
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    # test_beta_cdf_on_grid()
+#     # test_beta_cdf_on_grid()
 
-    test_dirichlet_mixture()
+#     test_dirichlet_mixture()
 

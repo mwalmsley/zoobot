@@ -69,7 +69,7 @@ def load_hdf5s(hdf5_locs: List):
     template_label_cols = None  # will use this var to check consistency of label_cols across each hdf5_loc
     for loc in hdf5_locs:
         with h5py.File(loc, 'r') as f:
-            logging.info(f.keys())
+            logging.debug(f.keys())
             these_predictions = f['predictions'][:]
             these_prediction_metadata = {
                 'id_str': f['id_str'].asstr()[:],
@@ -89,7 +89,7 @@ def load_hdf5s(hdf5_locs: List):
 
     # there is no assumption that id_str is unique, or attempt to group predictions by id_str
     # it just maps a set of hdf5 files, each with predictions, to a df of id_str and those loaded predictions (matching row-wise)
-
+    logging.info('All hdf5 loaded, beginning concat.')
     predictions = np.concatenate(predictions, axis=0)
     prediction_metadata = {
         'id_str': [p for metadata in prediction_metadata for p in metadata['id_str']],
