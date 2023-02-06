@@ -147,8 +147,9 @@ def get_confidence_intervals(concentrations, schema, interval_width=.9, gridsize
     for q in schema.questions:
         concentrations_q = concentrations[:, q.start_index:q.end_index+1]
         for answer_index in range(len(q.answers)):
-            grid, pdf, cdf = beta_mixture_on_grid(concentrations_q, answer_index, gridsize=gridsize)
-            lower_edge, upper_edge = get_confidence_interval_from_binned_dist(grid, pdf, cdf, interval_width=interval_width)
+            # grid, pdf, cdf = beta_mixture_on_grid(concentrations_q, answer_index, gridsize=gridsize)
+            # lower_edge, upper_edge = get_confidence_interval_from_binned_dist(grid, pdf, cdf, interval_width=interval_width)
+            lower_edge, upper_edge = get_confidence_interval_from_ppf_medians(concentrations_q, answer_index, interval_width=interval_width)
             lower_edges.append(lower_edge)
             upper_edges.append(upper_edge)
 
@@ -158,19 +159,20 @@ def get_confidence_intervals(concentrations, schema, interval_width=.9, gridsize
     return lower_edges, upper_edges
 
 
+def get_confidence_interval_from_ppf_medians(concentrations_q, answer_index, interval_width=.9):
+    concentrations_a, concentrations_not_a = reshape_concentrations_for_scipy_beta(concentrations_q, answer_index)
+    dist = beta(a=concentrations_a, b=concentrations_not_a)
+    lower_edges = dist.ppf(0.05)  # dimension (distribution, galaxy)
+    upper_edges = dist.ppf(0.95)
+    return np.median(lower_edges, axis=1), np.median(upper_edges, axis=1)
+
+
+
 # supports trailing dimensions for more distributions
 def beta_mixture_on_grid(concentrations_q, answer_index, gridsize=100):
     # concentration (galaxy, answer_index, distribution), any extra distribution dims already flattened
 
-    # reshape to have distribution in leading dim
-    concentrations_q = concentrations_q.transpose(2, 0, 1)
-    # (distribution, galaxy, answer_index)
-
-    concentrations_a = concentrations_q[:, :, answer_index]
-    concentrations_q_sum = concentrations_q.sum(axis=2)
-    # dirichlet of this or not this is equivalent to beta distribution with concentrations (this, sum_of_not_this)
-    concentrations_not_a = concentrations_q_sum - concentrations_a
-
+    concentrations_a, concentrations_not_a = reshape_concentrations_for_scipy_beta(concentrations_q, answer_index)
     # (distribution, galaxy)
 
     dist_with_extra_dim = beta(a=np.expand_dims(concentrations_a, -1), b=np.expand_dims(concentrations_not_a, -1))
@@ -227,6 +229,18 @@ def get_confidence_interval_from_binned_dist(grid, pdf, cdf, interval_width=.95)
 
 
 
+def reshape_concentrations_for_scipy_beta(concentrations_q, answer_index):
+    # reshape to have distribution in leading dim
+    concentrations_q = concentrations_q.transpose(2, 0, 1)
+    # (distribution, galaxy, answer_index)
+
+    concentrations_a = concentrations_q[:, :, answer_index]
+    concentrations_q_sum = concentrations_q.sum(axis=2)
+    # dirichlet of this or not this is equivalent to beta distribution with concentrations (this, sum_of_not_this)
+    concentrations_not_a = concentrations_q_sum - concentrations_a
+
+    return concentrations_a, concentrations_not_a
+
 
 
 def test_beta_cdf_on_grid():
@@ -260,10 +274,21 @@ def test_beta_cdf_on_grid():
 #     mixture = DirichletEqualMixture(concentrations)
 #     print(mixture.mean())
 
+def test_get_confidence_interval_from_ppf_medians():
+    # question_indices = [0, 2]
+    answer_index = 1
+    concentrations = np.array([[2., 2., 4.], [4., 4., 2.]])
+    # concentrations = np.expand_dims(concentrations, axis=2)
+    concentrations = np.stack([concentrations, concentrations], axis=2)
+    print(concentrations.shape)
+    lower_edge, upper_edge = get_confidence_interval_from_ppf_medians(concentrations, answer_index)
+    print(lower_edge, upper_edge)
 
-# if __name__ == '__main__':
+
+if __name__ == '__main__':
 
 #     # test_beta_cdf_on_grid()
 
 #     test_dirichlet_mixture()
 
+    test_get_confidence_interval_from_ppf_medians()
