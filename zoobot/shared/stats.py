@@ -162,9 +162,9 @@ def get_confidence_intervals(concentrations, schema, interval_width=.9, gridsize
 def get_confidence_interval_from_ppf_medians(concentrations_q, answer_index, interval_width=.9):
     concentrations_a, concentrations_not_a = reshape_concentrations_for_scipy_beta(concentrations_q, answer_index)
     dist = beta(a=concentrations_a, b=concentrations_not_a)
-    lower_edges = dist.ppf(0.05)  # dimension (distribution, galaxy)
-    upper_edges = dist.ppf(0.95)
-    return np.median(lower_edges, axis=1), np.median(upper_edges, axis=1)
+    lower_edges = dist.ppf(0.5 - interval_width/2.)  # dimension (distribution, galaxy)
+    upper_edges = dist.ppf(0.5 + interval_width/2.)
+    return np.median(lower_edges, axis=0), np.median(upper_edges, axis=0)  # median over mixture, per galaxy
 
 
 
@@ -279,7 +279,7 @@ def test_get_confidence_interval_from_ppf_medians():
     answer_index = 1
     concentrations = np.array([[2., 2., 4.], [4., 4., 2.]])
     # concentrations = np.expand_dims(concentrations, axis=2)
-    concentrations = np.stack([concentrations, concentrations], axis=2)
+    concentrations = np.stack([concentrations] * 5, axis=2)
     print(concentrations.shape)
     lower_edge, upper_edge = get_confidence_interval_from_ppf_medians(concentrations, answer_index)
     print(lower_edge, upper_edge)
