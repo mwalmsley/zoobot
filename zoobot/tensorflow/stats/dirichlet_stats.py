@@ -1,5 +1,3 @@
-import logging
-
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
@@ -163,10 +161,10 @@ class DirichletMultinomialEqualMixture(EqualMixture):
             BetaEqualMixture: beta(answer index, not answer index) with a batch dimension of num. dirichlet distributions in this mixture
         """
         assert self.batch_shape == 1  # beta uses batch shape for cdf(x), so needs to be able to broadcast, so can only do one galaxy at a time
-        num_answers = 
+        num_answers = self.concentrations.shape[1]
         answer_concentrations = self.concentrations[:, answer_index]
-        all_concentrations = self.concentrations.reshape(1, sum(axis=1)
-        beta_concentrations = np.stack([answer_concentrations, other_concentrations], axis=1)
+        all_concentrations = self.concentrations.reshape(1, num_answers, -1).sum(axis=1)
+        beta_concentrations = np.stack([answer_concentrations, all_concentrations - answer_concentrations], axis=1)
         return BetaEqualMixture(beta_concentrations, batch_dim=batch_dim)
 
 
@@ -250,9 +248,11 @@ def confidence_interval_from_cdf(x, cdf, mode_cdf, interval_width):
     upper = x[upper_index]
     return lower, upper
 
-if __name__ == '__main__':
 
-    concentrations = np.random.rand(10, 3) * 100 + 1  # 10 events/galaxies, 3 possible outcomes/answers
+
+
+# if __name__ == '__main__':
+
 
     # total_votes = 10
     # votes_except_last = np.random.randint(0, int(total_votes/2), size=(10, 2))  # can be no more than half, for convenience
@@ -273,8 +273,14 @@ if __name__ == '__main__':
 
     # print(mixture.cdf(eval_points))
 
-    mixture = tfp.distributions.Beta(10., 3.)
-    print(mixture.cdf(.8))
+    # mixture = tfp.distributions.Beta(5., 6.)  # concentrations
+    # print(mixture.cdf(.5))
+
+    # for each galaxy, for each question, for each answer, create a Beta distribution for that answer or not-that-answer
+    # then get the cdf
+    # no need for TFP - probably WAY faster in pure python
+    # I just want the CDF
+
 
 
 # # only used for posthoc evaluation, not when training
@@ -322,5 +328,3 @@ if __name__ == '__main__':
 #     x = np.linspace(0.001, .999, num=1000)
 #     cdf = dist.cdf(x)
 #     return confidence_interval_from_cdf(x, cdf, mode_cdf, interval_width)
-
-
