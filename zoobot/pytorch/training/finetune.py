@@ -28,13 +28,32 @@ def freeze_batchnorm_layers(model):
         else:
           freeze_batchnorm_layers(child)  # recurse
 
+class ZoobotEncoder(pl.LightningModule):
+  # very simple wrapper to turn pytorch model into lightning module#
+  # useful when we want to use lightning to make predictions with our encoder
+  # (i.e. to get representations)
+  # TODO not actually used for finetuning, should live somewhere more appropriate
+
+  def __init__(self, encoder) -> None:
+      super().__init__()
+      self.encoder = encoder  # plain pytorch module e.g. Sequential
+
+  @classmethod
+  def load_from_checkpoint(cls, loc):
+    # allows for ZoobotEncoder.load_from_checkpoint(loc), in the style of Lightning e.g. FinetunedZoobotLightningModule below
+      return ZoobotEncoder(load_encoder(checkpoint_loc=loc))
+
+  def forward(self, x):
+      return self.encoder(x)
+
+
 
 
 class FinetunedZoobotLightningModule(pl.LightningModule):
 
     def __init__(
         self,
-        encoder: pl.LightningModule,
+        encoder: pl.LightningModule,  # or plain pytorch model e.g. Sequential also works
         label_dim: int,
         encoder_dim=1280,  # as per current Zooot
         n_epochs=100,  # TODO early stopping
@@ -281,7 +300,7 @@ def run_finetuning(custom_config, encoder, datamodule, save_dir, logger=None):
 
 
 
-def load_encoder(checkpoint_loc: str) -> pl.LightningModule:
+def load_encoder(checkpoint_loc: str) -> torch.nn.Sequential:
 
     model = define_model.ZoobotLightningModule.load_from_checkpoint(checkpoint_loc)  # or .best_model_path, eventually
     """
@@ -292,6 +311,9 @@ def load_encoder(checkpoint_loc: str) -> pl.LightningModule:
       (0): EfficientNet(
     """
     encoder = model.get_submodule('model.0')  # includes avgpool and head
+    # because we got submodule, this is now a plain pytorch Sequential and NOT a LightningModule any more
+    # wrap with ZoobotEncoder if you want LightningModule
+    # e.g. ZoobotEncoder.load_from_checkpoint(checkpoint_loc)
     return encoder
 
 
