@@ -49,7 +49,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py 
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop $RESIZE_AFTER_CROP \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \
@@ -64,7 +64,7 @@ srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py 
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop $RESIZE_AFTER_CROP \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \
