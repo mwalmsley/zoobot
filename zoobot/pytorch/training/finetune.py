@@ -224,7 +224,7 @@ class LinearClassifier(torch.nn.Module):
 
 def cross_entropy_loss(y, y_pred, label_smoothing=0.):
     # note the flipped arg order (sklearn convention in my func)
-    return F.cross_entropy(y_pred, y, label_smoothing=label_smoothing, reduction='mean')
+    return F.cross_entropy(y_pred, y, label_smoothing=label_smoothing, reduction='none')
 
 
 def dirichlet_loss(y, y_pred, question_index_groups):
