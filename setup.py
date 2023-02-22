@@ -47,6 +47,13 @@ setuptools.setup(
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0'
         ],
+        'pytorch_colab': [
+            'pytorch-lightning>=1.8.3.post1',
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl>=1.8.0',
+            'torchmetrics==0.11.0'
+        ],
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
