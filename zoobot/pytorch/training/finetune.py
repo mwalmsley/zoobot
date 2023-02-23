@@ -62,6 +62,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         lr_decay=0.75,
         learning_rate=1e-4,
         dropout_prob=0.5,
+        label_smoothing=0.,
         freeze_batchnorm=True,
         prog_bar=True,
         seed=42,
@@ -103,7 +104,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         if label_mode == 'classification':
             logging.info('Using classification head and cross-entropy loss')
             self.head = LinearClassifier(input_dim=encoder_dim, output_dim=label_dim, dropout_prob=self.dropout_prob)
-            self.label_smoothing = 0.1 if self.freeze else 0
+            self.label_smoothing = label_smoothing
             self.loss = partial(cross_entropy_loss, label_smoothing=self.label_smoothing)
             self.train_acc = tm.Accuracy(task='binary', average="micro")
             self.val_acc = tm.Accuracy(task='binary', average="micro")
@@ -219,7 +220,9 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
 
             layers = [layer for layer in effnet_with_pool.children(
             ) if isinstance(layer, torch.nn.Sequential)]
-            layers.reverse()  # inplace
+            layers.reverse()  # inplace. first element is now upper-most layer 
+            # print(layers)
+            # exit()
 
             assert self.n_layers <= len(
                 layers
@@ -227,12 +230,15 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
 
             # Append parameters of layers for finetuning along with decayed learning rate
             for i, layer in enumerate(layers[: self.n_layers]):
-                params.append({"params": layer.parameters(),
-                              "lr": lr * (self.lr_decay**i)})
+                params.append({
+                  "params": layer.parameters(),
+                  # "lr": lr * (self.lr_decay**i)
+                  "lr": 1e-5
+              })
 
             # Initialize AdamW optimizer
             opt = torch.optim.AdamW(
-                params, weight_decay=0.25, betas=(0.9, 0.999))  # very high weight decay
+                params, weight_decay=0.05, betas=(0.9, 0.999))  # very high weight decay
 
             # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             #     opt, self.n_epochs)
