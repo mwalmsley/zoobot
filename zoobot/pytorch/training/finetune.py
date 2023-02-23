@@ -135,29 +135,45 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         x, y = batch
         y_pred = self.forward(x)
         loss = self.loss(y, y_pred)
-        return {'loss': loss, 'preds': y_pred, 'targets': y}
+
+        y_class_preds = torch.argmax(y_pred, axis=1)
+        self.train_acc(y_class_preds, y)  # update calc, but do not log
+
+        return {'loss': loss.mean(), 'preds': y_pred, 'targets': y}
 
     def on_train_batch_end(self, outputs, *args) -> None:
-        self.log("finetuning/train_loss",
+        self.log("finetuning/train_loss_batch",
                  outputs['loss'], on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+    
+    def train_epoch_end(self, outputs, *args) -> None:
+        losses = torch.cat([batch_output['loss'].expand(0) for batch_output in outputs])
+        self.log("finetuning/train_loss", losses.mean(), prog_bar=self.prog_bar)
+
         if self.train_acc is not None:
-            self.train_acc(outputs['preds'], outputs['targets'])
-            self.log("finetuning/train_acc", self.train_acc,
-                     on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+            self.log("finetuning/train_acc", self.train_acc, prog_bar=self.prog_bar)  # log here
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
         x, y = batch
         y_pred = self.forward(x)
         loss = self.loss(y, y_pred)
-        return {'loss': loss, 'preds': y_pred, 'targets': y}
+
+        y_class_preds = torch.argmax(y_pred, axis=1)
+        self.val_acc(y_class_preds, y)
+        
+        return {'loss': loss.mean(), 'preds': y_pred, 'targets': y}
 
     def on_validation_batch_end(self, outputs, *args) -> None:
-        self.log(f"finetuning/val_loss",
-                 outputs['loss'], on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+        self.log(f"finetuning/val_loss_batch",
+                 outputs['loss'].mean(), on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+
+    def validation_epoch_end(self, outputs, *args) -> None:
+        # calc. mean of losses over val batches as val loss
+        losses = torch.FloatTensor([batch_output['loss'] for batch_output in outputs])
+        self.log("finetuning/val_loss", torch.mean(losses), prog_bar=self.prog_bar)
+
         if self.val_acc is not None:
-            self.val_acc(outputs['preds'], outputs['targets'])
-            self.log(f"finetuning/val_acc", self.val_acc,
-                     on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+            self.log("finetuning/val_acc", self.val_acc, prog_bar=self.prog_bar)
+
 
     def test_step(self, batch, batch_idx, dataloader_idx=0):
       # now identical to val_step
@@ -208,27 +224,31 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
                 opt, self.n_epochs)
             return [opt], [scheduler]
 
+
 # https://github.com/inigoval/byol/blob/1da1bba7dc5cabe2b47956f9d7c6277decd16cc7/byol_main/networks/models.py#L29
 class LinearClassifier(torch.nn.Module):
     def __init__(self, input_dim, output_dim, dropout_prob=0.5):
+      # input dim is representation dim, output_dim is num classes
         super(LinearClassifier, self).__init__()
-        self.linear = torch.nn.Linear(input_dim, output_dim)
         self.dropout = torch.nn.Dropout(p=dropout_prob)
+        self.linear = torch.nn.Linear(input_dim, output_dim)
 
     def forward(self, x):
         x = self.dropout(x)
         x = self.linear(x)
-        return F.softmax(x, dim=1)[:, 0]
-        # loss should be F.cross_entropy
-
+        return x
 
 def cross_entropy_loss(y, y_pred, label_smoothing=0.):
+    # y should be shape (batch) and ints
+    # y_pred should be shape (batch, classes)
     # note the flipped arg order (sklearn convention in my func)
-    return F.cross_entropy(y_pred, y, label_smoothing=label_smoothing, reduction='mean')
+    # returns loss of shape (batch)
+    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, reduction='none')  # will reduce myself
 
 
 def dirichlet_loss(y, y_pred, question_index_groups):
     # aggregation equiv. to sum(axis=1).mean(), but fewer operations
+    # returns loss of shape (batch)
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
 
