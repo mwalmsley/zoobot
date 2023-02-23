@@ -55,6 +55,9 @@ if __name__ == '__main__':
             'n_epochs': 100,
             'n_layers': 2,
             'label_mode': 'classification',
+            'learning_rate': 3e-4,
+            'lr_decay': 0.75,
+            'dropout_prob': 0.5,
             'prog_bar': True
         }
     }
