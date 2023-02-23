@@ -162,9 +162,23 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         
         return {'loss': loss.mean(), 'preds': y_pred, 'targets': y}
 
-    def on_validation_batch_end(self, outputs, *args) -> None:
+    def on_validation_batch_end(self, outputs, batch, batch_idx, *args) -> None:
         self.log(f"finetuning/val_loss_batch",
                  outputs['loss'].mean(), on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+
+        if (self.logger is not None) and (batch_idx == 0):
+        #  and (self.train_acc is not None):  # i.e. classification
+          # log example images and their predictions
+            x, y = batch
+            # y_pred_softmax = F.softmax(outputs['preds'], dim=1)[:, 1]  # odds of class 1 (assumed binary)
+            n_images = 5
+            images = [img for img in x[:n_images]]
+            captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(y[:n_images], outputs['preds'][:n_images])]
+            self.logger.log_image(
+              key='val_images', 
+              images=images, 
+              caption=captions)
+
 
     def validation_epoch_end(self, outputs, *args) -> None:
         # calc. mean of losses over val batches as val loss
