@@ -204,12 +204,11 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
                      on_step=False, on_epoch=True)
 
     def configure_optimizers(self):
+      
         if self.freeze:
             params = self.head.parameters()
-            # using adam not adamW for now - TODO config/hparam?
-            return torch.optim.Adam(params, lr=self.learning_rate)
+            return torch.optim.AdamW(params, lr=self.learning_rate)
         else:
-            # lr = 0.001 * self.batch_size / 256
             lr = self.learning_rate
             params = [{"params": self.head.parameters(), "lr": lr}]
 
@@ -231,12 +230,14 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
                 params.append({"params": layer.parameters(),
                               "lr": lr * (self.lr_decay**i)})
 
-            # Initialize AdamW optimizer with cosine decay learning rate
+            # Initialize AdamW optimizer
             opt = torch.optim.AdamW(
-                params, weight_decay=0.05, betas=(0.9, 0.999))
-            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-                opt, self.n_epochs)
-            return [opt], [scheduler]
+                params, weight_decay=0.25, betas=(0.9, 0.999))  # very high weight decay
+
+            # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            #     opt, self.n_epochs)
+            # return [opt], [scheduler]
+            return opt
 
 
 # https://github.com/inigoval/byol/blob/1da1bba7dc5cabe2b47956f9d7c6277decd16cc7/byol_main/networks/models.py#L29
