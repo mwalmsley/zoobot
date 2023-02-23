@@ -24,6 +24,8 @@ SEED=$RANDOM
 # sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=resnet_torchvision,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_evo,COLOR_STRING=--color,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 # sbatch --job-name=evo_py_gr_128px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=128,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
-sbatch --job-name=evo_py_gr_128px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=128,DATASET=gz_evo,COLOR_STRING=--color,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=evo_py_c_128px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=128,DATASET=gz_evo,COLOR_STRING=--color,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+sbatch --job-name=evo_py_gr_64px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=64,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+sbatch --job-name=evo_py_c_64px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=64,DATASET=gz_evo,COLOR_STRING=--color,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 echo 'PyTorch jobs submitted'
