@@ -60,6 +60,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         n_layers=0,  # how many layers deep to FT
         batch_size=1024,
         lr_decay=0.75,
+        weight_decay=0.05,
         learning_rate=1e-4,
         dropout_prob=0.5,
         label_smoothing=0.,
@@ -88,6 +89,7 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
         self.batch_size = batch_size
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
+        self.weight_decay = weight_decay
         self.dropout_prob = dropout_prob
         self.n_epochs = n_epochs
 
@@ -232,13 +234,13 @@ class FinetunedZoobotLightningModule(pl.LightningModule):
             for i, layer in enumerate(layers[: self.n_layers]):
                 params.append({
                   "params": layer.parameters(),
-                  # "lr": lr * (self.lr_decay**i)
-                  "lr": 1e-5
+                  "lr": lr * (self.lr_decay**i)
+                  # "lr": 1e-5
               })
 
             # Initialize AdamW optimizer
             opt = torch.optim.AdamW(
-                params, weight_decay=0.05, betas=(0.9, 0.999))  # very high weight decay
+                params, weight_decay=self.weight_decay, betas=(0.9, 0.999))  # very high weight decay
 
             # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             #     opt, self.n_epochs)
