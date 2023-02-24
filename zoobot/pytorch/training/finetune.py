@@ -275,7 +275,7 @@ def dirichlet_loss(y, y_pred, question_index_groups):
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
 
-def run_finetuning(custom_config, encoder, datamodule, save_dir, logger=None):
+def run_finetuning(custom_config, encoder, datamodule, save_dir, logger=None, baseline=False):
 
     default_config = {
       'finetune': {
@@ -330,8 +330,14 @@ def run_finetuning(custom_config, encoder, datamodule, save_dir, logger=None):
         **config["trainer"],
     )
 
-    model = FinetunedZoobotLightningModule(encoder, batch_size=datamodule.batch_size,
+    if baseline:
+      # pass in an encoder=pytorch.estimators.define_model.get_plain_pytorch_model
+      # will be trained exactly is finetuning, except with fixed learning rate for all layers
+          model = FinetunedZoobotLightningModuleBaseline(encoder, batch_size=datamodule.batch_size,
                      **config["finetune"])
+    else:
+          model = FinetunedZoobotLightningModule(encoder, batch_size=datamodule.batch_size,
+                          **config["finetune"])
 
     trainer.fit(model, datamodule)
 
@@ -341,6 +347,14 @@ def run_finetuning(custom_config, encoder, datamodule, save_dir, logger=None):
     return model, checkpoint_callback.best_model_path
 
 
+class FinetunedZoobotLightningModuleBaseline(FinetunedZoobotLightningModule):
+  # exactly as the Finetuned model above, but with a simple single learning rate
+  # useful for training from-scratch model exactly as if it were finetuned, as a baseline
+
+    def configure_optimizers(self):
+        head_params = list(self.head.parameters())
+        encoder_params = list(self.encoder.parameters())
+        return torch.optim.AdamW(head_params + encoder_params, lr=self.learning_rate)
 
 
 def load_encoder(checkpoint_loc: str) -> torch.nn.Sequential:
