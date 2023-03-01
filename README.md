@@ -26,16 +26,16 @@ And then pick one of the three commands below to install Zoobot and either PyTor
     # OR Zoobot with PyTorch and no GPU
     pip install -e "zoobot[pytorch_cpu]" --extra-index-url https://download.pytorch.org/whl/cpu
 
-    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2.
-    pip install -e "zoobot[tensorflow]
+    # OR Zoobot with PyTorch on Mac with M1 chip
+    pip install -e "zoobot[pytorch_m1]"
 
+    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2. 
+    pip install -e "zoobot[tensorflow]
 
 This installs the downloaded Zoobot code using pip [editable mode](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) so you can easily change the code locally. Zoobot is also available directly from pip (`pip install zoobot[option]`). Only use this if you are sure you won't be making changes to Zoobot itself. For Google Colab, use `pip install zoobot[pytorch_colab]`
 
 To use a GPU, you must *already* have CUDA installed and matching the versions above.
 I share my install steps [here](#install_cuda). GPUs are optional - Zoobot will run retrain fine on CPU, just slower.
-
-    
 
 ## Quickstart
 
@@ -56,19 +56,14 @@ Let's say you want to find ringed galaxies and you have a small labelled dataset
       batch_size=32
     )
 
-    config = {
-        'finetune': {
-            'label_dim': 2,
-            'label_mode': 'classification',
-            'n_epochs': 100
-        }
-    }
-
     # load trained Zoobot model
-    encoder = finetune.load_encoder(checkpoint_loc)  
+    model = finetune.FinetuneableZoobotClassifier(checkpoint_loc)  
+    
+    trainer = finetune.get_trainer(save_dir)
 
     # retrain to find rings
-    _, finetuned_model = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
+    trainer.fit(model, datamodule)
+
 ```
 
 Then you can make predict if new galaxies have rings:
@@ -81,7 +76,7 @@ Then you can make predict if new galaxies have rings:
 
     predict_on_catalog.predict(
       unlabelled_df,
-      finetuned_model,
+      model,
       label_cols=['ring'],  # only used for 
       save_loc='/your/path/finetuned_predictions.csv'
     )
@@ -135,10 +130,6 @@ CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
     conda activate zoobot38_tf
     conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/  # add this environment variable
-
-
-
-
 
 ### Latest features (v1.0.0)
 

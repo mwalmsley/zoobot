@@ -6,7 +6,7 @@ TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/pytorch/run_dataset_benchmar
 SEED=$RANDOM
 
 # debug mode
-# sbatch --job-name=dr5_py_debug_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED,DEBUG_STRING='--debug' $TRAIN_JOB
+sbatch --job-name=dr5_py_debug_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED,DEBUG_STRING='--debug' $TRAIN_JOB
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
@@ -25,7 +25,7 @@ SEED=$RANDOM
 
 # sbatch --job-name=evo_py_gr_128px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=128,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 # sbatch --job-name=evo_py_c_128px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=128,DATASET=gz_evo,COLOR_STRING=--color,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
-sbatch --job-name=evo_py_gr_64px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=64,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
-sbatch --job-name=evo_py_c_64px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=64,DATASET=gz_evo,COLOR_STRING=--color,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=evo_py_gr_64px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=64,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=evo_py_c_64px_$SEED --export=ARCHITECTURE=efficientnet,BATCH_SIZE=256,RESIZE_AFTER_CROP=64,DATASET=gz_evo,COLOR_STRING=--color,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 echo 'PyTorch jobs submitted'

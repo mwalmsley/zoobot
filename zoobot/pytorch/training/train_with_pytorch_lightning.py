@@ -25,7 +25,7 @@ def train_default_zoobot_from_scratch(
     epochs=1000,
     patience=8,
     # model hparams
-    architecture_name='efficientnet',  # recently changed
+    architecture_name='efficientnet_b0',  # recently changed
     batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
@@ -136,22 +136,23 @@ def train_default_zoobot_from_scratch(
             'test_catalog': test_catalog  # may be None
         }
 
-    wandb_logger.log_hyperparams({
-        'random_state': random_state,
-        'epochs': epochs,
-        'accelerator': accelerator,
-        'gpus': gpus,
-        'nodes': nodes,
-        'precision': precision,
-        'batch_size': batch_size,
-        'greyscale': not color,
-        'crop_scale_bounds': crop_scale_bounds,
-        'crop_ratio_bounds': crop_ratio_bounds,
-        'resize_after_crop': resize_after_crop,
-        'num_workers': num_workers,
-        'prefetch_factor': prefetch_factor,
-        'framework': 'pytorch'
-    })
+    if wandb_logger is not None:
+        wandb_logger.log_hyperparams({
+            'random_state': random_state,
+            'epochs': epochs,
+            'accelerator': accelerator,
+            'gpus': gpus,
+            'nodes': nodes,
+            'precision': precision,
+            'batch_size': batch_size,
+            'greyscale': not color,
+            'crop_scale_bounds': crop_scale_bounds,
+            'crop_ratio_bounds': crop_ratio_bounds,
+            'resize_after_crop': resize_after_crop,
+            'num_workers': num_workers,
+            'prefetch_factor': prefetch_factor,
+            'framework': 'pytorch'
+        })
 
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
@@ -170,17 +171,16 @@ def train_default_zoobot_from_scratch(
     datamodule.setup(stage='fit')
 
     # these args are automatically logged
-    lightning_model = define_model.ZoobotLightningModule(
+    lightning_model = define_model.ZoobotTree(
         output_dim=len(schema.label_cols),
         question_index_groups=schema.question_index_groups,
-        include_top=True,
+        architecture_name=architecture_name,
         channels=channels,
         use_imagenet_weights=False,
         test_time_dropout=True,
         dropout_rate=dropout_rate,
-        drop_connect_rate=drop_connect_rate,
-        architecture_name=architecture_name,
         learning_rate=learning_rate,
+        timm_kwargs={'drop_path_rate': drop_connect_rate},
         betas=betas,
         scheduler_params=scheduler_params
     )
