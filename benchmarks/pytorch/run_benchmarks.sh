@@ -6,14 +6,14 @@ TRAIN_JOB=/share/nas2/walml/repos/zoobot/benchmarks/pytorch/run_dataset_benchmar
 SEED=$RANDOM
 
 # debug mode
-sbatch --job-name=dr5_py_debug_$SEED --export=ARCHITECTURE=efficientnet_b0,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED,DEBUG_STRING='--debug' $TRAIN_JOB
+# sbatch --job-name=dr5_py_debug_$SEED --export=ARCHITECTURE=efficientnet_b0,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED,DEBUG_STRING='--debug' $TRAIN_JOB
 
 # minimal hardware - 1 gpu, no mixed precision
 # (not specifying a string will default to not doing it)
 # sbatch --job-name=dr5_py_min_$SEED --export=ARCHITECTURE=efficientnet_b0,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,GPUS=1,SEED=$SEED $TRAIN_JOB
 
 # otherwise full hardware (standard setup) - 2 gpus, mixed precision
-# sbatch --job-name=dr5_py_gr_$SEED --export=ARCHITECTURE=efficientnet_b0,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+sbatch --job-name=dr5_py_gr_$SEED --export=ARCHITECTURE=efficientnet_b0,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 # sbatch --job-name=dr5_py_co_$SEED --export=ARCHITECTURE=efficientnet_b0,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_decals_dr5,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,COLOR_STRING=--color,SEED=$SEED $TRAIN_JOB
 
 # new - all galaxies
