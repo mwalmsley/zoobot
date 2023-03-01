@@ -288,6 +288,11 @@ def get_pytorch_encoder(
     """
     # num_classes=0 gives pooled encoder
     # https://github.com/rwightman/pytorch-image-models/blob/main/timm/models/efficientnet.py
+    
+    # support older code that didn't specify effnet version
+    if architecture_name == 'efficientnet':
+        logging.warning('efficientnet variant not specified - please set architecture_name=efficientnet_b0 (or similar)')
+        architecture_name = 'efficientnet_b0'
     return timm.create_model(architecture_name, in_chans=channels, num_classes=0, pretrained=use_imagenet_weights, **timm_kwargs)
 
 
