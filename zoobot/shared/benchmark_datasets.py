@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from zoobot.shared import label_metadata, schemas
+from zoobot.shared import schemas
 
 
 def get_gz_decals_dr5_benchmark_dataset(data_dir, random_state, download):
@@ -17,10 +17,7 @@ def get_gz_decals_dr5_benchmark_dataset(data_dir, random_state, download):
     train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
     test_catalog = canonical_test_catalog.copy()
 
-
-    question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # dr5
-    dependencies = label_metadata.decals_ortho_dependencies
-    schema = schemas.Schema(question_answer_pairs, dependencies)
+    schema = schemas.decals_dr5_ortho_schema
     logging.info('Schema: {}'.format(schema))
 
     return schema, (train_catalog, val_catalog, test_catalog)
