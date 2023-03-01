@@ -253,7 +253,7 @@ def train_default_zoobot_from_scratch(
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
     # to make this work, ZoobotLightningModule can only take "normal" parameters (e.g. not custom objects) so has quite a few args
     logging.info('Returning model from checkpoint: {}'.format(best_model_path))
-    define_model.ZoobotLightningModule.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
+    define_model.ZoobotTree.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 

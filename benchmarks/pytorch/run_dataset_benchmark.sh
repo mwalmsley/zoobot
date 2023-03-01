@@ -26,6 +26,8 @@ nvidia-smi
 
 export NCCL_DEBUG=INFO
 
+PYTORCH_KERNEL_CACHE_PATH=/share/nas2/walml/.cache/torch/kernels
+
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_torch/bin/python
 
