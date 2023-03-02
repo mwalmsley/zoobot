@@ -104,6 +104,6 @@ setuptools.setup(
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
         'setuptools==59.5.0',  # wandb logger incompatibility
-        'galaxy-datasets==0.0.7'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
+        'galaxy-datasets==0.0.8'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
     ]
 )
