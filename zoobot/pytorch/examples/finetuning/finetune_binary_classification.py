@@ -28,7 +28,7 @@ if __name__ == '__main__':
    
     # load a pretrained checkpoint saved here
     # checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
-    checkpoint_loc = '/Users/user/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_15366/checkpoints/epoch=0-step=321.ckpt'
+    checkpoint_loc = '/Users/user/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_15366/checkpoints/epoch=58-step=18939.ckpt'
     
     # save the finetuning results here
     save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
