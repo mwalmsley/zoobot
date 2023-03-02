@@ -252,7 +252,7 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
 
     def __init__(
         self,
-        schema=None,
+        schema,
         **super_kwargs
 
     ):
