@@ -28,7 +28,7 @@ setuptools.setup(
             'torch == 1.12.1+cpu',
             'torchvision == 0.13.1+cpu',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.8.3.post1',  # tensorboard/protobuf issue fixed now
+            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
@@ -41,7 +41,7 @@ setuptools.setup(
             'torch == 1.12.1',
             'torchvision == 0.13.1',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.8.3.post1',  # tensorboard/protobuf issue fixed now
+            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
@@ -55,14 +55,14 @@ setuptools.setup(
             'torch == 1.12.1+cu113',
             'torchvision == 0.13.1+cu113',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.8.3.post1',
+            'pytorch-lightning>=1.9.4',
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0'
         ],
         'pytorch_colab': [
-            'pytorch-lightning>=1.8.3.post1',
+            'pytorch-lightning>=1.9.4',
             'simplejpeg',
             'albumentations',
             'pyro-ppl>=1.8.0',

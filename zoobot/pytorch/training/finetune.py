@@ -187,7 +187,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
 
     def __init__(
             self,
-            label_dim: int,
+            num_classes: int,
             label_smoothing=0.,
             **super_kwargs) -> None:
 
@@ -196,7 +196,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         logging.info('Using classification head and cross-entropy loss')
         self.head = LinearClassifier(
             input_dim=self.encoder_dim,
-            output_dim=label_dim,
+            output_dim=num_classes,
             dropout_prob=self.dropout_prob
         )
         self.label_smoothing = label_smoothing
@@ -291,9 +291,15 @@ class LinearClassifier(torch.nn.Module):
         self.linear = torch.nn.Linear(input_dim, output_dim)
 
     def forward(self, x):
+        # returns logits, as recommended for CrossEntropy loss
         x = self.dropout(x)
         x = self.linear(x)
         return x
+
+    def predict_step(self, x):
+        x = self.forward(x)  # logits
+        # then applies softmax
+        return F.softmax(x, dim=1)[:, 1]
 
 
 def cross_entropy_loss(y, y_pred, label_smoothing=0.):

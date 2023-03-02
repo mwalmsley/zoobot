@@ -16,13 +16,13 @@ if __name__ == '__main__':
     # each catalog should be a dataframe with columns of "id_str", "file_loc", and any labels
     # here I'm using galaxy-datasets to download some premade data - check it out for examples
     data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'
-    train_catalog, label_cols = demo_rings(root=data_dir, download=True, train=True)
+    train_catalog, _ = demo_rings(root=data_dir, download=True, train=True)
     test_catalog, _ = demo_rings(root=data_dir, download=True, train=False)
-
 
     # wondering about "label_cols"? 
     # This is a list of catalog columns which should be used as labels
-    # Here:   label_cols = ['ring']
+    # Here:
+    label_cols = ['ring']
     # For binary classification, the label column should have binary (0 or 1) labels for your classes
     # To support more complicated labels, Zoobot expects a list of columns. A list with one element works fine.
    
@@ -45,10 +45,14 @@ if __name__ == '__main__':
     #   exit()
 
   
-    model = finetune.FinetuneableZoobotClassifier(checkpoint_loc=checkpoint_loc, label_dim=2)
+    model = finetune.FinetuneableZoobotClassifier(
+      checkpoint_loc=checkpoint_loc,
+      num_classes=2,
+      n_layers=0  # only updating the head weights. Set e.g. 1, 2 to finetune deeper. 
+    )
     # under the hood, this does:
     # encoder = finetune.load_pretrained_encoder(checkpoint_loc)
-    # model = finetune.FinetuneableZoobotClassifier(encoder=encoder, label_dim=2)
+    # model = finetune.FinetuneableZoobotClassifier(encoder=encoder, ...)
 
     # retrain to find rings
     trainer = finetune.get_trainer(save_dir, accelerator='cpu', max_epochs=1)
