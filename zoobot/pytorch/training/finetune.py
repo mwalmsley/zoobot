@@ -225,6 +225,13 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
 
         return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
 
+    
+    def predict_step(self, x, batch_idx):
+        # assert False
+        x = self.forward(x)  # logits from LinearClassifier
+        # then applies softmax
+        return F.softmax(x, dim=1)[:, 1]
+
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       # self.logger is set by pl.Trainer(logger=) argument
@@ -295,11 +302,6 @@ class LinearClassifier(torch.nn.Module):
         x = self.dropout(x)
         x = self.linear(x)
         return x
-
-    def predict_step(self, x):
-        x = self.forward(x)  # logits
-        # then applies softmax
-        return F.softmax(x, dim=1)[:, 1]
 
 
 def cross_entropy_loss(y, y_pred, label_smoothing=0.):
