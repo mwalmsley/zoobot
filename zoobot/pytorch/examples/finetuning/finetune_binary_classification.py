@@ -10,12 +10,12 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    zoobot_dir = '/home/walml/repos/zoobot'  # TODO set to directory where you cloned Zoobot
+    zoobot_dir = '/Users/user/repos/zoobot'  # TODO set to directory where you cloned Zoobot
 
     # load in catalogs of images and labels to finetune on
     # each catalog should be a dataframe with columns of "id_str", "file_loc", and any labels
     # here I'm using galaxy-datasets to download some premade data - check it out for examples
-    data_dir = '/home/walml/repos/galaxy-datasets/roots/demo_rings'
+    data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'
     train_catalog, label_cols = demo_rings(root=data_dir, download=True, train=True)
     test_catalog, _ = demo_rings(root=data_dir, download=True, train=False)
 
@@ -27,7 +27,8 @@ if __name__ == '__main__':
     # To support more complicated labels, Zoobot expects a list of columns. A list with one element works fine.
    
     # load a pretrained checkpoint saved here
-    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
+    # checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
+    checkpoint_loc = '/Users/user/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_15366/checkpoints/epoch=0-step=321.ckpt'
     
     # save the finetuning results here
     save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
@@ -37,41 +38,27 @@ if __name__ == '__main__':
       catalog=train_catalog,
       batch_size=32
     )
-
     # datamodule.setup()
     # for images, labels in datamodule.train_dataloader():
     #   print(images.shape)
     #   print(labels.shape)
     #   exit()
 
-    config = {
-        'trainer': {
-            'devices': 1,
-            'accelerator': 'cpu'
-        },
-        'finetune': {
-            'encoder_dim': 1280,
-            'label_dim': 2,
-            'n_epochs': 100,
-            'n_layers': 2,
-            'label_mode': 'classification',
-            'learning_rate': 3e-4,
-            'lr_decay': 0.75,
-            'dropout_prob': 0.5,
-            'prog_bar': True
-        }
-    }
+  
+    model = finetune.FinetuneableZoobotClassifier(checkpoint_loc=checkpoint_loc, label_dim=2)
+    # under the hood, this does:
+    # encoder = finetune.load_pretrained_encoder(checkpoint_loc)
+    # model = finetune.FinetuneableZoobotClassifier(encoder=encoder, label_dim=2)
 
-    encoder = finetune.load_encoder(checkpoint_loc)
-
-    _finetuned_model, best_checkpoint_path = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
-
+    # retrain to find rings
+    trainer = finetune.get_trainer(save_dir, accelerator='cpu', max_epochs=1)
+    trainer.fit(model, datamodule)
     # can now use this model or saved checkpoint to make predictions on new data. Well done!
 
     # pretending we want to load from scratch:
-    finetuned_model = finetune.FinetunedZoobotLightningModule.load_from_checkpoint(best_checkpoint_path)
+    best_checkpoint = trainer.checkpoint_callback.best_model_path
+    finetuned_model = finetune.FinetuneableZoobotClassifier.load_from_checkpoint(best_checkpoint)
 
-    # or using the convenient zoobot function
     from zoobot.pytorch.predictions import predict_on_catalog
 
     predict_on_catalog.predict(
@@ -82,9 +69,6 @@ if __name__ == '__main__':
       save_loc=os.path.join(save_dir, 'finetuned_predictions.csv')
       # trainer_kwargs={'accelerator': 'gpu'}
     )
-
-
-
     """
     Under the hood, this is essentially doing:
 

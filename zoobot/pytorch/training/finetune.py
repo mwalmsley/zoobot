@@ -10,11 +10,9 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 
 import torch
-from torch import Tensor
 import torch.nn.functional as F
 import torchmetrics as tm
 
-from zoobot.pytorch.estimators import efficientnet_custom
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
 
@@ -31,26 +29,7 @@ def freeze_batchnorm_layers(model):
             freeze_batchnorm_layers(child)  # recurse
 
 
-class ZoobotEncoder(pl.LightningModule):
-    # very simple wrapper to turn pytorch model into lightning module#
-    # useful when we want to use lightning to make predictions with our encoder
-    # (i.e. to get representations)
-
-    def __init__(self, encoder) -> None:
-        super().__init__()
-        self.encoder = encoder  # plain pytorch module e.g. Sequential
-
-    @classmethod
-    def load_from_checkpoint(cls, loc):
-      # allows for ZoobotEncoder.load_from_checkpoint(loc), in the style of Lightning e.g. FinetunedZoobotLightningModule below
-      # TODO need to check this works for both base zoobot and the finetuned versions below
-        return ZoobotEncoder(load_pytorch_encoder_from_zoobot_lightning_checkpoint(checkpoint_loc=loc))
-
-    def forward(self, x):
-        return self.encoder(x)
-
-
-class FinetuneableZoobotAbstract():
+class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def __init__(
         self,
@@ -85,7 +64,7 @@ class FinetuneableZoobotAbstract():
 
         if checkpoint_loc is not None:
           assert encoder is None, 'Cannot pass both checkpoint to load and encoder to use'
-          self.encoder = ZoobotEncoder.load_from_checkpoint(checkpoint_loc)
+          self.encoder = load_pretrained_encoder(checkpoint_loc)
         else:
           assert checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
           self.encoder = encoder
@@ -145,7 +124,7 @@ class FinetuneableZoobotAbstract():
             return opt
 
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.encoder(x)
         x = self.head(x)
         return x
@@ -229,7 +208,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
 
 
     def training_step(self, batch, batch_idx):
-        y, y_pred, loss = self.make_step(self, batch)
+        y, y_pred, loss = self.make_step(batch)
 
         # calculate metrics
         y_class_preds = torch.argmax(y_pred, axis=1)
@@ -239,7 +218,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
 
     
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
-        y, y_pred, loss = self.make_step(self, batch)
+        y, y_pred, loss = self.make_step(batch)
 
         y_class_preds = torch.argmax(y_pred, axis=1)
         self.val_acc(y_class_preds, y)
@@ -287,12 +266,12 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
         self.loss = define_model.get_dirichlet_loss_func(self.schema.question_index_groups)
 
     def training_step(self, batch, batch_idx):
-        y, y_pred, loss = self.make_step(self, batch)
+        y, y_pred, loss = self.make_step(batch)
         return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
 
     def validation_step(self, batch, batch_idx, dataloader_idx=0):
       # now identical to above
-        y, y_pred, loss = self.make_step(self, batch)
+        y, y_pred, loss = self.make_step(batch)
         return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
 
     def test_step(self, batch, batch_idx, dataloader_idx=0):
@@ -342,29 +321,15 @@ class FinetunedZoobotLightningModuleBaseline(FinetuneableZoobotClassifier):
         return torch.optim.AdamW(head_params + encoder_params, lr=self.learning_rate)
 
 
-def load_pytorch_encoder_from_zoobot_lightning_checkpoint(checkpoint_loc: str) -> torch.nn.Sequential:
-
-    model = define_model.ZoobotLightningModule.load_from_checkpoint(
-        checkpoint_loc)  # or .best_model_path, eventually
-    """
-    Model:  ZoobotLightningModule(
-    (train_accuracy): Accuracy()
-    (val_accuracy): Accuracy()
-    (model): Sequential(
-      (0): EfficientNet(
-    """
-    encoder = model.get_submodule('model.0')  # includes avgpool and head
-    # because we got submodule, this is now a plain pytorch Sequential and NOT a LightningModule any more
-    # wrap with ZoobotEncoder if you want LightningModule
-    # e.g. ZoobotEncoder.load_from_checkpoint(checkpoint_loc)
-    return encoder
-
+def load_pretrained_encoder(checkpoint_loc: str) -> torch.nn.Sequential:
+    return define_model.ZoobotTree.load_from_checkpoint(
+        checkpoint_loc).encoder
 
 def get_trainer(
     save_dir,
     file_template="{epoch}",
     save_top_k=1,
-    n_epochs=100,
+    max_epochs=100,
     patience=10,
     devices=None,
     accelerator='auto',
@@ -397,10 +362,9 @@ def get_trainer(
     trainer = pl.Trainer(
         logger=logger,
         callbacks=[checkpoint_callback, early_stopping_callback],
-        max_epochs=n_epochs,
+        max_epochs=max_epochs,
         accelerator=accelerator,
         devices=devices,
-        n_epochs=n_epochs,
         **trainer_kwargs,
     )
 
