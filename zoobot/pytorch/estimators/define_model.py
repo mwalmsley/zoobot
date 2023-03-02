@@ -133,6 +133,7 @@ class ZoobotTree(GenericLightningModule):
         learning_rate=1e-3,  # PyTorch default
         # optim args
         betas=(0.9, 0.999),  # PyTorch default
+        weight_decay=0.01,  # AdamW PyTorch default
         scheduler_params={}  # no scheduler by default
         ):
 
@@ -148,6 +149,7 @@ class ZoobotTree(GenericLightningModule):
             dropout_rate,
             learning_rate,
             betas,
+            weight_decay,
             scheduler_params
         )
 
@@ -157,6 +159,7 @@ class ZoobotTree(GenericLightningModule):
         # TODO refactor to optimizer params
         self.learning_rate = learning_rate
         self.betas = betas
+        self.weight_decay = weight_decay
         self.scheduler_params = scheduler_params
 
         self.encoder = get_pytorch_encoder(
@@ -197,7 +200,12 @@ class ZoobotTree(GenericLightningModule):
     def configure_optimizers(self):
         # designed for training from scratch
         # parameters = list(self.head.parameters()) + list(self.encoder.parameters()) TODO should happen automatically?
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate, betas=self.betas)  
+        optimizer = torch.optim.AdamW(
+            self.parameters(),
+            lr=self.learning_rate,
+            betas=self.betas,
+            weight_decay=self.weight_decay
+        )  
         if self.scheduler_params.get('name', None) == 'plateau':
             logging.info(f'Using Plateau scheduler with {self.scheduler_params}')
             # TODO could generalise this if needed

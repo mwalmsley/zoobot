@@ -31,6 +31,7 @@ def train_default_zoobot_from_scratch(
     drop_connect_rate=0.2,
     learning_rate=1e-3,
     betas=(0.9, 0.999),
+    weight_decay=0.01,
     scheduler_params={},
     # data and augmentation parameters
     color=False,
@@ -182,6 +183,7 @@ def train_default_zoobot_from_scratch(
         learning_rate=learning_rate,
         timm_kwargs={'drop_path_rate': drop_connect_rate},
         betas=betas,
+        weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
 
