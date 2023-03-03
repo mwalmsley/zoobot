@@ -8,15 +8,15 @@ import torch
 import pytorch_lightning as pl
 
 from zoobot.shared import save_predictions
-from pytorch_galaxy_datasets.galaxy_datamodule import GalaxyDataModule
+from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 
-def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str, datamodule_kwargs, trainer_kwargs):
+def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, label_cols: List, save_loc: str, datamodule_kwargs={}, trainer_kwargs={}):
 
-    image_id_strs = list(catalog['id_str'])
+    image_id_strs = list(catalog['id_str'].astype(str))
 
     predict_datamodule = GalaxyDataModule(
-        label_cols=label_cols,
+        label_cols=None,  # not using label_cols to load labels, we're only using it to name our predictions
         predict_catalog=catalog,  # no need to specify the other catalogs
         # will use the default transforms unless overridden with datamodule_kwargs
         # 
@@ -25,10 +25,15 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     # with this stage arg, will only use predict_catalog 
     # crucial to specify the stage, or will error (as missing other catalogs)
     predict_datamodule.setup(stage='predict')  
+    # for images in predict_datamodule.predict_dataloader():
+    #     print(images)
+    #     print(images.shape)
+
 
     # set up trainer (again)
     trainer = pl.Trainer(
         max_epochs=-1,  # does nothing in this context, suppresses warning
+        inference_mode=True,  # no grads needed
         **trainer_kwargs  # e.g. gpus
     )
 
@@ -43,7 +48,7 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     # trainer.predict gives list of tensors, each tensor being predictions for a batch. Concat on axis 0.
     # range(n_samples) list comprehension repeats this, for dropout-permuted predictions. Stack to create new last axis.
     # final shape (n_galaxies, n_answers, n_samples)
-    predictions = torch.stack([torch.concat(trainer.predict(model, predict_datamodule), dim=0) for n in range(n_samples)], dim=2).numpy()
+    predictions = torch.stack([torch.concat(trainer.predict(model, predict_datamodule), dim=0) for n in range(n_samples)], dim=-1).numpy()
     logging.info('Predictions complete - {}'.format(predictions.shape))
 
     logging.info(f'Saving predictions to {save_loc}')

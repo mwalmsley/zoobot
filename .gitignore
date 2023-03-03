@@ -158,6 +158,9 @@ data/example_images/advanced_old
 data/external
 *.jpg
 *.tar.gz
+data/example_images/cosmic_dawn
+data/cosmic_dawn*.parquet
 
-# custom training script in root of image
-train_model_on_catalog.py
+results
+
+hparams.yaml

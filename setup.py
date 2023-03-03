@@ -20,29 +20,68 @@ setuptools.setup(
         "Environment :: GPU :: NVIDIA CUDA"
     ],
     packages=setuptools.find_packages(),
-    python_requires=">=3.7",  # tf 2.8.0 requires Python 3.7 and above
+    python_requires=">=3.8",  # recommend 3.9 for new users. TF needs >=3.7.2, torchvision>=3.8
     extras_require={
-        'pytorch': [
-            'torch == 1.10.1',
-            'torchvision == 0.11.2',
-            'torchaudio == 0.10.1',
-            'pytorch-lightning==1.6.5',  # 1.7 requires protobuf version incompatible with tensorflow/tensorboard. Otherwise works.
+        'pytorch_cpu': [
+            # A100 GPU currently only seems to support cuda 11.3 on manchester cluster, let's stick with this version for now
+            # very latest version wants cuda 11.6
+            'torch == 1.12.1+cpu',
+            'torchvision == 0.13.1+cpu',
+            'torchaudio == 0.12.1',
+            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
-            'pytorch-galaxy-datasets == 0.0.1'
+            'torchmetrics == 0.11.0',
+            'timm'
+        ],
+        'pytorch_m1': [
+            # as above but without the +cpu (and the extra-index-url in readme has no effect)
+            # all matching pytorch versions for an m1 system will be cpu
+            'torch == 1.12.1',
+            'torchvision == 0.13.1',
+            'torchaudio == 0.12.1',
+            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl == 1.8.0',
+            'torchmetrics == 0.11.0',
+            'timm'
+        ],
+        # as above but without pytorch itself
+        # for GPU, you will also need e.g. cudatoolkit=11.3, 11.6
+        # https://pytorch.org/get-started/previous-versions/#v1121
+        'pytorch_cu113': [
+            'torch == 1.12.1+cu113',
+            'torchvision == 0.13.1+cu113',
+            'torchaudio == 0.12.1',
+            'pytorch-lightning>=1.9.4',
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl == 1.8.0',
+            'torchmetrics == 0.11.0',
+            'timm'
+        ],
+        'pytorch_colab': [
+            'pytorch-lightning>=1.9.4',
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl>=1.8.0',
+            'torchmetrics==0.11.0',
+            'timm'
         ],
         'tensorflow': [
-            'tensorflow >= 2.8',
+            'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
-            'tensorflow_probability >= 0.11',
+            'tensorflow_probability == 0.18.0',  # 0.19 requires tf 2.11
             'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
+        # for GPU, you will also need cudatoolkit=11.2 and cudnn=8.1.0 (note - 11.3 NOT supported by TF)
+        # https://www.tensorflow.org/install/pip#step-by-step_instructions
         'utilities': [
             'seaborn',  # for nice plots
             'boto3',    # for AWs s3 access
-            'python-dateutil == 2.8.1',  # for boto3
-            'astropy' # for reading .fits (not yet implemented, but likely to be added)
+            'python-dateutil == 2.8.1',  # for boto3  
         ],
         'docs': [
             'Sphinx',
@@ -52,17 +91,20 @@ setuptools.setup(
         ]
     },
     install_requires=[
+        'h5py',
         'tqdm',
         'pillow',
         'numpy',
         'pandas',
         'scipy',
+        'astropy',  # for reading fits
         'scikit-image >= 0.19.2',
         'scikit-learn >= 1.0.2',
         'matplotlib',
         'pyarrow',  # to read parquet, which is very handy for big datasets
-        'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
-        'wandb'
+        'wandb',
+        'setuptools==59.5.0',  # wandb logger incompatibility
+        'galaxy-datasets==0.0.11'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
     ]
 )
