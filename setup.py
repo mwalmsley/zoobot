@@ -28,11 +28,25 @@ setuptools.setup(
             'torch == 1.12.1+cpu',
             'torchvision == 0.13.1+cpu',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.8.3.post1',  # tensorboard/protobuf issue fixed now
+            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
-            'torchmetrics == 0.11.0'
+            'torchmetrics == 0.11.0',
+            'timm'
+        ],
+        'pytorch_m1': [
+            # as above but without the +cpu (and the extra-index-url in readme has no effect)
+            # all matching pytorch versions for an m1 system will be cpu
+            'torch == 1.12.1',
+            'torchvision == 0.13.1',
+            'torchaudio == 0.12.1',
+            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl == 1.8.0',
+            'torchmetrics == 0.11.0',
+            'timm'
         ],
         # as above but without pytorch itself
         # for GPU, you will also need e.g. cudatoolkit=11.3, 11.6
@@ -41,11 +55,20 @@ setuptools.setup(
             'torch == 1.12.1+cu113',
             'torchvision == 0.13.1+cu113',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.8.3.post1',
+            'pytorch-lightning>=1.9.4',
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
-            'torchmetrics == 0.11.0'
+            'torchmetrics == 0.11.0',
+            'timm'
+        ],
+        'pytorch_colab': [
+            'pytorch-lightning>=1.9.4',
+            'simplejpeg',
+            'albumentations',
+            'pyro-ppl>=1.8.0',
+            'torchmetrics==0.11.0',
+            'timm'
         ],
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
@@ -58,8 +81,7 @@ setuptools.setup(
         'utilities': [
             'seaborn',  # for nice plots
             'boto3',    # for AWs s3 access
-            'python-dateutil == 2.8.1',  # for boto3
-            'astropy' # for reading .fits (not yet implemented, but likely to be added)
+            'python-dateutil == 2.8.1',  # for boto3  
         ],
         'docs': [
             'Sphinx',
@@ -75,14 +97,14 @@ setuptools.setup(
         'numpy',
         'pandas',
         'scipy',
+        'astropy',  # for reading fits
         'scikit-image >= 0.19.2',
         'scikit-learn >= 1.0.2',
         'matplotlib',
         'pyarrow',  # to read parquet, which is very handy for big datasets
-        'statsmodels',
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
         'setuptools==59.5.0',  # wandb logger incompatibility
-        'galaxy-datasets==0.0.5'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
+        'galaxy-datasets==0.0.11'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
     ]
 )

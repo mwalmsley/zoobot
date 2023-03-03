@@ -3,7 +3,8 @@ import os
 
 from galaxy_datasets import demo_rings
 
-from zoobot.pytorch.training import finetune
+from zoobot.pytorch.training import finetune, representations
+from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared import load_predictions
 
@@ -15,7 +16,13 @@ def main(catalog, checkpoint_loc, save_dir):
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
-    model = finetune.ZoobotEncoder.load_from_checkpoint(checkpoint_loc)
+    # can load from either ZoobotTree (if trained from scratch) or FinetuneableZoobotTree (if finetuned)
+    encoder = finetune.FinetuneableZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
+    # encoder = define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
+
+    # convert to simple pytorch lightning model
+    model = representations.ZoobotEncoder(encoder=encoder, pyramid=False)
+
     label_cols = [f'feat_{n}' for n in range(1280)]
     save_loc = os.path.join(save_dir, 'representations.hdf5')
 

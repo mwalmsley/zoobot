@@ -25,6 +25,7 @@ pwd; hostname; date
 nvidia-smi
 
 export NCCL_DEBUG=INFO
+export PYTORCH_KERNEL_CACHE_PATH=/share/nas2/walml/.cache/torch/kernels
 
 ZOOBOT_DIR=/share/nas2/walml/repos/zoobot
 PYTHON=/share/nas2/walml/miniconda3/envs/zoobot38_torch/bin/python
@@ -49,7 +50,7 @@ echo $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py 
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop $RESIZE_AFTER_CROP \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \
@@ -64,7 +65,7 @@ srun $PYTHON $ZOOBOT_DIR/benchmarks/pytorch/train_model_on_benchmark_dataset.py 
     --data-dir $DATA_DIR \
     --dataset $DATASET \
     --architecture $ARCHITECTURE \
-    --resize-after-crop 224 \
+    --resize-after-crop $RESIZE_AFTER_CROP \
     --batch-size $BATCH_SIZE \
     --gpus $GPUS \
     --nodes $NODES \

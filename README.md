@@ -1,7 +1,9 @@
 # Zoobot
 
 [![Documentation Status](https://readthedocs.org/projects/zoobot/badge/?version=latest)](https://zoobot.readthedocs.io/)
-[![Build Status](https://app.travis-ci.com/mwalmsley/zoobot.svg?branch=main)](https://app.travis-ci.com/mwalmsley/zoobot)
+![build](https://github.com/mwalmsley/zoobot/actions/workflows/run_CI.yml/badge.svg)
+![publiish](https://github.com/mwalmsley/zoobot/actions/workflows/python-publish.yml/badge.svg)
+[![PyPI](https://badge.fury.io/py/zoobot.svg)](https://badge.fury.io/py/zoobot)
 [![DOI](https://zenodo.org/badge/343787617.svg)](https://zenodo.org/badge/latestdoi/343787617)
 <a href="https://ascl.net/2203.027"><img src="https://img.shields.io/badge/ascl-2203.027-blue.svg?colorB=262255" alt="ascl:2203.027" /></a>
 
@@ -34,10 +36,13 @@ And then pick one of the three commands below to install Zoobot and either PyTor
     # OR Zoobot with PyTorch and no GPU
     pip install -e "zoobot[pytorch_cpu]" --extra-index-url https://download.pytorch.org/whl/cpu
 
-    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2.
+    # OR Zoobot with PyTorch on Mac with M1 chip
+    pip install -e "zoobot[pytorch_m1]"
+
+    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2. 
     pip install -e "zoobot[tensorflow]
 
-This installs the downloaded Zoobot code using pip [editable mode](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) so you can easily change the code locally. Zoobot is also available directly from pip (`pip install zoobot[option]`). Only use this if you are sure you won't be making changes to Zoobot itself.
+This installs the downloaded Zoobot code using pip [editable mode](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) so you can easily change the code locally. Zoobot is also available directly from pip (`pip install zoobot[option]`). Only use this if you are sure you won't be making changes to Zoobot itself. For Google Colab, use `pip install zoobot[pytorch_colab]`
 
 To use a GPU, you must *already* have CUDA installed and matching the versions above.
 I share my install steps [here](#install_cuda). GPUs are optional - Zoobot will run retrain fine on CPU, just slower.
@@ -62,19 +67,12 @@ Let's say you want to find ringed galaxies and you have a small labelled dataset
       batch_size=32
     )
 
-    config = {
-        'finetune': {
-            'label_dim': 2,
-            'label_mode': 'classification',
-            'n_epochs': 100
-        }
-    }
-
     # load trained Zoobot model
-    encoder = finetune.load_encoder(checkpoint_loc)  
-
+    model = finetune.FinetuneableZoobotClassifier(checkpoint_loc, num_classes=2)  
+    
     # retrain to find rings
-    _, finetuned_model = finetune.run_finetuning(config, encoder, datamodule, save_dir, logger=None)
+    trainer = finetune.get_trainer(save_dir)
+    trainer.fit(model, datamodule)
 ```
 
 Then you can make predict if new galaxies have rings:
@@ -87,7 +85,7 @@ Then you can make predict if new galaxies have rings:
 
     predict_on_catalog.predict(
       unlabelled_df,
-      finetuned_model,
+      model,
       label_cols=['ring'],  # only used for 
       save_loc='/your/path/finetuned_predictions.csv'
     )
@@ -107,8 +105,10 @@ For pretrained model weights, precalculated representations, catalogues, and so 
 ### Worked Examples
 <a name="worked_examples"></a>
 
-PyTorch:
+PyTorch (recommended):
 - [pytorch/examples/finetuning/finetune_binary_classification.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py)
+- [pytorch/examples/finetuning/finetune_counts_full_tree.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py)
+- [pytorch/examples/representations/get_representations.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/representations/get_representations.py)
 - [pytorch/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/train_model_on_catalog.py) (only necessary to train from scratch)
 
 TensorFlow:
@@ -117,11 +117,13 @@ TensorFlow:
 - [tensorflow/examples/finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py)
 - [tensorflow/examples/finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py)
 
-I also include some examples which record how the models in W+22a (the GZ DECaLS data release) were trained:
-- [benchmarks/tensorflow/train_model_on_benchmark_dataset.py](https://github.com/mwalmsley/zoobot/blob/main/benchmarks/tensorflow/train_model_on_benchmark_dataset.py)
-- [benchmarks/pytorch/train_model_on_benchmark_dataset.py](https://github.com/mwalmsley/zoobot/blob/main/benchmarks/pytorch/train_model_on_benchmark_dataset.py)
+There is more explanation and an API reference on the [docs](https://zoobot.readthedocs.io/).
 
-There's also the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb), which describes Zoobot's statistical predictions. When trained from scratch, it predicts the parameters for distributions, not simple class labels!
+I also [include](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) the scripts used to create and benchmark our pretrained models. Many pretrained models are available [already](https://zoobot.readthedocs.io/data_notes.html), but if you need one trained on e.g. different input image sizes or with a specific architecture, I can probably make it for you.
+
+When trained with a decision tree head (ZoobotTree, FinetuneableZoobotTree), Zoobot can learn from volunteer labels of varying confidence and predict posteriors for what the typical volunteer might say. Specifically, this Zoobot mode predicts the parameters for distributions, not simple class labels! For a demonstration of how to interpret these predictions, see the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb).
+
+
 
 ### (Optional) Install PyTorch or TensorFlow, with CUDA
 <a name="install_cuda"></a>
@@ -175,3 +177,4 @@ You might be interested in reading papers using Zoobot:
 - [A Comparison of Deep Learning Architectures for Optical Galaxy Morphology Classification](https://arxiv.org/abs/2111.04353)
 - [Towards Foundation Models for Galaxy Morphology](https://arxiv.org/abs/2206.11927) (adding contrastive learning)
 - [Harnessing the Hubble Space Telescope Archives: A Catalogue of 21,926 Interacting Galaxies](https://arxiv.org/abs/2303.00366)
+

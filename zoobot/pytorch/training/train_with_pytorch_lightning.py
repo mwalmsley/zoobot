@@ -25,12 +25,13 @@ def train_default_zoobot_from_scratch(
     epochs=1000,
     patience=8,
     # model hparams
-    architecture_name='efficientnet',  # recently changed
+    architecture_name='efficientnet_b0',  # recently changed
     batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     learning_rate=1e-3,
     betas=(0.9, 0.999),
+    weight_decay=0.01,
     scheduler_params={},
     # data and augmentation parameters
     color=False,
@@ -136,22 +137,23 @@ def train_default_zoobot_from_scratch(
             'test_catalog': test_catalog  # may be None
         }
 
-    wandb_logger.log_hyperparams({
-        'random_state': random_state,
-        'epochs': epochs,
-        'accelerator': accelerator,
-        'gpus': gpus,
-        'nodes': nodes,
-        'precision': precision,
-        'batch_size': batch_size,
-        'greyscale': not color,
-        'crop_scale_bounds': crop_scale_bounds,
-        'crop_ratio_bounds': crop_ratio_bounds,
-        'resize_after_crop': resize_after_crop,
-        'num_workers': num_workers,
-        'prefetch_factor': prefetch_factor,
-        'framework': 'pytorch'
-    })
+    if wandb_logger is not None:
+        wandb_logger.log_hyperparams({
+            'random_state': random_state,
+            'epochs': epochs,
+            'accelerator': accelerator,
+            'gpus': gpus,
+            'nodes': nodes,
+            'precision': precision,
+            'batch_size': batch_size,
+            'greyscale': not color,
+            'crop_scale_bounds': crop_scale_bounds,
+            'crop_ratio_bounds': crop_ratio_bounds,
+            'resize_after_crop': resize_after_crop,
+            'num_workers': num_workers,
+            'prefetch_factor': prefetch_factor,
+            'framework': 'pytorch'
+        })
 
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
@@ -170,18 +172,18 @@ def train_default_zoobot_from_scratch(
     datamodule.setup(stage='fit')
 
     # these args are automatically logged
-    lightning_model = define_model.ZoobotLightningModule(
+    lightning_model = define_model.ZoobotTree(
         output_dim=len(schema.label_cols),
         question_index_groups=schema.question_index_groups,
-        include_top=True,
+        architecture_name=architecture_name,
         channels=channels,
         use_imagenet_weights=False,
         test_time_dropout=True,
         dropout_rate=dropout_rate,
-        drop_connect_rate=drop_connect_rate,
-        architecture_name=architecture_name,
         learning_rate=learning_rate,
+        timm_kwargs={'drop_path_rate': drop_connect_rate},
         betas=betas,
+        weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
 
@@ -253,7 +255,7 @@ def train_default_zoobot_from_scratch(
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
     # to make this work, ZoobotLightningModule can only take "normal" parameters (e.g. not custom objects) so has quite a few args
     logging.info('Returning model from checkpoint: {}'.format(best_model_path))
-    define_model.ZoobotLightningModule.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
+    define_model.ZoobotTree.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 
