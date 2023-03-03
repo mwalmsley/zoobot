@@ -12,14 +12,14 @@ authors:
     orcid: 0000-0002-6408-4181
     corresponding: true
     equal-contrib: false
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+    affiliation: 1 # (Multiple affiliations must be quoted)
   # people who wrote core code, alphabetical
   - name: Cambell Allen
     equal-contrib: true
     affiliation: 2
   - name: Ben Aussel
     corresponding: false
-    affiliation: 1
+    affiliation: 3
     equal-contrib: true
   - name: Micah Bowles
     corresponding: false
@@ -29,17 +29,21 @@ authors:
     corresponding: false
     affiliation: 1
     equal-contrib: true
-  # people who supervised people who wrote code (alphabetical)
-  - name: Chris J. Lintott
-    corresponding: false
-    affiliation: 1
-  - name: Anna M. M. Scaife
-    corresponding: false
-    affiliation: 1
-  # heidelberg hackathon team who wrote code/helped test TODO alphabetical
+  # Kasia who helped write the docs
   - name: Kasia Gregorowicz
     corresponding: false
     affiliation: TODO
+  # people who supervised/funded/advised me (alphabetical)
+  - name: Chris J. Lintott
+    corresponding: false
+    affiliation: 4
+  - name: Anna M. M. Scaife
+    corresponding: false
+    affiliation: "1, 5"
+  # heidelberg hackathon team + devina, who wrote experimental code/helped test TODO alphabetical
+  - name: Devina Mohan
+    corresponding: false
+    affiliation: 1
   - name: Nicolás Guerra Varas
     corresponding: false
     affiliation: TODO
@@ -64,10 +68,6 @@ authors:
   - name: Renuka Velu
     corresponding: false
     affiliation: TODO
-  # people who 
-  # - name: Devina Mohan
-  #   corresponding: false
-  #   affiliation: 1
 
 affiliations:
  - name: Department of Physics and Astronomy, University of Manchester, Manchester, UK
@@ -76,9 +76,11 @@ affiliations:
    index: 2
  - name: MPIA
    index: 3
- - name: The Alan Turing Institute, Euston Road, London NW1 2DB, UK
+- name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
    index: 4
-date: 19 February 2023
+ - name: The Alan Turing Institute, London, UK
+   index: 5
+date: 03 March 2023
 bibliography: paper.bib
 
 ---
@@ -111,10 +113,11 @@ We hope that `Zoobot` will help astronomers use deep learning and the next gener
 
 # Statement of need
 <!-- A statement of need: Does the paper have a section titled ‘Statement of need’ that clearly states what problems the software is designed to solve, who the target audience is, and its relation to other work? -->
+<!-- State of the field: Do the authors describe how this software compares to other commonly-used packages? -->
 
 Astronomers aim to understand why galaxies look the way they do by measuring
 the appearance - morphology - of millions of galaxies [@Masters2019a]
-The sheer number of images requires most of these measurement to be made automatically with software [@Walmsley:2021].
+The sheer number of images requires most of these measurement to be made automatically with software [@Walmsley2020].
 
 Unfortunately, making automated measurements of complicated features like spiral arms is difficult because
 it is hard to write down a set of steps that reliably identify those and only those features.
@@ -128,21 +131,10 @@ Neither can most other people;
 terrestrial practictioners often start with a model already trained ("pretrained")
 on a broad generic task and then adapt it ("finetune") to their specific measurement task `[@https://doi.org/10.48550/arxiv.2104.10972].
 
-<!-- Zoobot by sharing models pre-trained
-Further, Zoobot 
-
-Zoobot is the first package for finetuning deep learning models on astronomical images.
-
-Zoobot is built on 
-
-new surveys -->
-
-<!-- State of the field: Do the authors describe how this software compares to other commonly-used packages? -->
-
-<!-- - `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)" -->
-
+Zoobot makes this approach available to astronomers.
+We provide models pretrained on galaxy images and a convenient API for finetuning those models.
+Early results [@Walmsley2022Towards,@https://doi.org/10.48550/arxiv.2303.00366] show that our pretrained models can be efficiently adapted to new morphology tasks.
+<!-- We will continue to improve our pretraining methods to create adaptable galaxy "foundation" models and to make those models available to the community via Zoobot. -->
 
 # Acknowledgements
 
