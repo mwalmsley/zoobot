@@ -3,8 +3,7 @@
 Pretrained Models
 =================
 
-Zoobot includes weights for pretrained models. 
-.. 
+Zoobot includes weights for the following pretrained models. 
 
 .. list-table:: PyTorch Models
    :widths: 70 35 35 35 35
@@ -90,12 +89,12 @@ All models are trained on the same images shown to Galaxy Zoo volunteers.
 These are typically 424 pixels across.
 The images are transformed using the galaxy-datasets default transforms (random off-center crop/zoom, flips, rotation) and then resized to the desired input size (224px or 300px) and, for 1-channel models, channel-averaged.
 
-We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.com/sh/asqia51m1u3ccl1/AAD2XZz-AtG-ZShLiPRBrRzqa?dl=0>`_. 
+We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.com/scl/fo/l1l7frgy12wtmsbm0hihb/h?dl=0&rlkey=sq5wevuhxs7ku5ki4cwhbhm5j>`_. 
 - EfficientNetB0 models pretrained only on GZ DECaLS GZD-5. For reference/comparison.
 - EfficientNetB0 models pretrained with smaller images (128px and 64px). For debugging.
 
 
-Which Model Should I Use?
+Which model should I use?
 --------------------------
 
 We suggest the PyTorch EfficientNetB0 single-channel 300-pixel model for most users.

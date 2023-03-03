@@ -1,5 +1,5 @@
 
-Code
+API
 ====
 
 We encourage you to explore the code directly.
