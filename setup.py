@@ -59,7 +59,8 @@ setuptools.setup(
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
-            'torchmetrics == 0.11.0'
+            'torchmetrics == 0.11.0',
+            'timm'
         ],
         'pytorch_colab': [
             'pytorch-lightning>=1.9.4',
