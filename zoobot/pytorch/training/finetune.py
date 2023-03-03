@@ -99,19 +99,24 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             params = [{"params": self.head.parameters(), "lr": lr}]
 
             # this bit is specific to Zoobot EffNet
-            # zoobot model is single Sequential()
-            effnet_with_pool = list(self.encoder.children())[0]
+            encoder_blocks = list(self.encoder.children())
 
-            layers = [layer for layer in effnet_with_pool.children(
-            ) if isinstance(layer, torch.nn.Sequential)]
-            layers.reverse()  # inplace. first element is now upper-most layer
-
+            # for n, l in enumerate(encoder_blocks):
+            #     print('\n')
+            #     print(n)
+            #     print(l)
+            
+            # layers with no parameters don't count
+            tuneable_blocks = [b for b in encoder_blocks if is_tuneable(b)]
+ 
             assert self.n_layers <= len(
-                layers
-            ), f"Network only has {len(layers)} layers, {self.n_layers} specified for finetuning"
+                tuneable_blocks
+            ), f"Network only has {len(tuneable_blocks)} tuneable blocks, {self.n_layers} specified for finetuning"
 
             # Append parameters of layers for finetuning along with decayed learning rate
-            for i, layer in enumerate(layers[: self.n_layers]):
+            blocks_to_tune = tuneable_blocks[:self.n_layers]
+            blocks_to_tune.reverse()  # highest block to lowest block
+            for i, layer in enumerate(blocks_to_tune):
                 params.append({
                     "params": layer.parameters(),
                     "lr": lr * (self.lr_decay**i)
@@ -134,7 +139,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
       # part of training/val/test for all subclasses
         x, y = batch
         y_pred = self.forward(x)
-        loss = self.loss(y, y_pred)
+        loss = self.loss(y_pred, y)
         # {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
         return y, y_pred, loss
 
@@ -304,18 +309,18 @@ class LinearClassifier(torch.nn.Module):
         return x
 
 
-def cross_entropy_loss(y, y_pred, label_smoothing=0.):
+def cross_entropy_loss(y_pred, y, label_smoothing=0.):
     # y should be shape (batch) and ints
     # y_pred should be shape (batch, classes)
-    # note the flipped arg order (sklearn convention in my func)
     # returns loss of shape (batch)
     # will reduce myself
     return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, reduction='none')
 
 
-def dirichlet_loss(y, y_pred, question_index_groups):
+def dirichlet_loss(y_pred, y, question_index_groups):
     # aggregation equiv. to sum(axis=1).mean(), but fewer operations
     # returns loss of shape (batch)
+    # my func uses sklearn convention y, y_pred
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
 
@@ -377,6 +382,16 @@ def get_trainer(
     )
 
     return trainer
+
+
+def is_tuneable(block_of_layers):
+    if len(list(block_of_layers.parameters())) == 0:
+        logging.info('Skipping block with no params')
+        logging.info(block_of_layers)
+        return False
+    else:
+        # currently, allowed to include batchnorm
+        return True
 
     # when ready (don't peek often, you'll overfit)
     # trainer.test(model, dataloaders=datamodule)

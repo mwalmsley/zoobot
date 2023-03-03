@@ -185,7 +185,6 @@ class ZoobotTree(GenericLightningModule):
 
 
     def calculate_and_log_loss(self, predictions, labels, step_name):
-        # true, pred convention as with sklearn
         # self.loss_func returns shape of (galaxy, question), mean to ()
         multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
         # if hasattr(self, 'schema'):
