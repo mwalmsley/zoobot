@@ -41,20 +41,17 @@ authors:
     corresponding: false
     affiliation: "1, 5"
   # heidelberg hackathon team + devina, who wrote experimental code/helped test TODO alphabetical
-  - name: Devina Mohan
-    corresponding: false
-    affiliation: 1
-  - name: Nicolás Guerra Varas
-    corresponding: false
-    affiliation: TODO
-  - name: Maja Jabłońska
+  - name: Maja Jab\Lońska
     corresponding: false
     affiliation: TODO
   - name: Kosio Karchev
     corresponding: false
-    affiliation: TODO
   - name: Denise Lanzieri
     corresponding: false
+    affiliation: TODO
+  - name: Devina Mohan
+    corresponding: false
+    affiliation: 1
     affiliation: TODO
   - name: David O’Ryan
     corresponding: false
@@ -63,6 +60,9 @@ authors:
     corresponding: false
     affiliation: TODO
   - name: Crisel Suárez
+    corresponding: false
+    affiliation: TODO
+  - name: Nicolás Guerra Varas
     corresponding: false
     affiliation: TODO
   - name: Renuka Velu
@@ -133,7 +133,7 @@ on a broad generic task and then adapt it ("finetune") to their specific measure
 
 Zoobot makes this approach available to astronomers.
 We provide models pretrained on galaxy images and a convenient API for finetuning those models.
-Early results [@Walmsley2022Towards,@https://doi.org/10.48550/arxiv.2303.00366] show that our pretrained models can be efficiently adapted to new morphology tasks.
+Early results [@Walmsley2022Towards;@https://doi.org/10.48550/arxiv.2303.00366] show that our pretrained models can be efficiently adapted to new morphology tasks.
 <!-- We will continue to improve our pretraining methods to create adaptable galaxy "foundation" models and to make those models available to the community via Zoobot. -->
 
 # Acknowledgements
