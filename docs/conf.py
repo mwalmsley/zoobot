@@ -19,7 +19,7 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'Zoobot'
-copyright = '2022, Mike Walmsley'
+copyright = '2023, Mike Walmsley'
 author = 'Mike Walmsley'
 
 # The full version, including alpha/beta/rc tags

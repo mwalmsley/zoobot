@@ -1,13 +1,13 @@
 version: 2
 
 python:
-  version: 3.7
+  version: 3.8
   install:
     - method: pip
       path: .
       extra_requirements:
         - docs
-        - pytorch
+        - pytorch_cpu
         - tensorflow
   system_packages: true
 
