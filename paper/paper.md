@@ -33,7 +33,7 @@ authors:
     corresponding: false
     affiliation: 1
     equal-contrib: true
-  # people who supervised/funded/advised me (alphabetical)
+  # people who actively advised me (alphabetical)
   - name: Chris J. Lintott
     corresponding: false
     affiliation: 4
@@ -74,7 +74,7 @@ affiliations:
    index: 1
  - name: Zooniverse.org, University of Oxford, Oxford, UK
    index: 2
- - name: MPIA
+ - name: TODO
    index: 3
  - name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
    index: 4
@@ -132,7 +132,7 @@ terrestrial practictioners often start with a model already trained ("pretrained
 on a broad generic task and then adapt it ("finetune") to their specific measurement task `[@https://doi.org/10.48550/arxiv.2104.10972].
 
 Zoobot makes this approach available to astronomers.
-We provide models pretrained on galaxy images and present a convenient API for finetuning those models.
+We provide models pretrained on millions of galaxy images and present a convenient API for finetuning those models.
 Early results [@Walmsley2022Towards;@https://doi.org/10.48550/arxiv.2303.00366] show that our pretrained models can be efficiently adapted to new morphology tasks.
 <!-- We will continue to improve our pretraining methods to create adaptable galaxy "foundation" models and to make those models available to the community via Zoobot. -->
 
