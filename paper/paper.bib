@@ -1,59 +1,171 @@
-@article{Pearson:2017,
-  	url = {http://adsabs.harvard.edu/abs/2017arXiv170304627P},
-  	Archiveprefix = {arXiv},
-  	Author = {{Pearson}, S. and {Price-Whelan}, A.~M. and {Johnston}, K.~V.},
-  	Eprint = {1703.04627},
-  	Journal = {ArXiv e-prints},
-  	Keywords = {Astrophysics - Astrophysics of Galaxies},
-  	Month = mar,
-  	Title = {{Gaps in Globular Cluster Streams: Pal 5 and the Galactic Bar}},
-  	Year = 2017
+@inproceedings{Walmsley2022Towards,
+   abstract = {New astronomical tasks are often related to earlier tasks for which labels
+have already been collected. We adapt the contrastive framework BYOL to
+leverage those labels as a pretraining task while also enforcing augmentation
+invariance. For large-scale pretraining, we introduce GZ-Evo v0.1, a set of
+96.5M volunteer responses for 552k galaxy images plus a further 1.34M
+comparable unlabelled galaxies. Most of the 206 GZ-Evo answers are unknown for
+any given galaxy, and so our pretraining task uses a Dirichlet loss that
+naturally handles unknown answers. GZ-Evo pretraining, with or without hybrid
+learning, improves on direct training even with plentiful downstream labels
+(+4% accuracy with 44k labels). Our hybrid pretraining/contrastive method
+further improves downstream accuracy vs. pretraining or contrastive learning,
+especially in the low-label transfer regime (+6% accuracy with 750 labels).},
+   author = {Mike Walmsley and Inigo Val Slijepcevic and Micah Bowles and Anna M. M. Scaife},
+   doi = {10.48550/arxiv.2206.11927},
+   journal = {Machine Learning for Astrophysics Workshop at the Thirty Ninth International Conference on Machine Learning (ICML 2022)},
+   month = {6},
+   title = {Towards Galaxy Foundation Models with Hybrid Contrastive Learning},
+   url = {https://arxiv.org/abs/2206.11927v1},
+   year = {2022},
 }
 
-@book{Binney:2008,
-  	url = {http://adsabs.harvard.edu/abs/2008gady.book.....B},
-  	Author = {{Binney}, J. and {Tremaine}, S.},
-  	Booktitle = {Galactic Dynamics: Second Edition, by James Binney and Scott Tremaine.~ISBN 978-0-691-13026-2 (HB).~Published by Princeton University Press, Princeton, NJ USA, 2008.},
-  	Publisher = {Princeton University Press},
-  	Title = {{Galactic Dynamics: Second Edition}},
-  	Year = 2008
+@inproceedings{Pytorch2019,
+   author = {Adam Paszke and Sam Gross and Francisco Massa and Adam Lerer and James Bradbury and Gregory Chanan and Trevor Killeen and Zeming Lin and Natalia Gimelshein and Luca Antiga and Alban Desmaison and Andreas Kopf and Edward Yang and Zachary DeVito and Martin Raison and Alykhan Tejani and Sasank Chilamkurthy and Benoit Steiner and Lu Fang and Junjie Bai and Soumith Chintala},
+   editor = {H Wallach and H Larochelle and A Beygelzimer and F d\textquotesingle Alché-Buc and E Fox and R Garnett},
+   journal = {Advances in Neural Information Processing Systems 32},
+   pages = {8024-8035},
+   publisher = {Curran Associates, Inc.},
+   title = {PyTorch: An Imperative Style, High-Performance Deep Learning Library},
+   url = {http://papers.neurips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf},
+   year = {2019},
 }
 
-@article{gaia,
-    author = {{Gaia Collaboration}},
-    title = "{The Gaia mission}",
-    journal = {Astronomy and Astrophysics},
-    archivePrefix = "arXiv",
-    eprint = {1609.04153},
-    primaryClass = "astro-ph.IM",
-    keywords = {space vehicles: instruments, Galaxy: structure, astrometry, parallaxes, proper motions, telescopes},
-    year = 2016,
-    month = nov,
-    volume = 595,
-    doi = {10.1051/0004-6361/201629272},
-    url = {http://adsabs.harvard.edu/abs/2016A%26A...595A...1G},
+@article{Walmsley2022decals,
+   author = {Mike Walmsley and Chris Lintott and Geron Tobias and Sandor J Kruk and Coleman Krawczyk and Kyle Willett and Steven Bamford and William Keel and Lee S Kelvin and Lucy Fortson and Karen Masters and Vihang Mehta and Brooke Simmons and Rebecca J Smethurst and Elisabeth M L Baeten and Christine Macmillan},
+   issue = {3},
+   journal = {Monthly Notices of the Royal Astronomical Society},
+   keywords = {Galaxy Zoo,astrophysics,citizen science,deep learning,galaxies},
+   month = {12},
+   pages = {3966-3988},
+   title = {Galaxy Zoo DECaLS: Detailed Visual Morphology Measurements from Volunteers and Deep Learning for 314,000 Galaxies},
+   volume = {509},
+   url = {https://arxiv.org/abs/2102.08414},
+   year = {2022},
 }
 
-@article{astropy,
-    author = {{Astropy Collaboration}},
-    title = "{Astropy: A community Python package for astronomy}",
-    journal = {Astronomy and Astrophysics},
-    archivePrefix = "arXiv",
-    eprint = {1307.6212},
-    primaryClass = "astro-ph.IM",
-    keywords = {methods: data analysis, methods: miscellaneous, virtual observatory tools},
-    year = 2013,
-    month = oct,
-    volume = 558,
-    doi = {10.1051/0004-6361/201322068},
-    url = {http://adsabs.harvard.edu/abs/2013A%26A...558A..33A}
+@article{2011arXiv1110.3193L,
+       author = {{Laureijs}, R. and {Amiaux}, J. and {Arduini}, S. and {Augu{\`e}res}, J. -L. and {Brinchmann}, J. and {Cole}, R. and {Cropper}, M. and {Dabin}, C. and {Duvet}, L. and {Ealet}, A. and {Garilli}, B. and {Gondoin}, P. and {Guzzo}, L. and {Hoar}, J. and {Hoekstra}, H. and {Holmes}, R. and {Kitching}, T. and {Maciaszek}, T. and {Mellier}, Y. and {Pasian}, F. and {Percival}, W. and {Rhodes}, J. and {Saavedra Criado}, G. and {Sauvage}, M. and {Scaramella}, R. and {Valenziano}, L. and {Warren}, S. and {Bender}, R. and {Castander}, F. and {Cimatti}, A. and {Le F{\`e}vre}, O. and {Kurki-Suonio}, H. and {Levi}, M. and {Lilje}, P. and {Meylan}, G. and {Nichol}, R. and {Pedersen}, K. and {Popa}, V. and {Rebolo Lopez}, R. and {Rix}, H. -W. and {Rottgering}, H. and {Zeilinger}, W. and {Grupp}, F. and {Hudelot}, P. and {Massey}, R. and {Meneghetti}, M. and {Miller}, L. and {Paltani}, S. and {Paulin-Henriksson}, S. and {Pires}, S. and {Saxton}, C. and {Schrabback}, T. and {Seidel}, G. and {Walsh}, J. and {Aghanim}, N. and {Amendola}, L. and {Bartlett}, J. and {Baccigalupi}, C. and {Beaulieu}, J. -P. and {Benabed}, K. and {Cuby}, J. -G. and {Elbaz}, D. and {Fosalba}, P. and {Gavazzi}, G. and {Helmi}, A. and {Hook}, I. and {Irwin}, M. and {Kneib}, J. -P. and {Kunz}, M. and {Mannucci}, F. and {Moscardini}, L. and {Tao}, C. and {Teyssier}, R. and {Weller}, J. and {Zamorani}, G. and {Zapatero Osorio}, M.~R. and {Boulade}, O. and {Foumond}, J.~J. and {Di Giorgio}, A. and {Guttridge}, P. and {James}, A. and {Kemp}, M. and {Martignac}, J. and {Spencer}, A. and {Walton}, D. and {Bl{\"u}mchen}, T. and {Bonoli}, C. and {Bortoletto}, F. and {Cerna}, C. and {Corcione}, L. and {Fabron}, C. and {Jahnke}, K. and {Ligori}, S. and {Madrid}, F. and {Martin}, L. and {Morgante}, G. and {Pamplona}, T. and {Prieto}, E. and {Riva}, M. and {Toledo}, R. and {Trifoglio}, M. and {Zerbi}, F. and {Abdalla}, F. and {Douspis}, M. and {Grenet}, C. and {Borgani}, S. and {Bouwens}, R. and {Courbin}, F. and {Delouis}, J. -M. and {Dubath}, P. and {Fontana}, A. and {Frailis}, M. and {Grazian}, A. and {Koppenh{\"o}fer}, J. and {Mansutti}, O. and {Melchior}, M. and {Mignoli}, M. and {Mohr}, J. and {Neissner}, C. and {Noddle}, K. and {Poncet}, M. and {Scodeggio}, M. and {Serrano}, S. and {Shane}, N. and {Starck}, J. -L. and {Surace}, C. and {Taylor}, A. and {Verdoes-Kleijn}, G. and {Vuerli}, C. and {Williams}, O.~R. and {Zacchei}, A. and {Altieri}, B. and {Escudero Sanz}, I. and {Kohley}, R. and {Oosterbroek}, T. and {Astier}, P. and {Bacon}, D. and {Bardelli}, S. and {Baugh}, C. and {Bellagamba}, F. and {Benoist}, C. and {Bianchi}, D. and {Biviano}, A. and {Branchini}, E. and {Carbone}, C. and {Cardone}, V. and {Clements}, D. and {Colombi}, S. and {Conselice}, C. and {Cresci}, G. and {Deacon}, N. and {Dunlop}, J. and {Fedeli}, C. and {Fontanot}, F. and {Franzetti}, P. and {Giocoli}, C. and {Garcia-Bellido}, J. and {Gow}, J. and {Heavens}, A. and {Hewett}, P. and {Heymans}, C. and {Holland}, A. and {Huang}, Z. and {Ilbert}, O. and {Joachimi}, B. and {Jennins}, E. and {Kerins}, E. and {Kiessling}, A. and {Kirk}, D. and {Kotak}, R. and {Krause}, O. and {Lahav}, O. and {van Leeuwen}, F. and {Lesgourgues}, J. and {Lombardi}, M. and {Magliocchetti}, M. and {Maguire}, K. and {Majerotto}, E. and {Maoli}, R. and {Marulli}, F. and {Maurogordato}, S. and {McCracken}, H. and {McLure}, R. and {Melchiorri}, A. and {Merson}, A. and {Moresco}, M. and {Nonino}, M. and {Norberg}, P. and {Peacock}, J. and {Pello}, R. and {Penny}, M. and {Pettorino}, V. and {Di Porto}, C. and {Pozzetti}, L. and {Quercellini}, C. and {Radovich}, M. and {Rassat}, A. and {Roche}, N. and {Ronayette}, S. and {Rossetti}, E. and {Sartoris}, B. and {Schneider}, P. and {Semboloni}, E. and {Serjeant}, S. and {Simpson}, F. and {Skordis}, C. and {Smadja}, G. and {Smartt}, S. and {Spano}, P. and {Spiro}, S. and {Sullivan}, M. and {Tilquin}, A. and {Trotta}, R. and {Verde}, L. and {Wang}, Y. and {Williger}, G. and {Zhao}, G. and {Zoubian}, J. and {Zucca}, E.},
+        title = "{Euclid Definition Study Report}",
+      journal = {arXiv e-prints},
+     keywords = {Astrophysics - Cosmology and Extragalactic Astrophysics, Astrophysics - Galaxy Astrophysics},
+         year = 2011,
+        month = oct,
+          eid = {arXiv:1110.3193},
+        pages = {arXiv:1110.3193},
+          doi = {10.48550/arXiv.1110.3193},
+archivePrefix = {arXiv},
+       eprint = {1110.3193},
+ primaryClass = {astro-ph.CO},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2011arXiv1110.3193L},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 
-@misc{fidgit,
-  author = {A. M. Smith and K. Thaney and M. Hahnel},
-  title = {Fidgit: An ungodly union of GitHub and Figshare},
-  year = {2020},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = {https://github.com/arfon/fidgit}
+@article{Walmsley2020,
+   abstract = {We use Bayesian convolutional neural networks and a novel generative model of Galaxy Zoo volunteer responses to infer posteriors for the visual morphology of galaxies. Bayesian CNN can learn from galaxy images with uncertain labels and then, for previously unlabelled galaxies, predict the probability of each possible label. Our posteriors are well-calibrated (e.g. for predicting bars, we achieve coverage errors of 11.8 per cent within a vote fraction deviation of 0.2) and hence are reliable for practical use. Further, using our posteriors, we apply the active learning strategy BALD to request volunteer responses for the subset of galaxies which, if labelled, would be most informative for training our network. We show that training our Bayesian CNNs using active learning requires up to 35–60 per cent fewer labelled galaxies, depending on the morphological feature being classified. By combining human and machine intelligence, Galaxy zoo will be able to classify surveys of any conceivable scale on a time-scale of weeks, providing massive and detailed morphology catalogues to support research into galaxy evolution.},
+   author = {Mike Walmsley and Lewis Smith and Chris Lintott and Yarin Gal and Steven Bamford and Hugh Dickinson and Lucy Fortson and Sandor Kruk and Karen Masters and Claudia Scarlata and Brooke Simmons and Rebecca Smethurst and Darryl Wright},
+   doi = {10.1093/mnras/stz2816},
+   issn = {0035-8711},
+   issue = {2},
+   journal = {Monthly Notices of the Royal Astronomical Society},
+   month = {1},
+   pages = {1554-1574},
+   title = {Galaxy Zoo: probabilistic morphology through Bayesian CNNs and active learning},
+   volume = {491},
+   url = {https://academic.oup.com/mnras/article/491/2/1554/5583078},
+   year = {2020},
+}
+@misc{https://doi.org/10.48550/arxiv.1603.04467,
+  doi = {10.48550/ARXIV.1603.04467},
+  url = {https://arxiv.org/abs/1603.04467},
+  author = {Abadi, Martín and Agarwal, Ashish and Barham, Paul and Brevdo, Eugene and Chen, Zhifeng and Citro, Craig and Corrado, Greg S. and Davis, Andy and Dean, Jeffrey and Devin, Matthieu and Ghemawat, Sanjay and Goodfellow, Ian and Harp, Andrew and Irving, Geoffrey and Isard, Michael and Jia, Yangqing and Jozefowicz, Rafal and Kaiser, Lukasz and Kudlur, Manjunath and Levenberg, Josh and Mane, Dan and Monga, Rajat and Moore, Sherry and Murray, Derek and Olah, Chris and Schuster, Mike and Shlens, Jonathon and Steiner, Benoit and Sutskever, Ilya and Talwar, Kunal and Tucker, Paul and Vanhoucke, Vincent and Vasudevan, Vijay and Viegas, Fernanda and Vinyals, Oriol and Warden, Pete and Wattenberg, Martin and Wicke, Martin and Yu, Yuan and Zheng, Xiaoqiang},
+  keywords = {Distributed, Parallel, and Cluster Computing (cs.DC), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems},
+  publisher = {arXiv},
+  year = {2016},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@inproceedings{Masters2019a,
+   abstract = {The Galaxy Zoo project has provided quantitative visual morphologies for over a million galaxies, and has been part of a reinvigoration of interest in the morphologies of galaxies and what they reveal about galaxy evolution. Morphological information collected by GZ has shown itself to be a powerful tool for studying galaxy evolution, and GZ continues to collect classifications-currently serving imaging from DECaLS in its main site, and running a variety of related projects hosted by the Zooniverse; the citizen science platform which came out of the early success of GZ. I highlight some of the results from the last twelve years, with a particular emphasis on linking morphology and dynamics, look forward to future projects in the GZ family, and provide a quick start guide for how you can easily make use of citizen science techniques to analysis your own large and complex data sets.},
+   author = {Karen L. Masters},
+   doi = {10.1017/S1743921319008615},
+   issn = {17439221},
+   issue = {S353},
+   journal = {Proceedings of the International Astronomical Union},
+   keywords = {catalogs,galaxies: evolution,galaxies:fundamental parameters,galaxies:kinematics and dynamics,galaxies:statistics},
+   month = {10},
+   pages = {205-212},
+   title = {Twelve years of Galaxy Zoo},
+   volume = {14},
+   url = {http://arxiv.org/abs/1910.08177},
+   year = {2019},
+}
+
+@article{HuertasCompany2022,
+   abstract = {The amount and complexity of data delivered by modern galaxy surveys has been steadily increasing over the past years. Extracting coherent scientific information from these large and multi-modal data sets remains an open issue and data driven approaches such as deep learning have rapidly emerged as a potentially powerful solution to some long lasting challenges. This enthusiasm is reflected in an unprecedented exponential growth of publications using neural networks. Half a decade after the first published work in astronomy mentioning deep learning, we believe it is timely to review what has been the real impact of this new technology in the field and its potential to solve key challenges raised by the size and complexity of the new datasets. In this review we first aim at summarizing the main applications of deep learning for galaxy surveys that have emerged so far. We then extract the major achievements and lessons learned and highlight key open questions and limitations. Overall, state-of-the art deep learning methods are rapidly adopted by the astronomical community, reflecting a democratization of these methods. We show that the majority of works using deep learning up to date are oriented to computer vision tasks. This is also the domain of application where deep learning has brought the most important breakthroughs so far. We report that the applications are becoming more diverse and deep learning is used for estimating galaxy properties, identifying outliers or constraining the cosmological model. Most of these works remain at the exploratory level. Some common challenges will most likely need to be addressed before moving to the next phase of deployment of deep learning in the processing of future surveys; e.g. uncertainty quantification, interpretability, data labeling and domain shift issues from training with simulations, which constitutes a common practice in astronomy.},
+   author = {Marc Huertas-Company and François Lanusse},
+   journal = {Publications of the Astronomical Society of Australia},
+   keywords = {keyword1-keyword2-keyword3-keyword4-keyword5},
+   month = {10},
+   title = {The DAWES review 10: The impact of deep learning for the analysis of galaxy surveys},
+   url = {http://arxiv.org/abs/2210.01813},
+   year = {2022},
+}
+
+@article{LeCun2015,
+   abstract = {Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer. Deep convolutional nets have brought about breakthroughs in processing images, video, speech and audio, whereas recurrent nets have shone light on sequential data such as text and speech.},
+   author = {Yann Lecun and Yoshua Bengio and Geoffrey Hinton},
+   doi = {10.1038/nature14539},
+   isbn = {3135786504},
+   issn = {14764687},
+   issue = {7553},
+   journal = {Nature},
+   month = {5},
+   pages = {436-444},
+   pmid = {26017442},
+   publisher = {Nature Publishing Group, a division of Macmillan Publishers Limited. All Rights Reserved.},
+   title = {Deep learning},
+   volume = {521},
+   url = {http://dx.doi.org/10.1038/nature14539 10.1038/nature14539},
+   year = {2015},
+}
+
+@misc{https://doi.org/10.48550/arxiv.2302.05442,
+  doi = {10.48550/ARXIV.2302.05442},
+  
+  url = {https://arxiv.org/abs/2302.05442},
+  
+  author = {Dehghani, Mostafa and Djolonga, Josip and Mustafa, Basil and Padlewski, Piotr and Heek, Jonathan and Gilmer, Justin and Steiner, Andreas and Caron, Mathilde and Geirhos, Robert and Alabdulmohsin, Ibrahim and Jenatton, Rodolphe and Beyer, Lucas and Tschannen, Michael and Arnab, Anurag and Wang, Xiao and Riquelme, Carlos and Minderer, Matthias and Puigcerver, Joan and Evci, Utku and Kumar, Manoj and van Steenkiste, Sjoerd and Elsayed, Gamaleldin F. and Mahendran, Aravindh and Yu, Fisher and Oliver, Avital and Huot, Fantine and Bastings, Jasmijn and Collier, Mark Patrick and Gritsenko, Alexey and Birodkar, Vighnesh and Vasconcelos, Cristina and Tay, Yi and Mensink, Thomas and Kolesnikov, Alexander and Pavetić, Filip and Tran, Dustin and Kipf, Thomas and Lučić, Mario and Zhai, Xiaohua and Keysers, Daniel and Harmsen, Jeremiah and Houlsby, Neil},
+  
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), Artificial Intelligence (cs.AI), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  
+  title = {Scaling Vision Transformers to 22 Billion Parameters},
+  
+  publisher = {arXiv},
+  
+  year = {2023},
+  
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@misc{Bommasani2021,
+   abstract = {AI is undergoing a paradigm shift with the rise of models (e.g., BERT, DALL-E, GPT-3) that are trained on broad data at scale and are adaptable to a wide range of downstream tasks. We call these models foundation models to underscore their critically central yet incomplete character. This report provides a thorough account of the opportunities and risks of foundation models, ranging from their capabilities (e.g., language, vision, robotics, reasoning, human interaction) and technical principles(e.g., model architectures, training procedures, data, systems, security, evaluation, theory) to their applications (e.g., law, healthcare, education) and societal impact (e.g., inequity, misuse, economic and environmental impact, legal and ethical considerations). Though foundation models are based on standard deep learning and transfer learning, their scale results in new emergent capabilities,and their effectiveness across so many tasks incentivizes homogenization. Homogenization provides powerful leverage but demands caution, as the defects of the foundation model are inherited by all the adapted models downstream. Despite the impending widespread deployment of foundation models, we currently lack a clear understanding of how they work, when they fail, and what they are even capable of due to their emergent properties. To tackle these questions, we believe much of the critical research on foundation models will require deep interdisciplinary collaboration commensurate with their fundamentally sociotechnical nature.},
+   author = {Rishi Bommasani and Drew A. Hudson and Ehsan Adeli and Russ Altman and Simran Arora and Sydney von Arx and Michael S. Bernstein and Jeannette Bohg and Antoine Bosselut and Emma Brunskill and Erik Brynjolfsson and Shyamal Buch and Dallas Card and Rodrigo Castellon and Niladri Chatterji and Annie Chen and Kathleen Creel and Jared Quincy Davis and Dora Demszky and Chris Donahue and Moussa Doumbouya and Esin Durmus and Stefano Ermon and John Etchemendy and Kawin Ethayarajh and Li Fei-Fei and Chelsea Finn and Trevor Gale and Lauren Gillespie and Karan Goel and Noah Goodman and Shelby Grossman and Neel Guha and Tatsunori Hashimoto and Peter Henderson and John Hewitt and Daniel E. Ho and Jenny Hong and Kyle Hsu and Jing Huang and Thomas Icard and Saahil Jain and Dan Jurafsky and Pratyusha Kalluri and Siddharth Karamcheti and Geoff Keeling and Fereshte Khani and Omar Khattab and Pang Wei Koh and Mark Krass and Ranjay Krishna and Rohith Kuditipudi and Ananya Kumar and Faisal Ladhak and Mina Lee and Tony Lee and Jure Leskovec and Isabelle Levent and Xiang Lisa Li and Xuechen Li and Tengyu Ma and Ali Malik and Christopher D. Manning and Suvir Mirchandani and Eric Mitchell and Zanele Munyikwa and Suraj Nair and Avanika Narayan and Deepak Narayanan and Ben Newman and Allen Nie and Juan Carlos Niebles and Hamed Nilforoshan and Julian Nyarko and Giray Ogut and Laurel Orr and Isabel Papadimitriou and Joon Sung Park and Chris Piech and Eva Portelance and Christopher Potts and Aditi Raghunathan and Rob Reich and Hongyu Ren and Frieda Rong and Yusuf Roohani and Camilo Ruiz and Jack Ryan and Christopher Ré and Dorsa Sadigh and Shiori Sagawa and Keshav Santhanam and Andy Shih and Krishnan Srinivasan and Alex Tamkin and Rohan Taori and Armin W. Thomas and Florian Tramèr and Rose E. Wang and William Wang and Bohan Wu and Jiajun Wu and Yuhuai Wu and Sang Michael Xie and Michihiro Yasunaga and Jiaxuan You and Matei Zaharia and Michael Zhang and Tianyi Zhang and Xikun Zhang and Yuhui Zhang and Lucia Zheng and Kaitlyn Zhou and Percy Liang},
+   journal = {arXiv preprint},
+   month = {8},
+   title = {On the Opportunities and Risks of Foundation Models},
+   url = {http://arxiv.org/abs/2108.07258},
+   year = {2021},
+}
+
+@misc{https://doi.org/10.48550/arxiv.2104.10972,
+  doi = {10.48550/ARXIV.2104.10972},
+  url = {https://arxiv.org/abs/2104.10972},
+  author = {Ridnik, Tal and Ben-Baruch, Emanuel and Noy, Asaf and Zelnik-Manor, Lihi},
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {ImageNet-21K Pretraining for the Masses},
+  publisher = {arXiv},
+  year = {2021},
+  copyright = {Creative Commons Attribution 4.0 International}
 }
