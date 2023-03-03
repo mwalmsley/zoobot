@@ -173,8 +173,9 @@ If you use this software for your research, please cite [the JOSS paper](TODO_on
 
 You might be interested in reading papers using Zoobot:
 
-- [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414) (data release)
+- [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414) (first use at Galaxy Zoo)
 - [A Comparison of Deep Learning Architectures for Optical Galaxy Morphology Classification](https://arxiv.org/abs/2111.04353)
 - [Towards Foundation Models for Galaxy Morphology](https://arxiv.org/abs/2206.11927) (adding contrastive learning)
 - [Harnessing the Hubble Space Telescope Archives: A Catalogue of 21,926 Interacting Galaxies](https://arxiv.org/abs/2303.00366)
 
+Many other works use Zoobot indirectly via the [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414) catalog.
