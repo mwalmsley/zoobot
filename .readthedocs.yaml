@@ -7,7 +7,7 @@ python:
       path: .
       extra_requirements:
         - docs
-        - pytorch_cpu
+        - pytorch_m1
         - tensorflow
   system_packages: true
 

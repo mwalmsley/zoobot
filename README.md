@@ -22,7 +22,7 @@ Zoobot is trained using millions of answers by Galaxy Zoo volunteers. This code 
 ## Installation
 <a name="installation"></a>
 
-You can retrain Zoobot in the cloud with a free GPU using this [Google Colab notebook](https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing). To install locally, keep reading.
+You can retrain Zoobot in the cloud with a free GPU using this [Google Colab notebook](https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing). To install locally, keep reading.
 
 Download the code using git:
 
