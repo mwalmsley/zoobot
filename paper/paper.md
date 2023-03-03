@@ -12,7 +12,7 @@ authors:
     orcid: 0000-0002-6408-4181
     corresponding: true
     equal-contrib: false
-    affiliation: 1 # (Multiple affiliations must be quoted)
+    affiliation: 1
   # people who wrote core code, alphabetical
   - name: Cambell Allen
     equal-contrib: true
@@ -76,7 +76,7 @@ affiliations:
    index: 2
  - name: MPIA
    index: 3
-- name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
+ - name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
    index: 4
  - name: The Alan Turing Institute, London, UK
    index: 5
