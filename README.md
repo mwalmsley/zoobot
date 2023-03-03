@@ -57,13 +57,11 @@ Let's say you want to find ringed galaxies and you have a small labelled dataset
     )
 
     # load trained Zoobot model
-    model = finetune.FinetuneableZoobotClassifier(checkpoint_loc)  
+    model = finetune.FinetuneableZoobotClassifier(checkpoint_loc, num_classes=2)  
     
-    trainer = finetune.get_trainer(save_dir)
-
     # retrain to find rings
+    trainer = finetune.get_trainer(save_dir)
     trainer.fit(model, datamodule)
-
 ```
 
 Then you can make predict if new galaxies have rings:
@@ -90,7 +88,7 @@ I suggest starting with the worked examples below, which you can copy and adapt.
 For context and explanation, see the [documentation](https://zoobot.readthedocs.io/). 
 For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/data_notes.html) in particular.
 
-PyTorch:
+PyTorch (recommended):
 - [pytorch/examples/finetuning/finetune_binary_classification.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py)
 - [pytorch/examples/finetuning/finetune_counts_full_tree.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py)
 - [pytorch/examples/representations/get_representations.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/representations/get_representations.py)
@@ -105,13 +103,12 @@ TensorFlow:
 - [tensorflow/examples/finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py)
 
 
+There is more explanation and an API reference on the [docs](https://zoobot.readthedocs.io/).
 
+I also [include](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) the scripts used to create and benchmark our pretrained models. Many pretrained models are available [already](https://zoobot.readthedocs.io/data_notes.html), but if you need one trained on e.g. different input image sizes or with a specific architecture, I can probably make it for you.
 
-I also include some examples which record how the models in W+22a (the GZ DECaLS data release) were trained:
-- [replication/tensorflow/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/tensorflow/train_model_on_decals_dr5_splits.py)
-- [replication/pytorch/train_model_on_decals_dr5_splits.py](https://github.com/mwalmsley/zoobot/blob/main/replication/pytorch/train_model_on_decals_dr5_splits.py)
+When trained with a decision tree head (ZoobotTree, FinetuneableZoobotTree), Zoobot can learn from volunteer labels of varying confidence and predict posteriors for what the typical volunteer might say. Specifically, this Zoobot mode predicts the parameters for distributions, not simple class labels! For a demonstration of how to interpret these predictions, see the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb).
 
-There's also the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb), which describes Zoobot's statistical predictions. When trained from scratch, it predicts the parameters for distributions, not simple class labels!
 
 ### (Optional) Install PyTorch or TensorFlow, with CUDA
 <a name="install_cuda"></a>
@@ -155,4 +152,4 @@ The resulting Zoobot model is very similar to those used for the GZ DECaLS catal
 
 ### Citing
 
-If you use this repo for your research, please cite [the paper](https://arxiv.org/abs/2102.08414) and the [code](https://doi.org/10.5281/zenodo.6483175) (via Zenodo).
+If you use this repo for your research, please cite [the DECaLS data release paper](https://arxiv.org/abs/2102.08414) and the [code](https://doi.org/10.5281/zenodo.6483175) (via Zenodo). I hope to publish a JOSS paper shortly.
