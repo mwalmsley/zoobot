@@ -13,30 +13,62 @@ authors:
     corresponding: true
     equal-contrib: false
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
+  # people who wrote core code, alphabetical
   - name: Cambell Allen
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    equal-contrib: true
     affiliation: 2
+  - name: Ben Aussel
+    corresponding: false
+    affiliation: 1
+    equal-contrib: true
   - name: Micah Bowles
     corresponding: false
     affiliation: 1
-  - name: Inigo Val
+    equal-contrib: true
+  - name: Inigo Val Slijepcevic
     corresponding: false
     affiliation: 1
-  - name: Devina Mohan
-    corresponding: false
-    affiliation: 1
-  - name: Ben
-    corresponding: false
-    affiliation: 1
+    equal-contrib: true
+  # people who supervised people who wrote code (alphabetical)
   - name: Chris J. Lintott
     corresponding: false
     affiliation: 1
   - name: Anna M. M. Scaife
     corresponding: false
     affiliation: 1
-  - name: Kasia
+  # heidelberg hackathon team who wrote code/helped test TODO alphabetical
+  - name: Kasia Gregorowicz
     corresponding: false
     affiliation: TODO
+  - name: Nicolás Guerra Varas
+    corresponding: false
+    affiliation: TODO
+  - name: Maja Jabłońska
+    corresponding: false
+    affiliation: TODO
+  - name: Kosio Karchev
+    corresponding: false
+    affiliation: TODO
+  - name: Denise Lanzieri
+    corresponding: false
+    affiliation: TODO
+  - name: David O’Ryan
+    corresponding: false
+    affiliation: TODO
+  - name: Bharath Saiguhan
+    corresponding: false
+    affiliation: TODO
+  - name: Crisel Suárez
+    corresponding: false
+    affiliation: TODO
+  - name: Renuka Velu
+    corresponding: false
+    affiliation: TODO
+  # people who 
+  # - name: Devina Mohan
+  #   corresponding: false
+  #   affiliation: 1
+
 affiliations:
  - name: Department of Physics and Astronomy, University of Manchester, Manchester, UK
    index: 1
@@ -44,6 +76,8 @@ affiliations:
    index: 2
  - name: MPIA
    index: 3
+ - name: The Alan Turing Institute, Euston Road, London NW1 2DB, UK
+   index: 4
 date: 19 February 2023
 bibliography: paper.bib
 
@@ -94,10 +128,14 @@ Neither can most other people;
 terrestrial practictioners often start with a model already trained ("pretrained")
 on a broad generic task and then adapt it ("finetune") to their specific measurement task `[@https://doi.org/10.48550/arxiv.2104.10972].
 
-Zoobot by sharing models pre-trained
+<!-- Zoobot by sharing models pre-trained
 Further, Zoobot 
 
-new surveys
+Zoobot is the first package for finetuning deep learning models on astronomical images.
+
+Zoobot is built on 
+
+new surveys -->
 
 <!-- State of the field: Do the authors describe how this software compares to other commonly-used packages? -->
 
@@ -116,6 +154,9 @@ MW, IVS, MB and AMS gratefully acknowledge support
 from the UK Alan Turing Institute under grant reference
 EP/V030302/1. IVS gratefully acknowledges support from
 the Frankopan Foundation.
+
+Our (recommended) PyTorch version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
+Our TensorFlow version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
 
 # References
 <!-- References: Is the list of references complete, and is everything cited appropriately that should be cited (e.g., papers, datasets, software)? -->
