@@ -45,32 +45,33 @@ authors:
   # heidelberg hackathon team + devina, who wrote experimental code/helped test TODO alphabetical
   - name: Maja Jabłońska
     corresponding: false
-    affiliation: 7
+    affiliation: 4
   - name: Kosio Karchev
     corresponding: false
-    affiliation: 8
+    affiliation: 7
   - name: Denise Lanzieri
+    orcid: 0000-0003-2787-1634
     corresponding: false
-    affiliation: 9
+    affiliation: 8
   - name: Devina Mohan
     corresponding: false
     affiliation: 1
   - name: David O’Ryan
     corresponding: false
-    affiliation: 10
+    affiliation: 9
   - name: Bharath Saiguhan
     corresponding: false
-    affiliation: 11
+    affiliation: 10
   - name: Crisel Suárez
     orcid: 0000-0001-5243-7659
     corresponding: false
-    affiliation: ["12, 13"]
+    affiliation: ["11, 12"]
   - name: Nicolás Guerra Varas
     corresponding: false
-    affiliation: 14
+    affiliation: 13
   - name: Renuka Velu
     corresponding: false
-    affiliation: 15
+    affiliation: 14
 
 affiliations:
  - name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, University of Manchester, Manchester, UK
@@ -85,10 +86,14 @@ affiliations:
    index: 5
  - name: The Alan Turing Institute, London, UK
    index: 6
+ - name: TODO
+   index: 7
+ - name: CEA, CNRS, Université Paris-Saclay, Université Paris Cité,  Paris, France
+   index: 8
  - name: Vanderbilt University, Nashville, USA
-   index: 12
+   index: 11
  - name: Center for Astrophysics | Harvard & Smithsonian, Cambridge, USA
-   index: 13
+   index: 12
 date: 03 March 2023
 bibliography: paper.bib
 
