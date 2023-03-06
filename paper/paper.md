@@ -14,7 +14,7 @@ authors:
     equal-contrib: false
     affiliation: 1
   # people who wrote core code and docs, alphabetical
-  - name: Cambell Allen
+  - name: Campbell Allen
     equal-contrib: true
     affiliation: 2
   - name: Ben Aussel
@@ -23,11 +23,13 @@ authors:
     equal-contrib: true
   - name: Micah Bowles
     corresponding: false
+    orcid: 0000-0001-5838-8405
     affiliation: 1
     equal-contrib: true
   - name: Kasia Gregorowicz
+    orcid: 0009-0003-0023-6240
     corresponding: false
-    affiliation: TODO
+    affiliation: 4
     equal-contrib: true
   - name: Inigo Val Slijepcevic
     corresponding: false
@@ -36,50 +38,57 @@ authors:
   # people who actively advised me (alphabetical)
   - name: Chris J. Lintott
     corresponding: false
-    affiliation: 4
+    affiliation: 5
   - name: Anna M. M. Scaife
     corresponding: false
-    affiliation: "1, 5"
+    affiliation: "1, 6"
   # heidelberg hackathon team + devina, who wrote experimental code/helped test TODO alphabetical
-  - name: Maja Jab\Lońska
+  - name: Maja Jab\L{}ońska
     corresponding: false
-    affiliation: TODO
+    affiliation: 7
   - name: Kosio Karchev
     corresponding: false
+    affiliation: 8
   - name: Denise Lanzieri
     corresponding: false
-    affiliation: TODO
+    affiliation: 9
   - name: Devina Mohan
     corresponding: false
     affiliation: 1
-    affiliation: TODO
   - name: David O’Ryan
     corresponding: false
-    affiliation: TODO
+    affiliation: 10
   - name: Bharath Saiguhan
     corresponding: false
-    affiliation: TODO
+    affiliation: 11
   - name: Crisel Suárez
+    orcid: 0000-0001-5243-7659
     corresponding: false
-    affiliation: TODO
+    affiliation: ["12, 13"]
   - name: Nicolás Guerra Varas
     corresponding: false
-    affiliation: TODO
+    affiliation: 14
   - name: Renuka Velu
     corresponding: false
-    affiliation: TODO
+    affiliation: 15
 
 affiliations:
- - name: Department of Physics and Astronomy, University of Manchester, Manchester, UK
+ - name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, University of Manchester, Manchester, UK
    index: 1
  - name: Zooniverse.org, University of Oxford, Oxford, UK
    index: 2
  - name: TODO
    index: 3
- - name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
+ - name: Astronomical Observatory of the University of Warsaw, Warsaw, Poland
    index: 4
- - name: The Alan Turing Institute, London, UK
+ - name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
    index: 5
+ - name: The Alan Turing Institute, London, UK
+   index: 6
+ - name: Vanderbilt University, Nashville, USA
+   index: 12
+ - name: Center for Astrophysics | Harvard & Smithsonian, Cambridge, USA
+   index: 13
 date: 03 March 2023
 bibliography: paper.bib
 
@@ -96,13 +105,13 @@ Astronomers can use `Zoobot` to adapt (finetune) pretrained deep learning models
 These finetuned models perform better and require far fewer new labels than training from scratch [@Walmsley2022Towards].
 
 The models included with `Zoobot` are pretrained on up to 92 million responses from [Galaxy Zoo](www.galaxyzoo.org) volunteers.
-Each volunteer answers a series of tasks describing the detailed appearance of each galaxy. 
+Each volunteer answers a series of tasks describing the detailed appearance of each galaxy.
 `Zoobot`'s models are trained to answer all of these diverse tasks simultaneously.
 The models can then be adapted to new related tasks.
 
 `Zoobot` provides a high-level API and guided workflow for carrying out the finetuning process.
 The API abstracts away engineering details such as efficiently loading astronomical images, multi-GPU training, iteratively finetuning deeper model layers, and so forth.
-Behind the scenes, these steps are implemented via either PyTorch [@Pytorch2019] or TensorFlow [@https://doi.org/10.48550/arxiv.1603.04467], according to the user's choice.
+Behind the scenes, these steps are implemented via either PyTorch or TensorFlow, according to the user's choice.
 `Zoobot` is therefore accessible to astronomers with no previous experience in deep learning.
 
 For advanced users, `Zoobot` also includes the code to replicate and extend our pretrained models.
@@ -147,8 +156,10 @@ from the UK Alan Turing Institute under grant reference
 EP/V030302/1. IVS gratefully acknowledges support from
 the Frankopan Foundation.
 
-Our (recommended) PyTorch version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
-Our TensorFlow version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
+CS acknowledges the support NASA Heliosphysics Supporting Research Grant (NASA-HSR 16611153) and Vanderbilt Bridge Program PhD Fellowship.
+
+Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
+Our TensorFlow [@https://doi.org/10.48550/arxiv.1603.04467] version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
 
 # References
 <!-- References: Is the list of references complete, and is everything cited appropriately that should be cited (e.g., papers, datasets, software)? -->
