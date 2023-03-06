@@ -43,7 +43,7 @@ authors:
     corresponding: false
     affiliation: "1, 6"
   # heidelberg hackathon team + devina, who wrote experimental code/helped test TODO alphabetical
-  - name: Maja Jab\L{}ońska
+  - name: Maja Jabłońska
     corresponding: false
     affiliation: 7
   - name: Kosio Karchev
