@@ -3,7 +3,10 @@
 define_model
 -------------
 
-This module contains the key function, ``train_estimator`` for training a tf.keras.Model, with some common features like early stopping and tensorboard logging.
+This module defines Zoobot's components. 
+
+:func:`.get_pytorch_encoder` and :func:`.get_pytorch_dirichlet_head` define the encoder and head, respectively, in PyTorch.
+:class:`zoobot.pytorch.estimators.define_model.ZoobotTree` wraps these components in a PyTorch LightningModule describing how to train them. 
 
 .. autoclass:: zoobot.pytorch.estimators.define_model.ZoobotTree
 
@@ -13,4 +16,4 @@ This module contains the key function, ``train_estimator`` for training a tf.ker
 
 |
 
-.. autofunction:: zoobot.pytorch.estimators.define_model.get_pytorch_head
+.. autofunction:: zoobot.pytorch.estimators.define_model.get_pytorch_dirichlet_head

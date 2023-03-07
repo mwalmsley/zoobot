@@ -15,6 +15,7 @@ import torchmetrics as tm
 
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
+from zoobot.shared import schemas
 
 # https://discuss.pytorch.org/t/how-to-freeze-bn-layers-while-training-the-rest-of-network-mean-and-var-wont-freeze/89736/7
 # I do this recursively and only for BatchNorm2d (not dropout, which I still want active)
@@ -30,6 +31,28 @@ def freeze_batchnorm_layers(model):
 
 
 class FinetuneableZoobotAbstract(pl.LightningModule):
+    """
+    Parent class of :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`.
+    You cannot use this class - you must use those child classes instead.
+
+    This class defines the finetuning methods that those child classes both use.
+    For example: when provided `checkpoint_loc`, it will load the encoder from that checkpoint.
+    Both :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`
+    can (and should) be passed any of these arguments to customise finetuning.
+
+    Args:
+        checkpoint_loc (str, optional): Path to encoder checkpoint to load (likely a saved ZoobotTree). Defaults to None.
+        encoder (pl.LightningModule, optional): Alternatively, pass an encoder directly. Load with :func:`zoobot.pytorch.training.finetune.load_pretrained_encoder`.
+        encoder_dim (int, optional): Output dimension of encoder. Defaults to 1280 (EfficientNetB0's encoder dim).
+        lr_decay (float, optional): For each layer i below the head, reduce the learning rate by lr_decay ^ i. Defaults to 0.75.
+        weight_decay (float, optional): AdamW weight decay arg (i.e. L2 penalty). Defaults to 0.05.
+        learning_rate (_type_, optional): AdamW learning rate arg. Defaults to 1e-4.
+        dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
+        freeze_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
+        prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
+        visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
+        seed (int, optional): random seed to use. Defaults to 42.
+    """
 
     def __init__(
         self,
@@ -189,6 +212,18 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
 
 class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
+    """
+    Pretrained Zoobot model intended for finetuning on a classification problem.
+
+    You must also pass either `checkpoint_loc` (to a saved encoder checkpoint)
+    or `encoder` (to a pytorch model already loaded in memory).
+    See :class:FinetuneableZoobotAbstract for more options.
+
+    Args:
+        num_classes (int): num. of target classes (e.g. 2 for binary classification).
+        label_smoothing (float, optional): See torch cross_entropy_loss docs. Defaults to 0.
+        Remaining args passed to :class:`FinetuneableZoobotAbstract` (usually to specify how to carry out the finetuning)
+    """
 
     def __init__(
             self,
@@ -254,13 +289,23 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
 
 
 class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
+    """
+    Pretrained Zoobot model intended for finetuning on a decision tree (i.e. GZ-like) problem.
+
+    You must also pass either `checkpoint_loc` (to a saved encoder checkpoint)
+    or `encoder` (to a pytorch model already loaded in memory).
+    See :class:FinetuneableZoobotAbstract for more options.
+
+    Args:
+        schema (schemas.Schema): description of the layout of the decision tree. See :ref:`zoobot.shared.schemas.Schema`.
+    """
 
     def __init__(
         self,
-        schema,
+        schema: schemas.Schema,
         **super_kwargs
-
     ):
+
         super().__init__(**super_kwargs)
 
         logging.info('Using dropout+dirichlet head and dirichlet (count) loss')
@@ -324,7 +369,7 @@ def dirichlet_loss(y_pred, y, question_index_groups):
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
 
-class FinetunedZoobotLightningModuleBaseline(FinetuneableZoobotClassifier):
+class FinetunedZoobotClassifierBaseline(FinetuneableZoobotClassifier):
     # exactly as the Finetuned model above, but with a simple single learning rate
     # useful for training from-scratch model exactly as if it were finetuned, as a baseline
 
@@ -335,11 +380,19 @@ class FinetunedZoobotLightningModuleBaseline(FinetuneableZoobotClassifier):
 
 
 def load_pretrained_encoder(checkpoint_loc: str) -> torch.nn.Sequential:
+    """
+    Args:
+        checkpoint_loc (str): path to saved LightningModule checkpoint, likely of :class:`ZoobotTree`, :class:`FinetuneableZoobotClassifier`, or :class:`FinetunabelZoobotTree`. Must have .encoder attribute.
+
+    Returns:
+        torch.nn.Sequential: pretrained PyTorch encoder within that LightningModule.
+    """
     return define_model.ZoobotTree.load_from_checkpoint(
         checkpoint_loc).encoder
 
+
 def get_trainer(
-    save_dir,
+    save_dir: str,
     file_template="{epoch}",
     save_top_k=1,
     max_epochs=100,
@@ -348,10 +401,24 @@ def get_trainer(
     accelerator='auto',
     logger=None,
     **trainer_kwargs
-):
-    # custom_config, encoder, datamodule, save_dir, logger=None, baseline=False):
-    # this is a convenient interface for users not wanting to configure everything in detail
-    # advanced users can import the classes above directly
+) -> pl.Trainer:
+    """
+    PyTorch Lightning Trainer that carries out the finetuning process.
+    Use like so: trainer.fit(model, datamodule)
+
+    Args:
+        save_dir (str): folder in which to save checkpoints and logs.
+        file_template (str, optional): custom naming for checkpoint files. See Lightning docs. Defaults to "{epoch}".
+        save_top_k (int, optional): save the top k checkpoints only. Defaults to 1.
+        max_epochs (int, optional): train for up to this many epochs. Defaults to 100.
+        patience (int, optional): wait up to this many epochs for decreasing loss before ending training. Defaults to 10.
+        devices (_type_, optional): number of devices for training (typically, num. GPUs). Defaults to None.
+        accelerator (str, optional): which device to use (typically 'gpu' or 'cpu'). Defaults to 'auto'.
+        logger (_type_, optional): If pl.loggers.wandb_logger, track experiment on Weights and Biases. Defaults to None.
+
+    Returns:
+        pl.Trainer: PyTorch Lightning trainer object for finetuning a model on a GalaxyDataModule.
+    """
 
     checkpoint_callback = ModelCheckpoint(
         monitor='finetuning/val_loss',

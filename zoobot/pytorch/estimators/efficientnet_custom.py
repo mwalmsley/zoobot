@@ -60,6 +60,13 @@ class ScaledSigmoid(nn.modules.Sigmoid):
     # https://pytorch.org/docs/stable/_modules/torch/nn/modules/activation.html#ReLU
 
     def forward(self, input: Tensor) -> Tensor:
+        """
+        Args:
+            input (Tensor): any vector. typically logits from a neural network
+
+        Returns:
+            Tensor: input mapped to range (1, 101) via torch.sigmoid
+        """
         return torch.sigmoid(input) * 100. + 1.  # could make args if I needed
 
 

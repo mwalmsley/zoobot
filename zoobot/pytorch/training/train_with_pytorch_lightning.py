@@ -96,8 +96,6 @@ def train_default_zoobot_from_scratch(
         Tuple[define_model.ZoobotTree, pl.Trainer]: Trained ZoobotTree model, and Trainer with which it was trained.
     """
 
-
-
     # some optional logging.debug calls recording cluster environment
     slurm_debugging_logs()
 

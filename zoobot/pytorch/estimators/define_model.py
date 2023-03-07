@@ -1,5 +1,6 @@
 import logging
 from functools import partial
+from typing import List
 
 import torch
 from torch import nn
@@ -113,14 +114,33 @@ class GenericLightningModule(pl.LightningModule):
 
 
 class ZoobotTree(GenericLightningModule):
+    """
+    
+    The Zoobot model. Train from scratch using :ref:`zoobot.pytorch.training.train_with_pytorch_lightning.train_default_zoobot_from_scratch`.
+
+    PyTorch LightningModule describing how to train the encoder and head (described below).
+    Trains using Dirichlet loss. Labels should be num. volunteers giving each answer to each question. 
+
+    See the code for exact training step, logging, etc - there's a lot of detail.
+
+    Args:
+        output_dim (int): Output dimension of model's head e.g. 34 for predicting a 34-answer decision tree.
+        question_index_groups (_type_): Mapping of which label indices are part of the same question. See TODO
+        architecture_name (str, optional): Architecture to use. Passed to timm. Must be in timm.list_models(). Defaults to "efficientnet_b0".
+        channels (int, optional): Num. input channels. Probably 3 or 1. Defaults to 1.
+        use_imagenet_weights (bool, optional): Load weights pretrained on ImageNet (NOT galaxies!). Defaults to False.
+        test_time_dropout (bool, optional): Apply dropout at test time, to pretend to be Bayesian. Defaults to True.
+        timm_kwargs (dict, optional): passed to timm.create_model e.g. drop_path_rate=0.2 for effnet. Defaults to {}.
+        learning_rate (_type_, optional): AdamW learning rate. Defaults to 1e-3.
+    """
 
     # lightning only supports checkpoint loading / hparams which are not fancy classes
     # therefore, can't nicely wrap these arguments. So it goes.
     # override GenericLightningModule above, only this init
     def __init__(
         self,
-        output_dim,
-        question_index_groups,
+        output_dim: int,
+        question_index_groups: List,
         # encoder args
         architecture_name="efficientnet_b0",
         channels=1,
@@ -135,20 +155,6 @@ class ZoobotTree(GenericLightningModule):
         weight_decay=0.01,  # AdamW PyTorch default
         scheduler_params={}  # no scheduler by default
         ):
-        """
-        
-        always from scratch
-
-        Args:
-            output_dim (_type_): _description_
-            question_index_groups (_type_): _description_
-            architecture_name (str, optional): _description_. Defaults to "efficientnet_b0".
-            channels (int, optional): _description_. Defaults to 1.
-            use_imagenet_weights (bool, optional): _description_. Defaults to False.
-            test_time_dropout (bool, optional): _description_. Defaults to True.
-            timm_kwargs (dict, optional): passed to timm.create_model e.g. drop_path_rate=0.2 for effnet. Defaults to {}.
-            learning_rate (_type_, optional): _description_. Defaults to 1e-3.
-        """
 
         # now, finally, can pass only standard variables as hparams to save
         # will still need to actually use these variables later, this super init only saves them
@@ -316,8 +322,23 @@ def get_pytorch_encoder(
     return timm.create_model(architecture_name, in_chans=channels, num_classes=0, pretrained=use_imagenet_weights, **timm_kwargs)
 
 
-def get_pytorch_dirichlet_head(encoder_dim, output_dim, test_time_dropout, dropout_rate):
-    # TODO use this when finetuning
+def get_pytorch_dirichlet_head(encoder_dim: int, output_dim: int, test_time_dropout: bool, dropout_rate: float) -> torch.nn.Sequential:
+    """
+    Head to combine with encoder (above) when predicting Galaxy Zoo decision tree answers.
+    Pytorch Sequential model.
+    Predicts Dirichlet concentration parameters.
+    
+    Also used when finetuning on a new decision tree - see :ref:zoobot.pytorch.training.finetune.FinetunableZoobotTree`.
+
+    Args:
+        encoder_dim (int): dimensions of preceding encoder i.e. the input size expected by this submodel.
+        output_dim (int): output dimensions of this head e.g. 34 to predict 34 answers.
+        test_time_dropout (bool): Use dropout at test time. 
+        dropout_rate (float): P of dropout. See torch.nn.Dropout docs.
+
+    Returns:
+        torch.nn.Sequential: pytorch model expecting `encoder_dim` vector and predicting `output_dim` decision tree answers.
+    """
 
     modules_to_use = []
 

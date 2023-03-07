@@ -1,10 +1,8 @@
 efficientnet_custom
 ===================
 
-This module contains custom functions for defining an EfficientNet model.
+This module contains custom layers for predicting Dirichlet concentrations.
 
-.. autofunction:: zoobot.tensorflow.estimators.efficientnet_custom.define_headless_efficientnet
+The module name is unhelpful - it used to be about EfficientNet, but not any more. Sorry.
 
-|
-
-.. autofunction:: zoobot.tensorflow.estimators.efficientnet_custom.custom_top_dirichlet
+.. autofunction:: zoobot.pytorch.estimators.efficientnet_custom.custom_top_dirichlet
