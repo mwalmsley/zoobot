@@ -121,7 +121,6 @@ class ZoobotTree(GenericLightningModule):
         self,
         output_dim,
         question_index_groups,
-        # weights_loc=None,  # always from scratch
         # encoder args
         architecture_name="efficientnet_b0",
         channels=1,
@@ -136,6 +135,20 @@ class ZoobotTree(GenericLightningModule):
         weight_decay=0.01,  # AdamW PyTorch default
         scheduler_params={}  # no scheduler by default
         ):
+        """
+        
+        always from scratch
+
+        Args:
+            output_dim (_type_): _description_
+            question_index_groups (_type_): _description_
+            architecture_name (str, optional): _description_. Defaults to "efficientnet_b0".
+            channels (int, optional): _description_. Defaults to 1.
+            use_imagenet_weights (bool, optional): _description_. Defaults to False.
+            test_time_dropout (bool, optional): _description_. Defaults to True.
+            timm_kwargs (dict, optional): passed to timm.create_model e.g. drop_path_rate=0.2 for effnet. Defaults to {}.
+            learning_rate (_type_, optional): _description_. Defaults to 1e-3.
+        """
 
         # now, finally, can pass only standard variables as hparams to save
         # will still need to actually use these variables later, this super init only saves them

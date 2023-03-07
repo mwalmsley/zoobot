@@ -66,12 +66,13 @@ authors:
     orcid: 0000-0001-5243-7659
     corresponding: false
     affiliation: ["11, 12"]
-  - name: Nicolás Guerra Varas
+  - name: Nicolás Guerra-Varas
+    orcid: 0000-0002-9718-6352
     corresponding: false
-    affiliation: 13
+    affiliation: "13, 14"
   - name: Renuka Velu
     corresponding: false
-    affiliation: 14
+    affiliation: 15
 
 affiliations:
  - name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, University of Manchester, Manchester, UK
@@ -94,6 +95,14 @@ affiliations:
    index: 11
  - name: Center for Astrophysics | Harvard & Smithsonian, Cambridge, USA
    index: 12
+ - name: Dipartimento di Fisica, Università di Roma "Tor Vergata", Roma, Italy
+   index: 13
+ - name: Department of Astronomy, Faculty of Mathematics, University of Belgrade, Belgrade, Serbia
+   index: 14
+
+
+   
+
 date: 03 March 2023
 bibliography: paper.bib
 

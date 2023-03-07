@@ -2,7 +2,7 @@ import torch
 from detectron2.config.defaults import _C as default_config
 from detectron2.layers import shape_spec
 
-from zoobot.pytorch.estimators.resnet_detectron2_standard import build_resnet_backbone
+from zoobot.pytorch.deprecated.resnet_detectron2_standard import build_resnet_backbone
 
 
 def get_resnet(

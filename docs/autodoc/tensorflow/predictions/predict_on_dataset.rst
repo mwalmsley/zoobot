@@ -5,7 +5,6 @@ This module includes utilities to make predictions with a trained model on a lis
 
 .. autofunction:: zoobot.tensorflow.predictions.predict_on_dataset.predict
 
-
 |
 
 .. autofunction:: zoobot.tensorflow.predictions.predict_on_dataset.paths_in_folder

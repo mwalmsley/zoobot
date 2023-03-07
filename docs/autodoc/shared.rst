@@ -1,8 +1,8 @@
-data_utils
+shared
 =============
 
 
 .. toctree::
     :maxdepth: 2
  
-    data_utils/image_datasets
+    shared/schemas

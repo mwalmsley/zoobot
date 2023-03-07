@@ -10,10 +10,6 @@ However, for convenience, you can check the docstrings directly here.
 .. toctree::
     :maxdepth: 2
 
-    data_utils
-    datasets
-    estimators
-    training
-    predictions
-    schemas
-    label_metadata
+    pytorch
+    tensorflow
+    shared

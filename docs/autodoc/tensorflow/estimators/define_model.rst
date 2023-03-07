@@ -10,9 +10,6 @@ Models are defined using functions in ``efficientnet_standard`` and ``efficientn
 
 |
 
-.. autofunction:: zoobot.tensorflow.estimators.define_model.add_augmentation_layers
-
-|
 
 .. autofunction:: zoobot.tensorflow.estimators.define_model.load_weights
 
