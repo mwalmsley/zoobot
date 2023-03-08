@@ -116,7 +116,7 @@ class GenericLightningModule(pl.LightningModule):
 class ZoobotTree(GenericLightningModule):
     """
     
-    The Zoobot model. Train from scratch using :ref:`zoobot.pytorch.training.train_with_pytorch_lightning.train_default_zoobot_from_scratch`.
+    The Zoobot model. Train from scratch using :function:`zoobot.pytorch.training.train_with_pytorch_lightning.train_default_zoobot_from_scratch`.
 
     PyTorch LightningModule describing how to train the encoder and head (described below).
     Trains using Dirichlet loss. Labels should be num. volunteers giving each answer to each question. 

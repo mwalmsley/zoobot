@@ -219,10 +219,12 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     or `encoder` (to a pytorch model already loaded in memory).
     See :class:FinetuneableZoobotAbstract for more options.
 
+    Any args not in the list below are passed to :class:`FinetuneableZoobotAbstract` (usually to specify how to carry out the finetuning)
+
     Args:
         num_classes (int): num. of target classes (e.g. 2 for binary classification).
         label_smoothing (float, optional): See torch cross_entropy_loss docs. Defaults to 0.
-        Remaining args passed to :class:`FinetuneableZoobotAbstract` (usually to specify how to carry out the finetuning)
+        
     """
 
     def __init__(
@@ -297,7 +299,7 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
     See :class:FinetuneableZoobotAbstract for more options.
 
     Args:
-        schema (schemas.Schema): description of the layout of the decision tree. See :ref:`zoobot.shared.schemas.Schema`.
+        schema (schemas.Schema): description of the layout of the decision tree. See :class:`zoobot.shared.schemas.Schema`.
     """
 
     def __init__(
