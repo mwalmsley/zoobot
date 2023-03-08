@@ -18,6 +18,7 @@ authors:
     equal-contrib: true
     affiliation: 2
   - name: Ben Aussel
+    orcid: 0000-0003-2592-6806
     corresponding: false
     affiliation: 3
     equal-contrib: true
@@ -37,12 +38,14 @@ authors:
     equal-contrib: true
   # people who actively advised me (alphabetical)
   - name: Chris J. Lintott
+    orcid: 0000-0001-5578-359X
     corresponding: false
     affiliation: 5
   - name: Anna M. M. Scaife
+    orcid: 0000-0002-5364-2301
     corresponding: false
     affiliation: "1, 6"
-  # heidelberg hackathon team + devina, who wrote experimental code/helped test TODO alphabetical
+  # heidelberg hackathon team + devina, who wrote experimental code/helped test
   - name: Maja Jabłońska
     corresponding: false
     affiliation: 4
@@ -74,12 +77,15 @@ authors:
     corresponding: false
     affiliation: 15
 
+# awaiting Anna, Renuka, Bharath, David, Kosio
+# send final reminder email on Wed
+
 affiliations:
  - name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, University of Manchester, Manchester, UK
    index: 1
  - name: Zooniverse.org, University of Oxford, Oxford, UK
    index: 2
- - name: TODO
+ - name: Institut für Planetologie, Westfälische Wilhelms-Universität Münster, Münster, Germany
    index: 3
  - name: Astronomical Observatory of the University of Warsaw, Warsaw, Poland
    index: 4
@@ -174,6 +180,8 @@ CS acknowledges the support NASA Heliosphysics Supporting Research Grant (NASA-H
 
 Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
 Our TensorFlow [@https://doi.org/10.48550/arxiv.1603.04467] version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
+
+For the purpose of open access, the author has applied a Creative Commons Attribution (CC BY) licence to any Author Accepted Manuscript version arising.
 
 # References
 <!-- References: Is the list of references complete, and is everything cited appropriately that should be cited (e.g., papers, datasets, software)? -->

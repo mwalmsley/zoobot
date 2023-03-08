@@ -1,7 +1,7 @@
 losses
 ===================
 
-This module contains functions for calculating the custom Dirichlet-Multinomial loss used for GZ DECaLS.
+This module contains functions for calculating the custom Dirichlet-Multinomial loss used for Galaxy Zoo decision trees.
 
 
 .. autofunction:: zoobot.tensorflow.training.losses.get_multiquestion_loss

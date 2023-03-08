@@ -14,41 +14,51 @@ Zoobot includes weights for the following pretrained models.
      - Channels
      - Finetune
      - Link
+   * - EfficientNetB0
+     - 224px
+     - 1
+     - Yes
+     - `Link <https://www.dropbox.com/s/7ixwo59imjfz4ay/effnetb0_greyscale_224px.ckpt?dl=0>`__
    * - EfficientNetB0 
      - 300px
      - 1 
      - Yes
-     - Link
-   * - EfficientNetB0 
-     - 224px
-     - 1
-     - Yes
-     - Link
+     - `Link <https://www.dropbox.com/s/izvqagd6rkhi4lq/effnetb0_greyscale_300px.ckpt?dl=0>`__
    * - EfficientNetB0 
      - 300px
      - 3
      - Yes
-     - Link
+     - WIP
    * - EfficientNetB0 
      - 224px
      - 3
      - Yes
-     - Link
+     - WIP
    * - ResNet50 
      - 300px
      - 1
      - Yes
-     - Link
+     - `Link <https://www.dropbox.com/s/hvvpy2dar0v1wti/resnet50_greyscale_300px.ckpt?dl=0>`__
    * - ResNet50
      - 224px
      - 1
      - Yes
-     - Link
+     - `Link <https://www.dropbox.com/s/copj2576v9uso16/resnet50_greyscale_224px.ckpt?dl=0>`__
+   * - ResNet18 
+     - 300px
+     - 1
+     - Yes
+     - `Link <https://www.dropbox.com/s/th1irihafkr3wqp/resnet18_greyscale_300px.ckpt?dl=0>`__
+   * - ResNet18
+     - 224px
+     - 1
+     - Yes
+     - `Link <https://www.dropbox.com/s/on21ri74rbz0qi1/resnet18_greyscale_224px.ckpt?dl=0>`__
    * - Max-ViT Tiny
      - 224px
      - 1
      - Not yet
-     - Link
+     - `Link <https://www.dropbox.com/s/pndcgi6wxh9wuqb/maxvittiny_greyscale_224px.ckpt?dl=0>`__
 
 
 

@@ -3,6 +3,9 @@
 training_config
 ===================
 
-This module contains the key function, ``train_estimator`` for training a tf.keras.Model, with some common features like early stopping and tensorboard logging.
+This module creates the :class:`Trainer` class for training a Zoobot model (itself a tf.keras.Model).
+Implements common features training like early stopping and tensorboard logging.
 
-.. autoclass:: zoobot.tensorflow.training.training_config.TrainConfig
+Follows the same idea as the PyTorch Lightning Trainer object.
+
+.. autoclass:: zoobot.tensorflow.training.training_config.Trainer

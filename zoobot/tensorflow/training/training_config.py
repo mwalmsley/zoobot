@@ -4,7 +4,7 @@ import time
 
 import tensorflow as tf
 
-from zoobot.tensorflow.estimators import custom_callbacks
+# from zoobot.tensorflow.estimators import custom_callbacks
 
 # similar style to PyTorch Lightning
 class Trainer():
