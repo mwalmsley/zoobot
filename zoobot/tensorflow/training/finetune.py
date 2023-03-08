@@ -4,7 +4,7 @@ import os
 import tensorflow as tf
 from tensorflow.keras import layers
 
-from zoobot.tensorflow.training import training_config, finetuning_utils
+from zoobot.tensorflow.training import training_config
 
 
 def run_finetuning(config, encoder, train_dataset, val_dataset, test_dataset, save_dir):
@@ -58,7 +58,7 @@ def run_finetuning(config, encoder, train_dataset, val_dataset, test_dataset, sa
 
     logging.info('Unfreezing layers')
     # you can unfreeze layers like so:
-    finetuning_utils.unfreeze_model(model, unfreeze_names=['top'])
+    unfreeze_model(model, unfreeze_names=['top'])
     # or more...
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7'])
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6'])

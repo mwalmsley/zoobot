@@ -60,6 +60,7 @@ authors:
     corresponding: false
     affiliation: 1
   - name: David O’Ryan
+    orcid: 0000-0003-1217-4617
     corresponding: false
     affiliation: 9
   - name: Bharath Saiguhan
@@ -77,7 +78,7 @@ authors:
     corresponding: false
     affiliation: 15
 
-# awaiting Anna, Renuka, Bharath, David, Kosio
+# awaiting Renuka, Bharath, Kosio
 # send final reminder email on Wed
 
 affiliations:
@@ -97,6 +98,8 @@ affiliations:
    index: 7
  - name: CEA, CNRS, Université Paris-Saclay, Université Paris Cité,  Paris, France
    index: 8
+ - name: Department of Physics, Lancaster University, Lancaster, UK
+   index: 9
  - name: Vanderbilt University, Nashville, USA
    index: 11
  - name: Center for Astrophysics | Harvard & Smithsonian, Cambridge, USA
@@ -173,10 +176,12 @@ Their efforts are individually and gratefully acknowledged [here](http://authors
 
 MW, IVS, MB and AMS gratefully acknowledge support
 from the UK Alan Turing Institute under grant reference
-EP/V030302/1. IVS gratefully acknowledges support from
+EP/V030302/1.
+IVS gratefully acknowledges support from
 the Frankopan Foundation.
-
 CS acknowledges the support NASA Heliosphysics Supporting Research Grant (NASA-HSR 16611153) and Vanderbilt Bridge Program PhD Fellowship.
+DOR acknowledges the support of the UK Science and Technology Facilities Council (STFC) under grant reference ST/T506205/1
+We thank Astro Hack Week for bringing together a community to experiment with the beta version of Zoobot.
 
 Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
 Our TensorFlow [@https://doi.org/10.48550/arxiv.1603.04467] version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
