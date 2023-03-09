@@ -175,6 +175,7 @@ You might be interested in reading papers using Zoobot:
 
 - [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414) (first use at Galaxy Zoo)
 - [A Comparison of Deep Learning Architectures for Optical Galaxy Morphology Classification](https://arxiv.org/abs/2111.04353)
+- [Practical Galaxy Morphology Tools from Deep Supervised Representation Learning](https://arxiv.org/abs/2110.12735)
 - [Towards Foundation Models for Galaxy Morphology](https://arxiv.org/abs/2206.11927) (adding contrastive learning)
 - [Harnessing the Hubble Space Telescope Archives: A Catalogue of 21,926 Interacting Galaxies](https://arxiv.org/abs/2303.00366)
 

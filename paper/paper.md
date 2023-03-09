@@ -50,6 +50,7 @@ authors:
     corresponding: false
     affiliation: 4
   - name: Kosio Karchev
+    orcid: 0000-0001-9344-736X
     corresponding: false
     affiliation: 7
   - name: Denise Lanzieri
@@ -64,6 +65,7 @@ authors:
     corresponding: false
     affiliation: 9
   - name: Bharath Saiguhan
+    orcid: 0000-0001-7580-364X
     corresponding: false
     affiliation: 10
   - name: Crisel Suárez
@@ -94,13 +96,13 @@ affiliations:
    index: 5
  - name: The Alan Turing Institute, London, UK
    index: 6
- - name: TODO
+ - name: Theoretical and Scientific Data Science Group, Scuola Internazionale Superiore di Studi Avanzati (SISSA), Trieste Italy
    index: 7
- - name: CEA, CNRS, Université Paris-Saclay, Université Paris Cité,  Paris, France
+ - name: Université Paris Cité, Université Paris-Saclay, CEA, CNRS, AIM, Gif-sur-Yvette, France
    index: 8
  - name: Department of Physics, Lancaster University, Lancaster, UK
    index: 9
- - name: TODO
+ - name: Physical Research Laboratory, Navrangpura, Ahmedabad, India
    index: 10
  - name: Vanderbilt University, Nashville, USA
    index: 11
@@ -184,7 +186,8 @@ EP/V030302/1.
 IVS gratefully acknowledges support from
 the Frankopan Foundation.
 CS acknowledges the support NASA Heliosphysics Supporting Research Grant (NASA-HSR 16611153) and Vanderbilt Bridge Program PhD Fellowship.
-DOR acknowledges the support of the UK Science and Technology Facilities Council (STFC) under grant reference ST/T506205/1
+DOR acknowledges the support of the UK Science and Technology Facilities Council (STFC) under grant reference ST/T506205/1.
+BS gratefully acknowledges support from the Physical Research Laboratory.
 We thank Astro Hack Week for bringing together a community to experiment with the beta version of Zoobot.
 
 Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.

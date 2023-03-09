@@ -22,7 +22,7 @@ Retraining (finetuning) this model requires much less time and labels than start
 
 .. note:: 
 
-    If you do want to start from scratch, :ref:`Zoobot can do that as well <training_from_scratch>`.
+    If you do want to start from scratch, Zoobot can do that as well - see zoobot/benchmarks.
     But we provide many pretrained models so hopefully you won't need to.
 
 
@@ -31,9 +31,9 @@ Examples
 
 Zoobot includes many working examples of finetuning: 
 
-- `Google Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>.`__ (for binary classification in the cloud)
-- `finetune_binary_classification.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py>`_ (script version of the Colab notebook)
-- `finetune_counts_full_tree.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py>`_ (for finetuning on a complicated GZ-style decision tree)
+- `Google Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`__ (for binary classification in the cloud)
+- `finetune_binary_classification.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py>`__ (script version of the Colab notebook)
+- `finetune_counts_full_tree.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py>`__ (for finetuning on a complicated GZ-style decision tree)
 
 There are also  `examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples>`__  with the TensorFlow version of Zoobot. But this is no longer actively developed so we strongly suggest using the PyTorch version if possible.
 
