@@ -6,10 +6,10 @@ Finetuning
 Galaxy Zoo answers the most common morphology questions: does this galaxy have spiral arms, is it merging, etc. 
 But what if you want to answer a different question?
 
-**You can finetune our automated classifier to solve new tasks or to solve the same tasks on new surveys.**
+**You can finetune our automated classifier to solve new tasks on new galaxy images.**
 
-The Galaxy Zoo classifier has been trained to simultaneously answer all of the Galaxy Zoo questions and has learned a useful general representation of galaxy morphology.
-This general representation is a good starting point for other morphology-related tasks, letting you (re)train a classifier using very little data.
+Zoobot has been trained to simultaneously answer all of the Galaxy Zoo questions.
+This provides a good starting point to be taught other morphology-related tasks using very little new data.
 
 The high-level approach is:
 
@@ -17,7 +17,6 @@ The high-level approach is:
 2. Retrain the model on your new task, typically with a low learning rate outside the new head
 
 You will likely only need a small amount of labelled images; a few hundred is a good starting point. 
-This is because Zoobot includes a classifier already trained to answer Galaxy Zoo questions for DECaLS galaxies.
 Retraining (finetuning) this model requires much less time and labels than starting from scratch.
 
 .. note:: 
@@ -58,7 +57,7 @@ These files are called checkpoints (like video game save files - computer scient
 
 :meth:`zoobot.pytorch.training.finetune.FinetuneableZoobotClassifier` loads the weights of a pretrained Zoobot model from a checkpoint file:
 
-.. code-block:: 
+.. code-block:: python
 
     model = finetune.FinetuneableZoobotClassifier(
       checkpoint_loc=checkpoint_loc,  # loads weights from here
@@ -80,7 +79,7 @@ Prepare Galaxy Data
 
 We will also need some galaxy images.
 
-.. code-block:: 
+.. code-block:: python
 
     data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'
     train_catalog, _ = demo_rings(root=data_dir, download=True, train=True)
@@ -93,7 +92,7 @@ This downloads the demo rings dataset. ``train_catalog`` is a table of galaxies 
 
 Then we can use ``GalaxyDataModule`` to tell PyTorch to load the images and labels in this catalog:
 
-.. code-block:: 
+.. code-block:: python
 
     datamodule = GalaxyDataModule(
       label_cols=['ring'],
@@ -118,7 +117,7 @@ Run the Finetuning
 
 Now we have loaded our pretrained model (with a new automatically-replaced head) and specified our data, we are ready to run the finetuning.
 
-.. code-block:: 
+.. code-block:: python
 
     trainer = finetune.get_trainer(save_dir, accelerator='cpu', max_epochs=100)
 
@@ -128,7 +127,7 @@ For more options, see the docstring: :func:`zoobot.pytorch.training.finetune.get
 
 Then we use it to fit our pretrained model:
 
-.. code-block:: 
+.. code-block:: python
 
     trainer.fit(model, datamodule)
 
@@ -141,7 +140,7 @@ Other types of problem will need different losses.
 The new weights, including the new head, have been saved to ``save_dir``.
 You can load them at any time to make predictions later.
 
-.. code-block:: 
+.. code-block:: python
 
     finetuned_model = finetune.FinetuneableZoobotClassifier.load_from_checkpoint(best_checkpoint)
 

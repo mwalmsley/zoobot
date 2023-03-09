@@ -31,14 +31,9 @@ from zoobot.pytorch.training import losses
 # FinetuneableZoobotClassifier(pretrained_model.encoder, optim_args, task_args)
 # (same approach for FinetuneableZoobotTree)
 
-
-# ZoobotEncoder is no longer needed, lightning training steps etc don't make sense for just the encoder
-# let it be part of a pytorch lightning module when needed
-
 # to use just the encoder later: 
 # encoder = load_pretrained_encoder(pyramid=False)
 # when pyramid=True, reset the timm model to pull lightning features (TODO)
-
 
 # timm gives regular pytorch models (with .forward_features argument available)
 # for both training and finetuning, we also use some custom torch classes as heads
@@ -125,13 +120,13 @@ class ZoobotTree(GenericLightningModule):
 
     Args:
         output_dim (int): Output dimension of model's head e.g. 34 for predicting a 34-answer decision tree.
-        question_index_groups (_type_): Mapping of which label indices are part of the same question. See TODO
+        question_index_groups (List): Mapping of which label indices are part of the same question. See :ref:`training_on_vote_counts`.
         architecture_name (str, optional): Architecture to use. Passed to timm. Must be in timm.list_models(). Defaults to "efficientnet_b0".
         channels (int, optional): Num. input channels. Probably 3 or 1. Defaults to 1.
         use_imagenet_weights (bool, optional): Load weights pretrained on ImageNet (NOT galaxies!). Defaults to False.
         test_time_dropout (bool, optional): Apply dropout at test time, to pretend to be Bayesian. Defaults to True.
         timm_kwargs (dict, optional): passed to timm.create_model e.g. drop_path_rate=0.2 for effnet. Defaults to {}.
-        learning_rate (_type_, optional): AdamW learning rate. Defaults to 1e-3.
+        learning_rate (float, optional): AdamW learning rate. Defaults to 1e-3.
     """
 
     # lightning only supports checkpoint loading / hparams which are not fancy classes
@@ -328,7 +323,7 @@ def get_pytorch_dirichlet_head(encoder_dim: int, output_dim: int, test_time_drop
     Pytorch Sequential model.
     Predicts Dirichlet concentration parameters.
     
-    Also used when finetuning on a new decision tree - see :ref:zoobot.pytorch.training.finetune.FinetunableZoobotTree`.
+    Also used when finetuning on a new decision tree - see :class:`zoobot.pytorch.training.finetune.FinetuneableZoobotTree`.
 
     Args:
         encoder_dim (int): dimensions of preceding encoder i.e. the input size expected by this submodel.

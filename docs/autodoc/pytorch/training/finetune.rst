@@ -6,6 +6,10 @@ Use these classes and methods to finetune a pretrained Zoobot model.
 See the `README <https://github.com/mwalmsley/zoobot>`_ for a minimal example.
 See zoobot/pytorch/examples for more worked examples.
 
+.. autoclass:: zoobot.pytorch.training.finetune.FinetuneableZoobotAbstract
+
+|
+
 .. autoclass:: zoobot.pytorch.training.finetune.FinetuneableZoobotClassifier
 
 |

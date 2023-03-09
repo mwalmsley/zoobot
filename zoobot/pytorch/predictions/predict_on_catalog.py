@@ -17,7 +17,7 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
 
     Args:
         catalog (pd.DataFrame): catalog of galaxies to make predictions on. Must include `file_loc` and `id_str` columns.
-        model (pl.LightningModule): with which to make predictions. Probably ZoobotTree, FinetuneableZoobotClassifier or FinetuneableZoobotTree.
+        model (pl.LightningModule): with which to make predictions. Probably ZoobotTree, FinetuneableZoobotClassifier, FinetuneableZoobotTree, or ZoobotEncoder.
         n_samples (int): num. of forward passes to make per galaxy. Useful to marginalise over augmentations/test-time dropout.
         label_cols (List): Names for prediction columns. Only for your convenience - has no effect on predictions.
         save_loc (str): desired name of file recording the predictions

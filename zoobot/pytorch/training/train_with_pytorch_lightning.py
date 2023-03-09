@@ -66,8 +66,8 @@ def train_default_zoobot_from_scratch(
         save_dir (str): folder to save training logs and trained model checkpoints
         catalog (pd.DataFrame, optional): Galaxy catalog with columns `id_str` and `file_loc`. Will be automatically split to train and val (no test). Defaults to None. 
         train_catalog (pd.DataFrame, optional): As above, but already split by you for training. Defaults to None.
-        val_catalog (_type_, optional): As above, for validation. Defaults to None.
-        test_catalog (_type_, optional): As above, for testing. Defaults to None.
+        val_catalog (pd.DataFrame, optional): As above, for validation. Defaults to None.
+        test_catalog (pd.DataFrame, optional): As above, for testing. Defaults to None.
         epochs (int, optional): Max. number of epochs to train for. Defaults to 1000.
         patience (int, optional): Max. number of epochs to wait for any loss improvement before ending training. Defaults to 8.
         architecture_name (str, optional): Architecture to use. Passed to timm. Must be in timm.list_models(). Defaults to 'efficientnet_b0'.

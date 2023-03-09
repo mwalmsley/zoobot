@@ -10,14 +10,15 @@ def custom_top_dirichlet(input_dim, output_dim):
     ``output_dim`` neurons with an activation of ``tf.nn.sigmoid(x) * 100. + 1.``, chosen to ensure 1-100 output range
     This range is suitable for parameters of Dirichlet distribution.
 
-    Unlike tf version, NOT inplace
-
     Args:
         output_dim (int): Dimension of dense layer e.g. 34 for decision tree with 34 answers
+
+    Returns:
+        nn.Sequential: nn.Linear followed by 1-101 sigmoid activation
     """
     return nn.Sequential(
         # LinearWithCustomInit(in_features=input_dim, out_features=output_dim),
-        nn.Linear(in_features=input_dim, out_features=output_dim, ),
+        nn.Linear(in_features=input_dim, out_features=output_dim),
         ScaledSigmoid()
     )
 

@@ -80,8 +80,6 @@ authors:
     corresponding: false
     affiliation: 15
 
-# awaiting Renuka, Bharath, Kosio
-# send final reminder email on Wed
 
 affiliations:
  - name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, University of Manchester, Manchester, UK
@@ -112,7 +110,7 @@ affiliations:
    index: 13
  - name: Department of Astronomy, Faculty of Mathematics, University of Belgrade, Belgrade, Serbia
    index: 14
- - name: TODO
+ - name: Ruprecht Karl University of Heidelberg, Germany
    index: 15
 
 

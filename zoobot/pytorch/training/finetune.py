@@ -33,12 +33,14 @@ def freeze_batchnorm_layers(model):
 class FinetuneableZoobotAbstract(pl.LightningModule):
     """
     Parent class of :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`.
-    You cannot use this class - you must use those child classes instead.
+    You cannot use this class directly - you must use the child classes above instead.
 
     This class defines the finetuning methods that those child classes both use.
     For example: when provided `checkpoint_loc`, it will load the encoder from that checkpoint.
     Both :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`
     can (and should) be passed any of these arguments to customise finetuning.
+
+    You could subclass this class to solve new finetuning tasks (like regression) - see :ref:`advanced_finetuning`.
 
     Args:
         checkpoint_loc (str, optional): Path to encoder checkpoint to load (likely a saved ZoobotTree). Defaults to None.
@@ -46,7 +48,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         encoder_dim (int, optional): Output dimension of encoder. Defaults to 1280 (EfficientNetB0's encoder dim).
         lr_decay (float, optional): For each layer i below the head, reduce the learning rate by lr_decay ^ i. Defaults to 0.75.
         weight_decay (float, optional): AdamW weight decay arg (i.e. L2 penalty). Defaults to 0.05.
-        learning_rate (_type_, optional): AdamW learning rate arg. Defaults to 1e-4.
+        learning_rate (float, optional): AdamW learning rate arg. Defaults to 1e-4.
         dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
         freeze_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
@@ -215,11 +217,11 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     """
     Pretrained Zoobot model intended for finetuning on a classification problem.
 
-    You must also pass either `checkpoint_loc` (to a saved encoder checkpoint)
+    You must also pass either ``checkpoint_loc`` (to a saved encoder checkpoint)
     or `encoder` (to a pytorch model already loaded in memory).
     See :class:FinetuneableZoobotAbstract for more options.
 
-    Any args not in the list below are passed to :class:`FinetuneableZoobotAbstract` (usually to specify how to carry out the finetuning)
+    Any args not in the list below are passed to :class:``FinetuneableZoobotAbstract`` (usually to specify how to carry out the finetuning)
 
     Args:
         num_classes (int): num. of target classes (e.g. 2 for binary classification).
@@ -294,8 +296,8 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
     """
     Pretrained Zoobot model intended for finetuning on a decision tree (i.e. GZ-like) problem.
 
-    You must also pass either `checkpoint_loc` (to a saved encoder checkpoint)
-    or `encoder` (to a pytorch model already loaded in memory).
+    You must also pass either ``checkpoint_loc`` (to a saved encoder checkpoint)
+    or ``encoder`` (to a pytorch model already loaded in memory).
     See :class:FinetuneableZoobotAbstract for more options.
 
     Args:
@@ -414,9 +416,9 @@ def get_trainer(
         save_top_k (int, optional): save the top k checkpoints only. Defaults to 1.
         max_epochs (int, optional): train for up to this many epochs. Defaults to 100.
         patience (int, optional): wait up to this many epochs for decreasing loss before ending training. Defaults to 10.
-        devices (_type_, optional): number of devices for training (typically, num. GPUs). Defaults to None.
+        devices (str, optional): number of devices for training (typically, num. GPUs). Defaults to None.
         accelerator (str, optional): which device to use (typically 'gpu' or 'cpu'). Defaults to 'auto'.
-        logger (_type_, optional): If pl.loggers.wandb_logger, track experiment on Weights and Biases. Defaults to None.
+        logger (pl.loggers.wandb_logger, optional): If pl.loggers.wandb_logger, track experiment on Weights and Biases. Defaults to None.
 
     Returns:
         pl.Trainer: PyTorch Lightning trainer object for finetuning a model on a GalaxyDataModule.

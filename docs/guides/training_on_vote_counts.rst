@@ -82,11 +82,11 @@ To train a model on Galaxy Zoo's decision trees, we need to know what the questi
         # etc
     }
 
-`zoobot.shared.schemas <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/schemas.py>`__ contains the ``Schema`` class. 
-``Schema`` objects have methods and properties which are more convenient for interpreting the decision tree than a simple dict.
-Most importantly, when training a model, your chosen ``schema`` tells the models which answers relate to which questions.
+`zoobot.shared.schemas <https://github.com/mwalmsley/zoobot/blob/main/zoobot/shared/schemas.py>`__ contains the :class:`zoobot.shared.schemas.Schema` class. 
+:class:`zoobot.shared.schemas.Schema` objects have methods and properties which are more convenient for interpreting the decision tree than a simple dict.
+Most importantly, when training a model, your chosen :class:`zoobot.shared.schemas.Schema` tells the models which answers relate to which questions.
 
-To create a new ``Schema``, pass in your pairs and dependencies:
+To create a new :class:`zoobot.shared.schemas.Schema`, pass in your pairs and dependencies:
 
 .. code-block:: python
 

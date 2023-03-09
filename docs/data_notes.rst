@@ -75,12 +75,12 @@ Zoobot includes weights for the following pretrained models.
      - 300px
      - 1 
      - Yes
-     - Link
+     - `Link <https://www.dropbox.com/scl/fo/h8xtoij1wf61oubqhj85x/h?dl=0&rlkey=g80xo368hbacae9465f4pb1q5>`__
    * - EfficientNetB0 
      - 224px
      - 1 
      - Yes
-     - Link
+     - WIP
 
 
 .. note:: 
@@ -94,7 +94,8 @@ All models are trained on the same images shown to Galaxy Zoo volunteers.
 These are typically 424 pixels across.
 The images are transformed using the galaxy-datasets default transforms (random off-center crop/zoom, flips, rotation) and then resized to the desired input size (224px or 300px) and, for 1-channel models, channel-averaged.
 
-We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.com/scl/fo/l1l7frgy12wtmsbm0hihb/h?dl=0&rlkey=sq5wevuhxs7ku5ki4cwhbhm5j>`_. 
+We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.com/scl/fo/l1l7frgy12wtmsbm0hihb/h?dl=0&rlkey=sq5wevuhxs7ku5ki4cwhbhm5j>`_.
+
 - EfficientNetB0 models pretrained only on GZ DECaLS GZD-5. For reference/comparison.
 - EfficientNetB0 models pretrained with smaller images (128px and 64px). For debugging.
 

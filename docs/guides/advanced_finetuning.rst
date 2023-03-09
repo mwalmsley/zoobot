@@ -15,7 +15,7 @@ Using Zoobot's Encoder Directly
 
 To get Zoobot's encoder, load the model and access the .encoder attribute:
 
-.. code-block:: 
+.. code-block:: python
 
     model = ZoobotTree.load_from_checkpoint(pretrained_checkpoint_loc)
     encoder = model.encoder
@@ -30,19 +30,19 @@ To get Zoobot's encoder, load the model and access the .encoder attribute:
 all have ``.encoder`` and ``.head`` attributes. These are the plain PyTorch (Sequential) models used for encoding or task predictions.
 The Zoobot classes simply wrap these with instructions for training, logging, checkpointing, and so on.
 
-Now you can use the encoder like any PyTorch Sequential for any machine learning task. We did this to `add contrastive learning <https://arxiv.org/abs/2206.11927>`_. Go nuts.
+You can use the encoder separately like any PyTorch Sequential for any machine learning task. We did this to `add contrastive learning <https://arxiv.org/abs/2206.11927>`_. Go nuts.
 
 
 Subclassing FinetuneableZoobotAbstract
 ---------------------------------------
 
 If you'd like to finetune Zoobot on a new task that isn't classification or vote counts,
-you could instead subclass ``FinetuneableZoobotAbstract``.
+you could instead subclass :class:`zoobot.pytorch.training.finetune.FinetuneableZoobotAbstract`.
 This is less general but avoids having to write out your own finetuning training code in e.g. PyTorch Lightning.
 
 For example, to make a regression version:
 
-.. code-block:: 
+.. code-block:: python
 
     
     class FinetuneableZoobotRegression(FinetuneableZoobotAbstract):
@@ -73,9 +73,10 @@ We use this at Galaxy Zoo to power our upcoming similary search and anomaly-find
 
 As above, we can get Zoobot's encoder from the .encoder attribute:
 
-.. code-block:: 
+.. code-block:: python
 
-    # can load from either ZoobotTree (if trained from scratch) or FinetuneableZoobotTree (if finetuned)
+    # can load from either ZoobotTree (if trained from scratch)
+    # or FinetuneableZoobotTree (if finetuned)
     encoder = finetune.FinetuneableZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
 
 ``encoder`` is a PyTorch Sequential object, so we could use ``encoder.predict()`` to calculate our representations.
@@ -83,7 +84,7 @@ But then we'd have to deal with batching, looping, etc.
 To avoid this boilerplate, Zoobot includes a PyTorch Lightning class that lets you pass ``encoder`` to the same :func:`zoobot.pytorch.predictions.predict_on_catalog.predict`
 utility function used for making predictions with a full Zoobot model.
 
-.. code-block:: 
+.. code-block:: python
 
     # convert to simple pytorch lightning model
     model = representations.ZoobotEncoder(encoder=encoder, pyramid=False)
@@ -98,7 +99,7 @@ utility function used for making predictions with a full Zoobot model.
         trainer_kwargs=trainer_kwargs
     )
 
-See 
+See `zoobot/pytorch/examples/representations <https://github.com/mwalmsley/zoobot/tree/main/zoobot/pytorch/examples/representations>`_ for a full working example.
 
 We plan on adding precalculated representations for all our DESI galaxies - but we haven't done it yet. Sorry.
 Please raise an issue if you really need these.
