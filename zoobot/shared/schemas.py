@@ -134,7 +134,13 @@ class Schema():
         """
         Relate the df label columns tor question/answer groups and to tfrecod label indices
         Requires that labels be continguous by question - easily satisfied
-        
+
+        Be careful with dependencies:
+        - first entry should be the first answer to that question, by df column order
+        - second entry should be the last answer to that question, similarly
+        - answers in between will be included: these are used to slice
+        - df columns must be contigious by question (e.g. not smooth_yes, bar_no, smooth_no) for this to work!
+
         Args:
             question_answer_pairs (dict): e.g. {'smooth-or-featured: ['_smooth, _featured-or-disk, ...], ...}
             dependencies (dict): dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
@@ -142,13 +148,7 @@ class Schema():
         self.question_answer_pairs = question_answer_pairs
         _, self.label_cols = label_metadata.extract_questions_and_label_cols(question_answer_pairs)
         self.dependencies = dependencies
-        """
-        Be careful:
-        - first entry should be the first answer to that question, by df column order
-        - second entry should be the last answer to that question, similarly
-        - answers in between will be included: these are used to slice
-        - df columns must be contigious by question (e.g. not smooth_yes, bar_no, smooth_no) for this to work!
-        """
+
         self.questions = [Question(question_text, answers_text, self.label_cols) for question_text, answers_text in question_answer_pairs.items()]
         if len(self.questions) > 1:
             set_dependencies(self.questions, self.dependencies)

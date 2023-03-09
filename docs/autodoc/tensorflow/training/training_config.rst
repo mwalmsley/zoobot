@@ -9,3 +9,4 @@ Implements common features training like early stopping and tensorboard logging.
 Follows the same idea as the PyTorch Lightning Trainer object.
 
 .. autoclass:: zoobot.tensorflow.training.training_config.Trainer
+    :members:

@@ -44,6 +44,32 @@ def train(
     # replication parameters
     random_state=42  # TODO not yet implemented except for catalog split (not used in benchmarks)
 ) -> tf.keras.Model:
+    """
+    Train a Zoobot (EfficientNetB0) model from scratch.
+    Note that the TensorFlow Zoobot version is not actively developed.
+    We suggest the PyTorch version instead.
+
+    Args:
+        save_dir (str): directory to save the trained model and logs
+        train_catalog (pd.DataFrame, optional): Catalog of galaxies for training. Must include `id_str`, `file_loc`, and label_cols columns. Defaults to None.
+        val_catalog (pd.DataFrame, optional): As above, for validation. Defaults to None.
+        test_catalog (pd.DataFrame, optional): As above, for testing. Defaults to None.
+        architecture_name (str, optional): Specifies architecture to use. B0 by default. Defaults to 'efficientnet'.
+        dropout_rate (float, optional): Prob. of dropout prior to output layer. Defaults to 0.2.
+        epochs (int, optional): Max epochs to train. Defaults to 1000.
+        patience (int, optional): Max epochs to wait for loss improvement before cancelling training. Defaults to 8.
+        color (bool, optional): Train with RGB images. Defaults to False.
+        requested_img_size (int, optional): Size to load images from disk (i.e. to resize before transforms). Defaults to None.
+        crop_scale_bounds (tuple, optional): Zoom fraction for random crops. Defaults to (0.7, 0.8).
+        crop_ratio_bounds (tuple, optional): Aspect ratio for random crops. Defaults to (0.9, 1.1).
+        resize_after_crop (int, optional): Size to input images to network (i.e. to resize after transforms). Defaults to 224.
+        always_augment (bool, optional): Use augmentations at test time. Defaults to False.
+        gpus (int, optional): Num. gpus to use. Defaults to 2.
+        eager (bool, optional): Use eager execution (good for debugging but much slower). Defaults to False.
+
+    Returns:
+        tf.keras.Model: Trained Zoobot model.
+    """
 
     # get the image paths, divide into train/val/test if not explicitly passed above
     if catalog is not None:
