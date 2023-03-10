@@ -158,7 +158,7 @@ v1.0.0 is recognises that most of the complexity in this repo is training Zoobot
 - Refactor out augmentations and datasets to `galaxy-datasets` repo. TF and Torch now use identical augmentations (via albumentations).
 - Many small quality-of-life improvements
 
-Contributions are very welcome and will be credited in any future work. Please get in touch! See [CONTRIBUTING.md]((https://github.com/mwalmsley/zoobot/blob/main/benchmarks) for more.
+Contributions are very welcome and will be credited in any future work. Please get in touch! See [CONTRIBUTING.md](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) for more.
 
 ### Benchmarks and Replication - Training from Scratch
 
