@@ -65,7 +65,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         encoder_dim=1280,  # as per current Zooot. TODO Could get automatically?
         n_epochs=100,  # TODO early stopping
         n_layers=0,  # how many layers deep to FT
-        batch_size=1024,
         lr_decay=0.75,
         weight_decay=0.05,
         learning_rate=1e-4,
@@ -98,7 +97,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.n_layers = n_layers
         self.freeze = True if n_layers == 0 else False
 
-        self.batch_size = batch_size
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
         self.weight_decay = weight_decay
