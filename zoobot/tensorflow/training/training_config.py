@@ -4,11 +4,19 @@ import time
 
 import tensorflow as tf
 
-from zoobot.tensorflow.estimators import custom_callbacks
+# from zoobot.tensorflow.estimators import custom_callbacks
 
 # similar style to PyTorch Lightning
 class Trainer():
+    """Lighting-esque object for executing training.
 
+    Args:
+        epochs (int, optional): Max epochs to train. Defaults to 1500.
+        patience (int, optional): Max epochs to wait for loss improvement before cancelling training. Defaults to 10.
+        log_dir (str, optional): Directory to save training logs. Defaults to 'runs/default_run_{}'.format(time.time()).
+        save_freq (str, optional): Frequency with which to save training logs. Defaults to 'epoch'.
+    """
+    
     def __init__(
         # this doesn't really need to be a class, 
         # but it's kinda nice to break up the training instructions from the model/dataset

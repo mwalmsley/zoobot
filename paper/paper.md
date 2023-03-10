@@ -1,5 +1,5 @@
 ---
-title: 'Gala: A Python package for galactic dynamics'
+title: 'Zoobot: Adaptable Deep Learning Models for Galaxy Morphology'
 tags:
   - Python
   - astronomy
@@ -12,39 +12,111 @@ authors:
     orcid: 0000-0002-6408-4181
     corresponding: true
     equal-contrib: false
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Cambell Allen
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    affiliation: 1
+  # people who wrote core code and docs, alphabetical
+  - name: Campbell Allen
+    equal-contrib: true
     affiliation: 2
+  - name: Ben Aussel
+    orcid: 0000-0003-2592-6806
+    corresponding: false
+    affiliation: 3
+    equal-contrib: true
   - name: Micah Bowles
     corresponding: false
+    orcid: 0000-0001-5838-8405
     affiliation: 1
-  - name: Inigo Val
+    equal-contrib: true
+  - name: Kasia Gregorowicz
+    orcid: 0009-0003-0023-6240
+    corresponding: false
+    affiliation: 4
+    equal-contrib: true
+  - name: Inigo Val Slijepcevic
     corresponding: false
     affiliation: 1
+    equal-contrib: true
+  # people who actively advised me (alphabetical)
+  - name: Chris J. Lintott
+    orcid: 0000-0001-5578-359X
+    corresponding: false
+    affiliation: 5
+  - name: Anna M. M. Scaife
+    orcid: 0000-0002-5364-2301
+    corresponding: false
+    affiliation: "1, 6"
+  # heidelberg hackathon team + devina, who wrote experimental code/helped test
+  - name: Maja Jabłońska
+    corresponding: false
+    affiliation: 4
+  - name: Kosio Karchev
+    orcid: 0000-0001-9344-736X
+    corresponding: false
+    affiliation: 7
+  - name: Denise Lanzieri
+    orcid: 0000-0003-2787-1634
+    corresponding: false
+    affiliation: 8
   - name: Devina Mohan
     corresponding: false
     affiliation: 1
-  - name: Ben
+  - name: David O’Ryan
+    orcid: 0000-0003-1217-4617
     corresponding: false
-    affiliation: 1
-  - name: Chris J. Lintott
+    affiliation: 9
+  - name: Bharath Saiguhan
+    orcid: 0000-0001-7580-364X
     corresponding: false
-    affiliation: 1
-  - name: Anna M. M. Scaife
+    affiliation: 10
+  - name: Crisel Suárez
+    orcid: 0000-0001-5243-7659
     corresponding: false
-    affiliation: 1
-  - name: Kasia
+    affiliation: ["11, 12"]
+  - name: Nicolás Guerra-Varas
+    orcid: 0000-0002-9718-6352
     corresponding: false
-    affiliation: TODO
+    affiliation: "13, 14"
+  - name: Renuka Velu
+    corresponding: false
+    affiliation: 15
+
+
 affiliations:
- - name: Department of Physics and Astronomy, University of Manchester, Manchester, UK
+ - name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, University of Manchester, Manchester, UK
    index: 1
  - name: Zooniverse.org, University of Oxford, Oxford, UK
    index: 2
- - name: MPIA
+ - name: Institut für Planetologie, Westfälische Wilhelms-Universität Münster, Münster, Germany
    index: 3
-date: 19 February 2023
+ - name: Astronomical Observatory of the University of Warsaw, Warsaw, Poland
+   index: 4
+ - name: Oxford Astrophysics, Department of Physics, University of Oxford, Oxford, UK
+   index: 5
+ - name: The Alan Turing Institute, London, UK
+   index: 6
+ - name: Theoretical and Scientific Data Science Group, Scuola Internazionale Superiore di Studi Avanzati (SISSA), Trieste Italy
+   index: 7
+ - name: Université Paris Cité, Université Paris-Saclay, CEA, CNRS, AIM, Gif-sur-Yvette, France
+   index: 8
+ - name: Department of Physics, Lancaster University, Lancaster, UK
+   index: 9
+ - name: Physical Research Laboratory, Navrangpura, Ahmedabad, India
+   index: 10
+ - name: Vanderbilt University, Nashville, USA
+   index: 11
+ - name: Center for Astrophysics | Harvard & Smithsonian, Cambridge, USA
+   index: 12
+ - name: Dipartimento di Fisica, Università di Roma "Tor Vergata", Roma, Italy
+   index: 13
+ - name: Department of Astronomy, Faculty of Mathematics, University of Belgrade, Belgrade, Serbia
+   index: 14
+ - name: Ruprecht Karl University of Heidelberg, Germany
+   index: 15
+
+
+   
+
+date: 09 March 2023
 bibliography: paper.bib
 
 ---
@@ -55,69 +127,50 @@ bibliography: paper.bib
 
 `Zoobot` is a Python package for measuring the detailed appearance of galaxies in telescope images
 using deep learning.
-`Zoobot` is aimed at astronomers who have their own measurement task (e.g. finding merging galaxies, counting spiral arms)
-but can't gather the hundreds of thousands of labelled images required to train a new deep learning model from scratch.
-`Zoobot` allows users to instead finetune pretrained models to solve their task, requiring far fewer new labels.
+`Zoobot` is aimed at astronomers who want to solve a galaxy image task such as finding merging galaxies or counting spiral arms.
+Astronomers can use `Zoobot` to adapt (finetune) pretrained deep learning models to solve their task.
+These finetuned models perform better and require far fewer new labels than training from scratch [@Walmsley2022Towards].
 
-The models included with `Zoobot` are pretrained on millions of responses from [Galaxy Zoo](www.galaxyzoo.org) volunteers,
-who answer a series of detailed appearance tasks.
-`Zoobot`'s models are trained to answer all of these tasks simultaneously.
-Having already learned to solve those tasks, the models can then be adapted to new related tasks `[@Walmsley:2022]`
-<!-- Towards -->
+The models included with `Zoobot` are pretrained on up to 92 million responses from [Galaxy Zoo](www.galaxyzoo.org) volunteers.
+Each volunteer answers a series of tasks describing the detailed appearance of each galaxy.
+`Zoobot`'s models are trained to answer all of these diverse tasks simultaneously.
+The models can then be adapted to new related tasks.
 
 `Zoobot` provides a high-level API and guided workflow for carrying out the finetuning process.
-The API abstracts away engineering details such as efficiently loading astronomical images, multi-GPU training, iteratively finetuning deeper model layers, etc.
-Behind the scenes, these steps are implemented via either PyTorch [] or TensorFlow [], according to the user's choice.
+The API abstracts away engineering details such as efficiently loading astronomical images, multi-GPU training, iteratively finetuning deeper model layers, and so forth.
+Behind the scenes, these steps are implemented via either PyTorch or TensorFlow, according to the user's choice.
 `Zoobot` is therefore accessible to astronomers with no previous experience in deep learning.
 
-For advanced users, `Zoobot` also includes the code to replicate and extend `Zoobot`'s pretrained models.
-This is used routinely at [Galaxy Zoo](www.galaxyzoo.org) to scale up galaxy measurement catalogues `[@Walmsley:2022]` `[@Walmsley:2022]`
+For advanced users, `Zoobot` also includes the code to replicate and extend our pretrained models.
+This is used routinely at [Galaxy Zoo](www.galaxyzoo.org) to scale up galaxy measurement catalogs [@Walmsley2022decals]
 and to prioritise the galaxies shown to volunteers for labelling.
-Zoobot models have been applied to measure galaxy appearance in SDSS `[@Walmsley:2021]`, Hubble, HSC, and DESI, and are included in the data pipeline of upcoming space telescope Euclid `[@Laurejis:2022]`.
-We hope that `Zoobot` will help astronomers use deep learning and the next generation of survey telescopes to answer their own science questions.
-
+Zoobot models have been applied to measure galaxy appearance in SDSS [@Walmsley2020], Hubble, HSC, and DESI, and are included in the data pipeline of upcoming space telescope Euclid [@2011arXiv1110.3193L].
+We hope that `Zoobot` will help empower astronomers to apply deep learning to answer their own science questions.
 
 # Statement of need
 <!-- A statement of need: Does the paper have a section titled ‘Statement of need’ that clearly states what problems the software is designed to solve, who the target audience is, and its relation to other work? -->
+<!-- State of the field: Do the authors describe how this software compares to other commonly-used packages? -->
 
-Astronomers aim to understand why galaxies look the way they do by measuring
-the appearance - morphology - of millions of galaxies.
-The sheer number of images requires these measurement to be made automatically with software.
+One common way to investigate why galaxies look the way they do is by measuring
+the appearance - morphology - of millions of galaxies and looking for connections between appearance and other physical properties [@Masters2019a].
+The sheer number of images requires most of these measurement to be made automatically with software [@Walmsley2020].
 
 Unfortunately, making automated measurements of complicated features like spiral arms is difficult because
 it is hard to write down a set of steps that reliably identify those and only those features.
-This mirrors many image classification problems back on Earth.
+This mirrors many image classification problems back on Earth [@LeCun2015].
 Astronomers often aim instead to learn the measurement steps directly from data
-by providing deep learning models with large sets of images with labels (e.g. spiral or not).
+by providing deep learning models with large sets of galaxy images with labels (e.g. spiral or not) [@HuertasCompany2022].
 
-Gathering large sets of labelled galaxy images is a major barrier.
-Models trained on millions to billions of labelled images consistently perform better (scaling laws).
-Astronomers cannot routinely label this many images.
+Gathering large sets of labelled galaxy images is a major practical barrier.
+Models trained on millions to billions of labelled images consistently perform better [@Bommasani2021;@https://doi.org/10.48550/arxiv.2302.05442], but astronomers cannot routinely label this many images.
 Neither can most other people;
 terrestrial practictioners often start with a model already trained ("pretrained")
-on a broad generic task and then adapt it ("finetune") to their specific measurement task.
+on a broad generic task and then adapt it ("finetune") to their specific measurement task `[@https://doi.org/10.48550/arxiv.2104.10972].
 
-Zoobot by sharing models pre-trained
-Further, Zoobot 
-
-new surveys
-
-<!-- State of the field: Do the authors describe how this software compares to other commonly-used packages? -->
-
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
-
-<!-- TODO explanatory diagram? -->
+Zoobot makes this approach available to astronomers.
+We provide models pretrained on millions of galaxy images and present a convenient API for finetuning those models.
+Early results [@Walmsley2022Towards;@https://doi.org/10.48550/arxiv.2303.00366] show that our pretrained models can be efficiently adapted to new morphology tasks.
+<!-- We will continue to improve our pretraining methods to create adaptable galaxy "foundation" models and to make those models available to the community via Zoobot. -->
 
 # Acknowledgements
 
@@ -127,8 +180,18 @@ Their efforts are individually and gratefully acknowledged [here](http://authors
 
 MW, IVS, MB and AMS gratefully acknowledge support
 from the UK Alan Turing Institute under grant reference
-EP/V030302/1. IVS gratefully acknowledges support from
+EP/V030302/1.
+IVS gratefully acknowledges support from
 the Frankopan Foundation.
+CS acknowledges the support NASA Heliosphysics Supporting Research Grant (NASA-HSR 16611153) and Vanderbilt Bridge Program PhD Fellowship.
+DOR acknowledges the support of the UK Science and Technology Facilities Council (STFC) under grant reference ST/T506205/1.
+BS gratefully acknowledges support from the Physical Research Laboratory.
+We thank Astro Hack Week for bringing together a community to experiment with the beta version of Zoobot.
+
+Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
+Our TensorFlow [@https://doi.org/10.48550/arxiv.1603.04467] version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
+
+For the purpose of open access, the author has applied a Creative Commons Attribution (CC BY) licence to any Author Accepted Manuscript version arising.
 
 # References
 <!-- References: Is the list of references complete, and is everything cited appropriately that should be cited (e.g., papers, datasets, software)? -->
