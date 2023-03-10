@@ -49,6 +49,7 @@ def train_default_zoobot_from_scratch(
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
     save_top_k=3,
+    extra_callbacks=None,
     # replication parameters
     random_state=42
 ) -> Tuple[define_model.ZoobotTree, pl.Trainer]:
@@ -225,6 +226,8 @@ def train_default_zoobot_from_scratch(
         weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
+    
+    extra_callbacks = extra_callbacks if extra_callbacks else []
 
     # used later for checkpoint_callback.best_model_path
     checkpoint_callback = ModelCheckpoint(
@@ -238,10 +241,11 @@ def train_default_zoobot_from_scratch(
             # avoids extra folders from the checkpoint name
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
-        )
+    )
+
     early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
 
-    callbacks = [checkpoint_callback, early_stopping_callback]
+    callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
 
     trainer = pl.Trainer(
         log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
