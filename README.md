@@ -148,7 +148,7 @@ CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
 
 ### Latest features (v1.0.0)
 
-v1.0.0 is recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
+v1.0.0 recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
 
 - Adds new finetuning interface (`finetune.run_finetuning()`), examples.
 - Refocuses docs on finetuning rather than training from scratch.
