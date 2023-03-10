@@ -1,6 +1,5 @@
 import os
 import glob
-import json
 import logging
 import time
 import datetime
@@ -16,6 +15,7 @@ from zoobot.shared import save_predictions
 def predict(ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_cols: List, save_loc: str):
     """
     Make and save predictions by model on image dataset.
+
     Args:
         ds (tf.data.Dataset): dataset yielding batches of (images, id_strs). Preprocessing already applied. id_strs may be the original path to image, or any other galaxy identifier.
         model (tf.keras.Model): trained model with which to make predictions

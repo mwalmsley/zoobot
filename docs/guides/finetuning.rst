@@ -6,43 +6,37 @@ Finetuning
 Galaxy Zoo answers the most common morphology questions: does this galaxy have spiral arms, is it merging, etc. 
 But what if you want to answer a different question?
 
-**You can finetune our automated classifier to solve new tasks or to solve the same tasks on new surveys.**
+**You can finetune our automated classifier to solve new tasks on new galaxy images.**
 
-The Galaxy Zoo classifier has been trained to simultaneously answer all of the Galaxy Zoo questions and has learned a useful general representation of galaxy morphology.
-This general representation is a good starting point for other morphology-related tasks, letting you (re)train a classifier using very little data.
+Zoobot has been trained to simultaneously answer all of the Galaxy Zoo questions.
+This provides a good starting point to be taught other morphology-related tasks using very little new data.
 
 The high-level approach is:
 
 1. Load the trained model, replacing the head (output layers) to match your task
-2. Retrain *only* the new head, leaving the rest of the model frozen
-3. Optionally, once the new head is trained, unfreeze the rest of the model and train with a low learning rate
+2. Retrain the model on your new task, typically with a low learning rate outside the new head
 
 You will likely only need a small amount of labelled images; a few hundred is a good starting point. 
-This is because Zoobot includes a classifier already trained to answer Galaxy Zoo questions for DECaLS galaxies.
 Retraining (finetuning) this model requires much less time and labels than starting from scratch.
-If you do want to start from scratch, to reproduce or improve upon the pretrained classifier, :ref:`Zoobot can do that as well <training_from_scratch>`.
 
 .. note:: 
 
-    This guide uses code for the TensorFlow version of Zoobot.
-    The conceptual approach is exactly the same with the PyTorch version.
-    I haven't written examples yet - sorry! 
-    For now, here are two links for fine-tuning vision models with `PyTorch Vision <https://github.com/PyTorchLightning/pytorch-lightning/blob/master/pl_examples/domain_templates/computer_vision_fine_tuning.py>`__ and `PyTorch Lightning <https://github.com/PyTorchLightning/pytorch-lightning/blob/master/pl_examples/domain_templates/computer_vision_fine_tuning.py>`__.
+    If you do want to start from scratch, Zoobot can do that as well - see zoobot/benchmarks.
+    But we provide many pretrained models so hopefully you won't need to.
 
 
 Examples
 ---------------------
 
-Zoobot includes two complete working examples:
+Zoobot includes many working examples of finetuning: 
 
-`finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`_ shows how to partially finetune a model (1 and 2 only) to classify ring galaxies using an example dataset.
-It is designed to be easy to understand.
+- `Google Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`__ (for binary classification in the cloud)
+- `finetune_binary_classification.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py>`__ (script version of the Colab notebook)
+- `finetune_counts_full_tree.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py>`__ (for finetuning on a complicated GZ-style decision tree)
 
-`finetune_advanced.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py>`_ solves the same problem with some additional tips and tricks: filtering the dataset, balancing the classes (rings are rare), and unfreezing the model (3). 
+There are also  `examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples>`__  with the TensorFlow version of Zoobot. But this is no longer actively developed so we strongly suggest using the PyTorch version if possible.
 
-Readers familiar with python and machine learning may prefer to read, copy and adapt the example scripts directly. 
-
-Below, for less familiar readers, I walk through the `finetune_minimal.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`__ example in detail.
+Below, for less familiar readers, we walk through the ``finetune_binary_classification.py`` example in detail.
 
 Background
 ---------------------
@@ -51,120 +45,103 @@ Fine-tuning, also known as transfer learning, is when a model trained on one tas
 This can drastically reduce the amount of labelled data needed.
 For a general introduction, see `this excellent blog post <https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html>`_.
 
+Here, we will finetune a pretrained Zoobot model to find ringed galaxies.
 
 Load Pretrained Model
 ---------------------
 
 Neural networks, like any statistical model, are trained by fitting their free parameters to data.
 The free parameters in neural networks are called weights.
+When we load a network, we are reading the fitted values of the weights from a file saved on disk.
+These files are called checkpoints (like video game save files - computer scientists are nerds too).
 
-Recreating a previously trained neural network takes two steps: defining the model (how the neurons connect) and then loading the weights.
-:meth:`zoobot.estimators.define_model.load_model` does both steps for you. 
-It defines the model used for GZ DECaLS, and then loads the weights for that model.
-By passing ``include_top=False``, the final layers of the network (those used to make a prediction) will not be loaded.
-We will add our own top layers shortly.
+:meth:`zoobot.pytorch.training.finetune.FinetuneableZoobotClassifier` loads the weights of a pretrained Zoobot model from a checkpoint file:
 
-.. code-block:: 
+.. code-block:: python
 
-    base_model = define_model.load_model(
-        pretrained_checkpoint,
-        include_top=False,  # do not include the head used for GZ DECaLS - we will add our own head
-        input_size=requested_img_size,
-        crop_size=crop_size,  # model augmentation layers apply a crop...
-        resize_size=resize_size,  # ...and then apply a resize
-        output_dim=None  # headless so no effect
+    model = finetune.FinetuneableZoobotClassifier(
+      checkpoint_loc=checkpoint_loc,  # loads weights from here
+      num_classes=2,
+      n_layers=0
     )
 
-We would like to retrain this model to work well on a new, related problem - here, classifying ring galaxies.
-We don't have enough data to retrain the whole model - GZ DECaLS required hundreds of thousands of labels.
-Instead, we will freeze the model (without any top layers) and then add our own top layers.
-We can then train only the new top layer.
+You can download a checkpoint file from :ref:`datanotes`.
 
-.. code-block:: 
+What about the other arguments?
+When loading the checkpoint, FinetuneableZoobotClassifier will automatically change the head layer to suit a classification problem (hence, ``Classifier``).
+``num_classes=2`` specifies how many classes we have, Here, two classes (a.k.a. binary classification).
+``n_layers=0`` specifies how many layers (other than the output layer) we want to finetune.
+0 indicates no other layers, so we will only be changing the weights of the output layer.
 
-    base_model.trainable = False  # freeze the headless model (no training allowed)
 
-
-Replace Output Layers
+Prepare Galaxy Data
 ---------------------
 
-Our top layer needs to be small enough that we can train it with very little data.
-A few dense layers will do.
+We will also need some galaxy images.
 
-Here, I use two Dense layers with very aggressive dropout to prevent overfitting.
-Combining several dense layers allows for nonlinear behaviour, which can be useful.
+.. code-block:: python
 
-The final layer is a single neuron with a sigmoid activation function.
-This will always give an output between 0 and 1, which is appropriate for binary classification.
-For multiclass classification, I might instead use 
-``layers.Dense(3, activation="softmax", name="softmax_output")``.
+    data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'
+    train_catalog, _ = demo_rings(root=data_dir, download=True, train=True)
 
-.. code-block:: 
+This downloads the demo rings dataset. ``train_catalog`` is a table of galaxies with three crucial columns. 
 
-    new_head = tf.keras.Sequential([
-        layers.InputLayer(input_shape=(7,7,1280)),  # base model output shape
-        layers.GlobalAveragePooling2D(),
-        # TODO the following layers will likely need some experimentation
-        layers.Dropout(0.75),
-        layers.Dense(64, activation='relu'),
-        layers.Dropout(0.75),
-        layers.Dense(64, activation='relu'),
-        layers.Dropout(0.75),
-        layers.Dense(1, activation="sigmoid", name='sigmoid_output')
-    ])
+- ``id_str``, any string uniquely identifying each galaxy
+- ``file_loc``, a path to the image (jpg, png, or fits) containing the galaxy
+- ``ring``, the label (either 0 or 1)
 
-Now we stick the new head on top of the pretrained base model:
+Then we can use ``GalaxyDataModule`` to tell PyTorch to load the images and labels in this catalog:
 
-.. code-block:: 
+.. code-block:: python
 
-    model = tf.keras.Sequential([
-        tf.keras.layers.InputLayer(input_shape=(requested_img_size, requested_img_size, 1)),
-        base_model,
-        new_head
-    ])
+    datamodule = GalaxyDataModule(
+      label_cols=['ring'],
+      catalog=train_catalog,
+      batch_size=32
+    )
 
-Train 
------------
+``label_cols`` specifies which columns are the labels to predict. It must be a list.
+In a more complicated example, we might predict the labels in many columns at once.
+Here, there's only one label column, but it should still be a list.
 
-The base model remains frozen, while the head is free to train (as we never set ``new_head.trainable = False``).
-Training the overall model will therefore only affect the new head.
+``batch_size=32`` specifies how many images to show to the network in one go. 
+If your computer throws out-of-memory errors, you may need to reduce this.
+If training is very slow, you can increase this.
 
-For a binary classification problem, I am using the binary cross-entropy.
+``GalaxyDataModule`` has many other options for specifying how to transform the images before passing them to the network ("augmentations")
+See the `code <https://github.com/mwalmsley/galaxy-datasets/blob/main/galaxy_datasets/pytorch/galaxy_datamodule.py#L18>`__ (in another repo).
+
+
+Run the Finetuning
+---------------------
+
+Now we have loaded our pretrained model (with a new automatically-replaced head) and specified our data, we are ready to run the finetuning.
+
+.. code-block:: python
+
+    trainer = finetune.get_trainer(save_dir, accelerator='cpu', max_epochs=100)
+
+The ``trainer`` object is used to specify how I would like my model to be trained. 
+Here, I want to train with a CPU for up to 100 epochs (stopping early if the validation loss stops improving).
+For more options, see the docstring: :func:`zoobot.pytorch.training.finetune.get_trainer`
+
+Then we use it to fit our pretrained model:
+
+.. code-block:: python
+
+    trainer.fit(model, datamodule)
+
+This uses the AdamW optimizer and the cross-entropy loss.
 Other types of problem will need different losses.
-I am using the adam optimizer, which is nearly always a great choice - it's very robust!
-
-.. code-block:: 
-
-    model.compile(
-        loss=tf.keras.losses.binary_crossentropy,
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),  # normal learning rate is okay
-        metrics=['accuracy']
-    )
-
-I define how I would like my model to be trained, with 80 epochs and stopping early if the validation loss does not improve after 10 consecutive epochs:
-
-.. code-block:: 
-
-    train_config = training_config.TrainConfig(
-        log_dir='save/model/here',
-        epochs=80,
-        patience=10  # early stopping: if val loss does not improve for this many epochs in a row, end training
-    )
-
-And then we train!
-
-.. code-block:: 
-
-    training_config.train_estimator(
-        model,
-        train_config,  # how to train e.g. epochs, patience
-        train_dataset,
-        val_dataset
-    )
+``FinetuneableZoobotTree`` has a loss designed for GZ-style decision trees.
 
 ``model`` has now been fit to the training data. You can use it to make new predictions - see the full example for more.
 
-The new weights, including the new head, have been saved to log_dir/checkpoint. 
-You can load them at any time to make predictions later or continue training - just be sure to define your model, including the new head, in exactly the same way.
+The new weights, including the new head, have been saved to ``save_dir``.
+You can load them at any time to make predictions later.
+
+.. code-block:: python
+
+    finetuned_model = finetune.FinetuneableZoobotClassifier.load_from_checkpoint(best_checkpoint)
 
 Now go do some science!

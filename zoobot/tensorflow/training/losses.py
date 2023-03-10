@@ -118,6 +118,16 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
 
 
 def get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q):
-        dist = tfp.distributions.DirichletMultinomial(total_count, concentrations_for_q, validate_args=True)
-        return -dist.log_prob(labels_for_q)  # important minus sign
+    """_summary_
+
+    Args:
+        labels_for_q (_type_): _description_
+        total_count (_type_): _description_
+        concentrations_for_q (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    dist = tfp.distributions.DirichletMultinomial(total_count, concentrations_for_q, validate_args=True)
+    return -dist.log_prob(labels_for_q)  # important minus sign
 

@@ -7,19 +7,12 @@ Below are some practical guides for tasks that we hope Zoobot will be helpful fo
 .. toctree::
    :maxdepth: 2
 
-   /guides/pytorch_or_tensorflow
-   /guides/training_from_scratch
-   /guides/representations
    /guides/finetuning
+   /guides/advanced_finetuning
+   /guides/training_on_vote_counts
+   /guides/how_the_code_fits_together
+   /guides/pytorch_or_tensorflow
 
-These guides include content or code specific to either the PyTorch or TensorFlow versions of Zoobot:
+If you'd prefer worked examples, you can find those under `zoobot/pytorch/examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples>`_ and `zoobot/tensorflow/examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples>`_. 
 
-.. toctree::
-   :maxdepth: 2
-
-   /guides/training_with_tensorflow
-   /guides/training_with_pytorch
-
-If you'd prefer worked examples, you can find those under `zoobot/tensorflow/examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples>`_ and `zoobot/pytorch/examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples>`_
-
-There's also this `Colab notebook <https://colab.research.google.com/drive/1miKj3HVmt7NP6t7xnxaz7V4fFquwucW2?usp=sharing>`_ demonstrating finetuning which you can run in the cloud (with free access to a powerful GPU, courtesy of Google Research)
+There's also this `Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`_ demonstrating finetuning which you can run in the cloud (with free access to a powerful GPU, courtesy of Google Research)

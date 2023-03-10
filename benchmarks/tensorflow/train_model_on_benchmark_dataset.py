@@ -2,56 +2,12 @@ import logging
 import argparse
 import os
 
-import pandas as pd
 import tensorflow as tf
 tf.config.optimizer.set_jit(False)
 import wandb
-from sklearn.model_selection import train_test_split
 
-from zoobot.shared import label_metadata, schemas
 from zoobot.tensorflow.training import train_with_keras
-
-
-
-
-def get_gz_decals_dr5_benchmark_dataset(data_dir, random_state, download):
-    # use the setup() methods in galaxy_datasets.prepared_datasets to get the canonical (i.e. standard) train and test catalogs
-
-    from galaxy_datasets import gz_decals_5  # public
-
-    canonical_train_catalog, _ = gz_decals_5(root=data_dir, train=True, download=download)
-    canonical_test_catalog, _ = gz_decals_5(root=data_dir, train=False, download=download)
-
-    train_catalog, val_catalog = train_test_split(canonical_train_catalog, test_size=0.1, random_state=random_state)
-    test_catalog = canonical_test_catalog.copy()
-
-
-    question_answer_pairs = label_metadata.decals_dr5_ortho_pairs  # dr5
-    dependencies = label_metadata.decals_ortho_dependencies
-    schema = schemas.Schema(question_answer_pairs, dependencies)
-    logging.info('Schema: {}'.format(schema))
-
-    return schema, (train_catalog, val_catalog, test_catalog)
-
-
-def get_gz_evo_benchmark_dataset(data_dir, random_state, download=False, debug=False, datasets=['gz_desi', 'gz_hubble', 'gz_candels', 'gz2', 'gz_rings']):
-
-    from foundation.datasets import mixed  # not yet public. import will fail if you're not me.
-
-    # temporarily, everything *but* hubble, for Ben
-    datasets = ['gz_desi', 'gz_candels', 'gz2', 'gz_rings']
-
-    _, (temp_train_catalog, temp_val_catalog, _) = mixed.everything_all_dirichlet_with_rings(data_dir, debug, download=download, use_cache=True, datasets=datasets)
-    canonical_train_catalog = pd.concat([temp_train_catalog, temp_val_catalog], axis=0)
-
-    # here I'm going to ignore the test catalog
-    train_catalog, hidden_catalog = train_test_split(canonical_train_catalog, test_size=1./3., random_state=random_state)
-    val_catalog, test_catalog = train_test_split(hidden_catalog, test_size=2./3., random_state=random_state)
-
-    schema = mixed.mixed_schema()
-    logging.info('Schema: {}'.format(schema))
-    return schema, (train_catalog, val_catalog,test_catalog)
-
+from zoobot.shared import benchmark_datasets
 
 
 if __name__ == '__main__':
@@ -110,9 +66,9 @@ if __name__ == '__main__':
         download = False  # for speed afterwards
 
     if args.dataset == 'gz_decals_dr5':
-        schema, (train_catalog, val_catalog, test_catalog) = get_gz_decals_dr5_benchmark_dataset(args.data_dir, random_state, download=download)
+        schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_decals_dr5_benchmark_dataset(args.data_dir, random_state, download=download)
     elif args.dataset == 'gz_evo':
-        schema, (train_catalog, val_catalog, test_catalog) = get_gz_evo_benchmark_dataset(args.data_dir, random_state, download=download)
+        schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_evo_benchmark_dataset(args.data_dir, random_state, download=download)
     else:
         raise ValueError(f'Dataset {args.dataset} not recognised: should be "gz_decals_dr5" or "gz_evo"')
 

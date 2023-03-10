@@ -25,12 +25,13 @@ def train_default_zoobot_from_scratch(
     epochs=1000,
     patience=8,
     # model hparams
-    architecture_name='efficientnet',  # recently changed
+    architecture_name='efficientnet_b0',  # recently changed
     batch_size=128,
     dropout_rate=0.2,
     drop_connect_rate=0.2,
     learning_rate=1e-3,
     betas=(0.9, 0.999),
+    weight_decay=0.01,
     scheduler_params={},
     # data and augmentation parameters
     color=False,
@@ -50,10 +51,49 @@ def train_default_zoobot_from_scratch(
     save_top_k=3,
     # replication parameters
     random_state=42
-) -> Tuple[pl.LightningModule, pl.Trainer]:
+) -> Tuple[define_model.ZoobotTree, pl.Trainer]:
     """
-    Convenient API for training Zoobot (aka a base cnn model + dirichlet head) from scratch on a big galaxy catalog using sensible augmentations.
-    Does not do finetuning, does not do more complicated architectures (e.g. custom head), does not support custom losses (uses dirichlet loss)
+    Train Zoobot from scratch on a big galaxy catalog.
+    Zoobot is a base deep learning model (anything from timm, typically a CNN) plus a dirichlet head.
+    Images are augmented using the default transforms (flips, rotations, zooms)
+    from `the galaxy-datasets repo <https://github.com/mwalmsley/galaxy-datasets/blob/main/galaxy_datasets/transforms.py>`_.
+
+    Once trained, Zoobot can be finetuned to new data.
+    For finetuning, see zoobot/pytorch/training/finetune.py.
+    Many pretrained models are already available - see :ref:`datanotes`.
+
+    Args:
+        save_dir (str): folder to save training logs and trained model checkpoints
+        catalog (pd.DataFrame, optional): Galaxy catalog with columns `id_str` and `file_loc`. Will be automatically split to train and val (no test). Defaults to None. 
+        train_catalog (pd.DataFrame, optional): As above, but already split by you for training. Defaults to None.
+        val_catalog (pd.DataFrame, optional): As above, for validation. Defaults to None.
+        test_catalog (pd.DataFrame, optional): As above, for testing. Defaults to None.
+        epochs (int, optional): Max. number of epochs to train for. Defaults to 1000.
+        patience (int, optional): Max. number of epochs to wait for any loss improvement before ending training. Defaults to 8.
+        architecture_name (str, optional): Architecture to use. Passed to timm. Must be in timm.list_models(). Defaults to 'efficientnet_b0'.
+        dropout_rate (float, optional): Randomly drop activations prior to the output layer, with this probability. Defaults to 0.2.
+        drop_connect_rate (float, optional): Randomly drop blocks with this probability, for regularisation. For supported timm models only. Defaults to 0.2.
+        learning_rate (float, optional): Base learning rate for AdamW. Defaults to 1e-3.
+        betas (tuple, optional): Beta args (i.e. momentum) for adamW. Defaults to (0.9, 0.999).
+        weight_decay (float, optional): Weight decay arg (i.e. L2 penalty) for AdamW. Defaults to 0.01.
+        scheduler_params (dict, optional): Specify a learning rate scheduler. See code. Not recommended with AdamW. Defaults to {}.
+        color (bool, optional): Train on RGB images rather than channel-averaged. Defaults to False.
+        resize_after_crop (int, optional): Input image size. After all transforms, images will be resized to this size. Defaults to 224.
+        crop_scale_bounds (tuple, optional): Off-center crop fraction (<1 means zoom in). Defaults to (0.7, 0.8).
+        crop_ratio_bounds (tuple, optional): Aspect ratio of crop above. Defaults to (0.9, 1.1).
+        nodes (int, optional): Multi-node training Unlikely to work on your cluster without tinkering. Defaults to 1 (i.e. one node).
+        gpus (int, optional): Multi-GPU training. Uses distributed data parallel - essentially, full dataset is split by GPU. See torch docs. Defaults to 2.
+        num_workers (int, optional): Processes for loading data. See torch dataloader docs. Should be < num cpus. Defaults to 4.
+        prefetch_factor (int, optional): Num. batches to queue in memory per dataloader. See torch dataloader docs. Defaults to 4.
+        mixed_precision (bool, optional): Use (mostly) half-precision to halve memory requirements. May cause instability. See Lightning Trainer docs. Defaults to False.
+        wandb_logger (pl.loggers.wandb.WandbLogger, optional): Logger to track experiments on Weights and Biases. Defaults to None.
+        checkpoint_file_template (str, optional): formatting for checkpoint filename. See Lightning docs. Defaults to None.
+        auto_insert_metric_name (bool, optional): escape "/" in metric names when naming checkpoints. See Lightning docs. Defaults to True.
+        save_top_k (int, optional): Keep the k best checkpoints. See Lightning docs. Defaults to 3.
+        random_state (int, optional): Seed. Defaults to 42.
+
+    Returns:
+        Tuple[define_model.ZoobotTree, pl.Trainer]: Trained ZoobotTree model, and Trainer with which it was trained.
     """
 
     # some optional logging.debug calls recording cluster environment
@@ -136,22 +176,23 @@ def train_default_zoobot_from_scratch(
             'test_catalog': test_catalog  # may be None
         }
 
-    wandb_logger.log_hyperparams({
-        'random_state': random_state,
-        'epochs': epochs,
-        'accelerator': accelerator,
-        'gpus': gpus,
-        'nodes': nodes,
-        'precision': precision,
-        'batch_size': batch_size,
-        'greyscale': not color,
-        'crop_scale_bounds': crop_scale_bounds,
-        'crop_ratio_bounds': crop_ratio_bounds,
-        'resize_after_crop': resize_after_crop,
-        'num_workers': num_workers,
-        'prefetch_factor': prefetch_factor,
-        'framework': 'pytorch'
-    })
+    if wandb_logger is not None:
+        wandb_logger.log_hyperparams({
+            'random_state': random_state,
+            'epochs': epochs,
+            'accelerator': accelerator,
+            'gpus': gpus,
+            'nodes': nodes,
+            'precision': precision,
+            'batch_size': batch_size,
+            'greyscale': not color,
+            'crop_scale_bounds': crop_scale_bounds,
+            'crop_ratio_bounds': crop_ratio_bounds,
+            'resize_after_crop': resize_after_crop,
+            'num_workers': num_workers,
+            'prefetch_factor': prefetch_factor,
+            'framework': 'pytorch'
+        })
 
     datamodule = GalaxyDataModule(
         label_cols=schema.label_cols,
@@ -167,21 +208,21 @@ def train_default_zoobot_from_scratch(
         num_workers=num_workers,
         prefetch_factor=prefetch_factor
     )
-    datamodule.setup()
+    datamodule.setup(stage='fit')
 
     # these args are automatically logged
-    lightning_model = define_model.ZoobotLightningModule(
+    lightning_model = define_model.ZoobotTree(
         output_dim=len(schema.label_cols),
         question_index_groups=schema.question_index_groups,
-        include_top=True,
+        architecture_name=architecture_name,
         channels=channels,
         use_imagenet_weights=False,
         test_time_dropout=True,
         dropout_rate=dropout_rate,
-        drop_connect_rate=drop_connect_rate,
-        architecture_name=architecture_name,
         learning_rate=learning_rate,
+        timm_kwargs={'drop_path_rate': drop_connect_rate},
         betas=betas,
+        weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
 
@@ -253,7 +294,7 @@ def train_default_zoobot_from_scratch(
     # https://pytorch-lightning.readthedocs.io/en/stable/common/checkpointing_basic.html#initialize-with-other-parameters
     # to make this work, ZoobotLightningModule can only take "normal" parameters (e.g. not custom objects) so has quite a few args
     logging.info('Returning model from checkpoint: {}'.format(best_model_path))
-    define_model.ZoobotLightningModule.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
+    define_model.ZoobotTree.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
 

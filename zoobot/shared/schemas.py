@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from zoobot.shared import label_metadata
+from galaxy_datasets.shared import label_metadata
 
 
 class Question():
@@ -134,7 +134,13 @@ class Schema():
         """
         Relate the df label columns tor question/answer groups and to tfrecod label indices
         Requires that labels be continguous by question - easily satisfied
-        
+
+        Be careful with dependencies:
+        - first entry should be the first answer to that question, by df column order
+        - second entry should be the last answer to that question, similarly
+        - answers in between will be included: these are used to slice
+        - df columns must be contigious by question (e.g. not smooth_yes, bar_no, smooth_no) for this to work!
+
         Args:
             question_answer_pairs (dict): e.g. {'smooth-or-featured: ['_smooth, _featured-or-disk, ...], ...}
             dependencies (dict): dict mapping each question (e.g. disk-edge-on) to the answer on which it depends (e.g. smooth-or-featured_featured-or-disk)
@@ -142,13 +148,7 @@ class Schema():
         self.question_answer_pairs = question_answer_pairs
         _, self.label_cols = label_metadata.extract_questions_and_label_cols(question_answer_pairs)
         self.dependencies = dependencies
-        """
-        Be careful:
-        - first entry should be the first answer to that question, by df column order
-        - second entry should be the last answer to that question, similarly
-        - answers in between will be included: these are used to slice
-        - df columns must be contigious by question (e.g. not smooth_yes, bar_no, smooth_no) for this to work!
-        """
+
         self.questions = [Question(question_text, answers_text, self.label_cols) for question_text, answers_text in question_answer_pairs.items()]
         if len(self.questions) > 1:
             set_dependencies(self.questions, self.dependencies)
@@ -261,12 +261,22 @@ class Schema():
 
 
 # and define each schema here, for convenience
-# TODO likely refactor to galaxy-datasets
 decals_dr5_ortho_schema = Schema(label_metadata.decals_dr5_ortho_pairs , label_metadata.decals_ortho_dependencies)
+decals_dr8_ortho_schema = Schema(label_metadata.decals_dr8_ortho_pairs , label_metadata.decals_ortho_dependencies)
 decals_all_campaigns_ortho_schema = Schema(label_metadata.decals_all_campaigns_ortho_pairs , label_metadata.decals_ortho_dependencies)
 gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs , label_metadata.gz2_ortho_dependencies)
+gz_candels_ortho_schema = Schema(label_metadata.candels_ortho_pairs, label_metadata.candels_ortho_dependencies)
+gz_hubble_ortho_schema = Schema(label_metadata.hubble_ortho_pairs, label_metadata.hubble_ortho_dependencies)
 cosmic_dawn_ortho_schema = Schema(label_metadata.cosmic_dawn_ortho_pairs , label_metadata.cosmic_dawn_ortho_dependencies)
 gz_rings_schema = Schema(label_metadata.rings_pairs, label_metadata.rings_dependencies)
+desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies)  # for DESI data release prediction users, not for ML training - no -dr5, -dr8, etc
 # note that as this is a call to Schema (and Question and Answer), any logging within those will 
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
+
+# temp for debugging
+# print(label_metadata.desi_pairs)
+# print(label_metadata.desi_dependencies)
+
+# print(desi_schema.questions)
+# print(desi_schema.answers)

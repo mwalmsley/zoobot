@@ -1,15 +1,17 @@
 import json
 from typing import List
+import logging
 
 import numpy as np
 import pandas as pd
 import h5py
 
 
-def predictions_to_hdf5(predictions, id_str, label_cols, save_loc):
+def predictions_to_hdf5(predictions, id_str, label_cols, save_loc, compression="gzip"):
+    logging.info(f'Saving predictions to {save_loc}')
     assert save_loc.endswith('.hdf5')
     with h5py.File(save_loc, "w") as f:
-        f.create_dataset(name='predictions', data=predictions)
+        f.create_dataset(name='predictions', data=predictions, compression=compression)
         # https://docs.h5py.org/en/stable/special.html#h5py.string_dtype
         dt = h5py.string_dtype(encoding='utf-8')
         # predictions_dset.attrs['label_cols'] = label_cols  # would be more conventional but is a little awkward
@@ -48,8 +50,10 @@ def prediction_to_row(prediction: np.ndarray, id_str: str, label_cols: List):
     for n in range(len(label_cols)):
         answer = label_cols[n]
         answer_pred = prediction[n].astype(float)  # (n_samples,) shape
-        if len(answer_pred) == 1:  # i.e. if only one sample
-            row[answer + '_pred'] = answer_pred.squeeze()  # converts to scalar 
+        if isinstance(answer_pred, float) or isinstance(answer_pred, np.float64):
+            row[answer + '_pred'] = answer_pred  # it's a scalar already, life is good
+        elif len(answer_pred) == 1:  # i.e. if only one sample
+            row[answer + '_pred'] = answer_pred.squeeze()  # it's a scalar in disguise, make it a scalar 
         else:
-            row[answer + '_pred'] = json.dumps(list(answer_pred))
+            row[answer + '_pred'] = json.dumps(list(answer_pred))  # it's not a scalar, write as json
     return row

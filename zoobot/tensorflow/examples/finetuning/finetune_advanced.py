@@ -12,7 +12,7 @@ from tensorflow.keras import layers
 
 from zoobot.tensorflow.estimators import preprocess, define_model
 from zoobot.tensorflow.training import training_config
-from zoobot.tensorflow.transfer_learning import utils
+from zoobot.tensorflow.training import finetuning_utils
 from zoobot.tensorflow.datasets import rings
 
     
@@ -234,7 +234,7 @@ def main(batch_size, requested_img_size, train_dataset_size, epochs, greyscale=T
     
     logging.info('Unfreezing layers')
     # you can unfreeze layers like so:
-    utils.unfreeze_model(model, unfreeze_names=['top'])
+    finetuning_utils.unfreeze_model(model, unfreeze_names=['top'])
     # or more...
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7'])
     # utils.unfreeze_model(model, unfreeze_names=['top', 'block7', 'block6'])
