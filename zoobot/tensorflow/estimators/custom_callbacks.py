@@ -1,6 +1,7 @@
 import tensorflow as tf
+# import wandb
 
-
+# TODO now deprecated
 class UpdateStepCallback(tf.keras.callbacks.Callback):
 
     def __init__(self, batch_size):
@@ -26,5 +27,19 @@ class UpdateStepCallback(tf.keras.callbacks.Callback):
         # # self.model.step = step
         # # self.model.step.assign(step)
         tf.keras.backend.set_value(self.model.step, step)
-        print('\n Ending step: ', float(tf.keras.backend.get_value(self.model.step)))
+        # print('\n Ending step: ', float(tf.keras.backend.get_value(self.model.step)))
         # # print(f'Step {step}')
+
+
+# class VisualizeImages(tf.keras.callbacks.Callback):
+
+#     # no args needed yet
+#     # def __init__(self):
+#     #     super(VisualizeImages, self).__init__()
+
+#     def on_train_begin(self, logs=None):
+#         tf.summary.image(name='images_before_augmentation', data, max_outputs=3, description='Images passed to Zoobot')
+
+
+# callbacks can use self.model
+# https://www.tensorflow.org/guide/keras/custom_callback#usage_of_selfmodel_attribute

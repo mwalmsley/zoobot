@@ -4,8 +4,8 @@
 Zoobot Documentation
 ====================
 
-Zoobot makes it easy to train a state-of-the-art deep learning classifier to solve your galaxy morphology problem.
-For example, you can train a classifier to find ring galaxies in under `200 lines of code <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py>`_.
+Zoobot makes it easy to finetune a state-of-the-art deep learning classifier to solve your galaxy morphology problem.
+For example, you can finetune a classifier to find ring galaxies with `just a few hundred examples <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`_.
 
 .. figure:: finetuning_rings.png
    :alt: Ring galaxies found using Zoobot
@@ -13,27 +13,26 @@ For example, you can train a classifier to find ring galaxies in under `200 line
 
    *Ring galaxies found using Zoobot and 212 labelled examples.*
 
-Zoobot is intended for three tasks: training new models, calculating representations, and applying finetuning. 
-You can find practical guides to each task below.
-Each includes working example scripts you can run and adapt.
+The easiest way to learn to use Zoobot is simply to use Zoobot. 
+We suggest you start with our worked examples.
+The `Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`_ is the fastest way to get started.
+See the README for many scripts that you can run and adapt locally.
+
+
+Guides
+-------------
+
+If you'd like more explanation and context, we've written these guides.
 
 .. toctree::
    :maxdepth: 2
 
    /guides/guides
 
+Pretrained Models
+------------------
 
-You do not need to be a machine learning expert to use Zoobot. 
-Zoobot includes :ref:`components <overview_components>` for common tasks like loading images, managing training, and making predictions.
-You simply need to assemble these together. 
-
-.. toctree::
-   :maxdepth: 2
-
-   components/overview
-
-
-Zoobot includes pretrained weights, precalculated representations, example ring galaxy catalogues, and more. See here for a guide to the data:
+To choose and download a pretrained model, see here.
 
 .. toctree::
    :maxdepth: 2
@@ -41,8 +40,8 @@ Zoobot includes pretrained weights, precalculated representations, example ring 
    data_notes
 
 
-API Reference
--------------
+API reference
+--------------
 
 Look here for information on a specific function, class or
 method.
@@ -52,12 +51,24 @@ method.
 
    autodoc/api
 
-Indices
-^^^^^^^
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. You do not need to be a machine learning expert to use Zoobot. 
+.. Zoobot includes :ref:`components <overview_components>` for common tasks like loading images, managing training, and making predictions.
+.. You simply need to assemble these together. 
+
+.. .. toctree::
+..    :maxdepth: 2
+
+..    components/overview
+
+
+
+.. Indices
+.. ^^^^^^^
+
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
 
 .. Sphinx links below
 .. https://www.sphinx-doc.org/en/master/usage/quickstart.html

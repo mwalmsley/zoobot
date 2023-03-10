@@ -1,8 +1,10 @@
+from typing import Tuple
+
 import torch
 import pyro
 
 
-def calculate_multiquestion_loss(labels, predictions, question_index_groups):
+def calculate_multiquestion_loss(labels: torch.Tensor, predictions: torch.Tensor, question_index_groups: Tuple) -> torch.Tensor:
     """
     The full decision tree loss used for training GZ DECaLS models
 
@@ -10,12 +12,12 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups):
     from Dirichlet-Multinomial distributions for each question, using concentrations ``predictions``.
     
     Args:
-        labels (tf.Tensor): (galaxy, k successes) where k successes dimension is indexed by question_index_groups.
-        predictions (tf.Tensor):  Dirichlet concentrations, matching shape of labels
-        question_index_groups (list): Paired (tuple) integers of (first, last) indices of answers to each question, listed for all questions.
+        labels (torch.Tensor): (galaxy, k successes) where k successes dimension is indexed by question_index_groups.
+        predictions (torch.Tensor):  Dirichlet concentrations, matching shape of labels
+        question_index_groups (list): Paired (tuple) integers of (first, last) indices of answers to each question, listed for all questions. See :ref:`schemas`.
     
     Returns:
-        tf.Tensor: neg. log likelihood of shape (batch, question).
+        torch.Tensor: neg. log likelihood of shape (batch, question).
     """
     # very important that question_index_groups is fixed and discrete, else tf.function autograph will mess up 
     q_losses = []

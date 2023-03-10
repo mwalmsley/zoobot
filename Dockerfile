@@ -25,8 +25,8 @@ RUN ln -s /usr/local/bin/pip3 /usr/bin/pip
 # install dependencies
 COPY README.md .
 COPY setup.py .
-RUN pip install -U .[pytorch]
 
 # install zoobot package code
+# container already has CUDA 11.3
 COPY . .
-RUN pip install -U -e .
+RUN pip install -U -e .[pytorch_cu113]

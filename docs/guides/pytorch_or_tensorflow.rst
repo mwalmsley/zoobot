@@ -5,39 +5,33 @@
 PyTorch or TensorFlow?
 ===========================
 
-Zoobot is really two separate sets of code: `zoobot/pytorch <https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/pytorch>`_ and `zoobot/tensorflow <https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/tensorflow>`_.
-They both do (almost) exactly the same thing - train the same model architecture on the same Galaxy Zoo data in the same way, for extracting representations and for finetuning - but they use different underlying deep learning frameworks to do so.
+.. warning:: You should use the PyTorch version if possible. This is being actively developed and has the latest features.
 
-We have created two versions of Zoobot so that you can use your preferred framework.
-This is especially important in a lab where your colleagues all use one framework, or if your work involves integrating Zoobot with a deep learning approach only available in one framework.
+Zoobot is really two separate sets of code: `zoobot/pytorch <https://github.com/mwalmsley/zoobot/tree/main/zoobot/pytorch>`_ and `zoobot/tensorflow <https://github.com/mwalmsley/zoobot/tree/main/zoobot/tensorflow>`_.
+They can both train the same EfficientNet model architecture on the same Galaxy Zoo data in the same way, for extracting representations and for finetuning - but they use different underlying deep learning frameworks to do so.
 
-
-Which Version Should I Use?
-----------------------------
-
-- If your research involves an approach only published in one framework, there is no choice.
-- If your colleagues all use one framework, choose that.
-- If you're in a hurry and have much more experience with one framework, choose that.
-- If you want the best performance with Zoobot, choose the PyTorch version. This has the latest features.
-- If you're new to deep learning, it's a toss-up. The TensorFlow version has more documentation (because it's older) while the PyTorch version is simpler to load data with. You might want to check out `this blog post <https://walmsley.dev/posts/deep-learning-for-astro>`_ for astronomers getting started with deep learning.
+We originally created two versions of Zoobot so that astronomers can use their preferred framework.
+But maintaining two almost entirely separate sets of code is too much work for our current resources (Mike's time, basically).
+Going forward, the PyTorch version will be actively developed and gain new features, while the TensorFlow version will be kept up-to-date but will not otherwise improve.
 
 Tell Me More About What's Different
 -------------------------------------
 
-The biggest difference is how the training data is loaded.
-The TensorFlow Zoobot currently uses TFRecord shards (binary-encoded stacks of images) while the PyTorch version uses the images directly.
-This makes training more flexible: with shards, changing the training data requires making new shards, which is slow (a few hours).
-Avoiding shards also saves disk space: TFRecord shards take much up more disk space than the original images.
+The TensorFlow version was the original version.
+It was used for the `GZ DECaLS catalog <https://arxiv.org/abs/2102.08414>`_ and the `Practical Morphology Tools <https://arxiv.org/abs/2110.12735>`_ paper.
+You can train EfficientNetB0 and achieve the same performance as with PyTorch (see the "benchmarks folder").
+You can also finetune the trained model, although the process is slightly clunkier.
 
-The TensorFlow version has been around longer.
-It has more working examples (see https://github.com/mwalmsley/zoobot/tree/pytorch/zoobot/tensorflow/examples>`_).
-It has also been used in published work: both the GZ DECaLS catalog and the "practical representation tools" paper used the TensorFlow version.
-
-The PyTorch version is new and includes the latest features but has less examples and documentation and has not yet been formally published.
+The PyTorch version was introduced to support other researchers and to integrate with Bootstrap Your Own Latent for the `Towards Foundation Models <https://arxiv.org/abs/2206.11927>`_ paper.
+This version is actively developed and includes the latest features.
 
 PyTorch-specific features include:
-- ResNet50 architecture option (with both detectron2 and torchvision's implementations) 
+
+- Any architecture option from timm (including ResNet and Max-ViT)
+- Improved interface for easy finetuning
+- Layerwise learning rate decay during finetuning
 - Integration with AstroAugmentations (courtesy Micah Bowles) for custom astronomy image augmentations
+- Per-question loss tracking on WandB
 
 
 Can I have a JAX version?

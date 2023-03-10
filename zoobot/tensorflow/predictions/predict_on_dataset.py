@@ -1,6 +1,5 @@
 import os
 import glob
-import json
 import logging
 import time
 import datetime
@@ -16,6 +15,7 @@ from zoobot.shared import save_predictions
 def predict(ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_cols: List, save_loc: str):
     """
     Make and save predictions by model on image dataset.
+
     Args:
         ds (tf.data.Dataset): dataset yielding batches of (images, id_strs). Preprocessing already applied. id_strs may be the original path to image, or any other galaxy identifier.
         model (tf.keras.Model): trained model with which to make predictions
@@ -26,7 +26,13 @@ def predict(ds: tf.data.Dataset, model: tf.keras.Model, n_samples: int, label_co
 
     # to make sure images and id_str line up, load id_str back out from dataset
     id_str_ds = ds.map(lambda _, id_str: id_str)
-    image_id_strs = [id_str.numpy().decode('utf-8') for id_str_batch in id_str_ds for id_str in id_str_batch]
+    try:
+        image_id_strs = [id_str.numpy().decode('utf-8') for id_str_batch in id_str_ds for id_str in id_str_batch]
+    except AttributeError:
+        raise AttributeError(
+            'Dataset does not appear to be yielding batches of (images, id strings). \
+            Check with dataset.take(1). Make sure you create the dataset with include_id_str=True and labels=None'
+        )
 
     logging.info('Beginning predictions')
     start = datetime.datetime.fromtimestamp(time.time())

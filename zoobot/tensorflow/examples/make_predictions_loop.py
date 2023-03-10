@@ -9,7 +9,7 @@ from zoobot.shared import schemas
 from zoobot.tensorflow.data_utils import image_datasets
 from zoobot.tensorflow.estimators import define_model, preprocess
 from zoobot.tensorflow.predictions import predict_on_tfrecords, predict_on_dataset
-from zoobot.shared import label_metadata
+from galaxy_datasets.shared import label_metadata
 
 """
 This script is the more advanced (yet more useful) version of make_predictions.py
@@ -151,8 +151,7 @@ if __name__ == '__main__':
             preprocessing_config = preprocess.PreprocessingConfig(
                 label_cols=[],  # no labels are needed, we're only doing predictions
                 input_size=initial_size,
-                make_greyscale=greyscale,
-                normalise_from_uint8=True
+                make_greyscale=greyscale
             )
             image_ds = preprocess.preprocess_dataset(raw_image_ds, preprocessing_config)
             # image_ds will give batches of (images, paths) when label_cols=[]
