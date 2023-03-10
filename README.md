@@ -168,9 +168,21 @@ Training Zoobot using the GZ DECaLS dataset option will create models very simil
 
 ### Citing
 
-If you use this software for your research, please cite [the JOSS paper](TODO_on_publication). This describes Zoobot itself.
+We have submitted a JOSS paper to describe Zoobot itself.
+We hope this will become the single point-of-reference for Zoobot.
+Meanwhile, please cite the [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414), which uses the code that evolved into Zoobot:
 
-<!-- TODO bibtex on publication -->
+    @article{Walmsley2022decals,
+    author = {Mike Walmsley and Chris Lintott and Geron Tobias and Sandor J Kruk and Coleman Krawczyk and Kyle Willett and Steven Bamford and William Keel and Lee S Kelvin and Lucy Fortson and Karen Masters and Vihang Mehta and Brooke Simmons and Rebecca J Smethurst and Elisabeth M L Baeten and Christine Macmillan},
+    issue = {3},
+    journal = {Monthly Notices of the Royal Astronomical Society},
+    month = {12},
+    pages = {3966-3988},
+    title = {Galaxy Zoo DECaLS: Detailed Visual Morphology Measurements from Volunteers and Deep Learning for 314,000 Galaxies},
+    volume = {509},
+    url = {https://arxiv.org/abs/2102.08414},
+    year = {2022},
+    }
 
 You might be interested in reading papers using Zoobot:
 
