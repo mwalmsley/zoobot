@@ -171,7 +171,7 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     logging.info('Advanced summary table saved to {}'.format(advanced_loc))
 
 
-def single_forward_pass_hdf5s_to_df(hdf5_locs: List):
+def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False):
     """
     Load predictions (or representations) saved as hdf5 into pd.DataFrame with id_str and label_cols columns
 
@@ -189,11 +189,16 @@ def single_forward_pass_hdf5s_to_df(hdf5_locs: List):
     galaxy_id_df, predictions, label_cols = load_hdf5s(hdf5_locs)
 
     predictions = predictions.squeeze()
+    
     if len(predictions.shape) > 2:
-        logging.warning(
-            'Predictions are of shape {}, greater than rank 2. \
-            I suggest using load_hdf5s directly to work with np.arrays, not with DataFrame - see docstring'
-        )
+        if drop_extra_dims:
+            predictions = predictions[:, :, 0]
+            logging.warning('Dropped extra dimensions')
+        else:
+            logging.critical(
+                'Predictions are of shape {}, greater than rank 2. \
+                I suggest using load_hdf5s directly to work with np.arrays, not with DataFrame - see docstring'
+            )
     prediction_df = pd.DataFrame(data=predictions, columns=label_cols)
     # copy over metadata (indices will align)
     prediction_df['id_str'] = galaxy_id_df['id_str']
