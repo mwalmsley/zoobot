@@ -292,6 +292,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         self.val_acc(step_output['class_predictions'], step_output['labels'])
         self.log(
             'finetuning/val_acc',
+            self.val_acc,
             on_step=False,
             on_epoch=True,
             prog_bar=self.prog_bar
@@ -303,6 +304,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         self.test_acc(step_output['class_predictions'], step_output['labels'])
         self.log(
             "finetuning/test_acc",
+            self.test_acc,
             on_step=False,
             on_epoch=True,
             prog_bar=self.prog_bar
@@ -427,7 +429,7 @@ def get_trainer(
     save_top_k=1,
     max_epochs=100,
     patience=10,
-    devices=None,
+    devices='auto',
     accelerator='auto',
     logger=None,
     **trainer_kwargs
@@ -442,7 +444,7 @@ def get_trainer(
         save_top_k (int, optional): save the top k checkpoints only. Defaults to 1.
         max_epochs (int, optional): train for up to this many epochs. Defaults to 100.
         patience (int, optional): wait up to this many epochs for decreasing loss before ending training. Defaults to 10.
-        devices (str, optional): number of devices for training (typically, num. GPUs). Defaults to None.
+        devices (str, optional): number of devices for training (typically, num. GPUs). Defaults to 'auto'.
         accelerator (str, optional): which device to use (typically 'gpu' or 'cpu'). Defaults to 'auto'.
         logger (pl.loggers.wandb_logger, optional): If pl.loggers.wandb_logger, track experiment on Weights and Biases. Defaults to None.
 

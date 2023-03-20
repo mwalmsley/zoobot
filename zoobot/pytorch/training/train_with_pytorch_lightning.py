@@ -139,7 +139,7 @@ def train_default_zoobot_from_scratch(
         devices = gpus
     else:
         accelerator = 'cpu'
-        devices = None  # all
+        devices = 'auto'  # all
 
     precision = 32
     if mixed_precision:

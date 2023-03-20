@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # load in catalogs of images and labels to finetune on
     # each catalog should be a dataframe with columns of "id_str", "file_loc", and any labels
     # here I'm using galaxy-datasets to download some premade data - check it out for examples
-    data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'
+    data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'  # TODO set to any directory. rings dataset will be downloaded here
     train_catalog, _ = demo_rings(root=data_dir, download=True, train=True)
     test_catalog, _ = demo_rings(root=data_dir, download=True, train=False)
 
