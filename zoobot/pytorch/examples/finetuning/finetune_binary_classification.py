@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     datamodule = GalaxyDataModule(
       label_cols=label_cols,
-      catalog=train_catalog,
+      catalog=train_catalog,  # very small, as a demo
       batch_size=32
     )
     # datamodule.setup()

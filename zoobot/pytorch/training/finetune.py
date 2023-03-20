@@ -185,14 +185,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
     def test_step(self, batch, batch_idx, dataloader_idx=0):
         return self.make_step(batch)
 
-# lighting v2. removed validation_epoch_end(self, outputs)
-# now only has *on_*validation_epoch_end(self)
-# replacing by using explicit torchmetric for loss
-# https://github.com/Lightning-AI/lightning/releases/tag/2.0.0
-
-# https://torchmetrics.readthedocs.io/en/stable/pages/lightning.html#common-pitfalls
-    def training_step_end(self, step_output):
-        self.train_loss_metric(step_output['loss'])
+    def on_train_batch_end(self, outputs, batch, batch_idx: int):
+        self.train_loss_metric(outputs['loss'])
         self.log(
             "finetuning/train_loss", 
             self.train_loss_metric, 
@@ -201,8 +195,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_epoch=True
         )
 
-    def validation_step_end(self, step_output):
-        self.val_loss_metric(step_output['loss'])
+    def on_validation_batch_end(self, outputs, batch, batch_idx: int):
+        self.val_loss_metric(outputs['loss'])
         self.log(
             "finetuning/val_loss", 
             self.val_loss_metric, 
@@ -210,9 +204,12 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_step=False,
             on_epoch=True
         )
+        # unique to val batch end
+        if self.visualize_images:
+          self.upload_images_to_wandb(outputs, batch, batch_idx)
 
-    def test_step_end(self, step_output):
-        self.test_loss_metric(step_output['loss'])
+    def on_test_batch_end(self, outputs, batch, batch_idx: int):
+        self.test_loss_metric(outputs['loss'])
         self.log(
             "finetuning/test_loss", 
             self.test_loss_metric, 
@@ -220,13 +217,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_step=False,
             on_epoch=True
         )
-    
-    def on_validation_batch_end(self, outputs, batch, batch_idx, *args) -> None:
-        # self.log(f"finetuning/val_loss_batch",
-        #          outputs['loss'].mean(), on_step=False, on_epoch=True, prog_bar=self.prog_bar)
-        
-        if self.visualize_images:
-          self.upload_images_to_wandb(outputs, batch, batch_idx)
+
+# lighting v2. removed validation_epoch_end(self, outputs)
+# now only has *on_*validation_epoch_end(self)
+# replacing by using explicit torchmetric for loss
+# https://github.com/Lightning-AI/lightning/releases/tag/2.0.0
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       raise NotImplementedError('Must be subclassed')
@@ -274,8 +269,8 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         y_class_preds = torch.argmax(y_pred, axis=1)
         return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y, 'class_predictions': y_class_preds}
 
-    def training_step_end(self, step_output):
-        super().training_step_end(step_output)
+    def on_train_batch_end(self, step_output, *args):
+        super().on_train_batch_end(step_output, *args)
 
         self.train_acc(step_output['class_predictions'], step_output['labels'])
         self.log(
@@ -286,8 +281,8 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             prog_bar=self.prog_bar
         )
     
-    def validation_step_end(self, step_output):
-        super().validation_step_end(step_output)
+    def on_validation_batch_end(self, step_output, *args):
+        super().on_validation_batch_end(step_output, *args)
 
         self.val_acc(step_output['class_predictions'], step_output['labels'])
         self.log(
@@ -298,8 +293,8 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             prog_bar=self.prog_bar
         )
 
-    def test_step_end(self, step_output) -> None:
-        super().test_step_end(step_output)
+    def on_test_batch_end(self, step_output, *args) -> None:
+        super().on_test_batch_end(step_output, *args)
 
         self.test_acc(step_output['class_predictions'], step_output['labels'])
         self.log(
@@ -473,7 +468,7 @@ def get_trainer(
     # Initialise pytorch lightning trainer
     trainer = pl.Trainer(
         logger=logger,
-        callbacks=[checkpoint_callback, early_stopping_callback],
+        callbacks=[checkpoint_callback], # early_stopping_callback
         max_epochs=max_epochs,
         accelerator=accelerator,
         devices=devices,
