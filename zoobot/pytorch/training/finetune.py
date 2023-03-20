@@ -181,7 +181,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             self.log("finetuning/train_acc", self.train_acc,
                      prog_bar=self.prog_bar)  # log here
 
-    def validation_epoch_end(self, outputs, *args) -> None:
+    def on_validation_epoch_end(self, outputs, *args) -> None:
         # calc. mean of losses over val batches as val loss
         losses = torch.FloatTensor([batch_output['loss']
                                    for batch_output in outputs])
