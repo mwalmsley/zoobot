@@ -115,7 +115,7 @@ def train_default_zoobot_from_scratch(
         logging.info('Converting images to greyscale before training')
         channels = 1
 
-    strategy = None
+    strategy = 'auto'
     plugins = None
     if (gpus is not None) and (gpus > 1):
         strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
