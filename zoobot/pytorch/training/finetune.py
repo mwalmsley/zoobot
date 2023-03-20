@@ -105,6 +105,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
         self.freeze_batchnorm = freeze_batchnorm
 
+        self.train_loss_metric = tm.MeanMetric()
+        self.val_loss_metric = tm.MeanMetric()
+        self.test_loss_metric = tm.MeanMetric()
+
+
         if self.freeze_batchnorm:
             freeze_batchnorm_layers(self.encoder)  # inplace
 
@@ -157,54 +162,66 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         x = self.head(x)
         return x
 
-    
     def make_step(self, batch):
+        y, y_pred, loss = self.run_step_through_model(batch)
+        return self.step_to_dict(y, y_pred, loss)
+
+    def run_step_through_model(self, batch):
       # part of training/val/test for all subclasses
         x, y = batch
         y_pred = self.forward(x)
-        loss = self.loss(y_pred, y)
-        # {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
+        loss = self.loss(y_pred, y)  # must be subclasses and specified
         return y, y_pred, loss
 
+    def step_to_dict(self, y, y_pred, loss):
+        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
 
-    # def on_train_batch_end(self, outputs, *args) -> None:
-    #     self.log("finetuning/train_loss_batch",
-    #              outputs['loss'], on_step=False, on_epoch=True, prog_bar=self.prog_bar)
+    def training_step(self, batch, batch_idx, dataloader_idx=0):
+        return self.make_step(batch)
 
-    def train_epoch_end(self, outputs, *args) -> None:
-        losses = torch.cat([batch_output['loss'].expand(0)
-                           for batch_output in outputs])
-        self.log("finetuning/train_loss",
-                 losses.mean(), prog_bar=self.prog_bar)
+    def validation_step(self, batch, batch_idx, dataloader_idx=0):
+        return self.make_step(batch)
 
-        if hasattr(self, 'train_acc') is not None:
-            self.log("finetuning/train_acc", self.train_acc,
-                     prog_bar=self.prog_bar)  # log here
+    def test_step(self, batch, batch_idx, dataloader_idx=0):
+        return self.make_step(batch)
 
-    def validation_epoch_end(self, outputs, *args) -> None:
-        # calc. mean of losses over val batches as val loss
-        losses = torch.FloatTensor([batch_output['loss']
-                                   for batch_output in outputs])
-        self.log("finetuning/val_loss", torch.mean(losses),
-                 prog_bar=self.prog_bar)
+    def on_train_batch_end(self, outputs, batch, batch_idx: int):
+        self.train_loss_metric(outputs['loss'])
+        self.log(
+            "finetuning/train_loss", 
+            self.train_loss_metric, 
+            prog_bar=self.prog_bar, 
+            on_step=False,
+            on_epoch=True
+        )
 
-        if hasattr(self, 'val_acc'):
-            self.log("finetuning/val_acc", self.val_acc,
-                     prog_bar=self.prog_bar)
-
-    def on_test_batch_end(self, outputs, *args) -> None:
-        self.log('test/test_loss', outputs['loss'])
-        if hasattr(self, 'test_acc'):
-            self.test_acc(outputs['predictions'], outputs['labels'])
-            self.log(f"finetuning/test_acc", self.test_acc,
-                     on_step=False, on_epoch=True)
-
-    def on_validation_batch_end(self, outputs, batch, batch_idx, *args) -> None:
-        # self.log(f"finetuning/val_loss_batch",
-        #          outputs['loss'].mean(), on_step=False, on_epoch=True, prog_bar=self.prog_bar)
-        
+    def on_validation_batch_end(self, outputs, batch, batch_idx: int):
+        self.val_loss_metric(outputs['loss'])
+        self.log(
+            "finetuning/val_loss", 
+            self.val_loss_metric, 
+            prog_bar=self.prog_bar, 
+            on_step=False,
+            on_epoch=True
+        )
+        # unique to val batch end
         if self.visualize_images:
           self.upload_images_to_wandb(outputs, batch, batch_idx)
+
+    def on_test_batch_end(self, outputs, batch, batch_idx: int):
+        self.test_loss_metric(outputs['loss'])
+        self.log(
+            "finetuning/test_loss", 
+            self.test_loss_metric, 
+            prog_bar=self.prog_bar, 
+            on_step=False,
+            on_epoch=True
+        )
+
+# lighting v2. removed validation_epoch_end(self, outputs)
+# now only has *on_*validation_epoch_end(self)
+# replacing by using explicit torchmetric for loss
+# https://github.com/Lightning-AI/lightning/releases/tag/2.0.0
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       raise NotImplementedError('Must be subclassed')
@@ -247,29 +264,49 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         self.train_acc = tm.Accuracy(task='binary', average="micro")
         self.val_acc = tm.Accuracy(task='binary', average="micro")
         self.test_acc = tm.Accuracy(task='binary', average="micro")
-
-
-    def training_step(self, batch, batch_idx):
-        y, y_pred, loss = self.make_step(batch)
-
-        # calculate metrics
+        
+    def step_to_dict(self, y, y_pred, loss):
         y_class_preds = torch.argmax(y_pred, axis=1)
-        self.train_acc(y_class_preds, y)  # update calc, but do not log
+        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y, 'class_predictions': y_class_preds}
 
-        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
+    def on_train_batch_end(self, step_output, *args):
+        super().on_train_batch_end(step_output, *args)
 
+        self.train_acc(step_output['class_predictions'], step_output['labels'])
+        self.log(
+            'finetuning/train_acc',
+            self.train_acc,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=self.prog_bar
+        )
     
-    def validation_step(self, batch, batch_idx, dataloader_idx=0):
-        y, y_pred, loss = self.make_step(batch)
+    def on_validation_batch_end(self, step_output, *args):
+        super().on_validation_batch_end(step_output, *args)
 
-        y_class_preds = torch.argmax(y_pred, axis=1)
-        self.val_acc(y_class_preds, y)
+        self.val_acc(step_output['class_predictions'], step_output['labels'])
+        self.log(
+            'finetuning/val_acc',
+            self.val_acc,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=self.prog_bar
+        )
 
-        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
+    def on_test_batch_end(self, step_output, *args) -> None:
+        super().on_test_batch_end(step_output, *args)
+
+        self.test_acc(step_output['class_predictions'], step_output['labels'])
+        self.log(
+            "finetuning/test_acc",
+            self.test_acc,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=self.prog_bar
+        )
 
     
     def predict_step(self, x, batch_idx):
-        # assert False
         x = self.forward(x)  # logits from LinearClassifier
         # then applies softmax
         return F.softmax(x, dim=1)[:, 1]
@@ -324,22 +361,10 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
       
         self.loss = define_model.get_dirichlet_loss_func(self.schema.question_index_groups)
 
-    def training_step(self, batch, batch_idx):
-        y, y_pred, loss = self.make_step(batch)
-        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
-
-    def validation_step(self, batch, batch_idx, dataloader_idx=0):
-      # now identical to above
-        y, y_pred, loss = self.make_step(batch)
-        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
-
-    def test_step(self, batch, batch_idx, dataloader_idx=0):
-      # now identical to above
-        y, y_pred, loss = self.make_step(batch)
-        return {'loss': loss, 'predictions': y_pred, 'labels': y}
-
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       pass  # not yet implemented
+
+    # other functions are simply inherited from FinetunedZoobotAbstract
 
 # https://github.com/inigoval/byol/blob/1da1bba7dc5cabe2b47956f9d7c6277decd16cc7/byol_main/networks/models.py#L29
 class LinearClassifier(torch.nn.Module):
@@ -399,7 +424,7 @@ def get_trainer(
     save_top_k=1,
     max_epochs=100,
     patience=10,
-    devices=None,
+    devices='auto',
     accelerator='auto',
     logger=None,
     **trainer_kwargs
@@ -414,7 +439,7 @@ def get_trainer(
         save_top_k (int, optional): save the top k checkpoints only. Defaults to 1.
         max_epochs (int, optional): train for up to this many epochs. Defaults to 100.
         patience (int, optional): wait up to this many epochs for decreasing loss before ending training. Defaults to 10.
-        devices (str, optional): number of devices for training (typically, num. GPUs). Defaults to None.
+        devices (str, optional): number of devices for training (typically, num. GPUs). Defaults to 'auto'.
         accelerator (str, optional): which device to use (typically 'gpu' or 'cpu'). Defaults to 'auto'.
         logger (pl.loggers.wandb_logger, optional): If pl.loggers.wandb_logger, track experiment on Weights and Biases. Defaults to None.
 
@@ -443,7 +468,7 @@ def get_trainer(
     # Initialise pytorch lightning trainer
     trainer = pl.Trainer(
         logger=logger,
-        callbacks=[checkpoint_callback, early_stopping_callback],
+        callbacks=[checkpoint_callback], # early_stopping_callback
         max_epochs=max_epochs,
         accelerator=accelerator,
         devices=devices,

@@ -80,6 +80,10 @@ method.
 .. install sphinx https://www.sphinx-doc.org/en/master/usage/installation.html is confusing, you can just use pip install -U sphinx
 .. run from in docs folder:    make html
 
+.. can also check docs with
+.. make linkcheck
+.. (thanks, BS!)
+
 .. docs/autodoc contains the tree that sphinx uses to add automatic documentation
 .. it needs folders and files matching the python source
 .. you will need to add a new {folder}.rst, a new folder, and a new {file}.rst

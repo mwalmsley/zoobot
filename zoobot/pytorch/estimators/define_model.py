@@ -85,19 +85,19 @@ class GenericLightningModule(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         return self.make_step(batch, batch_idx, step_name='train')
 
-    def training_step_end(self, outputs):
+    def on_training_batch_end(self, outputs, *args):
         self.log_outputs(outputs, step_name='train')
 
     def validation_step(self, batch, batch_idx):
         return self.make_step(batch, batch_idx, step_name='validation')
 
-    def validation_step_end(self, outputs):
+    def on_validation_batch_end(self, outputs, *args):
         self.log_outputs(outputs, step_name='validation')
 
     def test_step(self, batch, batch_idx):
         return self.make_step(batch, batch_idx, step_name='test')
 
-    def test_step_end(self, outputs):
+    def on_test_batch_end(self, outputs, *args):
          self.log_outputs(outputs, step_name='test')
 
     
@@ -248,6 +248,8 @@ class ZoobotTree(GenericLightningModule):
     def log_loss_per_question(self, multiq_loss, prefix):
         # log questions individually
         # TODO need schema attribute or similar to have access to question names, this will do for now
+        # unlike Finetuneable..., does not use TorchMetrics, simply logs directly
+        # TODO could use TorchMetrics and for q in schema, self.q_metric loop
         for question_n in range(multiq_loss.shape[1]):
             self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, sync_dist=True)
 

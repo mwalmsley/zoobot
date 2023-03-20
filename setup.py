@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="1.0.0",
+    version="1.0.1",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -28,7 +28,7 @@ setuptools.setup(
             'torch == 1.12.1+cpu',
             'torchvision == 0.13.1+cpu',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
+            'pytorch-lightning >= 2.0.0',
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
@@ -41,7 +41,7 @@ setuptools.setup(
             'torch == 1.12.1',
             'torchvision == 0.13.1',
             'torchaudio == 0.12.1',
-            'pytorch-lightning==1.9.4',  # tensorboard/protobuf issue fixed now
+            'pytorch-lightning >= 2.0.0',
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
@@ -55,7 +55,7 @@ setuptools.setup(
             'torch == 1.12.1+cu113',
             'torchvision == 0.13.1+cu113',
             'torchaudio == 0.12.1',
-            'pytorch-lightning>=1.9.4',
+            'pytorch-lightning >= 2.0.0',
             'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
@@ -63,7 +63,7 @@ setuptools.setup(
             'timm'
         ],
         'pytorch_colab': [
-            'pytorch-lightning>=1.9.4',
+            'pytorch-lightning >= 2.0.0',
             'simplejpeg',
             'albumentations',
             'pyro-ppl>=1.8.0',
