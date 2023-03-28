@@ -6,7 +6,7 @@ from galaxy_datasets import demo_rings
 from zoobot.pytorch.training import finetune, representations
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
-from zoobot.shared import load_predictions
+from zoobot.shared import load_predictions, schemas
 
 
 def main(catalog, checkpoint_loc, save_dir):
@@ -16,9 +16,12 @@ def main(catalog, checkpoint_loc, save_dir):
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
-    # can load from either ZoobotTree (if trained from scratch) or FinetuneableZoobotTree (if finetuned)
-    encoder = finetune.FinetuneableZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
-    # encoder = define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
+    # can load from either ZoobotTree checkpoint (if trained from scratch)
+    encoder = define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
+    # or FinetuneableZoobotTree (if finetuned)
+    # currently, FinetuneableZoobotTree checkpoints should be loaded as ZoobotTree with the args below
+    # this is a bit awkward and I'm working on a clearer method - but it does work.
+    # encoder = define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, output_dim=TODO, question_index_groups=[]).encoder
 
     # convert to simple pytorch lightning model
     model = representations.ZoobotEncoder(encoder=encoder, pyramid=False)
