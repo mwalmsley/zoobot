@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Tuple
 
+import torch
 import pytorch_lightning as pl
 from pytorch_lightning.strategies.ddp import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -141,11 +142,15 @@ def train_default_zoobot_from_scratch(
         accelerator = 'cpu'
         devices = 'auto'  # all
 
-    precision = 32
+    
     if mixed_precision:
         logging.info(
             'Training with automatic mixed precision. Will reduce memory footprint but may cause training instability for e.g. resnet')
-        precision = 16
+        precision = '16-mixed'
+        torch.set_float32_matmul_precision('medium')
+    else:
+        precision = '32'
+        torch.set_float32_matmul_precision('high')
 
     assert num_workers > 0
 
@@ -161,7 +166,8 @@ def train_default_zoobot_from_scratch(
             You may be spawning more dataloader workers than you have cpus, causing bottlenecks.
             Suggest reducing num_workers."""
         )
-
+        
+    
     if catalog is not None:
         assert train_catalog is None
         assert val_catalog is None
