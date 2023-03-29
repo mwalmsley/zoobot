@@ -33,7 +33,7 @@ sbatch --job-name=evo_py_co_vittiny_224_$SEED --export=ARCHITECTURE=maxvit_tiny_
 # and convnext (works badly)
 # sbatch --job-name=evo_py_gr_$SEED --export=ARCHITECTURE=convnext_nano,BATCH_SIZE=256,RESIZE_AFTER_CROP=224,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 # and vit
-sbatch --job-name=evo_py_gr_vittinyp16_224_$SEED --export=ARCHITECTURE=vit_tiny_patch16_224,BATCH_SIZE=128,RESIZE_AFTER_CROP=224,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
+# sbatch --job-name=evo_py_gr_vittinyp16_224_$SEED --export=ARCHITECTURE=vit_tiny_patch16_224,BATCH_SIZE=128,RESIZE_AFTER_CROP=224,DATASET=gz_evo,MIXED_PRECISION_STRING=--mixed-precision,GPUS=2,SEED=$SEED $TRAIN_JOB
 
 
 # and in color with no mixed precision, for specific project
