@@ -185,7 +185,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
     def test_step(self, batch, batch_idx, dataloader_idx=0):
         return self.make_step(batch)
 
-    def on_train_batch_end(self, outputs, batch, batch_idx: int):
+    def on_train_batch_end(self, outputs, batch, batch_idx: int, dataloader_idx=0):
+        # v2 docs currently do not show dataloader_idx as train argument so unclear if this will value be updated properly
+        # arg is shown for val/test equivalents
+        # currently does nothing in Zoobot so inconsequential
+        # https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#on-train-batch-end
         self.train_loss_metric(outputs['loss'])
         self.log(
             "finetuning/train_loss", 
@@ -195,7 +199,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_epoch=True
         )
 
-    def on_validation_batch_end(self, outputs, batch, batch_idx: int):
+    def on_validation_batch_end(self, outputs, batch, batch_idx: int, dataloader_idx=0):
         self.val_loss_metric(outputs['loss'])
         self.log(
             "finetuning/val_loss", 
@@ -208,7 +212,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         if self.visualize_images:
           self.upload_images_to_wandb(outputs, batch, batch_idx)
 
-    def on_test_batch_end(self, outputs, batch, batch_idx: int):
+    def on_test_batch_end(self, outputs, batch, batch_idx: int, dataloader_idx=0):
         self.test_loss_metric(outputs['loss'])
         self.log(
             "finetuning/test_loss", 
@@ -468,7 +472,7 @@ def get_trainer(
     # Initialise pytorch lightning trainer
     trainer = pl.Trainer(
         logger=logger,
-        callbacks=[checkpoint_callback], # early_stopping_callback
+        callbacks=[checkpoint_callback, early_stopping_callback],
         max_epochs=max_epochs,
         accelerator=accelerator,
         devices=devices,
