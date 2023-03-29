@@ -2,6 +2,7 @@ import logging
 import os
 from typing import Tuple
 
+import torch
 import pytorch_lightning as pl
 from pytorch_lightning.strategies.ddp import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -49,6 +50,7 @@ def train_default_zoobot_from_scratch(
     checkpoint_file_template=None,
     auto_insert_metric_name=True,
     save_top_k=3,
+    extra_callbacks=None,
     # replication parameters
     random_state=42
 ) -> Tuple[define_model.ZoobotTree, pl.Trainer]:
@@ -114,7 +116,7 @@ def train_default_zoobot_from_scratch(
         logging.info('Converting images to greyscale before training')
         channels = 1
 
-    strategy = None
+    strategy = 'auto'
     plugins = None
     if (gpus is not None) and (gpus > 1):
         strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
@@ -138,13 +140,17 @@ def train_default_zoobot_from_scratch(
         devices = gpus
     else:
         accelerator = 'cpu'
-        devices = None  # all
+        devices = 'auto'  # all
 
-    precision = 32
+    
     if mixed_precision:
         logging.info(
             'Training with automatic mixed precision. Will reduce memory footprint but may cause training instability for e.g. resnet')
-        precision = 16
+        precision = '16-mixed'
+        torch.set_float32_matmul_precision('medium')
+    else:
+        precision = '32'
+        torch.set_float32_matmul_precision('high')
 
     assert num_workers > 0
 
@@ -160,7 +166,8 @@ def train_default_zoobot_from_scratch(
             You may be spawning more dataloader workers than you have cpus, causing bottlenecks.
             Suggest reducing num_workers."""
         )
-
+        
+    
     if catalog is not None:
         assert train_catalog is None
         assert val_catalog is None
@@ -225,6 +232,8 @@ def train_default_zoobot_from_scratch(
         weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
+    
+    extra_callbacks = extra_callbacks if extra_callbacks else []
 
     # used later for checkpoint_callback.best_model_path
     checkpoint_callback = ModelCheckpoint(
@@ -238,10 +247,11 @@ def train_default_zoobot_from_scratch(
             # avoids extra folders from the checkpoint name
             auto_insert_metric_name=auto_insert_metric_name,
             save_top_k=save_top_k
-        )
+    )
+
     early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
 
-    callbacks = [checkpoint_callback, early_stopping_callback]
+    callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
 
     trainer = pl.Trainer(
         log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps

@@ -148,7 +148,7 @@ CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
 
 ### Latest features (v1.0.0)
 
-v1.0.0 is recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
+v1.0.0 recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
 
 - Adds new finetuning interface (`finetune.run_finetuning()`), examples.
 - Refocuses docs on finetuning rather than training from scratch.
@@ -158,7 +158,7 @@ v1.0.0 is recognises that most of the complexity in this repo is training Zoobot
 - Refactor out augmentations and datasets to `galaxy-datasets` repo. TF and Torch now use identical augmentations (via albumentations).
 - Many small quality-of-life improvements
 
-Contributions are very welcome and will be credited in any future work. Please get in touch! See [CONTRIBUTING.md]((https://github.com/mwalmsley/zoobot/blob/main/benchmarks) for more.
+Contributions are very welcome and will be credited in any future work. Please get in touch! See [CONTRIBUTING.md](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) for more.
 
 ### Benchmarks and Replication - Training from Scratch
 
@@ -168,9 +168,21 @@ Training Zoobot using the GZ DECaLS dataset option will create models very simil
 
 ### Citing
 
-If you use this software for your research, please cite [the JOSS paper](TODO_on_publication). This describes Zoobot itself.
+We have submitted a JOSS paper to describe Zoobot itself.
+We hope this will become the single point-of-reference for Zoobot.
+Meanwhile, please cite the [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414), which uses the code that evolved into Zoobot:
 
-<!-- TODO bibtex on publication -->
+    @article{Walmsley2022decals,
+    author = {Mike Walmsley and Chris Lintott and Geron Tobias and Sandor J Kruk and Coleman Krawczyk and Kyle Willett and Steven Bamford and William Keel and Lee S Kelvin and Lucy Fortson and Karen Masters and Vihang Mehta and Brooke Simmons and Rebecca J Smethurst and Elisabeth M L Baeten and Christine Macmillan},
+    issue = {3},
+    journal = {Monthly Notices of the Royal Astronomical Society},
+    month = {12},
+    pages = {3966-3988},
+    title = {Galaxy Zoo DECaLS: Detailed Visual Morphology Measurements from Volunteers and Deep Learning for 314,000 Galaxies},
+    volume = {509},
+    url = {https://arxiv.org/abs/2102.08414},
+    year = {2022},
+    }
 
 You might be interested in reading papers using Zoobot:
 
