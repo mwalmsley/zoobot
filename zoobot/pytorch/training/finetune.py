@@ -252,6 +252,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             self,
             num_classes: int,
             label_smoothing=0.,
+            class_weights=None,
             **super_kwargs) -> None:
 
         super().__init__(**super_kwargs)
@@ -264,6 +265,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         )
         self.label_smoothing = label_smoothing
         self.loss = partial(cross_entropy_loss,
+                            weight=class_weights,
                             label_smoothing=self.label_smoothing)
         self.train_acc = tm.Accuracy(task='binary', average="micro")
         self.val_acc = tm.Accuracy(task='binary', average="micro")
@@ -385,12 +387,12 @@ class LinearClassifier(torch.nn.Module):
         return x
 
 
-def cross_entropy_loss(y_pred, y, label_smoothing=0.):
+def cross_entropy_loss(y_pred, y, label_smoothing=0., weight=None):
     # y should be shape (batch) and ints
     # y_pred should be shape (batch, classes)
     # returns loss of shape (batch)
     # will reduce myself
-    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, reduction='none')
+    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, weight=weight, reduction='none')
 
 
 def dirichlet_loss(y_pred, y, question_index_groups):
