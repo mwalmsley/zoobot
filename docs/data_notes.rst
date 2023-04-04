@@ -59,6 +59,11 @@ Zoobot includes weights for the following pretrained models.
      - 1
      - Not yet
      - `Link <https://www.dropbox.com/s/pndcgi6wxh9wuqb/maxvittiny_greyscale_224px.ckpt?dl=0>`__
+   * - Max-ViT Tiny
+     - 224px
+     - 3
+     - Not yet
+     - `Link <https://www.dropbox.com/s/ibuo5n1tcaphvn3/maxvittiny_color_224px.ckpt?dl=0>`__
 
 
 
