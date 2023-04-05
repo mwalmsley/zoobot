@@ -41,22 +41,26 @@ def load_hdf5s(hdf5_locs: List):
     template_label_cols = None  # will use this var to check consistency of label_cols across each hdf5_loc
     for loc in hdf5_locs:
         with h5py.File(loc, 'r') as f:
-            logging.debug(f.keys())
-            these_predictions = f['predictions'][:]
-            these_prediction_metadata = {
-                'id_str': f['id_str'].asstr()[:],
-                'hdf5_loc': [os.path.basename(loc) for _ in these_predictions]
-        }
-            predictions.append(these_predictions)  # will create a list where each element is 3D predictions stored in each hdf5
-            prediction_metadata.append(these_prediction_metadata)  # also track id_str, similarly
+            try:
+                logging.debug(f.keys())
+                these_predictions = f['predictions'][:]
+                these_prediction_metadata = {
+                    'id_str': f['id_str'].asstr()[:],
+                    'hdf5_loc': [os.path.basename(loc) for _ in these_predictions]
+            }
+                predictions.append(these_predictions)  # will create a list where each element is 3D predictions stored in each hdf5
+                prediction_metadata.append(these_prediction_metadata)  # also track id_str, similarly
 
-            if template_label_cols is None:  # first file to load, use this as the expected template
-                template_label_cols = f['label_cols'].asstr()[:]
-                logging.info('Using label columns {} from first hdf5 {}'.format(template_label_cols, loc))
-            else:
-                these_label_cols = f['label_cols'].asstr()[:]
-                if any(these_label_cols != template_label_cols):
-                    raise ValueError('Label columns {} of hdf5 {} do not match first label columns {}'.format(loc, f['label_cols'], template_label_cols))
+                if template_label_cols is None:  # first file to load, use this as the expected template
+                    template_label_cols = f['label_cols'].asstr()[:]
+                    logging.info('Using label columns {} from first hdf5 {}'.format(template_label_cols, loc))
+                else:
+                    these_label_cols = f['label_cols'].asstr()[:]
+                    if any(these_label_cols != template_label_cols):
+                        raise ValueError('Label columns {} of hdf5 {} do not match first label columns {}'.format(loc, f['label_cols'], template_label_cols))
+            except Exception as e:
+                logging.critical('Failed to load {}'.format(loc))
+                raise e
 
 
     # there is no assumption that id_str is unique, or attempt to group predictions by id_str
