@@ -51,6 +51,8 @@ I share my install steps [here](#install_cuda). GPUs are optional - Zoobot will 
 ## Quickstart
 <a name="quickstart"></a>
 
+The [Colab notebook](https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing) is the quickest way to get started. Alternatively, the minimal example below illustrates how Zoobot works.
+
 Let's say you want to find ringed galaxies and you have a small labelled dataset of 500 ringed or not-ringed galaxies. You can retrain Zoobot to find rings like so:
 
 ```python
@@ -97,7 +99,7 @@ Zoobot includes many guides and working examples - see the [Getting Started](#ge
 ## Getting Started
 <a name="getting_started"></a>
 
-I suggest starting with the worked examples below, which you can copy and adapt.
+I suggest starting with the [Colab notebook](https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing) or the worked examples below, which you can copy and adapt.
 
 For context and explanation, see the [documentation](https://zoobot.readthedocs.io/).
 
