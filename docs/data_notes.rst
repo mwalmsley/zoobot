@@ -103,7 +103,7 @@ We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.
 Which model should I use?
 --------------------------
 
-We suggest the PyTorch EfficientNetB0 single-channel 300-pixel model for most users.
+We suggest the PyTorch EfficientNetB0 single-channel 224-pixel model for most users.
 
 Zoobot will prioritise PyTorch going forward. For more, see here.
 The TensorFlow models currently perform just as well as the PyTorch equivalents but will not benefit from any future updates.
@@ -115,7 +115,7 @@ Color information does not improve overall performance at predicting GZ votes.
 This is a little surprising, but we're confident it's true for our datasets (see the benchmarks folder for our tests).
 However, it might be useful to include for other tasks where color is critical, such as hunting certain anomalous galaxies.
 
-Larger input images (300px vs 224px) provide a small boost in performance at predicting GZ votes.
+Larger input images (300px vs 224px) provide a very small boost in performance at predicting GZ votes, on our benchmarks.
 However, the models require more memory and train/finetune slightly more slowly.
 You may want to start with a 224px model and experiment with "upgrading" once you're happy everything works.
 
