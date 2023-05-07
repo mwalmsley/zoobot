@@ -33,6 +33,7 @@ authors:
     affiliation: 4
     equal-contrib: true
   - name: Inigo Val Slijepcevic
+    orcid: 0000-0002-7056-9599
     corresponding: false
     affiliation: 1
     equal-contrib: true
@@ -47,6 +48,7 @@ authors:
     affiliation: "1, 6"
   # heidelberg hackathon team + devina, who wrote experimental code/helped test
   - name: Maja Jabłońska
+    orcid: 0000-0001-6962-4979
     corresponding: false
     affiliation: 4
   - name: Kosio Karchev
@@ -58,6 +60,7 @@ authors:
     corresponding: false
     affiliation: 8
   - name: Devina Mohan
+    orcid: 0000-0002-8566-7968
     corresponding: false
     affiliation: 1
   - name: David O’Ryan
