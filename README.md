@@ -16,7 +16,7 @@ Zoobot is trained using millions of answers by Galaxy Zoo volunteers. This code 
 - [Install](#installation)
 - [Quickstart](#quickstart)
 - [Worked Examples](#worked-examples)
-- [Pretrained Weights](https://zoobot.readthedocs.io/data_notes.html)
+- [Pretrained Weights](https://zoobot.readthedocs.io/en/latest/data_notes.html)
 - [Datasets](https://www.github.com/mwalmsley/galaxy-datasets)
 - [Documentation](https://zoobot.readthedocs.io/) (for understanding/reference)
 
@@ -103,7 +103,7 @@ I suggest starting with the [Colab notebook](https://colab.research.google.com/d
 
 For context and explanation, see the [documentation](https://zoobot.readthedocs.io/).
 
-For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/data_notes.html) in particular.
+For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/en/latest/data_notes.html) in particular.
 
 ### Worked Examples
 <a name="worked_examples"></a>
@@ -122,7 +122,7 @@ TensorFlow:
 
 There is more explanation and an API reference on the [docs](https://zoobot.readthedocs.io/).
 
-I also [include](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) the scripts used to create and benchmark our pretrained models. Many pretrained models are available [already](https://zoobot.readthedocs.io/data_notes.html), but if you need one trained on e.g. different input image sizes or with a specific architecture, I can probably make it for you.
+I also [include](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) the scripts used to create and benchmark our pretrained models. Many pretrained models are available [already](https://zoobot.readthedocs.io/en/latest/data_notes.html), but if you need one trained on e.g. different input image sizes or with a specific architecture, I can probably make it for you.
 
 When trained with a decision tree head (ZoobotTree, FinetuneableZoobotTree), Zoobot can learn from volunteer labels of varying confidence and predict posteriors for what the typical volunteer might say. Specifically, this Zoobot mode predicts the parameters for distributions, not simple class labels! For a demonstration of how to interpret these predictions, see the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb).
 
