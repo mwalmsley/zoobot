@@ -32,8 +32,7 @@ Zoobot includes weights for the following pretrained models.
    * - EfficientNetB0 
      - 224px
      - 3
-     - Yes
-     - `Link <https://www.dropbox.com/s/19mooltlnofnj10crd88v/effnetb0_color_224px.ckpt?dl=0>`__
+     - `Link <https://www.dropbox.com/scl/fi/19mooltlnofnj10crd88v/effnetb0_color_224px.ckpt%26rlkey%3D2wczt74p8qmjvsf83sulrkdy4>`__
    * - ResNet50 
      - 300px
      - 1
