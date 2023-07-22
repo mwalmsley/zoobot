@@ -185,6 +185,8 @@ class ZoobotTree(GenericLightningModule):
         # bit lazy assuming 224 input size
         self.encoder_dim = get_encoder_dim(self.encoder, input_size=224, channels=channels)
         # typically encoder_dim=1280 for effnetb0
+        logging.info('encoder dim: {}'.format(self.encoder_dim))
+
 
         self.head = get_pytorch_dirichlet_head(
             self.encoder_dim,
