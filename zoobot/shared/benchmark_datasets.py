@@ -23,16 +23,15 @@ def get_gz_decals_dr5_benchmark_dataset(data_dir, random_state, download):
     return schema, (train_catalog, val_catalog, test_catalog)
 
 
-def get_gz_evo_benchmark_dataset(data_dir, random_state, download=False, debug=False, datasets=['gz_desi', 'gz_hubble', 'gz_candels', 'gz2', 'gz_rings']):
+def get_gz_evo_benchmark_dataset(data_dir, random_state, download=False, debug=False, datasets=['gz_desi', 'gz_hubble', 'gz_candels', 'gz2', 'gz_rings', 'gz_cosmic_dawn']):
 
     from foundation.datasets import mixed  # not yet public. import will fail if you're not me.
 
     # temporarily, everything *but* hubble, for Ben
     # datasets = ['gz_desi', 'gz_candels', 'gz2', 'gz_rings']
-    datasets = ['gz_desi', 'gz_candels', 'gz_hubble', 'gz2', 'gz_rings', 'gz_cosmic_dawn']
 
     # TODO temporarily no cache, to remake
-    _, (temp_train_catalog, temp_val_catalog, _) = mixed.everything_all_dirichlet_with_rings(data_dir, debug, download=download, use_cache=False, datasets=datasets)
+    direct_label_cols, (temp_train_catalog, temp_val_catalog, _) = mixed.everything_all_dirichlet_with_rings(data_dir, debug, download=download, use_cache=False, datasets=datasets)
     canonical_train_catalog = pd.concat([temp_train_catalog, temp_val_catalog], axis=0)
 
     # here I'm going to ignore the test catalog
@@ -40,5 +39,6 @@ def get_gz_evo_benchmark_dataset(data_dir, random_state, download=False, debug=F
     val_catalog, test_catalog = train_test_split(hidden_catalog, test_size=2./3., random_state=random_state)
 
     schema = mixed.mixed_schema()
+    assert len(direct_label_cols) == len(schema.label_cols), ValueError((len(direct_label_cols), len(schema)))
     logging.info('Schema: {}'.format(schema))
     return schema, (train_catalog, val_catalog,test_catalog)
