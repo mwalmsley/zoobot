@@ -29,7 +29,7 @@ def get_gz_evo_benchmark_dataset(data_dir, random_state, download=False, debug=F
 
     # temporarily, everything *but* hubble, for Ben
     # datasets = ['gz_desi', 'gz_candels', 'gz2', 'gz_rings']
-    datasets = ['gz_desi', 'gz_candels', 'gz_hubble', 'gz2', 'gz_rings']
+    datasets = ['gz_desi', 'gz_candels', 'gz_hubble', 'gz2', 'gz_rings', 'gz_cosmic_dawn']
 
     _, (temp_train_catalog, temp_val_catalog, _) = mixed.everything_all_dirichlet_with_rings(data_dir, debug, download=download, use_cache=True, datasets=datasets)
     canonical_train_catalog = pd.concat([temp_train_catalog, temp_val_catalog], axis=0)
