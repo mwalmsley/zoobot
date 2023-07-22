@@ -121,12 +121,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
         if self.freeze:
             params = self.head.parameters()
-            return torch.optim.AdamW(params, lr=self.learning_rate)
+            return torch.optim.AdamW(params, betas=(0.9, 0.999), lr=self.learning_rate)
         else:
             lr = self.learning_rate
             params = [{"params": self.head.parameters(), "lr": lr}]
 
             # this bit is specific to Zoobot EffNet
+            # TODO check these are blocks not individual layers
             encoder_blocks = list(self.encoder.children())
 
             # for n, l in enumerate(encoder_blocks):
@@ -135,6 +136,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             #     print(l)
             
             # layers with no parameters don't count
+            # TODO double-check is_tuneable
             tuneable_blocks = [b for b in encoder_blocks if is_tuneable(b)]
  
             assert self.n_layers <= len(
@@ -483,7 +485,7 @@ def get_trainer(
 
     return trainer
 
-
+# TODO check exactly which layers get FTd
 def is_tuneable(block_of_layers):
     if len(list(block_of_layers.parameters())) == 0:
         logging.info('Skipping block with no params')
