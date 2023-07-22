@@ -121,12 +121,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
         if self.freeze:
             params = self.head.parameters()
-            return torch.optim.AdamW(params, lr=self.learning_rate)
+            return torch.optim.AdamW(params, betas=(0.9, 0.999), lr=self.learning_rate)
         else:
             lr = self.learning_rate
             params = [{"params": self.head.parameters(), "lr": lr}]
 
             # this bit is specific to Zoobot EffNet
+            # TODO check these are blocks not individual layers
             encoder_blocks = list(self.encoder.children())
 
             # for n, l in enumerate(encoder_blocks):
@@ -135,6 +136,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             #     print(l)
             
             # layers with no parameters don't count
+            # TODO double-check is_tuneable
             tuneable_blocks = [b for b in encoder_blocks if is_tuneable(b)]
  
             assert self.n_layers <= len(
@@ -252,6 +254,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             self,
             num_classes: int,
             label_smoothing=0.,
+            class_weights=None,
             **super_kwargs) -> None:
 
         super().__init__(**super_kwargs)
@@ -264,6 +267,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         )
         self.label_smoothing = label_smoothing
         self.loss = partial(cross_entropy_loss,
+                            weight=class_weights,
                             label_smoothing=self.label_smoothing)
         self.train_acc = tm.Accuracy(task='binary', average="micro")
         self.val_acc = tm.Accuracy(task='binary', average="micro")
@@ -385,12 +389,12 @@ class LinearClassifier(torch.nn.Module):
         return x
 
 
-def cross_entropy_loss(y_pred, y, label_smoothing=0.):
+def cross_entropy_loss(y_pred, y, label_smoothing=0., weight=None):
     # y should be shape (batch) and ints
     # y_pred should be shape (batch, classes)
     # returns loss of shape (batch)
     # will reduce myself
-    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, reduction='none')
+    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, weight=weight, reduction='none')
 
 
 def dirichlet_loss(y_pred, y, question_index_groups):
@@ -481,7 +485,7 @@ def get_trainer(
 
     return trainer
 
-
+# TODO check exactly which layers get FTd
 def is_tuneable(block_of_layers):
     if len(list(block_of_layers.parameters())) == 0:
         logging.info('Skipping block with no params')
