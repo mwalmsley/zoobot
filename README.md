@@ -52,6 +52,8 @@ I share my install steps [here](#install_cuda). GPUs are optional - Zoobot will 
 ## Quickstart
 <a name="quickstart"></a>
 
+The [Colab notebook](https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing) is the quickest way to get started. Alternatively, the minimal example below illustrates how Zoobot works.
+
 Let's say you want to find ringed galaxies and you have a small labelled dataset of 500 ringed or not-ringed galaxies. You can retrain Zoobot to find rings like so:
 
 ```python
@@ -98,7 +100,7 @@ Zoobot includes many guides and working examples - see the [Getting Started](#ge
 ## Getting Started
 <a name="getting_started"></a>
 
-I suggest starting with the worked examples below, which you can copy and adapt.
+I suggest starting with the [Colab notebook](https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing) or the worked examples below, which you can copy and adapt.
 
 For context and explanation, see the [documentation](https://zoobot.readthedocs.io/).
 
@@ -147,7 +149,14 @@ CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
     conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/  # add this environment variable
 
-### Latest features (v1.0.0)
+### Latest minor features (v1.0.4)
+
+- Now supports multi-class finetuning. See `pytorch/examples/finetuning/finetune_multiclass_classification.py`
+- Removed `simplejpeg` dependency due to M1 install issue. 
+- Pinned `timm` version to ensure MaX-ViT models load correctly. Models supporting the latest `timm` will follow.
+- (internal until published) GZ Evo v2 now includes Cosmic Dawn (HSC). Significant performance improvement on HSC finetuning.
+
+### Latest major features (v1.0.0)
 
 v1.0.0 recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
 

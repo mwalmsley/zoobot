@@ -71,7 +71,7 @@ authors:
   - name: Crisel Suárez
     orcid: 0000-0001-5243-7659
     corresponding: false
-    affiliation: ["11, 12"]
+    affiliation: "11, 12"
   - name: Nicolás Guerra-Varas
     orcid: 0000-0002-9718-6352
     corresponding: false
