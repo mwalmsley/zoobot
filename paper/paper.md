@@ -33,6 +33,7 @@ authors:
     affiliation: 4
     equal-contrib: true
   - name: Inigo Val Slijepcevic
+    orcid: 0000-0002-7056-9599
     corresponding: false
     affiliation: 1
     equal-contrib: true
@@ -47,6 +48,7 @@ authors:
     affiliation: "1, 6"
   # heidelberg hackathon team + devina, who wrote experimental code/helped test
   - name: Maja Jabłońska
+    orcid: 0000-0001-6962-4979
     corresponding: false
     affiliation: 4
   - name: Kosio Karchev
@@ -58,6 +60,7 @@ authors:
     corresponding: false
     affiliation: 8
   - name: Devina Mohan
+    orcid: 0000-0002-8566-7968
     corresponding: false
     affiliation: 1
   - name: David O’Ryan
@@ -188,7 +191,7 @@ DOR acknowledges the support of the UK Science and Technology Facilities Council
 BS gratefully acknowledges support from the Physical Research Laboratory.
 We thank Astro Hack Week for bringing together a community to experiment with the beta version of Zoobot.
 
-Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2018pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
+Our (recommended) PyTorch [@Pytorch2019] version uses timm [@rw2019timm] for architecture definition, Pyro [@bingham2019pyro;@phan2019composable] for our custom loss and Pytorch Lightning [@Falcon_PyTorch_Lightning_2019] for training.
 Our TensorFlow [@https://doi.org/10.48550/arxiv.1603.04467] version uses Tensorflow Probability [@https://doi.org/10.48550/arxiv.1711.10604] for our custom loss.
 
 For the purpose of open access, the author has applied a Creative Commons Attribution (CC BY) licence to any Author Accepted Manuscript version arising.
