@@ -10,12 +10,12 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    zoobot_dir = '/home/walml/repos/zoobot'  # TODO set to directory where you cloned Zoobot
+    zoobot_dir = '/Users/user/repos/zoobot'  # TODO set to directory where you cloned Zoobot
 
     # load in catalogs of images and labels to finetune on
     # each catalog should be a dataframe with columns of "id_str", "file_loc", and any labels
     # here I'm using galaxy-datasets to download some premade data - check it out for examples
-    data_dir = '/home/walml/repos/galaxy-datasets/roots/demo_rings'  # TODO set to any directory. rings dataset will be downloaded here
+    data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'  # TODO set to any directory. rings dataset will be downloaded here
     train_catalog, _ = demo_rings(root=data_dir, download=True, train=True)
     test_catalog, _ = demo_rings(root=data_dir, download=True, train=False)
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
    
     # load a pretrained checkpoint saved here
     checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt')
-    # checkpoint_loc = '/home/walml/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_15366/checkpoints/epoch=58-step=18939.ckpt'
+    # checkpoint_loc = '/Users/user/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_15366/checkpoints/epoch=58-step=18939.ckpt'
     
     # save the finetuning results here
     save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_multiclass_classification')

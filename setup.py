@@ -29,11 +29,11 @@ setuptools.setup(
             'torchvision == 0.13.1+cpu',
             'torchaudio == 0.12.1',
             'pytorch-lightning >= 2.0.0',
-            'simplejpeg',
+            # 'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0',
-            'timm'
+            'timm == 0.6.12'
         ],
         'pytorch_m1': [
             # as above but without the +cpu (and the extra-index-url in readme has no effect)
@@ -42,11 +42,10 @@ setuptools.setup(
             'torchvision == 0.13.1',
             'torchaudio == 0.12.1',
             'pytorch-lightning >= 2.0.0',
-            'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0',
-            'timm'
+            'timm == 0.6.12'
         ],
         # as above but without pytorch itself
         # for GPU, you will also need e.g. cudatoolkit=11.3, 11.6
@@ -56,19 +55,17 @@ setuptools.setup(
             'torchvision == 0.13.1+cu113',
             'torchaudio == 0.12.1',
             'pytorch-lightning >= 2.0.0',
-            'simplejpeg',
             'albumentations',
             'pyro-ppl == 1.8.0',
             'torchmetrics == 0.11.0',
-            'timm'
+            'timm == 0.6.12'
         ],
         'pytorch_colab': [
             'pytorch-lightning >= 2.0.0',
-            'simplejpeg',
             'albumentations',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
-            'timm'
+            'timm == 0.6.12'
         ],
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
@@ -105,6 +102,6 @@ setuptools.setup(
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
         'setuptools==59.5.0',  # wandb logger incompatibility
-        'galaxy-datasets==0.0.12'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
+        'galaxy-datasets==0.0.13'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
     ]
 )

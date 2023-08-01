@@ -268,6 +268,9 @@ gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs , label_metadata.gz2_or
 gz_candels_ortho_schema = Schema(label_metadata.candels_ortho_pairs, label_metadata.candels_ortho_dependencies)
 gz_hubble_ortho_schema = Schema(label_metadata.hubble_ortho_pairs, label_metadata.hubble_ortho_dependencies)
 cosmic_dawn_ortho_schema = Schema(label_metadata.cosmic_dawn_ortho_pairs , label_metadata.cosmic_dawn_ortho_dependencies)
+
+# schemas without orthogonal question suffix (-cd, -dr8, etc)
+cosmic_dawn_schema = Schema(label_metadata.cosmic_dawn_pairs , label_metadata.cosmic_dawn_dependencies)
 gz_rings_schema = Schema(label_metadata.rings_pairs, label_metadata.rings_dependencies)
 desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies)  # for DESI data release prediction users, not for ML training - no -dr5, -dr8, etc
 # note that as this is a call to Schema (and Question and Answer), any logging within those will 
