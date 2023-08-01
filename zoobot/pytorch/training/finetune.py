@@ -269,9 +269,16 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         self.loss = partial(cross_entropy_loss,
                             weight=class_weights,
                             label_smoothing=self.label_smoothing)
-        self.train_acc = tm.Accuracy(task='binary', average="micro")
-        self.val_acc = tm.Accuracy(task='binary', average="micro")
-        self.test_acc = tm.Accuracy(task='binary', average="micro")
+        logging.info(f'num_classes: {num_classes}')
+        if num_classes == 2:
+            logging.info('Using binary classification')
+            task = 'binary'
+        else:
+            logging.info('Using multi-class classification')
+            task = 'multiclass'
+        self.train_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
+        self.val_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
+        self.test_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
         
     def step_to_dict(self, y, y_pred, loss):
         y_class_preds = torch.argmax(y_pred, axis=1)

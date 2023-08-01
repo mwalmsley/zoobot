@@ -164,3 +164,5 @@ data/cosmic_dawn*.parquet
 results
 
 hparams.yaml
+
+data/pretrained_models

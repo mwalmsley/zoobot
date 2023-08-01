@@ -93,7 +93,6 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     """
     assert isinstance(hdf5_loc, str)
 
-    label_cols = schema.label_cols
 
     # concentrations will be of (galaxy, question, model, forward_pass) after going through c_group
     # may be only one model but will still have that dimension (e.g. 1000, 39, 1, 5)
@@ -104,6 +103,12 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
         concentrations = concentrations[:100000]
         galaxy_id_df = galaxy_id_df[:100000]
         save_loc = save_loc.replace('.parquet', '_debug.parquet')
+
+    label_cols = schema.label_cols
+    # TODO optionally ignore all but a subset of columns, for models without finetuning
+    # hdf5_label_cols = label_cols
+    # valid_cols = [col for col in hdf5_label_cols if col in label_col_subset]
+    # concentrations = concentrations[:, valid_cols]
 
     # applies to all questions at once
     # hopefully also supports 3D concentrations (galaxy/question/model/pass)

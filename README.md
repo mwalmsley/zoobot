@@ -149,7 +149,14 @@ CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
     conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/  # add this environment variable
 
-### Latest features (v1.0.0)
+### Latest minor features (v1.0.4)
+
+- Now supports multi-class finetuning. See `pytorch/examples/finetuning/finetune_multiclass_classification.py`
+- Removed `simplejpeg` dependency due to M1 install issue. 
+- Pinned `timm` version to ensure MaX-ViT models load correctly. Models supporting the latest `timm` will follow.
+- (internal until published) GZ Evo v2 now includes Cosmic Dawn (HSC). Significant performance improvement on HSC finetuning.
+
+### Latest major features (v1.0.0)
 
 v1.0.0 recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
 
