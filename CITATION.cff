@@ -9,11 +9,8 @@ authors:
   - family-names: Walmsley
     given-names: Mike
     orcid: https://orcid.org/0000-0002-6408-4181
-  # people who wrote core code and docs, alphabetical
   - family-names: Allen
     given-names: Campbell
-    equal-contrib: true
-    affiliation: 2
   - family-names: Aussel
     given-names: Ben
     orcid: 0000-0003-2592-6806
