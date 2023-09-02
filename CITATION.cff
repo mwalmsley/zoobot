@@ -1,7 +1,6 @@
 cff-version: 1.2.0
 title: >-
-  Zoobot: Adaptable Deep Learning Models for Galaxy
-  Morphology
+  Zoobot: Adaptable Deep Learning Models for Galaxy Morphology
 message: >-
   "Please cite the following work when using this software: https://joss.theoj.org/papers/10.21105/joss.05312#"
 type: software
@@ -13,45 +12,46 @@ authors:
     given-names: Campbell
   - family-names: Aussel
     given-names: Ben
-    orcid: 0000-0003-2592-6806
+    orcid: https://orcid.org/0000-0003-2592-6806
   - family-names: Bowles
     given-names: Micah
+    orcid: https://orcid.org/0000-0001-5838-8405
   - family-names: Gregorowicz
     given-names: Kasia
-    orcid: 0009-0003-0023-6240
+    orcid: https://orcid.org/0009-0003-0023-6240
   - family-names: Slijepcevic
     given-names: Inigo Val
-    orcid: 0000-0002-7056-9599
+    orcid: https://orcid.org/0000-0002-7056-9599
   - family-names: Lintott
     given-names: Chris J.
-    orcid: 0000-0001-5578-359X
-  - family-names: Anna M. M. Scaife
-    given-names: Anna M. M. Scaife
-    orcid: 0000-0002-5364-2301
+    orcid: https://orcid.org/0000-0001-5578-359X
+  - family-names: Scaife
+    given-names: Anna M. M.
+    orcid: https://orcid.org/0000-0002-5364-2301
   - family-names: Jabłońska
     given-names: Maja
-    orcid: 0000-0001-6962-4979
+    orcid: https://orcid.org/0000-0001-6962-4979
   - family-names: Karchev
     given-names: Kosio
-    orcid: 0000-0001-9344-736X
+    orcid: https://orcid.org/0000-0001-9344-736X
   - family-names: Lanzieri
     given-names: Denise
-    orcid: 0000-0003-2787-1634
+    orcid: https://orcid.org/0000-0003-2787-1634
   - family-names: Mohan
     given-names: Devina
-    orcid: 0000-0002-8566-7968
+    orcid: https://orcid.org/0000-0002-8566-7968
   - family-names: O’Ryan
     given-names: David
-    orcid: 0000-0003-1217-4617
+    orcid: https://orcid.org/0000-0003-1217-4617
   - family-names: Saiguhan
     given-names: Bharath
-    orcid: 0000-0001-7580-364X
+    orcid: https://orcid.org/0000-0001-7580-364X
   - family-names: Suárez
     given-names: Crisel
-    orcid: 0000-0001-5243-7659
+    orcid: https://orcid.org/0000-0001-5243-7659
   - family-names: Guerra-Varas
     given-names: Nicolás
-    orcid: 0000-0002-9718-6352
+    orcid: https://orcid.org/0000-0002-9718-6352
   - family-names: Velu
     given-names: Renuka
 identifiers:
@@ -60,7 +60,7 @@ identifiers:
   - type: url
     value: 'https://joss.theoj.org/papers/10.21105/joss.05312#'
   - type: ascl-id
-   value: "2203.027"
+    value: "2203.027"
 repository-code: 'https://github.com/mwalmsley/zoobot'
 abstract: >-
   Zoobot classifies galaxy morphology with Bayesian CNN.
