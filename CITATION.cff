@@ -77,3 +77,63 @@ keywords:
   - morphology
   - astronomy
 license: GPL-3.0
+preferred-citation:
+  type: article
+  authors:
+  - family-names: Walmsley
+    given-names: Mike
+    orcid: https://orcid.org/0000-0002-6408-4181
+  - family-names: Allen
+    given-names: Campbell
+  - family-names: Aussel
+    given-names: Ben
+    orcid: https://orcid.org/0000-0003-2592-6806
+  - family-names: Bowles
+    given-names: Micah
+    orcid: https://orcid.org/0000-0001-5838-8405
+  - family-names: Gregorowicz
+    given-names: Kasia
+    orcid: https://orcid.org/0009-0003-0023-6240
+  - family-names: Slijepcevic
+    given-names: Inigo Val
+    orcid: https://orcid.org/0000-0002-7056-9599
+  - family-names: Lintott
+    given-names: Chris J.
+    orcid: https://orcid.org/0000-0001-5578-359X
+  - family-names: Scaife
+    given-names: Anna M. M.
+    orcid: https://orcid.org/0000-0002-5364-2301
+  - family-names: Jabłońska
+    given-names: Maja
+    orcid: https://orcid.org/0000-0001-6962-4979
+  - family-names: Karchev
+    given-names: Kosio
+    orcid: https://orcid.org/0000-0001-9344-736X
+  - family-names: Lanzieri
+    given-names: Denise
+    orcid: https://orcid.org/0000-0003-2787-1634
+  - family-names: Mohan
+    given-names: Devina
+    orcid: https://orcid.org/0000-0002-8566-7968
+  - family-names: O’Ryan
+    given-names: David
+    orcid: https://orcid.org/0000-0003-1217-4617
+  - family-names: Saiguhan
+    given-names: Bharath
+    orcid: https://orcid.org/0000-0001-7580-364X
+  - family-names: Suárez
+    given-names: Crisel
+    orcid: https://orcid.org/0000-0001-5243-7659
+  - family-names: Guerra-Varas
+    given-names: Nicolás
+    orcid: https://orcid.org/0000-0002-9718-6352
+  - family-names: Velu
+    given-names: Renuka
+  doi: "10.21105/joss.05312"
+  url: https://doi.org/10.21105/joss.05312
+  journal: "Journal of Open Source Software"
+  month: 5
+  title: "Zoobot: Adaptable Deep Learning Models for Galaxy Morphology"
+  volume: 8
+  number: 85
+  pages: 5312
