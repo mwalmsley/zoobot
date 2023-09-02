@@ -178,21 +178,9 @@ Training Zoobot using the GZ DECaLS dataset option will create models very simil
 
 ### Citing
 
-We have submitted a JOSS paper to describe Zoobot itself.
-We hope this will become the single point-of-reference for Zoobot.
-Meanwhile, please cite the [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414), which uses the code that evolved into Zoobot:
+If you use this software, or otherwise wish to cite Zoobot as a software package, please use the [JOSS paper](https://doi.org/10.21105/joss.05312):
 
-    @article{Walmsley2022decals,
-    author = {Mike Walmsley and Chris Lintott and Geron Tobias and Sandor J Kruk and Coleman Krawczyk and Kyle Willett and Steven Bamford and William Keel and Lee S Kelvin and Lucy Fortson and Karen Masters and Vihang Mehta and Brooke Simmons and Rebecca J Smethurst and Elisabeth M L Baeten and Christine Macmillan},
-    issue = {3},
-    journal = {Monthly Notices of the Royal Astronomical Society},
-    month = {12},
-    pages = {3966-3988},
-    title = {Galaxy Zoo DECaLS: Detailed Visual Morphology Measurements from Volunteers and Deep Learning for 314,000 Galaxies},
-    volume = {509},
-    url = {https://arxiv.org/abs/2102.08414},
-    year = {2022},
-    }
+    @article{Walmsley2023, doi = {10.21105/joss.05312}, url = {https://doi.org/10.21105/joss.05312}, year = {2023}, publisher = {The Open Journal}, volume = {8}, number = {85}, pages = {5312}, author = {Mike Walmsley and Campbell Allen and Ben Aussel and Micah Bowles and Kasia Gregorowicz and Inigo Val Slijepcevic and Chris J. Lintott and Anna M. m. Scaife and Maja Jabłońska and Kosio Karchev and Denise Lanzieri and Devina Mohan and David O’Ryan and Bharath Saiguhan and Crisel Suárez and Nicolás Guerra-Varas and Renuka Velu}, title = {Zoobot: Adaptable Deep Learning Models for Galaxy Morphology}, journal = {Journal of Open Source Software} } 
 
 You might be interested in reading papers using Zoobot:
 

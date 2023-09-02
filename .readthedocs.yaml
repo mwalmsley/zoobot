@@ -9,7 +9,6 @@ python:
         - docs
         - pytorch_m1
         - tensorflow
-  system_packages: true
 
 sphinx:
   fail_on_warning: true
