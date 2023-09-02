@@ -1,51 +1,82 @@
-cff-version: 1.1.0
-message: "Please cite the following works when using this software: https://ui.adsabs.harvard.edu/abs/2022MNRAS.509.3966W and https://doi.org/10.5281/zenodo.6483175"
+cff-version: 1.2.0
+title: >-
+  Zoobot: Adaptable Deep Learning Models for Galaxy
+  Morphology
+message: >-
+  "Please cite the following work when using this software: https://joss.theoj.org/papers/10.21105/joss.05312#"
+type: software
 authors:
-- family-names: Walmsley
-  given-names: Mike
-  orcid: https://orcid.org/0000-0002-6408-4181
-- family-names: Lintott
-  given-names: Chris
-- family-names: Géron
-  given-names: Tobias
-- family-names: Kruk
-  given-names: Sandor
-- family-names: Krawczyk
-  given-names: Coleman
-- family-names: Willett
-  given-names: Kyle W.
-- family-names: Bamford
-  given-names: Steven
-- family-names: Kelvin
-  given-names: Lee S.
-- family-names: Fortson
-  given-names: Lucy
-- family-names: Gal
-  given-names: Yarin
-- family-names: Keel
-  given-names: William
-- family-names: Masters
-  given-names: Karen L.
-- family-names: Mehta
-  given-names: Vihang
-- family-names: Simmons
-  given-names: Brooke D.
-- family-names: Smethurst
-  given-names: Rebecca
-- family-names: Smith
-  given-names: Lewis
-- family-names: Baeten
-  given-names: Elisabeth M.
-- family-names: Macmillan
-  given-names: Christine
-title: "Zoobot: Deep learning galaxy morphology classifier"
-version: 0.0.3
-date-released: 2022-04-01
+  - family-names: Walmsley
+    given-names: Mike
+    orcid: https://orcid.org/0000-0002-6408-4181
+  # people who wrote core code and docs, alphabetical
+  - family-names: Allen
+    given-names: Campbell
+    equal-contrib: true
+    affiliation: 2
+  - family-names: Aussel
+    given-names: Ben
+    orcid: 0000-0003-2592-6806
+  - family-names: Bowles
+    given-names: Micah
+  - family-names: Gregorowicz
+    given-names: Kasia
+    orcid: 0009-0003-0023-6240
+  - family-names: Slijepcevic
+    given-names: Inigo Val
+    orcid: 0000-0002-7056-9599
+  - family-names: Lintott
+    given-names: Chris J.
+    orcid: 0000-0001-5578-359X
+  - family-names: Anna M. M. Scaife
+    given-names: Anna M. M. Scaife
+    orcid: 0000-0002-5364-2301
+  - family-names: Jabłońska
+    given-names: Maja
+    orcid: 0000-0001-6962-4979
+  - family-names: Karchev
+    given-names: Kosio
+    orcid: 0000-0001-9344-736X
+  - family-names: Lanzieri
+    given-names: Denise
+    orcid: 0000-0003-2787-1634
+  - family-names: Mohan
+    given-names: Devina
+    orcid: 0000-0002-8566-7968
+  - family-names: O’Ryan
+    given-names: David
+    orcid: 0000-0003-1217-4617
+  - family-names: Saiguhan
+    given-names: Bharath
+    orcid: 0000-0001-7580-364X
+  - family-names: Suárez
+    given-names: Crisel
+    orcid: 0000-0001-5243-7659
+  - family-names: Guerra-Varas
+    given-names: Nicolás
+    orcid: 0000-0002-9718-6352
+  - family-names: Velu
+    given-names: Renuka
 identifiers:
- - type: "ascl-id"
+  - type: doi
+    value: 10.21105/joss.05312
+  - type: url
+    value: 'https://joss.theoj.org/papers/10.21105/joss.05312#'
+  - type: ascl-id
    value: "2203.027"
- - type: "doi"
-   value: 10.5281/zenodo.6483176
- - type: "bibcode"
-   value: "2022ascl.soft03027W"
-abstract: "Zoobot classifies galaxy morphology with Bayesian CNN. Deep learning models were trained on volunteer classifications; these models were able to both learn from uncertain volunteer responses and predict full posteriors (rather than point estimates) for what volunteers would have said. The code reproduces and improves Galaxy Zoo DECaLS automated classifications, and can be finetuned for new tasks."
+repository-code: 'https://github.com/mwalmsley/zoobot'
+abstract: >-
+  Zoobot classifies galaxy morphology with Bayesian CNN.
+  Deep learning models were trained on volunteer
+  classifications; these models were able to both learn from
+  uncertain volunteer responses and predict full posteriors
+  (rather than point estimates) for what volunteers would
+  have said. The code reproduces and improves Galaxy Zoo
+  DECaLS automated classifications, and can be finetuned for
+  new tasks.
+keywords:
+  - galaxies
+  - deep learning
+  - morphology
+  - astronomy
+license: GPL-3.0
