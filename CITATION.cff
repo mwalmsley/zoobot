@@ -131,9 +131,10 @@ preferred-citation:
     given-names: Renuka
   doi: "10.21105/joss.05312"
   url: https://doi.org/10.21105/joss.05312
-  journal: "Journal of Open Source Software"
-  month: 5
   title: "Zoobot: Adaptable Deep Learning Models for Galaxy Morphology"
+  journal: "Journal of Open Source Software"
+  year: 2023
+  month: 5
   volume: 8
   number: 85
   pages: 5312
