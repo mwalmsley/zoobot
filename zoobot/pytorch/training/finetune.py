@@ -24,7 +24,7 @@ from zoobot.shared import schemas
 def freeze_batchnorm_layers(model):
     for name, child in (model.named_children()):
         if isinstance(child, torch.nn.BatchNorm2d):
-            logging.debug('freezing {} {}'.format(child, name))
+            logging.debug('Freezing {} {}'.format(child, name))
             child.eval()  # no grads, no param updates, no statistic updates
         else:
             freeze_batchnorm_layers(child)  # recurse
@@ -64,15 +64,16 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         encoder=None,
         encoder_dim=1280,  # as per current Zooot. TODO Could get automatically?
         n_epochs=100,  # TODO early stopping
-        n_layers=0,  # how many layers deep to FT
+        n_blocks=0,  # how many layers deep to FT
         lr_decay=0.75,
         weight_decay=0.05,
-        learning_rate=1e-4,
+        learning_rate=1e-4,  # 10x lower than typical, you may like to experiment
         dropout_prob=0.5,
-        freeze_batchnorm=True,
+        always_train_batchnorm=True,
         prog_bar=True,
         visualize_images=False,  # upload examples to wandb, good for debugging
-        seed=42
+        seed=42,
+        n_layers=0  # for backward compat., n_blocks preferred
     ):
         super().__init__()
 
@@ -94,8 +95,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
           self.encoder = encoder
 
         self.encoder_dim = encoder_dim
-        self.n_layers = n_layers
-        self.freeze = True if n_layers == 0 else False
+        self.n_blocks = n_blocks
+
+        # for backwards compat.
+        if n_layers:
+            logging.warning('FinetuneableZoobot(n_layers) is now renamed to n_blocks, please update to pass n_blocks instead! For now, setting n_blocks=n_layers')
+            self.n_blocks = n_layers
+        logging.info('Layers to finetune: {}'.format(n_layers))
 
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
@@ -103,15 +109,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.dropout_prob = dropout_prob
         self.n_epochs = n_epochs
 
-        self.freeze_batchnorm = freeze_batchnorm
+        self.always_train_batchnorm = always_train_batchnorm
+        if self.always_train_batchnorm:
+            logging.info('always_train_batchnorm=True, so all batch norm layers will be finetuned')
 
         self.train_loss_metric = tm.MeanMetric()
         self.val_loss_metric = tm.MeanMetric()
         self.test_loss_metric = tm.MeanMetric()
-
-
-        if self.freeze_batchnorm:
-            freeze_batchnorm_layers(self.encoder)  # inplace
 
         self.seed = seed
         self.prog_bar = prog_bar
@@ -119,44 +123,50 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def configure_optimizers(self):
 
-        if self.freeze:
-            params = self.head.parameters()
-            return torch.optim.AdamW(params, betas=(0.9, 0.999), lr=self.learning_rate)
-        else:
-            lr = self.learning_rate
-            params = [{"params": self.head.parameters(), "lr": lr}]
+        lr = self.learning_rate
+        params = [{"params": self.head.parameters(), "lr": lr}]
 
-            # this bit is specific to Zoobot EffNet
-            # TODO check these are blocks not individual layers
-            encoder_blocks = list(self.encoder.children())
+        # this bit is specific to Zoobot EffNet
+        # may not yet work fr MaxViT (help wanted!)
+        encoder_blocks = self.encoder.blocks
 
-            # for n, l in enumerate(encoder_blocks):
-            #     print('\n')
-            #     print(n)
-            #     print(l)
-            
-            # layers with no parameters don't count
-            # TODO double-check is_tuneable
-            tuneable_blocks = [b for b in encoder_blocks if is_tuneable(b)]
- 
-            assert self.n_layers <= len(
-                tuneable_blocks
-            ), f"Network only has {len(tuneable_blocks)} tuneable blocks, {self.n_layers} specified for finetuning"
+        assert self.n_blocks <= len(
+            encoder_blocks
+        ), f"Network only has {len(encoder_blocks)} tuneable blocks, {self.n_blocks} specified for finetuning"
 
-            # Append parameters of layers for finetuning along with decayed learning rate
-            blocks_to_tune = tuneable_blocks[:self.n_layers]
-            blocks_to_tune.reverse()  # highest block to lowest block
-            for i, layer in enumerate(blocks_to_tune):
-                params.append({
-                    "params": layer.parameters(),
+        blocks_to_tune = list(encoder_blocks.named_children())
+        # take n blocks, ordered highest layer to lowest layer
+        blocks_to_tune.reverse()
+        # will finetune all params in first N
+        blocks_to_tune = blocks_to_tune[:self.n_blocks]
+        # optionally, can finetune batchnorm params in remaining layers
+        remaining_blocks = blocks_to_tune[self.n_blocks:]
+
+        # Append parameters of layers for finetuning along with decayed learning rate
+        for i, (_, block) in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
+            params.append({
+                    "params": block.parameters(),
                     "lr": lr * (self.lr_decay**i)
                 })
 
-            # Initialize AdamW optimizer
-            opt = torch.optim.AdamW(
-                params, weight_decay=self.weight_decay, betas=(0.9, 0.999))  # higher weight decay is typically good
+        logging.debug(params)
 
-            return opt
+        # optionally, for the remaining layers (not otherwise finetuned) you can choose to still FT the batchnorm layers
+        for i, (_, block) in enumerate(remaining_blocks):
+            if self.always_train_batchnorm:
+                params.append({
+                    "params": get_batch_norm_params_lighting(block),
+                    "lr": lr * (self.lr_decay**i)
+                })
+
+        # TODO this actually breaks training because the generator only iterates once!
+        # total_params = sum(p.numel() for param_set in params.copy() for p in param_set['params'])
+        # logging.info('Total params to fit: {}'.format(total_params))
+
+        # Initialize AdamW optimizer
+        opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
+
+        return opt
 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -501,6 +511,16 @@ def is_tuneable(block_of_layers):
     else:
         # currently, allowed to include batchnorm
         return True
+    
+def get_batch_norm_params_lighting(parent_module, current_params=[]):
+    for child_module in parent_module.children():
+        if isinstance(child_module, torch.nn.BatchNorm2d):
+            current_params += child_module.parameters()
+        else:
+            current_params = get_batch_norm_params_lighting(child_module, current_params)
+    return current_params
+
+
 
     # when ready (don't peek often, you'll overfit)
     # trainer.test(model, dataloaders=datamodule)
