@@ -15,12 +15,12 @@ if __name__ == '__main__':
     data_dir = '/tmp/walml/finetune'
     os.makedirs(data_dir)
 
-    remote_image_dir = '/project/def-bovy/walml/repos/galaxy-datasets/roots/galaxy_mnist'
+    remote_image_dir = '/project/def-bovy/walml/galaxy-datasets/roots/galaxy_mnist'
     image_dir = data_dir + '/images'
     shutil.copytree(remote_image_dir, image_dir)
     logging.info('Copied')
 
-    remote_zoobot_dir = '/project/def-bovy/walml/repos/zoobot'
+    remote_zoobot_dir = '/project/def-bovy/walml/zoobot'
 
     batch_size = 32
     num_workers= 8

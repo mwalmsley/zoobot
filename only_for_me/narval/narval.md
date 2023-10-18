@@ -50,3 +50,14 @@ pip install --no-index -r zoobot/only_for_me/narval/requirements.txt
 and my own cloned repos
 pip install --no-deps -e galaxy-datasets
 pip install --no-deps -e zoobot
+
+
+Multi-node notes
+
+https://lightning.ai/docs/pytorch/stable/clouds/cluster_intermediate_2.html#
+https://pytorch.org/docs/stable/elastic/run.html#environment-variables
+https://github.com/webdataset/webdataset/issues/250
+https://github.com/webdataset/webdataset-lightning/blob/main/train.py
+https://lightning.ai/forums/t/multi-gpu-multi-node-training-with-webdataset/2300
+https://webdataset.github.io/webdataset/multinode/
+https://webdataset.github.io/webdataset/creating/
