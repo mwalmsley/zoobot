@@ -10,14 +10,14 @@
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
-mkdir /tmp/walml/finetune
-mkdir /tmp/walml/finetune/data
-mkdir /tmp/walml/finetune/checkpoints
+mkdir $SLURM_TMPDIR/walml/finetune
+mkdir $SLURM_TMPDIR/walml/finetune/data
+mkdir $SLURM_TMPDIR/walml/finetune/checkpoints
 
-cp /project/def-bovy/walml/galaxy-datasets/roots/galaxy_mnist /tmp/walml/finetune/data/
+cp /project/def-bovy/walml/galaxy-datasets/roots/galaxy_mnist $SLURM_TMPDIR/walml/finetune/data/
 
-ls /tmp/walml/finetune/data/galaxy_mnist
+ls $SLURM_TMPDIR/walml/finetune/data/galaxy_mnist
 
 $PYTHON /project/def-bovy/walml/zoobot/only_for_me/narval/finetune.py
 
-ls /tmp/walml/finetune/checkpoints
+ls $SLURM_TMPDIR/walml/finetune/checkpoints
