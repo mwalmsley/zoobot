@@ -13,7 +13,7 @@ if __name__ == '__main__':
     logging.info('Begin')
 
     data_dir = '/tmp/walml/finetune'
-    os.mkdirs(data_dir)
+    os.makedirs(data_dir)
 
     remote_image_dir = '/project/def-bovy/walml/repos/galaxy-imagesets/roots/galaxy_mnist'
     image_dir = data_dir + '/images'
