@@ -18,16 +18,16 @@
 module load StdEnv/2020  # CUDA etc
 nvidia-smi
 
-# PYTHON=/home/walml/envs/zoobot39_dev/bin/python
+PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
-module load python/3.9.6
-virtualenv --no-download $SLURM_TMPDIR/env
-source $SLURM_TMPDIR/env/bin/activate
-pip install --no-index -r /project/def-bovy/walml/zoobot/only_for_me/narval/requirements.txt
-cp -r /project/def-bovy/walml/galaxy-datasets $SLURM_TMPDIR/
-cp -r /project/def-bovy/walml/zoobot $SLURM_TMPDIR/
-pip install --no-deps -e $SLURM_TMPDIR/galaxy-datasets
-pip install --no-deps -e $SLURM_TMPDIR/zoobot
+# module load python/3.9.6
+# virtualenv --no-download $SLURM_TMPDIR/env
+# source $SLURM_TMPDIR/env/bin/activate
+# pip install --no-index -r /project/def-bovy/walml/zoobot/only_for_me/narval/requirements.txt
+# cp -r /project/def-bovy/walml/galaxy-datasets $SLURM_TMPDIR/
+# cp -r /project/def-bovy/walml/zoobot $SLURM_TMPDIR/
+# pip install --no-deps -e $SLURM_TMPDIR/galaxy-datasets
+# pip install --no-deps -e $SLURM_TMPDIR/zoobot
 
 mkdir $SLURM_TMPDIR/walml
 mkdir $SLURM_TMPDIR/walml/finetune
@@ -38,8 +38,6 @@ cp -r /project/def-bovy/walml/data/roots/galaxy_mnist $SLURM_TMPDIR/walml/finetu
 
 ls $SLURM_TMPDIR/walml/finetune/data/galaxy_mnist
 
-pip install --no-index wandb
-
 wandb offline  # only write metadata locally
 
 export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use the NCCL backend for inter-GPU communication.
@@ -47,7 +45,7 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 # echo "r$SLURM_NODEID master: $MASTER_ADDR"
 # echo "r$SLURM_NODEID Launching python script"
 
-# $PYTHON /project/def-bovy/walml/zoobot/only_for_me/narval/finetune.py
-srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
+$PYTHON /project/def-bovy/walml/zoobot/only_for_me/narval/finetune.py
+# srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
 
 ls $SLURM_TMPDIR/walml/finetune/checkpoints
