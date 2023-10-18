@@ -10,6 +10,7 @@ from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
+    logging.info('Begin')
 
     data_dir = '/tmp/walml/finetune'
     os.mkdirs(data_dir)
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     remote_image_dir = '/project/def-bovy/walml/repos/galaxy-imagesets/roots/galaxy_mnist'
     image_dir = data_dir + '/images'
     shutil.copytree(remote_image_dir, image_dir)
+    logging.info('Copied')
 
     remote_zoobot_dir = '/project/def-bovy/walml/repos/zoobot'
 
@@ -27,6 +29,7 @@ if __name__ == '__main__':
 
     train_catalog, _ = galaxy_mnist(root=data_dir, download=False, train=True)
     test_catalog, _ = galaxy_mnist(root=data_dir, download=False, train=False)
+    logging.info('Data ready')
 
     label_cols = ['label']
     num_classes = 4
