@@ -67,7 +67,7 @@ def main():
 
     transform_train = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    dataset_train = CIFAR10(root='./data', train=True, download=False, transform=transform_train)
+    dataset_train = CIFAR10(root='/project/def-bovy/walml/data/roots/cifar10', train=True, download=False, transform=transform_train)
 
     train_loader = DataLoader(dataset_train, batch_size=args.batch_size, num_workers=args.num_workers)
 
