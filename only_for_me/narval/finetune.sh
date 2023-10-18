@@ -3,12 +3,13 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=8
 #SBATCH --time=0:15:0      
-# SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:a100:1
 
 #### SBATCH --mail-user=<youremail@gmail.com>
 #### SBATCH --mail-type=ALL
 
 module load StdEnv/2020  # CUDA etc
+nvidia-smi
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
