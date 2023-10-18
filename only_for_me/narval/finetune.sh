@@ -10,6 +10,7 @@
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
+mkdir $SLURM_TMPDIR/walml
 mkdir $SLURM_TMPDIR/walml/finetune
 mkdir $SLURM_TMPDIR/walml/finetune/data
 mkdir $SLURM_TMPDIR/walml/finetune/checkpoints
