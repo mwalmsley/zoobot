@@ -16,18 +16,18 @@ if __name__ == '__main__':
 
     logging.info(os.environ['SLURM_TMPDIR'])
 
-    os.environ['NCCL_BLOCKING_WAIT'] = 1
+    # os.environ['NCCL_BLOCKING_WAIT'] = 1
 
     # import glob
     # logging.info(glob.glob(os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/data')))
     # logging.info(glob.glob(os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/data/galaxy_mnist')))
 
-    import torch
-    torch.set_float32_matmul_precision('medium')
-    assert torch.cuda.is_available()
+    # import torch
+    # torch.set_float32_matmul_precision('medium')
+    # assert torch.cuda.is_available()
 
-    batch_size = 256
-    num_workers= 4
+    batch_size = 128
+    num_workers= 1
     n_blocks = 1  # EffnetB0 is divided into 7 blocks. set 0 to only fit the head weights. Set 1, 2, etc to finetune deeper. 
     max_epochs = 6  #  6 epochs should get you ~93% accuracy. Set much higher (e.g. 1000) for harder problems, to use Zoobot's default early stopping. \
 
@@ -42,7 +42,8 @@ if __name__ == '__main__':
     # rsync -avz --no-g --no-p /home/walml/repos/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt walml@narval.alliancecan.ca:/project/def-bovy/walml/zoobot/data/pretrained_models/pytorch
     checkpoint_loc = '/project/def-bovy/walml/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt'
 
-    logger = WandbLogger(name='debug', save_dir='/project/def-bovy/walml/wandb/debug', project='narval', log_model=False, offline=True)
+    # logger = WandbLogger(name='debug', save_dir='/project/def-bovy/walml/wandb/debug', project='narval', log_model=False, offline=True)
+    logger = None
     
     datamodule = GalaxyDataModule(
       label_cols=label_cols,
@@ -62,7 +63,7 @@ if __name__ == '__main__':
         devices=2,
         num_nodes=1,
         strategy='ddp',
-        precision='16-mixed',
+        # precision='16-mixed',
         max_epochs=max_epochs,
         enable_progress_bar=False,
         logger=logger
