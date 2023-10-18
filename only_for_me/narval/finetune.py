@@ -14,6 +14,10 @@ if __name__ == '__main__':
 
     logging.info(os.environ['SLURM_TMPDIR'])
 
+    import glob
+    logging.info(glob.glob(os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/data')))
+    logging.info(glob.glob(os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/data/galaxy_mnist')))
+
     batch_size = 32
     num_workers= 8
     n_blocks = 1  # EffnetB0 is divided into 7 blocks. set 0 to only fit the head weights. Set 1, 2, etc to finetune deeper. 

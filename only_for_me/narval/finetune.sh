@@ -15,7 +15,7 @@ mkdir $SLURM_TMPDIR/walml/finetune
 mkdir $SLURM_TMPDIR/walml/finetune/data
 mkdir $SLURM_TMPDIR/walml/finetune/checkpoints
 
-cp -r /project/def-bovy/walml/galaxy-datasets/roots/galaxy_mnist $SLURM_TMPDIR/walml/finetune/data/
+cp -r /project/def-bovy/walml/data/roots/galaxy_mnist $SLURM_TMPDIR/walml/finetune/data/
 
 ls $SLURM_TMPDIR/walml/finetune/data/galaxy_mnist
 
