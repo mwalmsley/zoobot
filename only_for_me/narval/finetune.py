@@ -12,23 +12,13 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     logging.info('Begin')
 
-    data_dir = '/tmp/walml/finetune'
-    os.makedirs(data_dir)
-
-    remote_image_dir = '/project/def-bovy/walml/galaxy-datasets/roots/galaxy_mnist'
-    image_dir = data_dir + '/images'
-    shutil.copytree(remote_image_dir, image_dir)
-    logging.info('Copied')
-
-    remote_zoobot_dir = '/project/def-bovy/walml/zoobot'
-
     batch_size = 32
     num_workers= 8
     n_blocks = 1  # EffnetB0 is divided into 7 blocks. set 0 to only fit the head weights. Set 1, 2, etc to finetune deeper. 
     max_epochs = 6  #  6 epochs should get you ~93% accuracy. Set much higher (e.g. 1000) for harder problems, to use Zoobot's default early stopping. \
 
-    train_catalog, _ = galaxy_mnist(root=data_dir, download=False, train=True)
-    test_catalog, _ = galaxy_mnist(root=data_dir, download=False, train=False)
+    train_catalog, _ = galaxy_mnist(root='/tmp/walml/finetune/data/galaxy_mnist', download=False, train=True)
+    test_catalog, _ = galaxy_mnist(root='/tmp/walml/finetune/data/galaxy_mnist', download=False, train=False)
     logging.info('Data ready')
 
     label_cols = ['label']
@@ -36,7 +26,7 @@ if __name__ == '__main__':
   
     # load a pretrained checkpoint saved here
     # rsync -avz --no-g --no-p /home/walml/repos/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt walml@narval.alliancecan.ca:/project/def-bovy/walml/zoobot/data/pretrained_models/pytorch
-    checkpoint_loc = os.path.join(remote_zoobot_dir, 'data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt')
+    checkpoint_loc = '/project/bovy-dev/walml/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt'
     
     datamodule = GalaxyDataModule(
       label_cols=label_cols,
@@ -50,6 +40,6 @@ if __name__ == '__main__':
       num_classes=num_classes,
       n_blocks=n_blocks
     )
-    trainer = finetune.get_trainer(data_dir, accelerator='auto', max_epochs=max_epochs)
+    trainer = finetune.get_trainer('/tmp/walml/finetune/checkpoints', accelerator='auto', max_epochs=max_epochs)
     trainer.fit(model, datamodule)
     trainer.test(model, datamodule)
