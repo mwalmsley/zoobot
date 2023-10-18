@@ -16,6 +16,8 @@ if __name__ == '__main__':
 
     logging.info(os.environ['SLURM_TMPDIR'])
 
+    os.environ['NCCL_BLOCKING_WAIT'] = 1
+
     # import glob
     # logging.info(glob.glob(os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/data')))
     # logging.info(glob.glob(os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/data/galaxy_mnist')))
