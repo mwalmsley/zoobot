@@ -11,7 +11,7 @@ from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
     logging.info('Begin')
 
     logging.info(os.environ['SLURM_TMPDIR'])
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     assert torch.cuda.is_available()
 
     batch_size = 256
-    num_workers= 8
+    num_workers= 4
     n_blocks = 1  # EffnetB0 is divided into 7 blocks. set 0 to only fit the head weights. Set 1, 2, etc to finetune deeper. 
     max_epochs = 6  #  6 epochs should get you ~93% accuracy. Set much higher (e.g. 1000) for harder problems, to use Zoobot's default early stopping. \
 
