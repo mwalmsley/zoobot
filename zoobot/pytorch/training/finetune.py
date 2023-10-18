@@ -439,9 +439,13 @@ def load_pretrained_encoder(checkpoint_loc: str) -> torch.nn.Sequential:
     Returns:
         torch.nn.Sequential: pretrained PyTorch encoder within that LightningModule.
     """
-    return define_model.ZoobotTree.load_from_checkpoint(
-        checkpoint_loc).encoder
-
+    if torch.cuda.is_available():
+        map_location = None
+    else:
+        # necessary to load gpu-trained model on cpu
+        map_location = torch.device('cpu')
+    return define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, map_location=map_location).encoder
+    
 
 def get_trainer(
     save_dir: str,
