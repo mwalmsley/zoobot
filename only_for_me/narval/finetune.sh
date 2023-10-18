@@ -8,6 +8,8 @@
 #### SBATCH --mail-user=<youremail@gmail.com>
 #### SBATCH --mail-type=ALL
 
+module load StdEnv/2020  # CUDA etc
+
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
 mkdir $SLURM_TMPDIR/walml
