@@ -5,6 +5,7 @@ https://docs.alliancecan.ca/wiki/Narval/en
 https://docs.alliancecan.ca/wiki/AI_and_Machine_Learning
 https://docs.alliancecan.ca/wiki/PyTorch
 https://prashp.gitlab.io/post/compute-canada-tut/
+https://docs.alliancecan.ca/wiki/Python
 
 ssh walml@narval.alliancecan.ca
 

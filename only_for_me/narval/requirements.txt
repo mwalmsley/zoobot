@@ -9,6 +9,9 @@ timm
 wandb
 h5py
 astropy
+pandas
+matplotlib
+fastparquet  # replacing pyarrow below
 # below already required by packages above
 
 # tqdm

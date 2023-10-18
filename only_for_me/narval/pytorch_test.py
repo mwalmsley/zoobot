@@ -17,7 +17,7 @@ from galaxy_datasets import galaxy_mnist
 
 root = '/project/def-bovy/walml/data/roots/galaxy_mnist'
 
-df, label_cols = galaxy_mnist(root, train=True, download=False)
+df, label_cols = galaxy_mnist(root, train=True, download=False)  # must be already downloaded, no internet
 
 
 # TODO import zoobot and use something
