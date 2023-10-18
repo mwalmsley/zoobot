@@ -10,4 +10,4 @@
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
-$PYTHON /project/def-bovy/walml/repos/zoobot/only_for_me/narval/finetune.py
+$PYTHON /project/def-bovy/walml/zoobot/only_for_me/narval/finetune.py
