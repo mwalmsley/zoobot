@@ -32,7 +32,7 @@ if __name__ == '__main__':
   
     # load a pretrained checkpoint saved here
     # rsync -avz --no-g --no-p /home/walml/repos/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt walml@narval.alliancecan.ca:/project/def-bovy/walml/zoobot/data/pretrained_models/pytorch
-    checkpoint_loc = '/project/bovy-dev/walml/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt'
+    checkpoint_loc = '/project/def-bovy/walml/zoobot/data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt'
     
     datamodule = GalaxyDataModule(
       label_cols=label_cols,
