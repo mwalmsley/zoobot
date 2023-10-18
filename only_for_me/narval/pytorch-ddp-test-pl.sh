@@ -17,4 +17,4 @@ export NCCL_BLOCKING_WAIT=1 #Pytorch Lightning uses the NCCL backend for inter-G
 # If it is, it expects the user to have requested one task per GPU.
 # If you do not ask for 1 task per GPU, and you do not run your script with "srun", your job will fail!
 
-srun python pytorch-ddp-test-pl.py  --batch_size 256
+srun python /project/def-bovy/walml/zoobot/only_for_me/narval/pytorch-ddp-test-pl.py  --batch_size 256
