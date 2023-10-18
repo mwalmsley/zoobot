@@ -334,14 +334,14 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     def predict_step(self, x, batch_idx):
         x = self.forward(x)  # logits from LinearClassifier
         # then applies softmax
-        return F.softmax(x, dim=1)[:, 1]
+        return F.softmax(x, dim=1)
 
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       # self.logger is set by pl.Trainer(logger=) argument
         if (self.logger is not None) and (batch_idx == 0):
             x, y = batch
-            y_pred_softmax = F.softmax(outputs['predictions'], dim=1)[:, 1]  # odds of class 1 (assumed binary)
+            y_pred_softmax = F.softmax(outputs['predictions'], dim=1)
             n_images = 5
             images = [img for img in x[:n_images]]
             captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(
