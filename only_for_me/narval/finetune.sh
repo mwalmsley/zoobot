@@ -22,7 +22,7 @@ nvidia-smi
 module load python/3.9.6
 virtualenv --no-download $SLURM_TMPDIR/env
 source $SLURM_TMPDIR/env/bin/activate
-pip install --no-index -r zoobot/only_for_me/narval/requirements.txt
+pip install --no-index -r /project/def-bovy/walml/zoobot/only_for_me/narval/requirements.txt
 cp -r /project/def-bovy/walml/galaxy-datasets $SLURM_TMPDIR/
 cp -r /project/def-bovy/walml/zoobot $SLURM_TMPDIR/
 pip install --no-deps -e $SLURM_TMPDIR/galaxy-datasets
