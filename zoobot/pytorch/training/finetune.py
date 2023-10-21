@@ -131,7 +131,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             logging.info('Effnet detected')
             # TODO this actually excludes the first conv layer/bn
             encoder_blocks = self.encoder.blocks
-            blocks_to_tune = list(encoder_blocks.named_children())
+            blocks_to_tune = list(encoder_blocks)
         elif hasattr(self.encoder, 'layer4'):
             logging.info('Resnet detected')
             # similarly, excludes first conv/bn
@@ -166,7 +166,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         remaining_blocks = blocks_to_tune[self.n_blocks:]
 
         # Append parameters of layers for finetuning along with decayed learning rate
-        for i, (_, block) in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
+        for i, block in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
             params.append({
                     "params": block.parameters(),
                     "lr": lr * (self.lr_decay**i)
@@ -175,7 +175,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         logging.debug(params)
 
         # optionally, for the remaining layers (not otherwise finetuned) you can choose to still FT the batchnorm layers
-        for i, (_, block) in enumerate(remaining_blocks):
+        for i, block in enumerate(remaining_blocks):
             if self.always_train_batchnorm:
                 params.append({
                     "params": get_batch_norm_params_lighting(block),
