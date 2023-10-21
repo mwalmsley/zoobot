@@ -141,7 +141,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 self.encoder.layer3,
                 self.encoder.layer4
             ]
-        elif hasattr(self.encoder, '0'):
+        elif hasattr(self.encoder, 'stages'):
             logging.info('Max-ViT Tiny detected')
             blocks_to_tune = [
                 # getattr as obj.0 is not allowed (why does timm call them 0!?)
