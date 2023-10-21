@@ -131,10 +131,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             logging.info('Effnet detected')
             # TODO this actually excludes the first conv layer/bn
             encoder_blocks = self.encoder.blocks
+            blocks_to_tune = list(encoder_blocks.named_children())
         elif hasattr(self.encoder, 'layer4'):
             logging.info('Resnet detected')
             # similarly, excludes first conv/bn
-            encoder_blocks = [
+            blocks_to_tune = [
                 self.encoder.layer1,
                 self.encoder.layer2,
                 self.encoder.layer3,
@@ -142,7 +143,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             ]
         elif hasattr(self.encoder, '0'):
             logging.info('Max-ViT Tiny detected')
-            encoder_blocks = [
+            blocks_to_tune = [
                 # getattr as obj.0 is not allowed (why does timm call them 0!?)
                 getattr(self.encoder.stages, '0'),
                 getattr(self.encoder.stages, '1'),
@@ -153,10 +154,10 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             raise ValueError('Encoder architecture not automatically recognised')
         
         assert self.n_blocks <= len(
-            encoder_blocks
-        ), f"Network only has {len(encoder_blocks)} tuneable blocks, {self.n_blocks} specified for finetuning"
+            blocks_to_tune
+        ), f"Network only has {len(blocks_to_tune)} tuneable blocks, {self.n_blocks} specified for finetuning"
 
-        blocks_to_tune = list(encoder_blocks.named_children())
+        
         # take n blocks, ordered highest layer to lowest layer
         blocks_to_tune.reverse()
         # will finetune all params in first N
