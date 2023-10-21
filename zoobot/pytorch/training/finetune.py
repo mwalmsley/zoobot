@@ -92,6 +92,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
           self.encoder = load_pretrained_encoder(checkpoint_loc)
         else:
           assert checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
+          assert encoder is not None, 'Must pass either checkpoint to load or encoder to use'
           self.encoder = encoder
 
         self.encoder_dim = encoder_dim
@@ -126,10 +127,31 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         lr = self.learning_rate
         params = [{"params": self.head.parameters(), "lr": lr}]
 
-        # this bit is specific to Zoobot EffNet
-        # may not yet work fr MaxViT (help wanted!)
-        encoder_blocks = self.encoder.blocks
-
+        if hasattr(self.encoder, 'blocks'):  
+            logging.info('Effnet detected')
+            # TODO this actually excludes the first conv layer/bn
+            encoder_blocks = self.encoder.blocks
+        elif hasattr(self.encoder, 'layer4'):
+            logging.info('Resnet detected')
+            # similarly, excludes first conv/bn
+            encoder_blocks = [
+                self.encoder.layer1,
+                self.encoder.layer2,
+                self.encoder.layer3,
+                self.encoder.layer4
+            ]
+        elif hasattr(self.encoder, '0'):
+            logging.info('Max-ViT Tiny detected')
+            encoder_blocks = [
+                # getattr as obj.0 is not allowed (why does timm call them 0!?)
+                getattr(self.encoder.stages, '0'),
+                getattr(self.encoder.stages, '1'),
+                getattr(self.encoder.stages, '2'),
+                getattr(self.encoder.stages, '3'),
+            ]
+        else:
+            raise ValueError('Encoder architecture not automatically recognised')
+        
         assert self.n_blocks <= len(
             encoder_blocks
         ), f"Network only has {len(encoder_blocks)} tuneable blocks, {self.n_blocks} specified for finetuning"
