@@ -277,9 +277,26 @@ desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
 
-# temp for debugging
-# print(label_metadata.desi_pairs)
-# print(label_metadata.desi_dependencies)
 
-# print(desi_schema.questions)
-# print(desi_schema.answers)
+
+def get_gz_evo_v2_schema():
+
+    question_answer_pairs = {}
+    question_answer_pairs.update(label_metadata.decals_all_campaigns_ortho_pairs)
+    question_answer_pairs.update(label_metadata.gz2_ortho_pairs)
+    question_answer_pairs.update(label_metadata.candels_ortho_pairs)
+    question_answer_pairs.update(label_metadata.hubble_ortho_pairs)
+    question_answer_pairs.update(label_metadata.cosmic_dawn_ortho_pairs)
+
+    dependencies = {}
+    dependencies.update(label_metadata.decals_ortho_dependencies)
+    dependencies.update(label_metadata.gz2_ortho_dependencies)
+    dependencies.update(label_metadata.candels_ortho_dependencies)
+    dependencies.update(label_metadata.hubble_ortho_dependencies)
+    dependencies.update(label_metadata.cosmic_dawn_ortho_dependencies)
+
+    schema = Schema(question_answer_pairs, dependencies)
+
+    return schema
+
+gz_evo_v2_schema = get_gz_evo_v2_schema()
