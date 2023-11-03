@@ -81,13 +81,14 @@ def load_wds(wds_loc):
 def main():
 
     train_catalog, _ = gz_decals_5(root='/home/walml/repos/zoobot/only_for_me/narval/temp', download=False, train=True)
-    
-    train_catalog = train_catalog[:512*64]
+    # print(len(train_catalog))
+    # exit()
+    train_catalog = train_catalog[:88*2048]
     label_cols = label_metadata.decals_dr5_ortho_label_cols
 
-    save_loc = "gz_decals_5_train.tar"
+    save_loc = "/home/walml/repos/zoobot/only_for_me/narval/gz_decals_5/gz_decals_5_train.tar"
     
-    # df_to_wds(train_catalog, label_cols, save_loc, n_shards=8)
+    df_to_wds(train_catalog, label_cols, save_loc, n_shards=44)
 
     # check_wds(save_loc)
 
