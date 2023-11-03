@@ -1,10 +1,17 @@
 #!/bin/bash
 #SBATCH --mem=32G
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --time=0:20:0  
 #SBATCH --tasks-per-node=2 
 #SBATCH --cpus-per-task=12
 #SBATCH --gres=gpu:a100:2
+
+#### SBATCH --mem=32G
+#### SBATCH --nodes=1
+#### SBATCH --time=0:20:0  
+#### SBATCH --tasks-per-node=2 
+#### SBATCH --cpus-per-task=12
+#### SBATCH --gres=gpu:a100:2
 
 #### 
 #### SBATCH --mem=16G

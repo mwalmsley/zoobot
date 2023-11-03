@@ -61,7 +61,7 @@ if __name__ == '__main__':
         os.path.join(os.environ['SLURM_TMPDIR'], 'walml/finetune/checkpoints'),
         accelerator='gpu',
         devices=2,
-        num_nodes=1,
+        num_nodes=2,
         strategy='ddp',
         precision='16-mixed',
         max_epochs=max_epochs,

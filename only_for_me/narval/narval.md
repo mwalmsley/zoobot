@@ -8,6 +8,7 @@ https://prashp.gitlab.io/post/compute-canada-tut/
 https://docs.alliancecan.ca/wiki/Python
 
 ssh walml@narval.alliancecan.ca
+ssh-copy-id to avoid password in future
 
     module purge
     module avail
@@ -51,8 +52,12 @@ and my own cloned repos
 pip install --no-deps -e galaxy-datasets
 pip install --no-deps -e zoobot
 
+Run training
 
-Multi-node notes
+sbatch only_for_me/narval/finetune.sh
+
+Works with simple images on multi-GPU, single node
+
 
 https://lightning.ai/docs/pytorch/stable/clouds/cluster_intermediate_2.html#
 https://pytorch.org/docs/stable/elastic/run.html#environment-variables
