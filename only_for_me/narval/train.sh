@@ -20,6 +20,6 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 REPO_DIR=/project/def-bovy/walml/zoobot/
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models \
-    --batch-size 512 \
+    --batch-size 256 \
     --color --wandb --mixed-precision
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py

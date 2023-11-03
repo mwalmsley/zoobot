@@ -22,7 +22,7 @@ if __name__ == '__main__':
     parser.add_argument('--save-dir', dest='save_dir', type=str)
     # parser.add_argument('--data-dir', dest='data_dir', type=str)
     # parser.add_argument('--dataset', dest='dataset', type=str, help='dataset to use, either "gz_decals_dr5" or "gz_evo"')
-    parser.add_argument('--architecture', dest='architecture_name', default='efficientnet', type=str)
+    parser.add_argument('--architecture', dest='architecture_name', default='efficientnet_b0', type=str)
     parser.add_argument('--resize-after-crop', dest='resize_after_crop',
                         type=int, default=224)
     parser.add_argument('--color', default=False, action='store_true')
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
-    train_urls, val_urls = all_urls[:6], all_urls[6:]
+    train_urls, val_urls = all_urls[:38], all_urls[38:]
     schema = schemas.decals_dr5_ortho_schema
 
 
