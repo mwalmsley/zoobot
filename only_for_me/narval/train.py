@@ -65,7 +65,7 @@ if __name__ == '__main__':
         search_str = '/home/walml/repos/zoobot/gz_decals_5_train_*.tar'
 
     else:
-        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/gz_decals_5/gz_decals_5_train_*.tar'
+        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/gz_decals_5/full/gz_decals_5_train_*.tar'
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
