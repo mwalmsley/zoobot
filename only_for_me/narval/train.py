@@ -125,6 +125,7 @@ if __name__ == '__main__':
         num_workers=11,  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
         random_state=random_state,
         learning_rate=1e-3,
+        cache_dir=os.environ['SLURM_TMPDIR']
     )
 
     wandb.finish()

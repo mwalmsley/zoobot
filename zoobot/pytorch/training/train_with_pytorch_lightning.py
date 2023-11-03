@@ -26,6 +26,7 @@ def train_default_zoobot_from_scratch(
     train_urls=None,
     val_urls=None,
     test_urls=None,
+    cache_dir=None,  # only works with webdataset urls
     # training time parameters
     epochs=1000,
     patience=8,
@@ -229,7 +230,8 @@ def train_default_zoobot_from_scratch(
             val_urls=val_urls,
             batch_size=batch_size,
             num_workers=num_workers,
-            label_cols=schema.label_cols
+            label_cols=schema.label_cols,
+            cache_dir=cache_dir
             # TODO pass through the rest
         )
 

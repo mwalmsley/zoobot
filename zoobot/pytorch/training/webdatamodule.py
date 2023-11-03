@@ -10,7 +10,7 @@ from galaxy_datasets.transforms import default_transforms
 
 # https://github.com/webdataset/webdataset-lightning/blob/main/train.py
 class WebDataModule(pl.LightningDataModule):
-    def __init__(self, train_urls, val_urls, train_size=None, val_size=None, label_cols=None, batch_size=64, num_workers=4):
+    def __init__(self, train_urls, val_urls, train_size=None, val_size=None, label_cols=None, batch_size=64, num_workers=4, cache_dir=None):
         super().__init__()
         self.train_urls = train_urls
         self.val_urls = val_urls
@@ -28,6 +28,8 @@ class WebDataModule(pl.LightningDataModule):
 
         self.batch_size = batch_size
         self.num_workers = num_workers
+
+        self.cache_dir = cache_dir
 
         print("train_urls = ", self.train_urls)
         print("val_urls = ", self.val_urls)
@@ -67,7 +69,7 @@ class WebDataModule(pl.LightningDataModule):
         dataset = (
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls)
+            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0)
             .shuffle(shuffle)
             .decode("rgb")
             .to_tuple('image.jpg', 'labels.json')
