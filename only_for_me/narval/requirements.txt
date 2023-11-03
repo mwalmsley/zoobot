@@ -12,6 +12,7 @@ astropy
 pandas
 matplotlib
 fastparquet  # replacing pyarrow below
+webdataset
 # below already required by packages above
 
 # tqdm

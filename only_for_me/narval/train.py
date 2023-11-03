@@ -117,7 +117,8 @@ if __name__ == '__main__':
         color=args.color,
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
-        gpus=args.gpus,
+        # gpus=args.gpus,
+        gpus=0,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
@@ -125,7 +126,7 @@ if __name__ == '__main__':
         num_workers=11,  # system has 24 cpu, 12 cpu per gpu, leave a little wiggle room
         random_state=random_state,
         learning_rate=1e-3,
-        cache_dir=os.environ['SLURM_TMPDIR']
+        cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
     )
 
     wandb.finish()
