@@ -6,6 +6,7 @@
 #SBATCH --cpus-per-task=12
 #SBATCH --gres=gpu:a100:2
 
+# https://github.com/webdataset/webdataset-lightning/blob/main/simple_cluster.py
 #### SBATCH --mem=32G
 #### SBATCH --nodes=1
 #### SBATCH --time=0:20:0  

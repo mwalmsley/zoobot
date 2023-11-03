@@ -11,6 +11,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.estimators import define_model
+from zoobot.pytorch.training import webdatamodule
 
 
 def train_default_zoobot_from_scratch(    
@@ -22,6 +23,9 @@ def train_default_zoobot_from_scratch(
     train_catalog=None,
     val_catalog=None,
     test_catalog=None,
+    train_urls=None,
+    val_urls=None,
+    test_urls=None,
     # training time parameters
     epochs=1000,
     patience=8,
@@ -167,22 +171,6 @@ def train_default_zoobot_from_scratch(
             Suggest reducing num_workers."""
         )
         
-    
-    if catalog is not None:
-        assert train_catalog is None
-        assert val_catalog is None
-        assert test_catalog is None
-        catalogs_to_use = {
-            'catalog': catalog
-        }
-    else:
-        assert catalog is None
-        catalogs_to_use = {
-            'train_catalog': train_catalog,
-            'val_catalog': val_catalog,
-            'test_catalog': test_catalog  # may be None
-        }
-
     if wandb_logger is not None:
         wandb_logger.log_hyperparams({
             'random_state': random_state,
@@ -201,20 +189,50 @@ def train_default_zoobot_from_scratch(
             'framework': 'pytorch'
         })
 
-    datamodule = GalaxyDataModule(
-        label_cols=schema.label_cols,
-        # can take either a catalog (and split it), or a pre-split catalog
-        **catalogs_to_use,
-        # augmentations parameters
-        greyscale=not color,
-        crop_scale_bounds=crop_scale_bounds,
-        crop_ratio_bounds=crop_ratio_bounds,
-        resize_after_crop=resize_after_crop,
-        # hardware parameters
-        batch_size=batch_size, # on 2xA100s, 256 with DDP, 512 with distributed (i.e. split batch)
-        num_workers=num_workers,
-        prefetch_factor=prefetch_factor
-    )
+    # work out what dataset the user has passed
+    single_catalog = catalog is not None
+    split_catalogs = train_catalog is not None
+    webdatasets = train_urls is not None
+
+    if single_catalog or split_catalogs:
+        # this branch will use GalaxyDataModule to load catalogs
+        assert not webdatasets
+        if single_catalog:
+            assert not split_catalogs
+            data_to_use = {
+                'catalog': catalog
+            }
+        else:
+            data_to_use = {
+                'train_catalog': train_catalog,
+                'val_catalog': val_catalog,
+                'test_catalog': test_catalog  # may be None
+            }
+        datamodule = GalaxyDataModule(
+            label_cols=schema.label_cols,
+            # can take either a catalog (and split it), or a pre-split catalog
+            **data_to_use,
+            # augmentations parameters
+            greyscale=not color,
+            crop_scale_bounds=crop_scale_bounds,
+            crop_ratio_bounds=crop_ratio_bounds,
+            resize_after_crop=resize_after_crop,
+            # hardware parameters
+            batch_size=batch_size, # on 2xA100s, 256 with DDP, 512 with distributed (i.e. split batch)
+            num_workers=num_workers,
+            prefetch_factor=prefetch_factor
+        )
+    else:
+        # this branch will use WebDataModule to load premade webdatasets
+        datamodule = webdatamodule.WebDataModule(
+            train_urls=train_urls,
+            val_urls=val_urls,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            label_cols=schema.label_cols
+            # TODO pass through the rest
+        )
+
     datamodule.setup(stage='fit')
 
     # these args are automatically logged
