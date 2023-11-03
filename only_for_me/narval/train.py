@@ -118,7 +118,7 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
         # gpus=args.gpus,
-        gpus=0,
+        gpus=1,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
@@ -127,6 +127,7 @@ if __name__ == '__main__':
         random_state=random_state,
         learning_rate=1e-3,
         cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
+        # /tmp for ramdisk (400GB total, vs 4TB total for nvme)
     )
 
     wandb.finish()
