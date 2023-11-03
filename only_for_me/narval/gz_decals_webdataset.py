@@ -88,7 +88,7 @@ def main():
 
     save_loc = "/home/walml/repos/zoobot/only_for_me/narval/gz_decals_5/gz_decals_5_train.tar"
     
-    df_to_wds(train_catalog, label_cols, save_loc, n_shards=44)
+    # df_to_wds(train_catalog, label_cols, save_loc, n_shards=44)
 
     # check_wds(save_loc)
 

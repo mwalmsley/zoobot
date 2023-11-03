@@ -53,6 +53,7 @@ class WebDataModule(pl.LightningDataModule):
             return label_transform
         else:
             return identity  # do nothing
+    
 
     def make_loader(self, urls, mode="train"):
         if mode == "train":
@@ -69,7 +70,7 @@ class WebDataModule(pl.LightningDataModule):
         dataset = (
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0)
+            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
             .shuffle(shuffle)
             .decode("rgb")
             .to_tuple('image.jpg', 'labels.json')
@@ -127,6 +128,13 @@ class WebDataModule(pl.LightningDataModule):
     #     parser.add_argument("--valshards", default="imagenet-val-{000000..000006}.tar")
     #     return parser
 
+def nodesplitter_func(urls):
+    try:
+        node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
+        return urls[node_id::node_count]
+    except RuntimeError:
+        print('Distributed not initialised. Hopefully single node.')
+        return urls
 
 def identity(x):
     return x
