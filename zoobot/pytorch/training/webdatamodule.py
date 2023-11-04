@@ -1,4 +1,5 @@
 import os
+import types
 
 import torch.utils.data
 import numpy as np
@@ -12,6 +13,11 @@ from galaxy_datasets.transforms import default_transforms
 class WebDataModule(pl.LightningDataModule):
     def __init__(self, train_urls, val_urls, train_size=None, val_size=None, label_cols=None, batch_size=64, num_workers=4, cache_dir=None):
         super().__init__()
+
+        if isinstance(train_urls, types.GeneratorType):
+            train_urls = list(train_urls)
+        if isinstance(val_urls, types.GeneratorType):
+            val_urls = list(val_urls)
         self.train_urls = train_urls
         self.val_urls = val_urls
 
