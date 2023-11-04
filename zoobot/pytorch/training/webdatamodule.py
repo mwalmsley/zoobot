@@ -101,7 +101,7 @@ class WebDataModule(pl.LightningDataModule):
             shuffle=False,  # already shuffled
             num_workers=self.num_workers,
             pin_memory=True,
-            prefetch_factor=10
+            prefetch_factor=4
         )
 
         # print('sampling')
