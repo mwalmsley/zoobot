@@ -83,7 +83,8 @@ class WebDataModule(pl.LightningDataModule):
             .map_tuple(transform_image, transform_label)
             # torch collate stacks dicts nicely while webdataset only lists them
             # so use the torch collate instead
-            .batched(self.batch_size, torch.utils.data.default_collate, partial=False)
+            .batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
+            .repeat(2)
         )
 
         # from itertools import islice
@@ -97,8 +98,9 @@ class WebDataModule(pl.LightningDataModule):
         loader = wds.WebLoader(
             dataset,
             batch_size=None,  # already batched
-            shuffle=False,
+            shuffle=False,  # already shuffled
             num_workers=self.num_workers,
+            pin_memory=True
         )
 
         # print('sampling')
@@ -134,8 +136,8 @@ class WebDataModule(pl.LightningDataModule):
     #     parser.add_argument("--valshards", default="imagenet-val-{000000..000006}.tar")
     #     return parser
 
-def nodesplitter_func(urls):
-    print(urls)
+def nodesplitter_func(urls): # SimpleShardList
+    # print(urls)
     try:
         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
         return list(urls)[node_id::node_count]
