@@ -10,7 +10,8 @@ nvidia-smi
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
-mkdir $SLURM_TMPDIR/cache
+# mkdir $SLURM_TMPDIR/cache
+mkdir /tmp/cache
 
 export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use the NCCL backend for inter-GPU communication.
 # export MASTER_ADDR=$(hostname) #Store the master node’s IP address in the MASTER_ADDR environment variable.
