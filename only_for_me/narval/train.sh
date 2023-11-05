@@ -2,9 +2,9 @@
 #SBATCH --mem-per-cpu 4G
 #SBATCH --nodes=1
 #SBATCH --time=0:40:0  
-#SBATCH --tasks-per-node=4
+#SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=12
-#SBATCH --gres=gpu:a100:4
+#SBATCH --gres=gpu:a100:1
 
 nvidia-smi
 
