@@ -118,11 +118,11 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
         # gpus=args.gpus,
-        gpus=4,
+        gpus=1,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
-        prefetch_factor=4,
+        prefetch_factor=6,
         num_workers=6,
         random_state=random_state,
         learning_rate=1e-3,

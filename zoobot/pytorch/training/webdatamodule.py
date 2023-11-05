@@ -84,7 +84,7 @@ class WebDataModule(pl.LightningDataModule):
             # torch collate stacks dicts nicely while webdataset only lists them
             # so use the torch collate instead
             .batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
-            # .repeat(5)
+            .repeat(5)
         )
 
         # from itertools import islice
