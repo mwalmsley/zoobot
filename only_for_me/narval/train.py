@@ -36,7 +36,7 @@ if __name__ == '__main__':
                         default=False, action='store_true')
     parser.add_argument('--wandb', dest='wandb',
                         default=False, action='store_true')
-    parser.add_argument('--seed', dest='random_state', default=42, type=int)
+    parser.add_argument('--seed', dest='random_state', default=1, type=int)
     args = parser.parse_args()
 
     """
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     if args.wandb:
         wandb_logger = WandbLogger(
             project='narval',
-            name=os.path.basename(args.save_dir),
+            # name=os.path.basename(args.save_dir),
             log_model=False
         )
     else:
