@@ -10,8 +10,8 @@ nvidia-smi
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
-# mkdir $SLURM_TMPDIR/cache
-mkdir /tmp/cache
+mkdir $SLURM_TMPDIR/cache
+# mkdir /tmp/cache
 
 export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use the NCCL backend for inter-GPU communication.
 # export MASTER_ADDR=$(hostname) #Store the master node’s IP address in the MASTER_ADDR environment variable.
@@ -21,6 +21,7 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 REPO_DIR=/project/def-bovy/walml/zoobot/
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models \
-    --batch-size 512 \
+    --batch-size 128 \
+    --architecture maxvit_tiny_224 \
     --color --wandb --mixed-precision
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
