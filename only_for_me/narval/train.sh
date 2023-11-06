@@ -21,7 +21,7 @@ mkdir /tmp/cache
 REPO_DIR=/project/def-bovy/walml/zoobot/
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models \
-    --batch-size 256 \
+    --batch-size 512 \
     --color --wandb --mixed-precision
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
 
