@@ -122,7 +122,7 @@ if __name__ == '__main__':
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
-        prefetch_factor=6,
+        prefetch_factor=4,
         num_workers=11,
         random_state=random_state,
         learning_rate=1e-3,
