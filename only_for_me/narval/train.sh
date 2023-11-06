@@ -1,4 +1,5 @@
 #!/bin/bash
+#SBATCH --mem=80G
 #SBATCH --nodes=1
 #SBATCH --time=0:40:0  
 #SBATCH --tasks-per-node=2
