@@ -13,7 +13,7 @@ import pandas as pd
 from PIL import Image  # necessary to avoid PIL.Image error assumption in web_datasets
 
 from galaxy_datasets.shared import label_metadata
-from galaxy_datasets import gz_decals_5
+from galaxy_datasets import gz2
 from galaxy_datasets.transforms import default_transforms
 from galaxy_datasets.pytorch import galaxy_dataset
 
@@ -34,7 +34,7 @@ def galaxy_to_wds(galaxy: pd.Series, label_cols):
     }
 
 def df_to_wds(df: pd.DataFrame, label_cols, save_loc, n_shards):
-    df['id_str'] = df['id_str'].str.replace('.', '_')
+    df['id_str'] = df['id_str'].astype(str).str.replace('.', '_')
 
     shard_dfs = np.array_split(df, n_shards)
     print('shards: ', len(shard_dfs))
@@ -80,15 +80,19 @@ def load_wds(wds_loc):
 
 def main():
 
-    train_catalog, _ = gz_decals_5(root='/home/walml/repos/zoobot/only_for_me/narval/temp', download=False, train=True)
+    train_catalog, _ = gz2(root='/home/walml/repos/zoobot/only_for_me/narval/temp', download=True, train=True)
     # print(len(train_catalog))
     # exit()
-    train_catalog = train_catalog[:88*2048]
-    label_cols = label_metadata.decals_dr5_ortho_label_cols
+    divisor = 4096
+    batches = len(train_catalog) // divisor
+    print(batches)
+    train_catalog = train_catalog[:batches*divisor]
+    print(len(train_catalog))
+    label_cols = label_metadata.gz2_ortho_label_cols
 
-    save_loc = "/home/walml/repos/zoobot/only_for_me/narval/gz_decals_5/gz_decals_5_train.tar"
+    save_loc = "/home/walml/repos/zoobot/only_for_me/narval/gz2/gz2_train.tar"
     
-    # df_to_wds(train_catalog, label_cols, save_loc, n_shards=44)
+    df_to_wds(train_catalog, label_cols, save_loc, n_shards=batches)
 
     # check_wds(save_loc)
 
