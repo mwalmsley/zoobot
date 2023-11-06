@@ -1,17 +1,17 @@
 #!/bin/bash
-#SBATCH --mem=80G
+#SBATCH --mem-per-cpu 4G
 #SBATCH --nodes=1
 #SBATCH --time=0:40:0  
-#SBATCH --tasks-per-node=2
+#SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=12
-#SBATCH --gres=gpu:a100:2
+#SBATCH --gres=gpu:a100:1
 
 nvidia-smi
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
 
-mkdir $SLURM_TMPDIR/cache
-# mkdir /tmp/cache
+# mkdir $SLURM_TMPDIR/cache
+mkdir /tmp/cache
 
 export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use the NCCL backend for inter-GPU communication.
 # export MASTER_ADDR=$(hostname) #Store the master node’s IP address in the MASTER_ADDR environment variable.

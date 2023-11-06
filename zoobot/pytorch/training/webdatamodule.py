@@ -11,7 +11,7 @@ from galaxy_datasets.transforms import default_transforms
 
 # https://github.com/webdataset/webdataset-lightning/blob/main/train.py
 class WebDataModule(pl.LightningDataModule):
-    def __init__(self, train_urls, val_urls, train_size=None, val_size=None, label_cols=None, batch_size=64, num_workers=4, cache_dir=None):
+    def __init__(self, train_urls, val_urls, train_size=None, val_size=None, label_cols=None, batch_size=64, num_workers=4, prefetch_factor=4, cache_dir=None):
         super().__init__()
 
         # if isinstance(train_urls, types.GeneratorType):
@@ -34,6 +34,7 @@ class WebDataModule(pl.LightningDataModule):
 
         self.batch_size = batch_size
         self.num_workers = num_workers
+        self.prefetch_factor = prefetch_factor
 
         self.cache_dir = cache_dir
 
@@ -76,8 +77,7 @@ class WebDataModule(pl.LightningDataModule):
         dataset = (
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0)
-                        #    , nodesplitter=nodesplitter_func)
+            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
             .shuffle(shuffle)
             .decode("rgb")
             .to_tuple('image.jpg', 'labels.json')
@@ -102,7 +102,7 @@ class WebDataModule(pl.LightningDataModule):
             shuffle=False,  # already shuffled
             num_workers=self.num_workers,
             pin_memory=True,
-            prefetch_factor=4
+            prefetch_factor=self.prefetch_factor
         )
 
         # print('sampling')
@@ -138,14 +138,14 @@ class WebDataModule(pl.LightningDataModule):
     #     parser.add_argument("--valshards", default="imagenet-val-{000000..000006}.tar")
     #     return parser
 
-# def nodesplitter_func(urls): # SimpleShardList
-#     # print(urls)
-#     try:
-#         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
-#         return list(urls)[node_id::node_count]
-#     except RuntimeError:
-#         print('Distributed not initialised. Hopefully single node.')
-#         return urls
+def nodesplitter_func(urls): # SimpleShardList
+    # print(urls)
+    try:
+        node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
+        return list(urls)[node_id::node_count]
+    except RuntimeError:
+        # print('Distributed not initialised. Hopefully single node.')
+        return urls
 
 def identity(x):
     return x

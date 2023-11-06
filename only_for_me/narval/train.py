@@ -122,8 +122,8 @@ if __name__ == '__main__':
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
-        prefetch_factor=4,
-        num_workers=11,
+        prefetch_factor=6,
+        num_workers=6,
         random_state=random_state,
         learning_rate=1e-3,
         cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
