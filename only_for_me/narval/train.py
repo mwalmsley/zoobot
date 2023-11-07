@@ -118,12 +118,12 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
         # gpus=args.gpus,
-        gpus=1,
+        gpus=4,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
         prefetch_factor=6,
-        num_workers=12,
+        num_workers=9,
         random_state=random_state,
         learning_rate=1e-3,
         # cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
