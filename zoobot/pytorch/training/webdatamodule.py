@@ -156,12 +156,13 @@ def identity(x):
     return x
 
 def nodesplitter_func(urls):
+    # num_urls = len(list(urls.copy()))
     urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
     logging.info(
         f'''
         Splitting urls within webdatamodule with WORLD_SIZE: 
         {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}\n
-        URLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n)
+        URLS: {len(urls_to_use)} ({urls_to_use})\n\n)
         '''
         )
     return urls_to_use
