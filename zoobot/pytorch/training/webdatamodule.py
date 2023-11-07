@@ -77,7 +77,7 @@ class WebDataModule(pl.LightningDataModule):
         dataset = (
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
+            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=wds.split_by_node)
             .shuffle(shuffle)
             .decode("rgb")
             .to_tuple('image.jpg', 'labels.json')
@@ -138,15 +138,16 @@ class WebDataModule(pl.LightningDataModule):
     #     parser.add_argument("--valshards", default="imagenet-val-{000000..000006}.tar")
     #     return parser
 
-def nodesplitter_func(urls): # SimpleShardList
-    # print(urls)
-    try:
-        node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
-        urls_to_use = list(urls)[node_id::node_count]
-        logging.info(f'id: {node_id}, of count {node_count}. \nURLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n')
-    except RuntimeError:
-        # print('Distributed not initialised. Hopefully single node.')
-        return urls
+# def nodesplitter_func(urls): # SimpleShardList
+#     # print(urls)
+#     try:
+#         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
+#         urls_to_use = list(urls)[node_id::node_count]
+#         logging.info(f'id: {node_id}, of count {node_count}. \nURLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n')
+#         return urls_to_use
+#     except RuntimeError:
+#         # print('Distributed not initialised. Hopefully single node.')
+#         return urls
 
 def identity(x):
     return x
