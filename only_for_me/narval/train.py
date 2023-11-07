@@ -121,7 +121,7 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
         # gpus=args.gpus,
-        gpus=1,
+        gpus=2,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
