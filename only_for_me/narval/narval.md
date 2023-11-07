@@ -25,6 +25,7 @@ Just for venv:
 Latest is currently 2.0.1 (no 2.1.0 yet)
 
     pip install --no-index torch==2.0.1 torchvision torchtext torchaudio
+    pip install --no-index pytorch_lightning wandb
 
 Storage under /home/user is not ideal, 50gb space. Use /project/def-bovy/walml (1TB space).
 Can transfer data via rsync login node.
