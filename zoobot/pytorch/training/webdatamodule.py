@@ -143,7 +143,7 @@ def nodesplitter_func(urls): # SimpleShardList
     try:
         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
         urls_to_use = list(urls)[node_id::node_count]
-        logging.info('id: {}, of count {}. \nURLS: {} ({})\n\n'.format(node_id, node_count, urls_to_use))
+        logging.info(f'id: {node_id}, of count {node_count}. \nURLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n')
     except RuntimeError:
         # print('Distributed not initialised. Hopefully single node.')
         return urls
