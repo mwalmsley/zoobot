@@ -9,6 +9,8 @@ import wandb
 from zoobot.pytorch.training import train_with_pytorch_lightning
 from zoobot.shared import benchmark_datasets, schemas
 
+import pytorch_lightning as pl
+
 
 if __name__ == '__main__':
 
@@ -47,6 +49,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     random_state = args.random_state
+    pl.seed_everything(random_state)
 
     # if args.nodes > 1:
     #     # at Manchester, our slurm cluster sets TASKS not NTASKS, which then confuses lightning
@@ -118,7 +121,7 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
         # gpus=args.gpus,
-        gpus=2,
+        gpus=1,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
