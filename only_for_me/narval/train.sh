@@ -8,8 +8,8 @@
 
 nvidia-smi
 
-# PYTHON=/home/walml/envs/zoobot39_dev/bin/python
-source ~/envs/zoobot39_dev/bin/activate
+PYTHON=/home/walml/envs/zoobot39_dev/bin/python
+# source ~/envs/zoobot39_dev/bin/activate
 
 # mkdir $SLURM_TMPDIR/cache
 mkdir /tmp/cache
