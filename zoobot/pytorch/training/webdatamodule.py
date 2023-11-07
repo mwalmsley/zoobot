@@ -160,7 +160,7 @@ def nodesplitter_func(urls):
     # num_urls = len(list(urls.copy()))
     urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
-    logging.debug(
+    logging.info(
         f'''
         Splitting urls within webdatamodule with WORLD_SIZE: 
         {world_size}, RANK: {rank}, WORKER: {worker} of {num_workers}\n
