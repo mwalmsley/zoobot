@@ -92,7 +92,7 @@ if __name__ == '__main__':
         val_urls = val_urls[:2]
         epochs = 2
     else:
-        epochs = 1000
+        epochs = 1
 
     if args.wandb:
         wandb_logger = WandbLogger(

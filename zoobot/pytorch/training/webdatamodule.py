@@ -1,6 +1,6 @@
 import os
 import types
-
+import logging
 import torch.utils.data
 import numpy as np
 import pytorch_lightning as pl
@@ -142,7 +142,8 @@ def nodesplitter_func(urls): # SimpleShardList
     # print(urls)
     try:
         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
-        return list(urls)[node_id::node_count]
+        urls_to_use = list(urls)[node_id::node_count]
+        logging.info('id: {}, of count {}. \nURLS: {} ({})\n\n'.format(node_id, node_count, urls_to_use))
     except RuntimeError:
         # print('Distributed not initialised. Hopefully single node.')
         return urls
