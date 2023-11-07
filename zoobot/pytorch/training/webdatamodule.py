@@ -4,6 +4,7 @@ import logging
 import torch.utils.data
 import numpy as np
 import pytorch_lightning as pl
+from itertools import islice
 
 import webdataset as wds
 
@@ -88,7 +89,7 @@ class WebDataModule(pl.LightningDataModule):
             # torch collate stacks dicts nicely while webdataset only lists them
             # so use the torch collate instead
             .batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
-            .repeat(5)
+            # .repeat(5)
         )
 
         # from itertools import islice
@@ -158,11 +159,24 @@ def identity(x):
 def nodesplitter_func(urls):
     # num_urls = len(list(urls.copy()))
     urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
-    logging.info(
+    rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
+    logging.debug(
         f'''
         Splitting urls within webdatamodule with WORLD_SIZE: 
-        {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}\n
-        URLS: {len(urls_to_use)} ({urls_to_use})\n\n)
+        {world_size}, RANK: {rank}, WORKER: {worker} of {num_workers}\n
+        URLS: {len(urls_to_use)} (e.g. {urls_to_use[0]})\n\n)
         '''
         )
     return urls_to_use
+
+
+# def split_by_worker(urls):
+#     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
+#     if num_workers > 1:
+#         logging.info(f'Slicing urls for rank {rank}, world_size {world_size}, worker {worker}')
+#         for s in islice(urls, worker, None, num_workers):
+#             yield s
+#     else:
+#         logging.warning('only one worker?!')
+#         for s in urls:
+#             yield s
