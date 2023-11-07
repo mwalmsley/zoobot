@@ -80,7 +80,7 @@ class WebDataModule(pl.LightningDataModule):
         dataset = (
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=wds.split_by_node)
+            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
             .shuffle(shuffle)
             .decode("rgb")
             .to_tuple('image.jpg', 'labels.json')
@@ -154,3 +154,14 @@ class WebDataModule(pl.LightningDataModule):
 
 def identity(x):
     return x
+
+def nodesplitter_func(urls):
+    urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
+    logging.info(
+        f'''
+        Splitting urls within webdatamodule with WORLD_SIZE: 
+        {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}\n
+        URLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n)
+        '''
+        )
+    return urls_to_use
