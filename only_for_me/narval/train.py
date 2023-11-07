@@ -46,8 +46,6 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    logging.info(f'WORLD_SIZE: {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}')
-
     random_state = args.random_state
 
     # if args.nodes > 1:

@@ -38,6 +38,9 @@ class WebDataModule(pl.LightningDataModule):
 
         self.cache_dir = cache_dir
 
+
+        logging.info(f'Creating webdatamodule with WORLD_SIZE: {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}')
+
         print("train_urls = ", self.train_urls)
         print("val_urls = ", self.val_urls)
         print("train_size = ", self.train_size)
