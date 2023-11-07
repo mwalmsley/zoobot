@@ -223,7 +223,7 @@ def train_default_zoobot_from_scratch(
             num_workers=num_workers,
             prefetch_factor=prefetch_factor
         )
-        replace_sampler_ddp=True
+         use_distributed_sampler=True
     else:
         # this branch will use WebDataModule to load premade webdatasets
         datamodule = webdatamodule.WebDataModule(
@@ -235,7 +235,7 @@ def train_default_zoobot_from_scratch(
             cache_dir=cache_dir
             # TODO pass through the rest
         )
-        replace_sampler_ddp=False
+         use_distributed_sampler=False
 
     datamodule.setup(stage='fit')
 
@@ -287,7 +287,7 @@ def train_default_zoobot_from_scratch(
         max_epochs=epochs,
         default_root_dir=save_dir,
         plugins=plugins,
-        replace_sampler_ddp=replace_sampler_ddp
+         use_distributed_sampler= use_distributed_sampler
     )
 
     logging.info((trainer.strategy, trainer.world_size,
