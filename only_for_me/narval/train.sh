@@ -1,14 +1,16 @@
 #!/bin/bash
-#SBATCH --mem-per-cpu 4G
+#SBATCH --time=1:00:0  
 #SBATCH --nodes=1
-#SBATCH --time=0:40:0  
-#SBATCH --tasks-per-node=1
-#SBATCH --cpus-per-task=12
-#SBATCH --gres=gpu:a100:1
+#SBATCH --ntasks=4
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=10
+#SBATCH --mem-per-cpu 4G
+#SBATCH --gres=gpu:a100:4
 
 nvidia-smi
 
 PYTHON=/home/walml/envs/zoobot39_dev/bin/python
+# source ~/envs/zoobot39_dev/bin/activate
 
 # mkdir $SLURM_TMPDIR/cache
 mkdir /tmp/cache
@@ -18,7 +20,7 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 # echo "r$SLURM_NODEID master: $MASTER_ADDR"
 # echo "r$SLURM_NODEID Launching python script"
 
-REPO_DIR=/project/def-bovy/walml/zoobot/
+REPO_DIR=/project/def-bovy/walml/zoobot
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models \
     --batch-size 256 \

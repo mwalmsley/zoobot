@@ -9,6 +9,8 @@ import wandb
 from zoobot.pytorch.training import train_with_pytorch_lightning
 from zoobot.shared import benchmark_datasets, schemas
 
+import pytorch_lightning as pl
+
 
 if __name__ == '__main__':
 
@@ -47,6 +49,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     random_state = args.random_state
+    pl.seed_everything(random_state)
 
     # if args.nodes > 1:
     #     # at Manchester, our slurm cluster sets TASKS not NTASKS, which then confuses lightning
@@ -92,7 +95,7 @@ if __name__ == '__main__':
         val_urls = val_urls[:2]
         epochs = 2
     else:
-        epochs = 1000
+        epochs = 1
 
     if args.wandb:
         wandb_logger = WandbLogger(
@@ -118,16 +121,16 @@ if __name__ == '__main__':
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
         # gpus=args.gpus,
-        gpus=1,
+        gpus=4,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
         prefetch_factor=6,
-        num_workers=6,
+        num_workers=9,
         random_state=random_state,
         learning_rate=1e-3,
-        cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
-        # cache_dir='/tmp/cache'
+        # cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
+        cache_dir='/tmp/cache'
         # /tmp for ramdisk (400GB total, vs 4TB total for nvme)
     )
 

@@ -1,9 +1,10 @@
 import os
 import types
-
+import logging
 import torch.utils.data
 import numpy as np
 import pytorch_lightning as pl
+from itertools import islice
 
 import webdataset as wds
 
@@ -37,6 +38,9 @@ class WebDataModule(pl.LightningDataModule):
         self.prefetch_factor = prefetch_factor
 
         self.cache_dir = cache_dir
+
+
+        logging.info(f'Creating webdatamodule with WORLD_SIZE: {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}')
 
         print("train_urls = ", self.train_urls)
         print("val_urls = ", self.val_urls)
@@ -138,14 +142,41 @@ class WebDataModule(pl.LightningDataModule):
     #     parser.add_argument("--valshards", default="imagenet-val-{000000..000006}.tar")
     #     return parser
 
-def nodesplitter_func(urls): # SimpleShardList
-    # print(urls)
-    try:
-        node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
-        return list(urls)[node_id::node_count]
-    except RuntimeError:
-        # print('Distributed not initialised. Hopefully single node.')
-        return urls
+# def nodesplitter_func(urls): # SimpleShardList
+#     # print(urls)
+#     try:
+#         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
+#         urls_to_use = list(urls)[node_id::node_count]
+#         logging.info(f'id: {node_id}, of count {node_count}. \nURLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n')
+#         return urls_to_use
+#     except RuntimeError:
+#         # print('Distributed not initialised. Hopefully single node.')
+#         return urls
 
 def identity(x):
     return x
+
+def nodesplitter_func(urls):
+    # num_urls = len(list(urls.copy()))
+    urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
+    rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
+    logging.info(
+        f'''
+        Splitting urls within webdatamodule with WORLD_SIZE: 
+        {world_size}, RANK: {rank}, WORKER: {worker} of {num_workers}\n
+        URLS: {len(urls_to_use)} (e.g. {urls_to_use[0]})\n\n)
+        '''
+        )
+    return urls_to_use
+
+
+# def split_by_worker(urls):
+#     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
+#     if num_workers > 1:
+#         logging.info(f'Slicing urls for rank {rank}, world_size {world_size}, worker {worker}')
+#         for s in islice(urls, worker, None, num_workers):
+#             yield s
+#     else:
+#         logging.warning('only one worker?!')
+#         for s in urls:
+#             yield s
