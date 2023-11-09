@@ -46,6 +46,7 @@ Set  up repos
 
 (I made a .bashrc alias, export PROJECT=/project/def-bovy/walml)
 
+git checkout narval-migration (from zoobot)
 pip install --no-index -r zoobot/only_for_me/narval/requirements.txt
 
 and my own cloned repos
@@ -57,6 +58,9 @@ Run training
 sbatch only_for_me/narval/finetune.sh
 
 Works with simple images on multi-GPU, single node
+
+rsync -avz --no-g --no-p /home/walml/repos/zoobot/only_for_me/narval/gz_decals_5/*.tar walml@narval.computecanada.ca:projects/def-bovy/walml/data/webdatasets/gz_decals_5/full
+
 
 
 https://lightning.ai/docs/pytorch/stable/clouds/cluster_intermediate_2.html#
