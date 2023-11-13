@@ -166,3 +166,5 @@ results
 hparams.yaml
 
 data/pretrained_models
+
+*.tar

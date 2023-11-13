@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="1.0.4",
+    version="1.0.5",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -95,13 +95,12 @@ setuptools.setup(
         'pandas',
         'scipy',
         'astropy',  # for reading fits
-        # 'scikit-image >= 0.19.2',  # TODO remove
         'scikit-learn >= 1.0.2',
         'matplotlib',
         'pyarrow',  # to read parquet, which is very handy for big datasets
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
-        'setuptools==59.5.0',  # wandb logger incompatibility
-        'galaxy-datasets==0.0.15'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
+        'setuptools'  # no longer pinned
+        'galaxy-datasets>=0.0.15'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )
