@@ -61,12 +61,14 @@ setuptools.setup(
             'timm == 0.6.12'
         ],
         'pytorch_colab': [
+            # colab includes pytorch already
             'pytorch-lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
             'timm == 0.6.12'
         ],
+        # TODO may add narval/Digital Research Canada config
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
