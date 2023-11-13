@@ -277,9 +277,4 @@ desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
 
-# temp for debugging
-# print(label_metadata.desi_pairs)
-# print(label_metadata.desi_dependencies)
-
-# print(desi_schema.questions)
-# print(desi_schema.answers)
+gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)

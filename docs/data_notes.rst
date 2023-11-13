@@ -25,11 +25,6 @@ Zoobot includes weights for the following pretrained models.
      - Yes
      - `Link <https://www.dropbox.com/s/izvqagd6rkhi4lq/effnetb0_greyscale_300px.ckpt?dl=0>`__
    * - EfficientNetB0 
-     - 300px
-     - 3
-     - Yes
-     - WIP
-   * - EfficientNetB0 
      - 224px
      - 3
      - Yes
@@ -57,12 +52,12 @@ Zoobot includes weights for the following pretrained models.
    * - Max-ViT Tiny
      - 224px
      - 1
-     - Not yet
+     - Yes
      - `Link <https://www.dropbox.com/s/pndcgi6wxh9wuqb/maxvittiny_greyscale_224px.ckpt?dl=0>`__
    * - Max-ViT Tiny
      - 224px
      - 3
-     - Not yet
+     - Yes
      - `Link <https://www.dropbox.com/s/ibuo5n1tcaphvn3/maxvittiny_color_224px.ckpt?dl=0>`__
 
 
@@ -108,7 +103,7 @@ We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.
 Which model should I use?
 --------------------------
 
-We suggest the PyTorch EfficientNetB0 single-channel 300-pixel model for most users.
+We suggest the PyTorch EfficientNetB0 224-pixel model for most users.
 
 Zoobot will prioritise PyTorch going forward. For more, see here.
 The TensorFlow models currently perform just as well as the PyTorch equivalents but will not benefit from any future updates.
@@ -116,11 +111,11 @@ The TensorFlow models currently perform just as well as the PyTorch equivalents 
 EfficientNetB0 is a small yet capable modern architecture. 
 The ResNet50 models perform slightly worse than EfficientNet, but are a very common architecture and may be useful as benchmarks or as part of other frameworks (like detectron2, for segmentation).
 
-Color information does not improve overall performance at predicting GZ votes.
-This is a little surprising, but we're confident it's true for our datasets (see the benchmarks folder for our tests).
-However, it might be useful to include for other tasks where color is critical, such as hunting certain anomalous galaxies.
+It's unclear if color information improves overall performance at predicting GZ votes.
+For CNNs, the change in performance is not significant. For ViT, it is measureable but small.
+We suggesst including color if it is expected to be important to your specific task, such as hunting green peas.
 
-Larger input images (300px vs 224px) provide a small boost in performance at predicting GZ votes.
+Larger input images (300px vs 224px) may provide a small boost in performance at predicting GZ votes.
 However, the models require more memory and train/finetune slightly more slowly.
 You may want to start with a 224px model and experiment with "upgrading" once you're happy everything works.
 

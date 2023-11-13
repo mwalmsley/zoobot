@@ -24,7 +24,7 @@ from zoobot.shared import schemas
 def freeze_batchnorm_layers(model):
     for name, child in (model.named_children()):
         if isinstance(child, torch.nn.BatchNorm2d):
-            logging.debug('freezing {} {}'.format(child, name))
+            logging.debug('Freezing {} {}'.format(child, name))
             child.eval()  # no grads, no param updates, no statistic updates
         else:
             freeze_batchnorm_layers(child)  # recurse
@@ -64,15 +64,16 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         encoder=None,
         encoder_dim=1280,  # as per current Zooot. TODO Could get automatically?
         n_epochs=100,  # TODO early stopping
-        n_layers=0,  # how many layers deep to FT
+        n_blocks=0,  # how many layers deep to FT
         lr_decay=0.75,
         weight_decay=0.05,
-        learning_rate=1e-4,
+        learning_rate=1e-4,  # 10x lower than typical, you may like to experiment
         dropout_prob=0.5,
-        freeze_batchnorm=True,
+        always_train_batchnorm=True,
         prog_bar=True,
         visualize_images=False,  # upload examples to wandb, good for debugging
-        seed=42
+        seed=42,
+        n_layers=0  # for backward compat., n_blocks preferred
     ):
         super().__init__()
 
@@ -91,11 +92,17 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
           self.encoder = load_pretrained_encoder(checkpoint_loc)
         else:
           assert checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
+          assert encoder is not None, 'Must pass either checkpoint to load or encoder to use'
           self.encoder = encoder
 
         self.encoder_dim = encoder_dim
-        self.n_layers = n_layers
-        self.freeze = True if n_layers == 0 else False
+        self.n_blocks = n_blocks
+
+        # for backwards compat.
+        if n_layers:
+            logging.warning('FinetuneableZoobot(n_layers) is now renamed to n_blocks, please update to pass n_blocks instead! For now, setting n_blocks=n_layers')
+            self.n_blocks = n_layers
+        logging.info('Layers to finetune: {}'.format(n_layers))
 
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
@@ -103,15 +110,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.dropout_prob = dropout_prob
         self.n_epochs = n_epochs
 
-        self.freeze_batchnorm = freeze_batchnorm
+        self.always_train_batchnorm = always_train_batchnorm
+        if self.always_train_batchnorm:
+            logging.info('always_train_batchnorm=True, so all batch norm layers will be finetuned')
 
         self.train_loss_metric = tm.MeanMetric()
         self.val_loss_metric = tm.MeanMetric()
         self.test_loss_metric = tm.MeanMetric()
-
-
-        if self.freeze_batchnorm:
-            freeze_batchnorm_layers(self.encoder)  # inplace
 
         self.seed = seed
         self.prog_bar = prog_bar
@@ -119,44 +124,72 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def configure_optimizers(self):
 
-        if self.freeze:
-            params = self.head.parameters()
-            return torch.optim.AdamW(params, betas=(0.9, 0.999), lr=self.learning_rate)
+        lr = self.learning_rate
+        params = [{"params": self.head.parameters(), "lr": lr}]
+
+        if hasattr(self.encoder, 'blocks'):  
+            logging.info('Effnet detected')
+            # TODO this actually excludes the first conv layer/bn
+            encoder_blocks = self.encoder.blocks
+            blocks_to_tune = list(encoder_blocks)
+        elif hasattr(self.encoder, 'layer4'):
+            logging.info('Resnet detected')
+            # similarly, excludes first conv/bn
+            blocks_to_tune = [
+                self.encoder.layer1,
+                self.encoder.layer2,
+                self.encoder.layer3,
+                self.encoder.layer4
+            ]
+        elif hasattr(self.encoder, 'stages'):
+            logging.info('Max-ViT Tiny detected')
+            blocks_to_tune = [
+                # getattr as obj.0 is not allowed (why does timm call them 0!?)
+                getattr(self.encoder.stages, '0'),
+                getattr(self.encoder.stages, '1'),
+                getattr(self.encoder.stages, '2'),
+                getattr(self.encoder.stages, '3'),
+            ]
         else:
-            lr = self.learning_rate
-            params = [{"params": self.head.parameters(), "lr": lr}]
+            raise ValueError('Encoder architecture not automatically recognised')
+        
+        assert self.n_blocks <= len(
+            blocks_to_tune
+        ), f"Network only has {len(blocks_to_tune)} tuneable blocks, {self.n_blocks} specified for finetuning"
 
-            # this bit is specific to Zoobot EffNet
-            # TODO check these are blocks not individual layers
-            encoder_blocks = list(self.encoder.children())
+        
+        # take n blocks, ordered highest layer to lowest layer
+        blocks_to_tune.reverse()
+        # will finetune all params in first N
+        blocks_to_tune = blocks_to_tune[:self.n_blocks]
+        # optionally, can finetune batchnorm params in remaining layers
+        remaining_blocks = blocks_to_tune[self.n_blocks:]
 
-            # for n, l in enumerate(encoder_blocks):
-            #     print('\n')
-            #     print(n)
-            #     print(l)
-            
-            # layers with no parameters don't count
-            # TODO double-check is_tuneable
-            tuneable_blocks = [b for b in encoder_blocks if is_tuneable(b)]
- 
-            assert self.n_layers <= len(
-                tuneable_blocks
-            ), f"Network only has {len(tuneable_blocks)} tuneable blocks, {self.n_layers} specified for finetuning"
-
-            # Append parameters of layers for finetuning along with decayed learning rate
-            blocks_to_tune = tuneable_blocks[:self.n_layers]
-            blocks_to_tune.reverse()  # highest block to lowest block
-            for i, layer in enumerate(blocks_to_tune):
-                params.append({
-                    "params": layer.parameters(),
+        # Append parameters of layers for finetuning along with decayed learning rate
+        for i, block in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
+            params.append({
+                    "params": block.parameters(),
                     "lr": lr * (self.lr_decay**i)
                 })
 
-            # Initialize AdamW optimizer
-            opt = torch.optim.AdamW(
-                params, weight_decay=self.weight_decay, betas=(0.9, 0.999))  # higher weight decay is typically good
+        logging.debug(params)
 
-            return opt
+        # optionally, for the remaining layers (not otherwise finetuned) you can choose to still FT the batchnorm layers
+        for i, block in enumerate(remaining_blocks):
+            if self.always_train_batchnorm:
+                params.append({
+                    "params": get_batch_norm_params_lighting(block),
+                    "lr": lr * (self.lr_decay**i)
+                })
+
+        # TODO this actually breaks training because the generator only iterates once!
+        # total_params = sum(p.numel() for param_set in params.copy() for p in param_set['params'])
+        # logging.info('Total params to fit: {}'.format(total_params))
+
+        # Initialize AdamW optimizer
+        opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
+
+        return opt
 
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -324,14 +357,14 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     def predict_step(self, x, batch_idx):
         x = self.forward(x)  # logits from LinearClassifier
         # then applies softmax
-        return F.softmax(x, dim=1)[:, 1]
+        return F.softmax(x, dim=1)
 
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       # self.logger is set by pl.Trainer(logger=) argument
         if (self.logger is not None) and (batch_idx == 0):
             x, y = batch
-            y_pred_softmax = F.softmax(outputs['predictions'], dim=1)[:, 1]  # odds of class 1 (assumed binary)
+            y_pred_softmax = F.softmax(outputs['predictions'], dim=1)
             n_images = 5
             images = [img for img in x[:n_images]]
             captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(
@@ -501,6 +534,16 @@ def is_tuneable(block_of_layers):
     else:
         # currently, allowed to include batchnorm
         return True
+    
+def get_batch_norm_params_lighting(parent_module, current_params=[]):
+    for child_module in parent_module.children():
+        if isinstance(child_module, torch.nn.BatchNorm2d):
+            current_params += child_module.parameters()
+        else:
+            current_params = get_batch_norm_params_lighting(child_module, current_params)
+    return current_params
+
+
 
     # when ready (don't peek often, you'll overfit)
     # trainer.test(model, dataloaders=datamodule)

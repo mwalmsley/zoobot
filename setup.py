@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="1.0.4",
+    version="1.0.5",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -61,12 +61,14 @@ setuptools.setup(
             'timm == 0.6.12'
         ],
         'pytorch_colab': [
+            # colab includes pytorch already
             'pytorch-lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
             'timm == 0.6.12'
         ],
+        # TODO may add narval/Digital Research Canada config
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
@@ -95,13 +97,12 @@ setuptools.setup(
         'pandas',
         'scipy',
         'astropy',  # for reading fits
-        'scikit-image >= 0.19.2',
         'scikit-learn >= 1.0.2',
         'matplotlib',
         'pyarrow',  # to read parquet, which is very handy for big datasets
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
-        'setuptools==59.5.0',  # wandb logger incompatibility
-        'galaxy-datasets==0.0.14'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
+        'setuptools',  # no longer pinned
+        'galaxy-datasets>=0.0.15'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )
