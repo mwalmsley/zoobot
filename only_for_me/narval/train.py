@@ -58,12 +58,6 @@ if __name__ == '__main__':
     #     # log the rest to help debug
     #     logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
 
-    if args.debug:
-        download = False
-    else:
-        # download = True  # for first use
-        download = False  # for speed afterwards
-
     if os.path.isdir('/home/walml/repos/zoobot'):
         search_str = '/home/walml/repos/zoobot/gz_decals_5_train_*.tar'
 
@@ -74,18 +68,6 @@ if __name__ == '__main__':
     assert len(all_urls) > 0, search_str
     train_urls, val_urls = all_urls[:38], all_urls[38:]
     schema = schemas.decals_dr5_ortho_schema
-
-
-    # if args.dataset == 'gz_decals_dr5':
-    #     schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_decals_dr5_benchmark_dataset(args.data_dir, random_state, download=download)
-    # elif args.dataset == 'gz_evo':
-    #     schema, (train_catalog, val_catalog, test_catalog) = benchmark_datasets.get_gz_evo_benchmark_dataset(args.data_dir, random_state, download=download)
-    # else:
-    #     raise ValueError(f'Dataset {args.dataset} not recognised: should be "gz_decals_dr5" or "gz_evo"')
-
-
-    # logging.info('First val galaxy: {}'.format(val_catalog.iloc[0]['id_str']))
-
 
     # debug mode
     if args.debug:
@@ -120,8 +102,7 @@ if __name__ == '__main__':
         color=args.color,
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
-        # gpus=args.gpus,
-        gpus=4,
+        gpus=args.gpus,
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,

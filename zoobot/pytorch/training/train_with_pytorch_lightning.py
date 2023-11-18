@@ -11,7 +11,7 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.training import webdatamodule
+from zoobot.pytorch.datasets import webdatamodule
 
 
 def train_default_zoobot_from_scratch(    
