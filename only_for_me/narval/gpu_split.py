@@ -2,6 +2,7 @@
 import logging
 import os
 import time
+import glob
 
 import torch
 import torch.nn.functional as F
@@ -72,10 +73,11 @@ def main():
 
    schema = schemas.decals_all_campaigns_ortho_schema
 
-   shards = webdataset_utils.make_mock_wds(save_dir, schema.label_cols, n_shards=10, shard_size=32)
-   exit()
+   # shards = webdataset_utils.make_mock_wds(save_dir, schema.label_cols, n_shards=10, shard_size=32)
+   # exit()
    # webdataset_utils.load_wds_directly(shards[0], max_to_load=None)
    # webdataset_utils.load_wds_with_webdatamodule(shards, label_cols=schema.label_cols, max_to_load=None)
+   shards = list(glob.glob('/home/walml/repos/temp/mock_shard_*_32.tar'))
    # exit()
 
    train_shards = shards[:8]
