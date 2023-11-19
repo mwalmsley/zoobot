@@ -1,4 +1,5 @@
 import logging
+from typing import List
 import os
 import cv2
 import json
@@ -10,18 +11,17 @@ import numpy as np
 import pandas as pd
 from PIL import Image  # necessary to avoid PIL.Image error assumption in web_datasets
 
-from galaxy_datasets.shared import label_metadata
 from galaxy_datasets import gz2
 from galaxy_datasets.transforms import default_transforms
-from galaxy_datasets.pytorch import galaxy_dataset
 
 import webdataset as wds
 
 import zoobot.pytorch.datasets.webdatamodule as webdatamodule
 
 
-def make_mock_wds(save_dir, label_cols, n_shards, shard_size):
-    shards = [os.path.join(save_dir, f'mock_shard_{shard_n}') for shard_n in range(n_shards)]
+def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: int):
+    counter = 0
+    shards = [os.path.join(save_dir, f'mock_shard_{shard_n}_{shard_size}.tar') for shard_n in range(n_shards)]
     for shard in shards:
         sink = wds.TarWriter(shard)
         for galaxy_n in range(shard_size):
@@ -31,6 +31,9 @@ def make_mock_wds(save_dir, label_cols, n_shards, shard_size):
                 "labels.json": json.dumps(dict(zip(label_cols, [np.random.randint(low=0, high=10) for _ in range(len(label_cols))])))
             }
             sink.write(data)
+            counter += 1
+    print(counter)
+    return shards
 
 
 
@@ -63,12 +66,16 @@ def galaxy_to_wds(galaxy: pd.Series, label_cols):
     }
 
 # just for debugging
-def load_wds_directly(wds_loc):
+def load_wds_directly(wds_loc, max_to_load=3):
 
     dataset = wds.WebDataset(wds_loc) \
     .decode("rgb")
 
-    for sample in islice(dataset, 0, 3):
+    if max_to_load is not None:
+        sample_iterator = islice(dataset, 0, max_to_load)
+    else:
+        sample_iterator = dataset
+    for sample in sample_iterator:
         logging.info(sample['__key__'])     
         logging.info(sample['image.jpg'].shape)  # .decode(jpg) converts to decoded to 0-1 RGB float, was 0-255
         logging.info(type(sample['labels.json']))  # automatically decoded
@@ -91,25 +98,37 @@ def load_wds_with_augmentation(wds_loc):
         logging.info(sample[1])
 
 # just for debugging
-def load_wds_with_webdatamodule(save_loc, label_cols):
+def load_wds_with_webdatamodule(save_loc, label_cols, batch_size=16, max_to_load=3):
     wdm = webdatamodule.WebDataModule(
-        train_urls=glob.glob(save_loc.replace('.tar', '_*.tar')),
-        val_urls=[],
+        train_urls=save_loc,
+        val_urls=save_loc,  # not used
         # train_size=len(train_catalog),
         # val_size=0,
         label_cols=label_cols,
-        num_workers=1
+        num_workers=1,
+        batch_size=batch_size
     )
     wdm.setup('fit')
 
-    for sample in islice(wdm.train_dataloader(), 0, 3):
+    if max_to_load is not None:
+        sample_iterator =islice(wdm.train_dataloader(), 0, max_to_load)
+    else:
+        sample_iterator = wdm.train_dataloader()
+    for sample in sample_iterator:
         images, labels = sample
         logging.info(images.shape)
         # logging.info(len(labels))  # list of dicts
-        logging.info(labels)
+        logging.info(labels.shape)
 
 
 def identity(x):
     # no lambda to be pickleable
     return x
 
+if __name__ == '__main__':
+
+    save_dir = '/home/walml/repos/temp'
+    from galaxy_datasets.shared import label_metadata
+    label_cols = label_metadata.decals_all_campaigns_ortho_label_cols
+
+    make_mock_wds(save_dir, label_cols, n_shards=4, shard_size=512)

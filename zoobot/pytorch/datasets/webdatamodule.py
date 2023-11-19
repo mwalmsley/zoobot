@@ -42,11 +42,11 @@ class WebDataModule(pl.LightningDataModule):
 
         logging.info(f'Creating webdatamodule with WORLD_SIZE: {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}')
 
-        print("train_urls = ", self.train_urls)
-        print("val_urls = ", self.val_urls)
-        print("train_size = ", self.train_size)
-        print("val_size = ", self.val_size)
-        print("batch_size", self.batch_size, "num_workers", self.num_workers)
+        logging.info(f"train_urls (before hardware splits) = {len(self.train_urls)} e.g. {self.train_urls[0]}", )
+        logging.info(f"val_urls (before hardware splits) = {len(self.val_urls)} e.g. {self.val_urls[0]}", )
+        # logging.info("train_size (before hardware splits) = ", self.train_size)
+        # logging.info("val_size (before hardware splits) = ", self.val_size)
+        logging.info(f"batch_size: {self.batch_size}, num_workers: {self.num_workers}")
 
     def make_image_transform(self, mode="train"):
         # if mode == "train":
@@ -69,7 +69,7 @@ class WebDataModule(pl.LightningDataModule):
     def make_loader(self, urls, mode="train"):
         if mode == "train":
             dataset_size = self.train_size
-            shuffle = 5000
+            shuffle = min(self.train_size, 5000)
         elif mode == "val":
             dataset_size = self.val_size
             shuffle = 0
@@ -81,7 +81,9 @@ class WebDataModule(pl.LightningDataModule):
         dataset = (
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
+            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0
+                        #    , nodesplitter=nodesplitter_func
+            )
             .shuffle(shuffle)
             .decode("rgb")
             .to_tuple('image.jpg', 'labels.json')
@@ -89,7 +91,7 @@ class WebDataModule(pl.LightningDataModule):
             # torch collate stacks dicts nicely while webdataset only lists them
             # so use the torch collate instead
             .batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
-            .repeat(5)
+            # .repeat(5)
         )
 
         # from itertools import islice
@@ -119,7 +121,7 @@ class WebDataModule(pl.LightningDataModule):
         loader.length = dataset_size // self.batch_size
 
         # temp hack instead
-        assert dataset_size % self.batch_size == 0  
+        assert dataset_size % self.batch_size == 0, (dataset_size, self.batch_size, dataset_size % self.batch_size)
         # if mode == "train":
             # ensure same number of batches in all clients
             # loader = loader.ddp_equalize(dataset_size // self.batch_size)
