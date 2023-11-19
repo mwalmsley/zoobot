@@ -90,7 +90,7 @@ def main():
       cache_dir=None
       # TODO pass through the rest
    )
-   use_distributed_sampler=False
+   # use_distributed_sampler=False
 
    trainer = pl.Trainer(
       # log_every_n_steps=16,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
@@ -104,7 +104,7 @@ def main():
       max_epochs=1,
       default_root_dir=save_dir,
       #   plugins=plugins,
-      use_distributed_sampler=use_distributed_sampler
+      # use_distributed_sampler=use_distributed_sampler
    )
 
    # logging.info((trainer.strategy, trainer.world_size,
@@ -115,7 +115,7 @@ def main():
    trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
    # batch size 16
-   # shard size 16, 10 shards with 8 being assigned as training shards so 8*32 train images, 8*2 train batches
+   # shard size 16, 10 shards with 8 being assigned as training shards so 8*32 train images, 8*2=16 train batches
 
 
 if __name__=='__main__':
