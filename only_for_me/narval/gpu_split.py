@@ -48,6 +48,7 @@ class ToyLightningModule(pl.LightningModule):
 def main():
 
    logging.basicConfig(level=logging.INFO)
+   logging.warning('Script start')
 
    parser = argparse.ArgumentParser()
    parser.add_argument('--save-dir', dest='save_dir', type=str)
@@ -67,7 +68,7 @@ def main():
       save_dir = '/home/walml/repos/temp'
 
    else:
-      save_dir = '/project/def-bovy/walml/temp'
+      save_dir = os.environ['SLURM_TMPDIR']
 
    schema = schemas.decals_all_campaigns_ortho_schema
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=0:05:0  
+#SBATCH --time=0:15:0  
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
 #SBATCH --ntasks-per-node=2
@@ -20,6 +20,7 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 # echo "r$SLURM_NODEID master: $MASTER_ADDR"
 # echo "r$SLURM_NODEID Launching python script"
 
+echo 'Running script'
 REPO_DIR=/project/def-bovy/walml/zoobot
 srun $PYTHON $REPO_DIR/only_for_me/narval/gpu_split.py --gpus 1
 
