@@ -3,7 +3,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=2
 #SBATCH --ntasks-per-node=2
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu 4G
 #SBATCH --gres=gpu:v100:2
 
@@ -21,5 +21,5 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 # echo "r$SLURM_NODEID Launching python script"
 
 REPO_DIR=/project/def-bovy/walml/zoobot
-srun $PYTHON $REPO_DIR/only_for_me/narval/gpu_split.py
+srun $PYTHON $REPO_DIR/only_for_me/narval/gpu_split.py --gpus 2
 
