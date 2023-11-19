@@ -64,16 +64,16 @@ def main():
    parser.add_argument('--seed', dest='random_state', default=1, type=int)
    args = parser.parse_args()
 
-   if os.path.isdir('/home/walml/repos/zoobot'):
-      save_dir = '/home/walml/repos/temp'
+   # if os.path.isdir('/home/walml/repos/zoobot'):
+   save_dir = '/home/walml/repos/temp'
 
-   else:
-      save_dir = os.environ['SLURM_TMPDIR']
+   # else:
+      # save_dir = os.environ['SLURM_TMPDIR']
 
    schema = schemas.decals_all_campaigns_ortho_schema
 
    shards = webdataset_utils.make_mock_wds(save_dir, schema.label_cols, n_shards=10, shard_size=32)
-   # exit()
+   exit()
    # webdataset_utils.load_wds_directly(shards[0], max_to_load=None)
    # webdataset_utils.load_wds_with_webdatamodule(shards, label_cols=schema.label_cols, max_to_load=None)
    # exit()
