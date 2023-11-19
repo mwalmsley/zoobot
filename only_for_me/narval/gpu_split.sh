@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=0:10:0  
-#SBATCH --nodes=1             # This needs to match Trainer(num_nodes=...)
+#SBATCH --nodes=2             # This needs to match Trainer(num_nodes=...)
 #SBATCH --ntasks-per-node=4   # This needs to match Trainer(devices=...). Presumably is PER TASK.
 # this .sh always runs once, but the srun command (for parallel slurm tasks) gets called twice (ntasks). Lightning then hooks onto that by detecting it is in a slurm environment.
 #SBATCH --cpus-per-task=4
@@ -10,7 +10,7 @@
 # https://lightning.ai/docs/pytorch/stable/clouds/cluster_intermediate_1.html#setup-the-training-script
 # https://lightning.ai/docs/pytorch/stable/clouds/cluster_advanced.html
 
-#### SBATCH --ntasks-per-node=1
+
 
 nvidia-smi
 
@@ -29,5 +29,5 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 
 echo 'Running script'
 REPO_DIR=/project/def-bovy/walml/zoobot
-srun $PYTHON $REPO_DIR/only_for_me/narval/gpu_split.py --gpus 4
+srun $PYTHON $REPO_DIR/only_for_me/narval/gpu_split.py --gpus 4 --nodes 2
 
