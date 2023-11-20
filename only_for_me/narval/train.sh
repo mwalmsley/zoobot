@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=1:00:0  
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100:2
 
 nvidia-smi
 
