@@ -111,8 +111,8 @@ if __name__ == '__main__':
         num_workers=5,
         random_state=random_state,
         learning_rate=1e-3,
-        # cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
-        cache_dir='/tmp/cache'
+        cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
+        # cache_dir='/tmp/cache'
         # /tmp for ramdisk (400GB total, vs 4TB total for nvme)
     )
 
