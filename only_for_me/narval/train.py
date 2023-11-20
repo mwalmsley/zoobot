@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
-    train_urls, val_urls = all_urls[:8], all_urls[8:]
+    train_urls, val_urls = all_urls[:25], all_urls[25:]
     schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
@@ -99,6 +99,7 @@ if __name__ == '__main__':
         epochs=epochs,  # rely on early stopping
         patience=10,
         # augmentation parameters
+        # color=args.color,
         color=args.color,
         resize_after_crop=args.resize_after_crop,
         # hardware parameters
