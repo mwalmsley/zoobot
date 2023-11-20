@@ -1,11 +1,10 @@
 #!/bin/bash
 #SBATCH --time=1:00:0  
 #SBATCH --nodes=1
-#SBATCH --ntasks=4
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=10
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:a100:4
+#SBATCH --gres=gpu:v100:1
 
 nvidia-smi
 
@@ -23,7 +22,8 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 REPO_DIR=/project/def-bovy/walml/zoobot
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models \
-    --batch-size 256 \
+    --batch-size 128 \
+    --gpus 1
     --color --wandb --mixed-precision
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
 

@@ -37,12 +37,12 @@ def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: in
 
 
 
-def df_to_wds(df: pd.DataFrame, label_cols, save_loc, n_shards):
+def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int):
+    assert '.tar' in save_loc
     df['id_str'] = df['id_str'].astype(str).str.replace('.', '_')
 
     shard_dfs = np.array_split(df, n_shards)
-    logging.info('shards: ', len(shard_dfs))
-    logging.info('shard size: ', len(shard_dfs[0]))
+    logging.info(f'shards: {len(shard_dfs)}. Shard size: {len(shard_dfs[0])}')
     for shard_n, shard_df in tqdm.tqdm(enumerate(shard_dfs), total=len(shard_dfs)):
         shard_save_loc = save_loc.replace('.tar', f'_{shard_n}_{len(shard_df)}.tar')
         logging.info(shard_save_loc)

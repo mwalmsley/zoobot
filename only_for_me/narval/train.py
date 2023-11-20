@@ -62,12 +62,12 @@ if __name__ == '__main__':
         search_str = '/home/walml/repos/zoobot/gz_decals_5_train_*.tar'
 
     else:
-        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/gz_decals_5/full/gz_decals_5_train_*.tar'
+        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled/desi_labelled_train_*.tar'
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
-    train_urls, val_urls = all_urls[:38], all_urls[38:]
-    schema = schemas.decals_dr5_ortho_schema
+    train_urls, val_urls = all_urls[:8], all_urls[8:]
+    schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
     if args.debug:
@@ -107,7 +107,7 @@ if __name__ == '__main__':
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
         prefetch_factor=6,
-        num_workers=9,
+        num_workers=8,
         random_state=random_state,
         learning_rate=1e-3,
         # cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
