@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
-    train_urls, val_urls = all_urls[:25], all_urls[25:]
+    train_urls, val_urls = all_urls[:70], all_urls[70:]
     schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
@@ -75,9 +75,9 @@ if __name__ == '__main__':
             'Using debug mode: cutting urls down to 2')
         train_urls = train_urls[:2]
         val_urls = val_urls[:2]
-        epochs = 2
-    else:
         epochs = 1
+    else:
+        epochs = 1000
 
     if args.wandb:
         wandb_logger = WandbLogger(
