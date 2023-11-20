@@ -32,16 +32,16 @@ Download the code using git:
 
 And then pick one of the three commands below to install Zoobot and either PyTorch (recommended) or TensorFlow:
 
-    # Zoobot with PyTorch and a GPU. Requires CUDA 11.3.
-    pip install -e "zoobot[pytorch_cu113]" --extra-index-url https://download.pytorch.org/whl/cu113
+    # Zoobot with PyTorch and a GPU. Requires CUDA 12.1 (or CUDA 11.8, if you use `_cu118` instead)
+    pip install -e "zoobot[pytorch-cu121]" --extra-index-url https://download.pytorch.org/whl/cu121
 
     # OR Zoobot with PyTorch and no GPU
-    pip install -e "zoobot[pytorch_cpu]" --extra-index-url https://download.pytorch.org/whl/cpu
+    pip install -e "zoobot[pytorch-cpu]" --extra-index-url https://download.pytorch.org/whl/cpu
 
     # OR Zoobot with PyTorch on Mac with M1 chip
-    pip install -e "zoobot[pytorch_m1]"
+    pip install -e "zoobot[pytorch-m1]"
 
-    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2. 
+    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2.
     pip install -e "zoobot[tensorflow]
 
 This installs the downloaded Zoobot code using pip [editable mode](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) so you can easily change the code locally. Zoobot is also available directly from pip (`pip install zoobot[option]`). Only use this if you are sure you won't be making changes to Zoobot itself. For Google Colab, use `pip install zoobot[pytorch_colab]`
