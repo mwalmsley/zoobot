@@ -300,10 +300,12 @@ def train_default_zoobot_from_scratch(
     # logging.info((trainer.strategy, trainer.world_size,
     #              trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
-    if compile_model:
-        logging.warning('Using torch.compile on LightningModel')
-        torch._dynamo.config.cache_size_limit = 512 
-        lightning_model = torch.compile(lightning_model)
+    # disabled for now until December, not crucial. Stop over-optimising.
+    # if compile_model:
+        # logging.warning('Using torch.compile on LightningModel')
+        # torch._dynamo.config.cache_size_limit = 512 
+        # torch._dynamo.
+        # lightning_model = torch.compile(lightning_model)
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
