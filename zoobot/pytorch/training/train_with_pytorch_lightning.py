@@ -52,7 +52,7 @@ def train_default_zoobot_from_scratch(
     num_workers=4,
     prefetch_factor=4,
     mixed_precision=False,
-    compile_model=False,
+    compile_encoder=False,
     # checkpointing / logging
     wandb_logger=None,
     checkpoint_file_template=None,
@@ -254,6 +254,7 @@ def train_default_zoobot_from_scratch(
         dropout_rate=dropout_rate,
         learning_rate=learning_rate,
         timm_kwargs={'drop_path_rate': drop_connect_rate},
+        compile_encoder=compile_encoder,
         betas=betas,
         weight_decay=weight_decay,
         scheduler_params=scheduler_params
@@ -297,15 +298,6 @@ def train_default_zoobot_from_scratch(
         # use_distributed_sampler=use_distributed_sampler
     )
 
-    # logging.info((trainer.strategy, trainer.world_size,
-    #              trainer.local_rank, trainer.global_rank, trainer.node_rank))
-
-    # disabled for now until December, not crucial. Stop over-optimising.
-    # if compile_model:
-        # logging.warning('Using torch.compile on LightningModel')
-        # torch._dynamo.config.cache_size_limit = 512 
-        # torch._dynamo.
-        # lightning_model = torch.compile(lightning_model)
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 

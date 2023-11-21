@@ -73,11 +73,11 @@ def main():
 
    schema = schemas.decals_all_campaigns_ortho_schema
 
-   # shards = webdataset_utils.make_mock_wds(save_dir, schema.label_cols, n_shards=10, shard_size=32)
+   shards = webdataset_utils.make_mock_wds(save_dir, schema.label_cols, n_shards=10, shard_size=256)
    # exit()
    # webdataset_utils.load_wds_directly(shards[0], max_to_load=None)
    # webdataset_utils.load_wds_with_webdatamodule(shards, label_cols=schema.label_cols, max_to_load=None)
-   shards = list(glob.glob('/home/walml/repos/temp/mock_shard_*_32.tar'))
+   shards = list(glob.glob('/home/walml/repos/temp/mock_shard_*_256.tar'))
    # exit()
 
    train_shards = shards[:8]
@@ -100,20 +100,28 @@ def main():
       devices=args.gpus,  # per node
       num_nodes=args.nodes,
       #   strategy='auto',
-      precision='16-mixed',
+      precision='32',
       logger=False,
       #   callbacks=callbacks,
-      max_epochs=1,
+      max_epochs=10,
       default_root_dir=save_dir,
       #   plugins=plugins,
       # use_distributed_sampler=use_distributed_sampler
    )
 
-   # logging.info((trainer.strategy, trainer.world_size,
-   # trainer.local_rank, trainer.global_rank, trainer.node_rank))
+   # lightning_model = ToyLightningModule()
+   # lightning_model = torch.compile(lightning_model)
 
-   lightning_model = ToyLightningModule()
-
+   from zoobot.pytorch.estimators import define_model
+   lightning_model = define_model.ZoobotTree(
+        output_dim=len(schema.label_cols),
+        question_index_groups=schema.question_index_groups,
+        architecture_name="efficientnet_b0",
+        channels=3,
+        compile_encoder=True
+   )
+   # lightning_model = torch.compile(lightning_model)
+      
    trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
    # batch size 16

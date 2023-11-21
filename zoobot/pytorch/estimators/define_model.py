@@ -144,6 +144,7 @@ class ZoobotTree(GenericLightningModule):
         channels=1,
         use_imagenet_weights=False,
         test_time_dropout=True,
+        compile_encoder=False,
         timm_kwargs={},  # passed to timm.create_model e.g. drop_path_rate=0.2 for effnet
         # head args
         dropout_rate=0.2,
@@ -162,6 +163,7 @@ class ZoobotTree(GenericLightningModule):
             architecture_name,
             channels,
             timm_kwargs,
+            compile_encoder,
             test_time_dropout,
             dropout_rate,
             learning_rate,
@@ -179,12 +181,16 @@ class ZoobotTree(GenericLightningModule):
         self.weight_decay = weight_decay
         self.scheduler_params = scheduler_params
 
-        self.encoder = torch.compile(get_pytorch_encoder(
+        self.encoder = get_pytorch_encoder(
             architecture_name,
             channels,
             use_imagenet_weights=use_imagenet_weights,
             **timm_kwargs
-        ))
+        )
+        if compile_encoder:
+            logging.warning('Using torch.compile on encoder')
+            self.encoder = torch.compile(self.encoder)
+
         # bit lazy assuming 224 input size
         self.encoder_dim = get_encoder_dim(self.encoder, input_size=224, channels=channels)
         # typically encoder_dim=1280 for effnetb0

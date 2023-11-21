@@ -111,7 +111,7 @@ if __name__ == '__main__':
         wandb_logger=wandb_logger,
         prefetch_factor=1, # TODO
         num_workers=args.num_workers,
-        compile_model=True,  # NEW
+        compile_encoder=True,  # NEW
         random_state=random_state,
         learning_rate=1e-3,
         cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
