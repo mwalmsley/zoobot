@@ -15,6 +15,7 @@ from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.datasets import webdatamodule
 
 
+
 def train_default_zoobot_from_scratch(    
     # absolutely crucial arguments
     save_dir: str,  # save model here
@@ -228,7 +229,6 @@ def train_default_zoobot_from_scratch(
             num_workers=num_workers,
             prefetch_factor=prefetch_factor
         )
-        use_distributed_sampler=True
     else:
         # this branch will use WebDataModule to load premade webdatasets
         datamodule = webdatamodule.WebDataModule(
@@ -240,7 +240,6 @@ def train_default_zoobot_from_scratch(
             cache_dir=cache_dir
             # TODO pass through the rest
         )
-        use_distributed_sampler=False
 
     datamodule.setup(stage='fit')
 
@@ -303,6 +302,7 @@ def train_default_zoobot_from_scratch(
 
     if compile_model:
         logging.warning('Using torch.compile on LightningModel')
+        torch._dynamo.config.cache_size_limit = 512 
         lightning_model = torch.compile(lightning_model)
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule

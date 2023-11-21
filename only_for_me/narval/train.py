@@ -119,4 +119,7 @@ if __name__ == '__main__':
         # /tmp for ramdisk (400GB total, vs 4TB total for nvme)
     )
 
+    # https://discuss.pytorch.org/t/torch-dynamo-hit-config-cache-size-limit-64/183886
+    # https://pytorch.org/docs/stable/torch.compiler_faq.html#why-is-compilation-slow
+
     wandb.finish()

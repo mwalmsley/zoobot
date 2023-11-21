@@ -83,13 +83,13 @@ class GenericLightningModule(pl.LightningModule):
         raise NotImplementedError('Must be subclassed')
 
     def training_step(self, batch, batch_idx):
-        return self.make_step(batch, batch_idx, step_name='train')
+        return self.make_step(batch, step_name='train')
 
     def on_train_batch_end(self, outputs, *args):
         self.log_outputs(outputs, step_name='train')
 
     def validation_step(self, batch, batch_idx):
-        return self.make_step(batch, batch_idx, step_name='validation')
+        return self.make_step(batch, step_name='validation')
 
     def on_validation_batch_end(self, outputs, *args):
         self.log_outputs(outputs, step_name='validation')
@@ -98,7 +98,7 @@ class GenericLightningModule(pl.LightningModule):
         raise NotImplementedError('Must be subclassed')
 
     def test_step(self, batch, batch_idx):
-        return self.make_step(batch, batch_idx, step_name='test')
+        return self.make_step(batch, step_name='test')
 
     def on_test_batch_end(self, outputs, *args):
          self.log_outputs(outputs, step_name='test')
