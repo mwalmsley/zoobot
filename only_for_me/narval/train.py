@@ -68,7 +68,7 @@ if __name__ == '__main__':
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
     # train_urls, val_urls = all_urls[:70], all_urls[70:]
-    train_urls, val_urls = all_urls[:10], all_urls[10:20]
+    train_urls, val_urls = all_urls[:60], all_urls[60:70]
     schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
