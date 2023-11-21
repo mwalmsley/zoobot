@@ -275,14 +275,12 @@ def train_default_zoobot_from_scratch(
             save_top_k=save_top_k
     )
 
-    # TODO
-    # early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
-    # , early_stopping_callback
-    # callbacks = [checkpoint_callback] + extra_callbacks
-    callbacks = None
+    early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
+    callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
+    # callbacks = None
 
     trainer = pl.Trainer(
-        log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
+        log_every_n_steps=150,
         accelerator=accelerator,
         devices=devices,  # per node
         num_nodes=nodes,
