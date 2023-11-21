@@ -7,6 +7,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.strategies.ddp import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pytorch_lightning.loggers import CSVLogger
 
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
@@ -190,8 +191,8 @@ def train_default_zoobot_from_scratch(
             'framework': 'pytorch'
         })
     else:
-        logging.warning('No wandb_logger passed. Disabling logging')
-        wandb_logger = False
+        logging.warning('No wandb_logger passed. Using CSV logging only')
+        wandb_logger = CSVLogger(save_dir=save_dir)
 
     # work out what dataset the user has passed
     single_catalog = catalog is not None
