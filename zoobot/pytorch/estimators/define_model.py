@@ -239,15 +239,11 @@ class ZoobotTree(GenericLightningModule):
 
 
     def log_outputs(self, outputs, step_name):
-        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True, rank_zero_only=True)
-        # if self.log_on_step:
-        #     # seperate call to allow for different name, to allow for consistency with TF.keras auto-names
+        # self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True, rank_zero_only=True)
+        # if outputs['predictions'].shape[1] == 2:  # will only do for binary classifications
         #     self.log(
-        #         "{}/step_loss".format(step_name), outputs['loss'], on_epoch=False, on_step=True, prog_bar=True, logger=True, rank_zero_only=True)
-        if outputs['predictions'].shape[1] == 2:  # will only do for binary classifications
-            # logging.info(predictions.shape, labels.shape)
-            self.log(
-                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True, rank_zero_only=True)
+        #         "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True, rank_zero_only=True)
+        pass
 
 
     def log_loss_per_question(self, multiq_loss, prefix):
@@ -255,8 +251,9 @@ class ZoobotTree(GenericLightningModule):
         # TODO need schema attribute or similar to have access to question names, this will do for now
         # unlike Finetuneable..., does not use TorchMetrics, simply logs directly
         # TODO could use TorchMetrics and for q in schema, self.q_metric loop
-        for question_n in range(multiq_loss.shape[1]):
-            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, rank_zero_only=True)
+        # for question_n in range(multiq_loss.shape[1]):
+        #     self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, rank_zero_only=True)
+        pass
 
 
     

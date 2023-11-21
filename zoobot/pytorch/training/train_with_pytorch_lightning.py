@@ -275,9 +275,9 @@ def train_default_zoobot_from_scratch(
             save_top_k=save_top_k
     )
 
-    early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
-
-    callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
+    # early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
+    # , early_stopping_callback
+    callbacks = [checkpoint_callback] + extra_callbacks
 
     trainer = pl.Trainer(
         log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
@@ -290,12 +290,12 @@ def train_default_zoobot_from_scratch(
         callbacks=callbacks,
         max_epochs=epochs,
         default_root_dir=save_dir,
-        plugins=plugins,
-        use_distributed_sampler=use_distributed_sampler
+        plugins=plugins
+        # use_distributed_sampler=use_distributed_sampler
     )
 
-    logging.info((trainer.strategy, trainer.world_size,
-                 trainer.local_rank, trainer.global_rank, trainer.node_rank))
+    # logging.info((trainer.strategy, trainer.world_size,
+    #              trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
