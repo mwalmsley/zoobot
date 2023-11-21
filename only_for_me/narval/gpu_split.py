@@ -118,7 +118,7 @@ def main():
         question_index_groups=schema.question_index_groups,
         architecture_name="efficientnet_b0",
         channels=3,
-        compile_encoder=True
+        compile_encoder=False  # with compile on local desktop, 51 seconds for first epoch and 10 seconds thereafter. Without, 12 seconds for all epochs.
    )
    # lightning_model = torch.compile(lightning_model)
       
