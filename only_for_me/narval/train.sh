@@ -21,7 +21,7 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 
 REPO_DIR=/project/def-bovy/walml/zoobot
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_60_shards \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_60_shards_1gpu \
     --batch-size 256 \
     --gpus 1 \
     --num-workers 10 \
