@@ -70,7 +70,7 @@ class GenericLightningModule(pl.LightningModule):
         x = self.encoder(x)
         return self.head(x)
     
-    def make_step(self, batch, batch_idx, step_name):
+    def make_step(self, batch, step_name):
         x, labels = batch
         predictions = self(x)  # by default, these are Dirichlet concentrations
         loss = self.calculate_and_log_loss(predictions, labels, step_name)      
@@ -179,12 +179,12 @@ class ZoobotTree(GenericLightningModule):
         self.weight_decay = weight_decay
         self.scheduler_params = scheduler_params
 
-        self.encoder = get_pytorch_encoder(
+        self.encoder = torch.compile(get_pytorch_encoder(
             architecture_name,
             channels,
             use_imagenet_weights=use_imagenet_weights,
             **timm_kwargs
-        )
+        ))
         # bit lazy assuming 224 input size
         self.encoder_dim = get_encoder_dim(self.encoder, input_size=224, channels=channels)
         # typically encoder_dim=1280 for effnetb0
