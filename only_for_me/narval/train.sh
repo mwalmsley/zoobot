@@ -24,7 +24,9 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models \
     --batch-size 128 \
     --gpus 4 \
-    --color --wandb --mixed-precision
+    --color --mixed-precision
+
+    # --wandb
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
 
     # --architecture maxvit_small_tf_224 \

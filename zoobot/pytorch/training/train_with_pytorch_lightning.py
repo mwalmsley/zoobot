@@ -189,6 +189,9 @@ def train_default_zoobot_from_scratch(
             'prefetch_factor': prefetch_factor,
             'framework': 'pytorch'
         })
+    else:
+        logging.warning('No wandb_logger passed. Disabling logging')
+        wandb_logger = False
 
     # work out what dataset the user has passed
     single_catalog = catalog is not None
