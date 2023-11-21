@@ -275,6 +275,7 @@ def train_default_zoobot_from_scratch(
             save_top_k=save_top_k
     )
 
+    # TODO
     # early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
     # , early_stopping_callback
     # callbacks = [checkpoint_callback] + extra_callbacks
@@ -291,9 +292,10 @@ def train_default_zoobot_from_scratch(
         callbacks=callbacks,
         max_epochs=epochs,
         default_root_dir=save_dir,
-        plugins=plugins,
-        limit_train_batches=1,
-        limit_val_batches=1
+        plugins=plugins
+        # ,
+        # limit_train_batches=1,
+        # limit_val_batches=1
         # use_distributed_sampler=use_distributed_sampler
     )
 
