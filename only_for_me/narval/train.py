@@ -32,6 +32,7 @@ if __name__ == '__main__':
                         default=256, type=int)
     parser.add_argument('--gpus', dest='gpus', default=1, type=int)
     parser.add_argument('--nodes', dest='nodes', default=1, type=int)
+    parser.add_argument('--num_workers', dest='num_workers', default=1, type=int)
     parser.add_argument('--mixed-precision', dest='mixed_precision',
                         default=False, action='store_true')
     parser.add_argument('--debug', dest='debug',
@@ -108,8 +109,8 @@ if __name__ == '__main__':
         nodes=args.nodes,
         mixed_precision=args.mixed_precision,
         wandb_logger=wandb_logger,
-        prefetch_factor=6,
-        num_workers=5,
+        prefetch_factor=1, # TODO
+        num_workers=args.num_workers,
         random_state=random_state,
         learning_rate=1e-3,
         cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
