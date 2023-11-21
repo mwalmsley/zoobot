@@ -51,6 +51,7 @@ def train_default_zoobot_from_scratch(
     num_workers=4,
     prefetch_factor=4,
     mixed_precision=False,
+    compile_model=False,
     # checkpointing / logging
     wandb_logger=None,
     checkpoint_file_template=None,
@@ -299,6 +300,10 @@ def train_default_zoobot_from_scratch(
 
     # logging.info((trainer.strategy, trainer.world_size,
     #              trainer.local_rank, trainer.global_rank, trainer.node_rank))
+
+    if compile_model:
+        logging.warning('Using torch.compile on LightningModel')
+        lightning_model = torch.compile(lightning_model)
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 

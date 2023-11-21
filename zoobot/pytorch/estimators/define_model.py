@@ -239,10 +239,10 @@ class ZoobotTree(GenericLightningModule):
 
 
     def log_outputs(self, outputs, step_name):
-        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True, rank_zero_only=True)
+        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True, sync_dist=True)
         if outputs['predictions'].shape[1] == 2:  # will only do for binary classifications
             self.log(
-                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True, rank_zero_only=True)
+                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True, sync_dist=True)
         # pass
 
 
@@ -252,7 +252,7 @@ class ZoobotTree(GenericLightningModule):
         # unlike Finetuneable..., does not use TorchMetrics, simply logs directly
         # TODO could use TorchMetrics and for q in schema, self.q_metric loop
         for question_n in range(multiq_loss.shape[1]):
-            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, rank_zero_only=True)
+            self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, sync_dist=True)
         # pass
 
 
