@@ -24,6 +24,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/debug_models_v2 \
     --batch-size 128 \
     --gpus 4 \
+    --num-workers 5 \
     --color --wandb --mixed-precision
 
     # 

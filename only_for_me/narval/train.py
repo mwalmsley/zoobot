@@ -32,7 +32,7 @@ if __name__ == '__main__':
                         default=256, type=int)
     parser.add_argument('--gpus', dest='gpus', default=1, type=int)
     parser.add_argument('--nodes', dest='nodes', default=1, type=int)
-    parser.add_argument('--num_workers', dest='num_workers', default=1, type=int)
+    parser.add_argument('--num-workers', dest='num_workers', default=1, type=int)
     parser.add_argument('--mixed-precision', dest='mixed_precision',
                         default=False, action='store_true')
     parser.add_argument('--debug', dest='debug',
