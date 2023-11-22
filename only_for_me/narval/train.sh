@@ -26,7 +26,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --num-features 128 \    
     --gpus 2 \
     --num-workers 10 \
-    --color --wandb --mixed-precision
+    --color --wandb --mixed-precision --compile-encoder
 
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
 

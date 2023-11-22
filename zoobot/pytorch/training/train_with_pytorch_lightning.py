@@ -234,10 +234,17 @@ def train_default_zoobot_from_scratch(
         datamodule = webdatamodule.WebDataModule(
             train_urls=train_urls,
             val_urls=val_urls,
+            label_cols=schema.label_cols,
+            # hardware
             batch_size=batch_size,
             num_workers=num_workers,
-            label_cols=schema.label_cols,
-            cache_dir=cache_dir
+            prefetch_factor=prefetch_factor,
+            cache_dir=cache_dir,
+            # augmentation args
+            color=color,
+            crop_scale_bounds=crop_scale_bounds,
+            crop_ratio_bounds=crop_ratio_bounds,
+            resize_after_crop=resize_after_crop,
             # TODO pass through the rest
         )
 

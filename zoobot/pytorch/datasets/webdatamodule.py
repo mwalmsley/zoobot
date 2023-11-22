@@ -12,7 +12,23 @@ from galaxy_datasets.transforms import default_transforms
 
 # https://github.com/webdataset/webdataset-lightning/blob/main/train.py
 class WebDataModule(pl.LightningDataModule):
-    def __init__(self, train_urls, val_urls, train_size=None, val_size=None, label_cols=None, batch_size=64, num_workers=4, prefetch_factor=4, cache_dir=None):
+    def __init__(
+            self,
+            train_urls,
+            val_urls,
+            label_cols=None,
+            train_size=None,
+            val_size=None,
+            # hardware
+            batch_size=64,
+            num_workers=4,
+            prefetch_factor=4,
+            cache_dir=None,
+            color=False,
+            crop_scale_bounds=(0.7, 0.8),
+            crop_ratio_bounds=(0.9, 1.1),
+            resize_after_crop=224
+            ):
         super().__init__()
 
         # if isinstance(train_urls, types.GeneratorType):
@@ -39,6 +55,12 @@ class WebDataModule(pl.LightningDataModule):
 
         self.cache_dir = cache_dir
 
+        # could use mixin
+        self.color = color
+        self.resize_after_crop = resize_after_crop
+        self.crop_scale_bounds = crop_scale_bounds
+        self.crop_ratio_bounds = crop_ratio_bounds
+
 
         logging.info(f'Creating webdatamodule with WORLD_SIZE: {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}')
 
@@ -52,7 +74,12 @@ class WebDataModule(pl.LightningDataModule):
         # if mode == "train":
         # elif mode == "val":
 
-        augmentation_transform = default_transforms()  # A.Compose object
+        augmentation_transform = default_transforms(
+            crop_scale_bounds=self.crop_scale_bounds,
+            crop_ratio_bounds=self.crop_ratio_bounds,
+            resize_after_crop=self.resize_after_crop,
+            pytorch_greyscale=not self.color
+        )  # A.Compose object
         def do_transform(img):
             return np.transpose(augmentation_transform(image=np.array(img))["image"], axes=[2, 0, 1]).astype(np.float32)
         return do_transform

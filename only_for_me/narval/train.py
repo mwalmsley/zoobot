@@ -21,15 +21,16 @@ if __name__ == '__main__':
     See zoobot/pytorch/examples/minimal_examples.py for a friendlier example
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--save-dir', dest='save_dir', type=str)
+    parser.add_argument('--save-dir', dest='save_dir', type=str, default='local_debug')
     # parser.add_argument('--data-dir', dest='data_dir', type=str)
     # parser.add_argument('--dataset', dest='dataset', type=str, help='dataset to use, either "gz_decals_dr5" or "gz_evo"')
     parser.add_argument('--architecture', dest='architecture_name', default='efficientnet_b0', type=str)
     parser.add_argument('--resize-after-crop', dest='resize_after_crop',
                         type=int, default=224)
     parser.add_argument('--color', default=False, action='store_true')
+    parser.add_argument('--compile-encoder', dest='compile_encoder', default=False, action='store_true')
     parser.add_argument('--batch-size', dest='batch_size',
-                        default=256, type=int)
+                        default=16, type=int)
     parser.add_argument('--num-features', dest='num_features',
                         default=1280, type=int)
     parser.add_argument('--gpus', dest='gpus', default=1, type=int)
@@ -62,10 +63,13 @@ if __name__ == '__main__':
     #     logging.info([(x, y) for (x, y) in os.environ.items() if 'SLURM' in x])
 
     if os.path.isdir('/home/walml/repos/zoobot'):
-        search_str = '/home/walml/repos/zoobot/gz_decals_5_train_*.tar'
+        logging.warning('local mode')
+        search_str = '/home/walml/data/wds/desi_labelled_2048/desi_labelled_train_*.tar'
+        cache_dir = None
 
     else:
         search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_2048/desi_labelled_train_*.tar'
+        cache_dir = os.environ['SLURM_TMPDIR'] + '/cache'
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
@@ -115,10 +119,10 @@ if __name__ == '__main__':
         wandb_logger=wandb_logger,
         prefetch_factor=1, # TODO
         num_workers=args.num_workers,
-        compile_encoder=True,  # NEW
+        compile_encoder=args.compile_encoder,  # NEW
         random_state=random_state,
         learning_rate=1e-3,
-        cache_dir=os.environ['SLURM_TMPDIR'] + '/cache'
+        cache_dir=cache_dir
         # cache_dir='/tmp/cache'
         # /tmp for ramdisk (400GB total, vs 4TB total for nvme)
     )

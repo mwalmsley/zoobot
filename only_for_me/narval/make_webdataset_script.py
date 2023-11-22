@@ -62,19 +62,23 @@ def main():
     # desi pipeline shreds sources. Be careful to deduplicate.
 
     columns = ['id_str'] + label_cols
-    votes = pd.concat([
-        pd.read_parquet(f'/media/walml/beta/galaxy_zoo/decals/dr8/catalogs/training_catalogs/{campaign}_ortho_v5_labelled_catalog.parquet', columns=columns)
-        for campaign in ['dr12', 'dr5', 'dr8']
-    ], axis=0)
-    assert votes['id_str'].value_counts().max() == 1, votes['id_str'].value_counts()
-    votes['dr8_id'] = votes['id_str']
-    df = pd.merge(df, votes[['dr8_id']], on='dr8_id', how='inner')
+    # votes = pd.concat([
+    #     pd.read_parquet(f'/media/walml/beta/galaxy_zoo/decals/dr8/catalogs/training_catalogs/{campaign}_ortho_v5_labelled_catalog.parquet', columns=columns)
+    #     for campaign in ['dr12', 'dr5', 'dr8']
+    # ], axis=0)
+    # assert votes['id_str'].value_counts().max() == 1, votes['id_str'].value_counts()
+    # votes['dr8_id'] = votes['id_str']
+
+    # name = 'labelled'
+    # merge_strategy = {'labelled': 'inner', 'all': 'left'}
+    # df = pd.merge(df, votes[['dr8_id']], on='dr8_id', how=merge_strategy[name])
 
     df['relative_file_loc'] = df.apply(lambda x: f"{x['brickid']}/{x['brickid']}_{x['objid']}.jpg", axis=1) 
     df['file_loc'] = '/home/walml/data/desi/jpg/' + df['relative_file_loc']
 
     df_dedup = remove_close_sky_matches(df)
     print(len(df_dedup))
+    df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_all_dedup_20arcsec.parquet')
     exit()
     # df_dedup2 = remove_close_sky_matches(df_dedup)
     # print(len(df_dedup2))
@@ -103,6 +107,7 @@ def remove_close_sky_matches(df, seplimit=20*u.arcsec, col_to_prioritise='ra'):
 
     search_coords = catalog
 
+    logging.info('Beginning search for nearby galaxies')
     idxc, idxcatalog, d2d, _ = catalog.search_around_sky(search_coords, seplimit=seplimit)
     # idxc is index in search coords
     # idxcatalog is index in catalog
@@ -114,6 +119,7 @@ def remove_close_sky_matches(df, seplimit=20*u.arcsec, col_to_prioritise='ra'):
     idxcatalog = idxcatalog[d2d > 0]
     d2d = d2d[d2d > 0]
 
+    logging.info('Beginning drop prioritisation')
     indices_to_drop = []
     for search_index_val in pd.unique(idxc):
         matched_indices = idxcatalog[idxc == search_index_val]
