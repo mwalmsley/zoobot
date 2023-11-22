@@ -8,7 +8,7 @@ from itertools import islice
 
 import webdataset as wds
 
-from galaxy_datasets.transforms import default_transforms
+from galaxy_datasets import transforms
 
 # https://github.com/webdataset/webdataset-lightning/blob/main/train.py
 class WebDataModule(pl.LightningDataModule):
@@ -74,12 +74,20 @@ class WebDataModule(pl.LightningDataModule):
         # if mode == "train":
         # elif mode == "val":
 
-        augmentation_transform = default_transforms(
-            crop_scale_bounds=self.crop_scale_bounds,
-            crop_ratio_bounds=self.crop_ratio_bounds,
+        # augmentation_transform = transforms.default_transforms(
+        #     crop_scale_bounds=self.crop_scale_bounds,
+        #     crop_ratio_bounds=self.crop_ratio_bounds,
+        #     resize_after_crop=self.resize_after_crop,
+        #     pytorch_greyscale=not self.color
+        # )  # A.Compose object
+
+        logging.warning('Minimal augmentations for speed test')
+        augmentation_transform = transforms.minimal_transforms(
             resize_after_crop=self.resize_after_crop,
             pytorch_greyscale=not self.color
         )  # A.Compose object
+
+
         def do_transform(img):
             return np.transpose(augmentation_transform(image=np.array(img))["image"], axes=[2, 0, 1]).astype(np.float32)
         return do_transform

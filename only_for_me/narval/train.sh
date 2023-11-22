@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=23:30:0  
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=2
+#SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:2
+#SBATCH --gres=gpu:v100:1
 
 nvidia-smi
 
@@ -24,7 +24,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/desi_f128_2gpu \
     --batch-size 256 \
     --num-features 128 \
-    --gpus 2 \
+    --gpus 1 \
     --num-workers 10 \
     --color --wandb --mixed-precision --compile-encoder
 

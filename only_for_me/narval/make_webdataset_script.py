@@ -58,42 +58,42 @@ def main():
     columns = [
         'dr8_id', 'brickid', 'objid', 'ra', 'dec'
     ]
-    df = pd.read_parquet('/home/walml/repos/decals-rings/data/master_all_file_index_passes_file_checks.parquet', columns=columns)
+    # df = pd.read_parquet('/home/walml/repos/decals-rings/data/master_all_file_index_passes_file_checks.parquet', columns=columns)
     # desi pipeline shreds sources. Be careful to deduplicate.
 
     columns = ['id_str'] + label_cols
-    # votes = pd.concat([
-    #     pd.read_parquet(f'/media/walml/beta/galaxy_zoo/decals/dr8/catalogs/training_catalogs/{campaign}_ortho_v5_labelled_catalog.parquet', columns=columns)
-    #     for campaign in ['dr12', 'dr5', 'dr8']
-    # ], axis=0)
-    # assert votes['id_str'].value_counts().max() == 1, votes['id_str'].value_counts()
-    # votes['dr8_id'] = votes['id_str']
+    votes = pd.concat([
+        pd.read_parquet(f'/media/walml/beta/galaxy_zoo/decals/dr8/catalogs/training_catalogs/{campaign}_ortho_v5_labelled_catalog.parquet', columns=columns)
+        for campaign in ['dr12', 'dr5', 'dr8']
+    ], axis=0)
+    assert votes['id_str'].value_counts().max() == 1, votes['id_str'].value_counts()
+    votes['dr8_id'] = votes['id_str']
 
     # name = 'labelled'
     # merge_strategy = {'labelled': 'inner', 'all': 'left'}
     # df = pd.merge(df, votes[['dr8_id']], on='dr8_id', how=merge_strategy[name])
 
-    df['relative_file_loc'] = df.apply(lambda x: f"{x['brickid']}/{x['brickid']}_{x['objid']}.jpg", axis=1) 
-    df['file_loc'] = '/home/walml/data/desi/jpg/' + df['relative_file_loc']
+    # df['relative_file_loc'] = df.apply(lambda x: f"{x['brickid']}/{x['brickid']}_{x['objid']}.jpg", axis=1) 
+    # df['file_loc'] = '/home/walml/data/desi/jpg/' + df['relative_file_loc']
 
-    df_dedup = remove_close_sky_matches(df)
-    print(len(df_dedup))
-    df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_all_dedup_20arcsec.parquet')
-    exit()
+    # df_dedup = remove_close_sky_matches(df)
+    # print(len(df_dedup))
+    # df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_all_dedup_20arcsec.parquet')
+    # exit()
     # df_dedup2 = remove_close_sky_matches(df_dedup)
     # print(len(df_dedup2))
-    df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
+    # df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
 
 
-    df_dedup = pd.read_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
+    df_dedup = pd.read_parquet('/home/walml/data/desi/master_all_file_index_all_dedup_20arcsec.parquet')
 
     # columns = ['id_str', 'smooth-or-featured-dr12_total-votes', 'smooth-or-featured-dr5_total-votes', 'smooth-or-featured-dr8_total-votes']
 
-    df_dedup_with_votes = pd.merge(df_dedup, votes, how='inner', on='dr8_id')
+    df_dedup_with_votes = pd.merge(df_dedup, votes, how='left', on='dr8_id')
 
     train_catalog, test_catalog = train_test_split(df_dedup_with_votes, test_size=0.2, random_state=42)
-    train_catalog.to_parquet('/home/walml/data/wds/desi_labelled/train_catalog_v1.parquet', index=False)
-    test_catalog.to_parquet('/home/walml/data/wds/desi_labelled/test_catalog_v1.parquet', index=False)
+    train_catalog.to_parquet('/home/walml/data/wds/desi_all/train_catalog_v1.parquet', index=False)
+    test_catalog.to_parquet('/home/walml/data/wds/desi_all/test_catalog_v1.parquet', index=False)
 
     catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=2048)
 
