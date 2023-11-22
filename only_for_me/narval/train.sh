@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=23:00:0  
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=2
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100:2
 
 nvidia-smi
 
@@ -21,9 +21,10 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 
 REPO_DIR=/project/def-bovy/walml/zoobot
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_60_shards_1gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_f128 \
     --batch-size 256 \
-    --gpus 1 \
+    --num-features 128 \    
+    --gpus 2 \
     --num-workers 10 \
     --color --wandb --mixed-precision
 

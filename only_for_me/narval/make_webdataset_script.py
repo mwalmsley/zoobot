@@ -89,7 +89,7 @@ def main():
     train_catalog.to_parquet('/home/walml/data/wds/desi_labelled/train_catalog_v1.parquet', index=False)
     test_catalog.to_parquet('/home/walml/data/wds/desi_labelled/test_catalog_v1.parquet', index=False)
 
-    catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=4096)
+    catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=2048)
 
     
 

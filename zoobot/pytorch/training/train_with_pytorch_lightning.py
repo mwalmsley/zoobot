@@ -33,10 +33,10 @@ def train_default_zoobot_from_scratch(
     epochs=1000,
     patience=8,
     # model hparams
-    architecture_name='efficientnet_b0',  # recently changed
+    architecture_name='efficientnet_b0',
+    timm_kwargs = {}, # e.g. {'drop_path_rate': 0.2, 'num_features': 1280}. Passed to timm model init method, depends on arch.
     batch_size=128,
     dropout_rate=0.2,
-    drop_connect_rate=0.2,
     learning_rate=1e-3,
     betas=(0.9, 0.999),
     weight_decay=0.01,
@@ -253,7 +253,8 @@ def train_default_zoobot_from_scratch(
         test_time_dropout=True,
         dropout_rate=dropout_rate,
         learning_rate=learning_rate,
-        timm_kwargs={'drop_path_rate': drop_connect_rate},
+        # https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/efficientnet.py#L75C9-L75C17
+        timm_kwargs=timm_kwargs,
         compile_encoder=compile_encoder,
         betas=betas,
         weight_decay=weight_decay,

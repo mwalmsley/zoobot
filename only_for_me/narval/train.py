@@ -30,6 +30,8 @@ if __name__ == '__main__':
     parser.add_argument('--color', default=False, action='store_true')
     parser.add_argument('--batch-size', dest='batch_size',
                         default=256, type=int)
+    parser.add_argument('--num-features', dest='num_features',
+                        default=1280, type=int)
     parser.add_argument('--gpus', dest='gpus', default=1, type=int)
     parser.add_argument('--nodes', dest='nodes', default=1, type=int)
     parser.add_argument('--num-workers', dest='num_workers', default=1, type=int)
@@ -63,12 +65,13 @@ if __name__ == '__main__':
         search_str = '/home/walml/repos/zoobot/gz_decals_5_train_*.tar'
 
     else:
-        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled/desi_labelled_train_*.tar'
+        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_2048/desi_labelled_train_*.tar'
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
     # train_urls, val_urls = all_urls[:70], all_urls[70:]
-    train_urls, val_urls = all_urls[:60], all_urls[60:70]
+    # train_urls, val_urls = all_urls[:60], all_urls[60:70]
+    train_urls, val_urls = all_urls[:120], all_urls[120:140]    # all num shards must be divisible by workers * gpus e.g. 10*1, 10*2 
     schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
@@ -97,6 +100,7 @@ if __name__ == '__main__':
         val_urls = val_urls,
         test_urls = None,
         architecture_name=args.architecture_name,
+        timm_kwargs={'drop_path_rate': 0.2, 'num_features': args.num_features},
         batch_size=args.batch_size,
         epochs=epochs,  # rely on early stopping
         patience=10,
