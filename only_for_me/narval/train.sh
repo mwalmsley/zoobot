@@ -2,7 +2,7 @@
 #SBATCH --time=23:30:0  
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=20
 #SBATCH --mem-per-cpu 4G
 #SBATCH --gres=gpu:v100:1
 
@@ -25,7 +25,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --batch-size 256 \
     --num-features 128 \
     --gpus 1 \
-    --num-workers 10 \
+    --num-workers 20 \
     --color --wandb --mixed-precision --compile-encoder
 
 # srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
