@@ -24,7 +24,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/desi_f128 \
     --batch-size 256 \
     --num-features 128 \
-    --gpus 2 \
+    --gpus 1 \
     --num-workers 10 \
     --color --wandb --mixed-precision --compile-encoder
 
