@@ -115,6 +115,7 @@ def train_default_zoobot_from_scratch(
     assert save_dir is not None
     if not os.path.isdir(save_dir):
         os.mkdir(save_dir)
+    logging.info(f'Saving to {save_dir}')
 
     if color:
         logging.warning(
