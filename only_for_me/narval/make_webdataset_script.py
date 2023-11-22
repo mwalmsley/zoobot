@@ -75,9 +75,11 @@ def main():
 
     df_dedup = remove_close_sky_matches(df)
     print(len(df_dedup))
+    exit()
     # df_dedup2 = remove_close_sky_matches(df_dedup)
     # print(len(df_dedup2))
     df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
+
 
     df_dedup = pd.read_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
 
