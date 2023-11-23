@@ -68,7 +68,7 @@ if __name__ == '__main__':
         cache_dir = None
 
     else:
-        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_300px_2048/desi_labelled_train_*.tar'
+        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_300px_2048/desi_labelled_300px_2048_train_*.tar'
         cache_dir = os.environ['SLURM_TMPDIR'] + '/cache'
 
     all_urls = glob.glob(search_str)
