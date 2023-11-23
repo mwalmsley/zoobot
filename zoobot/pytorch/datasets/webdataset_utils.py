@@ -40,7 +40,7 @@ def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: in
 
 
 
-def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse_label_df=None):
+def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse_label_df=None, overwrite=False):
 
     assert '.tar' in save_loc
     df['id_str'] = df['id_str'].astype(str).str.replace('.', '_')
@@ -85,11 +85,12 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
         if sparse_label_df is not None:
             shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # auto-merge
         shard_save_loc = save_loc.replace('.tar', f'_{shard_n}_{len(shard_df)}.tar')
-        logging.info(shard_save_loc)
-        sink = wds.TarWriter(shard_save_loc)
-        for _, galaxy in shard_df.iterrows():
-            sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
-        sink.close()
+        if overwrite or not(os.path.isfile(shard_save_loc)):
+            logging.info(shard_save_loc)
+            sink = wds.TarWriter(shard_save_loc)
+            for _, galaxy in shard_df.iterrows():
+                sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
+            sink.close()
 
 
 def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):

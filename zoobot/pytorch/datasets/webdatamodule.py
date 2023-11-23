@@ -14,11 +14,11 @@ from galaxy_datasets import transforms
 class WebDataModule(pl.LightningDataModule):
     def __init__(
             self,
-            train_urls,
-            val_urls,
+            train_urls=None,
+            val_urls=None,
+            test_urls=None,
+            predict_urls=None,
             label_cols=None,
-            train_size=None,
-            val_size=None,
             # hardware
             batch_size=64,
             num_workers=4,
@@ -31,21 +31,20 @@ class WebDataModule(pl.LightningDataModule):
             ):
         super().__init__()
 
-        # if isinstance(train_urls, types.GeneratorType):
-        #     train_urls = list(train_urls)
-        # if isinstance(val_urls, types.GeneratorType):
-        #     val_urls = list(val_urls)
         self.train_urls = train_urls
         self.val_urls = val_urls
+        self.test_urls = test_urls
+        self.predict_urls = predict_urls
 
-        if train_size is None:
+        if train_urls is not None:
             # assume the size of each shard is encoded in the filename as ..._{size}.tar
-            train_size = sum([int(url.rstrip('.tar').split('_')[-1]) for url in train_urls])
-        if val_size is None:
-            val_size = sum([int(url.rstrip('.tar').split('_')[-1]) for url in val_urls])
-
-        self.train_size = train_size
-        self.val_size = val_size
+            self.train_size = interpret_dataset_size_from_urls(train_urls)
+        if val_urls is not None:
+            self.val_size = interpret_dataset_size_from_urls(val_urls)
+        if test_urls is not None:
+            self.test_size = interpret_dataset_size_from_urls(test_urls)
+        if predict_urls is not None:
+            self.predict_size = interpret_dataset_size_from_urls(predict_urls)
 
         self.label_cols = label_cols
 
@@ -61,18 +60,14 @@ class WebDataModule(pl.LightningDataModule):
         self.crop_scale_bounds = crop_scale_bounds
         self.crop_ratio_bounds = crop_ratio_bounds
 
+        for url_name in ['train', 'val', 'test', 'predict']:
+            urls = getattr(self, f'{url_name}_urls')
+            if urls is not None:
+                logging.info(f"{url_name} (before hardware splits) = {len(urls)} e.g. {urls[0]}", )
 
-        logging.info(f'Creating webdatamodule with WORLD_SIZE: {os.environ.get("WORLD_SIZE")}, RANK: {os.environ.get("RANK")}')
-
-        logging.info(f"train_urls (before hardware splits) = {len(self.train_urls)} e.g. {self.train_urls[0]}", )
-        logging.info(f"val_urls (before hardware splits) = {len(self.val_urls)} e.g. {self.val_urls[0]}", )
-        # logging.info("train_size (before hardware splits) = ", self.train_size)
-        # logging.info("val_size (before hardware splits) = ", self.val_size)
         logging.info(f"batch_size: {self.batch_size}, num_workers: {self.num_workers}")
 
     def make_image_transform(self, mode="train"):
-        # if mode == "train":
-        # elif mode == "val":
 
         augmentation_transform = transforms.default_transforms(
             crop_scale_bounds=self.crop_scale_bounds,
@@ -102,11 +97,11 @@ class WebDataModule(pl.LightningDataModule):
     
 
     def make_loader(self, urls, mode="train"):
+        dataset_size = getattr(self, f'{mode}_size')
         if mode == "train":
-            dataset_size = self.train_size
-            shuffle = min(self.train_size, 5000)
-        elif mode == "val":
-            dataset_size = self.val_size
+            shuffle = min(dataset_size, 5000)
+        else:
+            assert mode in ['val', 'test', 'predict'], mode
             shuffle = 0
 
         transform_image = self.make_image_transform(mode=mode)
@@ -120,21 +115,20 @@ class WebDataModule(pl.LightningDataModule):
             )
             .shuffle(shuffle)
             .decode("rgb")
-            .to_tuple('image.jpg', 'labels.json')
-            .map_tuple(transform_image, transform_label)
-            # torch collate stacks dicts nicely while webdataset only lists them
-            # so use the torch collate instead
-            .batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
-            # .repeat(5)
         )
+        if mode == 'predict':
+            # dataset = dataset.extract_keys('image.jpg').map(transform_image)
+            dataset = dataset.to_tuple('image.jpg').map_tuple(transform_image)  # (im,) tuple. But map applied to all elements
+            # .map(get_first)
+        else:
+            dataset = (
+                dataset.to_tuple('image.jpg', 'labels.json')
+                .map_tuple(transform_image, transform_label)
+            )
 
-        # from itertools import islice
-        # for batch in islice(dataset, 0, 3):
-        #     images, labels = batch
-        #     # print(len(sample))
-        #     print(images.shape)
-        #     print(len(labels))  # list of dicts
-        #     # exit()
+        # torch collate stacks dicts nicely while webdataset only lists them
+        # so use the torch collate instead
+        dataset = dataset.batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
 
         loader = wds.WebLoader(
             dataset,
@@ -145,17 +139,13 @@ class WebDataModule(pl.LightningDataModule):
             prefetch_factor=self.prefetch_factor
         )
 
-        # print('sampling')
-        # for sample in islice(loader, 0, 3):
-        #     images, labels = sample
-        #     print(images.shape)
-        #     print(len(labels))  # list of dicts
-            # exit()
-
         loader.length = dataset_size // self.batch_size
 
         # temp hack instead
-        assert dataset_size % self.batch_size == 0, (dataset_size, self.batch_size, dataset_size % self.batch_size)
+        if mode in ['train', 'val']:
+            assert dataset_size % self.batch_size == 0, (dataset_size, self.batch_size, dataset_size % self.batch_size)
+        # for test/predict, always single GPU anyway
+
         # if mode == "train":
             # ensure same number of batches in all clients
             # loader = loader.ddp_equalize(dataset_size // self.batch_size)
@@ -168,32 +158,14 @@ class WebDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return self.make_loader(self.val_urls, mode="val")
-
-    # @staticmethod
-    # def add_loader_specific_args(parser):
-    #     parser.add_argument("-b", "--batch-size", type=int, default=128)
-    #     parser.add_argument("--workers", type=int, default=6)
-    #     parser.add_argument("--bucket", default="./shards")
-    #     parser.add_argument("--shards", default="imagenet-train-{000000..001281}.tar")
-    #     parser.add_argument("--valshards", default="imagenet-val-{000000..000006}.tar")
-    #     return parser
-
-# def nodesplitter_func(urls): # SimpleShardList
-#     # print(urls)
-#     try:
-#         node_id, node_count = torch.distributed.get_rank(), torch.distributed.get_world_size()
-#         urls_to_use = list(urls)[node_id::node_count]
-#         logging.info(f'id: {node_id}, of count {node_count}. \nURLS: {len(urls_to_use)} of {len(urls)} ({urls_to_use})\n\n')
-#         return urls_to_use
-#     except RuntimeError:
-#         # print('Distributed not initialised. Hopefully single node.')
-#         return urls
+    
+    def predict_dataloader(self):
+        return self.make_loader(self.predict_urls, mode="predict")
 
 def identity(x):
     return x
 
 def nodesplitter_func(urls):
-    # num_urls = len(list(urls.copy()))
     urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
     logging.info(
@@ -205,14 +177,16 @@ def nodesplitter_func(urls):
         )
     return urls_to_use
 
+def interpret_shard_size_from_url(url):
+    return int(url.rstrip('.tar').split('_')[-1])
 
-# def split_by_worker(urls):
-#     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
-#     if num_workers > 1:
-#         logging.info(f'Slicing urls for rank {rank}, world_size {world_size}, worker {worker}')
-#         for s in islice(urls, worker, None, num_workers):
-#             yield s
-#     else:
-#         logging.warning('only one worker?!')
-#         for s in urls:
-#             yield s
+def interpret_dataset_size_from_urls(urls):
+    return sum([interpret_shard_size_from_url(url) for url in urls])
+
+def get_first(x):
+    return x[0]
+
+def custom_collate(x):
+    if isinstance(x, list) and len(x) == 1:
+        x = x[0]
+    return torch.utils.data.default_collate(x)

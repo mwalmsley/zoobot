@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     if os.path.isdir('/home/walml/repos/zoobot'):
         logging.warning('local mode')
-        search_str = '/home/walml/data/wds/desi_labelled_300px_2048/desi_labelled_train_*.tar'
+        search_str = '/home/walml/data/wds/desi_labelled_300px_2048/desi_labelled_300px_2048_train_*.tar'
         cache_dir = None
 
     else:

@@ -2,6 +2,7 @@
 # https://github.com/inigoval/finetune/blob/main/finetune.py
 import logging
 import os
+from typing import Any
 import warnings
 from functools import partial
 
@@ -182,10 +183,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                     "lr": lr * (self.lr_decay**i)
                 })
 
-        # TODO this actually breaks training because the generator only iterates once!
-        # total_params = sum(p.numel() for param_set in params.copy() for p in param_set['params'])
-        # logging.info('Total params to fit: {}'.format(total_params))
-
         # Initialize AdamW optimizer
         opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
 
@@ -219,6 +216,14 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def test_step(self, batch, batch_idx, dataloader_idx=0):
         return self.make_step(batch)
+    
+    def predict_step(self, batch, batch_idx) -> Any:
+        # I can't work out how to get webdataset to return a single item im, not a tuple (im,).
+        # this is fine for training but annoying for predict
+        # help welcome. meanwhile, this works around it
+        if isinstance(batch, list) and len(batch) == 1:
+            return self(batch[0])
+        return self(batch)
 
     def on_train_batch_end(self, outputs, batch, batch_idx: int, dataloader_idx=0):
         # v2 docs currently do not show dataloader_idx as train argument so unclear if this will value be updated properly
@@ -355,6 +360,9 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
 
     
     def predict_step(self, x, batch_idx):
+        # see Abstract version
+        if isinstance(x, list) and len(x) == 1:
+            return self(x[0])
         x = self.forward(x)  # logits from LinearClassifier
         # then applies softmax
         return F.softmax(x, dim=1)
