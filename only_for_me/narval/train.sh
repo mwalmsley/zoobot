@@ -20,14 +20,20 @@ export NCCL_BLOCKING_WAIT=1  #Set this environment variable if you wish to use t
 # echo "r$SLURM_NODEID Launching python script"
 
 REPO_DIR=/project/def-bovy/walml/zoobot
+# srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
+#     --save-dir $REPO_DIR/only_for_me/narval/desi_300px_f128_1gpu \
+#     --batch-size 256 \
+#     --num-features 128 \
+#     --gpus 1 \
+#     --num-workers 10 \
+#     --color --wandb --mixed-precision --compile-encoder
+
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_f128_1gpu \
-    --batch-size 256 \
-    --num-features 128 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvittiny_rw_224_1gpu \
+    --batch-size 64 \
     --gpus 1 \
     --num-workers 10 \
+    --architecture maxvit_tiny_rw_224 \
     --color --wandb --mixed-precision --compile-encoder
 
-# srun python $SLURM_TMPDIR/zoobot/only_for_me/narval/finetune.py
-
-    # --architecture maxvit_small_tf_224 \
+    # maxvit_small_tf_224 \

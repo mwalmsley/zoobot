@@ -82,11 +82,13 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
     # transform = None
 
     for shard_n, shard_df in tqdm.tqdm(enumerate(shard_dfs), total=len(shard_dfs)):
-        if sparse_label_df is not None:
-            shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # auto-merge
         shard_save_loc = save_loc.replace('.tar', f'_{shard_n}_{len(shard_df)}.tar')
         if overwrite or not(os.path.isfile(shard_save_loc)):
-            logging.info(shard_save_loc)
+
+            if sparse_label_df is not None:
+                shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # auto-merge
+
+            # logging.info(shard_save_loc)
             sink = wds.TarWriter(shard_save_loc)
             for _, galaxy in shard_df.iterrows():
                 sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
