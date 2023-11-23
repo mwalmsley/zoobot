@@ -30,17 +30,17 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # v100
 # effnet b0 256
 # maxvittiny_rw_224 64
-# tf_efficientnetv2_b0 256?
+# tf_efficientnetv2_b0 256 - runs
 # tf_efficientnetv2_s 64?
 # pit_xs_224 256?
 # pit_s_224 64?
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_tf_efficientnetv2_b0_1gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_xs_224_1gpu \
     --batch-size 256 \
     --gpus 1 \
     --num-workers 10 \
-    --architecture tf_efficientnetv2_b0 \
+    --architecture pit_xs_224 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
