@@ -36,11 +36,11 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # pit_s_224 64? - 20%, could do x4 -> 256
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_s_224_b256_4gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_xs_224_b256_4gpu \
     --batch-size 256 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture pit_s_224 \
+    --architecture pit_xs_224 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
