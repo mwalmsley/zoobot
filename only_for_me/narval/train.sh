@@ -34,13 +34,14 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # tf_efficientnetv2_s 64?
 # pit_xs_224 256 - 40%, could do 512
 # pit_s_224 64? - 20%, could do x4 -> 256
+# maxvit_small_224 32
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_efficientnet_b0_4gpu \
-    --batch-size 256 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_small_rw_224_4gpu \
+    --batch-size 32 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture efficientnet_b0 \
+    --architecture maxvit_rmlp_small_rw_224 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
