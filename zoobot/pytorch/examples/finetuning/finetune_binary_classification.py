@@ -27,9 +27,10 @@ if __name__ == '__main__':
     # To support more complicated labels, Zoobot expects a list of columns. A list with one element works fine.
    
     # load a pretrained checkpoint saved here
-    # checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/temp/dr5_py_gr_2270/checkpoints/epoch=360-step=231762.ckpt')
-    checkpoint_loc = '/Users/user/repos/gz-decals-classifiers/results/benchmarks/pytorch/dr5/dr5_py_gr_15366/checkpoints/epoch=58-step=18939.ckpt'
-    
+    # https://www.dropbox.com/s/7ixwo59imjfz4ay/effnetb0_greyscale_224px.ckpt?dl=0
+    # see https://zoobot.readthedocs.io/en/latest/data_notes.html for more options
+    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt')
+
     # save the finetuning results here
     save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
 
@@ -70,8 +71,9 @@ if __name__ == '__main__':
       finetuned_model,
       n_samples=1,
       label_cols=label_cols,
-      save_loc=os.path.join(save_dir, 'finetuned_predictions.csv')
-      # trainer_kwargs={'accelerator': 'gpu'}
+      save_loc=os.path.join(save_dir, 'finetuned_predictions.csv'),
+      datamodule_kwargs={'batch_size': 32},  # we also need to set batch size here, or you may run out of memory
+      trainer_kwargs={'accelerator': 'gpu'}  
     )
     """
     Under the hood, this is essentially doing:

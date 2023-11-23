@@ -92,6 +92,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
           self.encoder = load_pretrained_encoder(checkpoint_loc)
         else:
           assert checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
+          assert encoder is not None, 'Must pass either checkpoint to load or encoder to use'
           self.encoder = encoder
 
         self.encoder_dim = encoder_dim
@@ -126,15 +127,37 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         lr = self.learning_rate
         params = [{"params": self.head.parameters(), "lr": lr}]
 
-        # this bit is specific to Zoobot EffNet
-        # may not yet work fr MaxViT (help wanted!)
-        encoder_blocks = self.encoder.blocks
-
+        if hasattr(self.encoder, 'blocks'):  
+            logging.info('Effnet detected')
+            # TODO this actually excludes the first conv layer/bn
+            encoder_blocks = self.encoder.blocks
+            blocks_to_tune = list(encoder_blocks)
+        elif hasattr(self.encoder, 'layer4'):
+            logging.info('Resnet detected')
+            # similarly, excludes first conv/bn
+            blocks_to_tune = [
+                self.encoder.layer1,
+                self.encoder.layer2,
+                self.encoder.layer3,
+                self.encoder.layer4
+            ]
+        elif hasattr(self.encoder, 'stages'):
+            logging.info('Max-ViT Tiny detected')
+            blocks_to_tune = [
+                # getattr as obj.0 is not allowed (why does timm call them 0!?)
+                getattr(self.encoder.stages, '0'),
+                getattr(self.encoder.stages, '1'),
+                getattr(self.encoder.stages, '2'),
+                getattr(self.encoder.stages, '3'),
+            ]
+        else:
+            raise ValueError('Encoder architecture not automatically recognised')
+        
         assert self.n_blocks <= len(
-            encoder_blocks
-        ), f"Network only has {len(encoder_blocks)} tuneable blocks, {self.n_blocks} specified for finetuning"
+            blocks_to_tune
+        ), f"Network only has {len(blocks_to_tune)} tuneable blocks, {self.n_blocks} specified for finetuning"
 
-        blocks_to_tune = list(encoder_blocks.named_children())
+        
         # take n blocks, ordered highest layer to lowest layer
         blocks_to_tune.reverse()
         # will finetune all params in first N
@@ -143,7 +166,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         remaining_blocks = blocks_to_tune[self.n_blocks:]
 
         # Append parameters of layers for finetuning along with decayed learning rate
-        for i, (_, block) in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
+        for i, block in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
             params.append({
                     "params": block.parameters(),
                     "lr": lr * (self.lr_decay**i)
@@ -152,7 +175,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         logging.debug(params)
 
         # optionally, for the remaining layers (not otherwise finetuned) you can choose to still FT the batchnorm layers
-        for i, (_, block) in enumerate(remaining_blocks):
+        for i, block in enumerate(remaining_blocks):
             if self.always_train_batchnorm:
                 params.append({
                     "params": get_batch_norm_params_lighting(block),
@@ -334,14 +357,14 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     def predict_step(self, x, batch_idx):
         x = self.forward(x)  # logits from LinearClassifier
         # then applies softmax
-        return F.softmax(x, dim=1)[:, 1]
+        return F.softmax(x, dim=1)
 
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       # self.logger is set by pl.Trainer(logger=) argument
         if (self.logger is not None) and (batch_idx == 0):
             x, y = batch
-            y_pred_softmax = F.softmax(outputs['predictions'], dim=1)[:, 1]  # odds of class 1 (assumed binary)
+            y_pred_softmax = F.softmax(outputs['predictions'], dim=1)
             n_images = 5
             images = [img for img in x[:n_images]]
             captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(

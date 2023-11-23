@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="1.0.4",
+    version="1.0.6",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -22,51 +22,63 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     python_requires=">=3.8",  # recommend 3.9 for new users. TF needs >=3.7.2, torchvision>=3.8
     extras_require={
-        'pytorch_cpu': [
+        'pytorch-cpu': [
             # A100 GPU currently only seems to support cuda 11.3 on manchester cluster, let's stick with this version for now
             # very latest version wants cuda 11.6
-            'torch == 1.12.1+cpu',
-            'torchvision == 0.13.1+cpu',
-            'torchaudio == 0.12.1',
+            'torch == 2.1.0+cpu',
+            'torchvision == 0.16.0+cpu',
+            'torchaudio >= 2.1.0',
             'pytorch-lightning >= 2.0.0',
             # 'simplejpeg',
             'albumentations',
-            'pyro-ppl == 1.8.0',
+            'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
-            'timm == 0.6.12'
+            'timm == 0.9.10'
         ],
-        'pytorch_m1': [
+        'pytorch-m1': [
             # as above but without the +cpu (and the extra-index-url in readme has no effect)
             # all matching pytorch versions for an m1 system will be cpu
-            'torch == 1.12.1',
-            'torchvision == 0.13.1',
-            'torchaudio == 0.12.1',
+            'torch == 2.1.0',
+            'torchvision == 0.16.0',
+            'torchaudio >= 2.1.0',
             'pytorch-lightning >= 2.0.0',
             'albumentations',
-            'pyro-ppl == 1.8.0',
+            'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
-            'timm == 0.6.12'
+            'timm >= 0.9.10'
         ],
         # as above but without pytorch itself
         # for GPU, you will also need e.g. cudatoolkit=11.3, 11.6
         # https://pytorch.org/get-started/previous-versions/#v1121
-        'pytorch_cu113': [
-            'torch == 1.12.1+cu113',
-            'torchvision == 0.13.1+cu113',
-            'torchaudio == 0.12.1',
+        'pytorch-cu118': [
+            'torch == 2.1.0+cu118',
+            'torchvision == 0.16.0+cu118',
+            'torchaudio >= 2.1.0',
             'pytorch-lightning >= 2.0.0',
             'albumentations',
-            'pyro-ppl == 1.8.0',
+            'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
-            'timm == 0.6.12'
-        ],
-        'pytorch_colab': [
+            'timm >= 0.9.10'
+        ],  # exactly as above, but _cu121 for cuda 12.1 (the current default)
+        'pytorch-cu121': [
+            'torch == 2.1.0+cu121',
+            'torchvision == 0.16.0+cu121',
+            'torchaudio >= 2.1.0',
+            'pytorch-lightning >= 2.0.0',
+            'albumentations',
+            'pyro-ppl >= 1.8.6',
+            'torchmetrics == 0.11.0',
+            'timm >= 0.9.10'
+        ],        
+        'pytorch-colab': [
+            # colab includes pytorch already
             'pytorch-lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
-            'timm == 0.6.12'
+            'timm == 0.9.10'
         ],
+        # TODO may add narval/Digital Research Canada config
         'tensorflow': [
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
@@ -95,13 +107,12 @@ setuptools.setup(
         'pandas',
         'scipy',
         'astropy',  # for reading fits
-        # 'scikit-image >= 0.19.2',  # TODO remove
         'scikit-learn >= 1.0.2',
         'matplotlib',
         'pyarrow',  # to read parquet, which is very handy for big datasets
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
-        'setuptools==59.5.0',  # wandb logger incompatibility
-        'galaxy-datasets==0.0.15'  # for dataset loading in both TF and Torch (renamed from pytorch-galaxy-datasets)
+        'setuptools',  # no longer pinned
+        'galaxy-datasets>=0.0.15'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )
