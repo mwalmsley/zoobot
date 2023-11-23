@@ -32,8 +32,8 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # maxvittiny_rw_224 64
 # tf_efficientnetv2_b0 256 - runs
 # tf_efficientnetv2_s 64?
-# pit_xs_224 256?
-# pit_s_224 64?
+# pit_xs_224 256?  42681961
+# pit_s_224 64?   42681996
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_s_224_1gpu \
