@@ -64,11 +64,11 @@ if __name__ == '__main__':
 
     if os.path.isdir('/home/walml/repos/zoobot'):
         logging.warning('local mode')
-        search_str = '/home/walml/data/wds/desi_labelled_2048/desi_labelled_train_*.tar'
+        search_str = '/home/walml/data/wds/desi_labelled_300px_2048/desi_labelled_train_*.tar'
         cache_dir = None
 
     else:
-        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_2048/desi_labelled_train_*.tar'
+        search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_300px_2048/desi_labelled_train_*.tar'
         cache_dir = os.environ['SLURM_TMPDIR'] + '/cache'
 
     all_urls = glob.glob(search_str)
@@ -122,7 +122,8 @@ if __name__ == '__main__':
         compile_encoder=args.compile_encoder,  # NEW
         random_state=random_state,
         learning_rate=1e-3,
-        cache_dir=cache_dir
+        cache_dir=cache_dir,
+        crop_scale_bounds=(0.75, 0.85)  # slightly increased to compensate for 424-400px crop when saving webdataset
         # cache_dir='/tmp/cache'
         # /tmp for ramdisk (400GB total, vs 4TB total for nvme)
     )

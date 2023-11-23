@@ -74,18 +74,18 @@ class WebDataModule(pl.LightningDataModule):
         # if mode == "train":
         # elif mode == "val":
 
-        # augmentation_transform = transforms.default_transforms(
-        #     crop_scale_bounds=self.crop_scale_bounds,
-        #     crop_ratio_bounds=self.crop_ratio_bounds,
-        #     resize_after_crop=self.resize_after_crop,
-        #     pytorch_greyscale=not self.color
-        # )  # A.Compose object
-
-        logging.warning('Minimal augmentations for speed test')
-        augmentation_transform = transforms.minimal_transforms(
+        augmentation_transform = transforms.default_transforms(
+            crop_scale_bounds=self.crop_scale_bounds,
+            crop_ratio_bounds=self.crop_ratio_bounds,
             resize_after_crop=self.resize_after_crop,
             pytorch_greyscale=not self.color
         )  # A.Compose object
+
+        # logging.warning('Minimal augmentations for speed test')
+        # augmentation_transform = transforms.fast_transforms(
+        #     resize_after_crop=self.resize_after_crop,
+        #     pytorch_greyscale=not self.color
+        # )  # A.Compose object
 
 
         def do_transform(img):

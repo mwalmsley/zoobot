@@ -23,7 +23,7 @@ def dataset_to_webdataset(dataset_name, dataset_func, label_cols, divisor=4096):
     catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=divisor)
 
 
-def catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=4096):
+def catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=4096):
     for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
         n_shards = len(catalog) // divisor
         logging.info(n_shards)
@@ -33,7 +33,7 @@ def catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog
 
         save_loc = f"/home/walml/data/wds/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
         
-        webdataset_utils.df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards)
+        webdataset_utils.df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df)
 
         # webdataset_utils.load_wds_directly(save_loc)
 
@@ -53,7 +53,8 @@ def main():
  
 
     # for converting other catalogs e.g. DESI
-    dataset_name = 'desi_labelled'
+    dataset_name = 'desi_labelled_300px_2048'
+    # dataset_name = 'desi_all_2048'
     label_cols = label_metadata.decals_all_campaigns_ortho_label_cols
     columns = [
         'dr8_id', 'brickid', 'objid', 'ra', 'dec'
@@ -84,18 +85,20 @@ def main():
     # print(len(df_dedup2))
     # df_dedup.to_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
 
-
-    df_dedup = pd.read_parquet('/home/walml/data/desi/master_all_file_index_all_dedup_20arcsec.parquet')
+    df_dedup = pd.read_parquet('/home/walml/data/desi/master_all_file_index_labelled_dedup_20arcsec.parquet')
+    # df_dedup = pd.read_parquet('/home/walml/data/desi/master_all_file_index_all_dedup_20arcsec.parquet')
+    df_dedup['id_str'] = df_dedup['dr8_id']
 
     # columns = ['id_str', 'smooth-or-featured-dr12_total-votes', 'smooth-or-featured-dr5_total-votes', 'smooth-or-featured-dr8_total-votes']
 
-    df_dedup_with_votes = pd.merge(df_dedup, votes, how='left', on='dr8_id')
+    # gets too big, need to only merge in label_df per shard
+    # df_dedup_with_votes = pd.merge(df_dedup, votes, how='left', on='dr8_id')
 
-    train_catalog, test_catalog = train_test_split(df_dedup_with_votes, test_size=0.2, random_state=42)
-    train_catalog.to_parquet('/home/walml/data/wds/desi_all/train_catalog_v1.parquet', index=False)
-    test_catalog.to_parquet('/home/walml/data/wds/desi_all/test_catalog_v1.parquet', index=False)
+    train_catalog, test_catalog = train_test_split(df_dedup, test_size=0.2, random_state=42)
+    train_catalog.to_parquet('/home/walml/data/wds/desi_labelled_300px_2048/train_catalog_v1.parquet', index=False)
+    test_catalog.to_parquet('/home/walml/data/wds/desi_labelled_300px_2048/test_catalog_v1.parquet', index=False)
 
-    catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=2048)
+    catalogs_to_webdataset(dataset_name, label_cols, train_catalog, test_catalog, divisor=2048, sparse_label_df=votes)
 
     
 

@@ -6,6 +6,9 @@ import json
 from itertools import islice
 import glob
 
+
+import albumentations as A
+
 import tqdm
 import numpy as np
 import pandas as pd
@@ -37,26 +40,76 @@ def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: in
 
 
 
-def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int):
+def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse_label_df=None):
+
     assert '.tar' in save_loc
     df['id_str'] = df['id_str'].astype(str).str.replace('.', '_')
-
+    if sparse_label_df is not None:
+        logging.info(f'Using sparse label df: {len(sparse_label_df)}')
     shard_dfs = np.array_split(df, n_shards)
     logging.info(f'shards: {len(shard_dfs)}. Shard size: {len(shard_dfs[0])}')
+
+    transforms_to_apply = [
+        # below, for 224px fast training fast augs setup
+        # A.Resize(
+        #     height=350,  # now more aggressive, 65% crop effectively
+        #     width=350,  # now more aggressive, 65% crop effectively
+        #     interpolation=cv2.INTER_AREA  # slow and good interpolation
+        # ),
+        # A.CenterCrop(
+        #     height=224,
+        #     width=224,
+        #     always_apply=True
+        # ),
+        # below, for standard training default augs
+        # small boundary trim and then resize expecting further 224px crop
+        # we want 0.7-0.8 effective crop
+        # in augs that could be 0.x-1.0, and here a pre-crop to 0.8 i.e. 340px
+        # but this would change the centering
+        # let's stick to small boundary crop and 0.75-0.85 in augs
+        A.CenterCrop(
+            height=400,
+            width=400,
+            always_apply=True
+        ),
+        A.Resize(
+            height=300,
+            width=300,
+            interpolation=cv2.INTER_AREA  # slow and good interpolation
+        )
+    ]
+    transform = A.Compose(transforms_to_apply)
+    # transform = None
+
     for shard_n, shard_df in tqdm.tqdm(enumerate(shard_dfs), total=len(shard_dfs)):
+        if sparse_label_df is not None:
+            shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # auto-merge
         shard_save_loc = save_loc.replace('.tar', f'_{shard_n}_{len(shard_df)}.tar')
         logging.info(shard_save_loc)
         sink = wds.TarWriter(shard_save_loc)
         for _, galaxy in shard_df.iterrows():
-            sink.write(galaxy_to_wds(galaxy, label_cols))
+            sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
         sink.close()
 
 
-def galaxy_to_wds(galaxy: pd.Series, label_cols):
+def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):
 
     im = cv2.imread(galaxy['file_loc'])
     # cv2 loads BGR for 'history', fix
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB) 
+    # if central_crop is not None:
+    #     width, height, _ = im.shape
+    #     # assert width == height, (width, height)
+    #     mid = int(width/2)
+    #     half_central_crop = int(central_crop/2)
+    #     low_edge, high_edge = mid - half_central_crop, mid + half_central_crop
+    #     im = im[low_edge:high_edge, low_edge:high_edge]
+    #     assert im.shape == (central_crop, central_crop, 3)
+
+    # apply albumentations
+    if transform is not None:
+        im = transform(image=im)['image']
+
     labels = json.dumps(galaxy[label_cols].to_dict())
     id_str = str(galaxy['id_str'])
     return {
