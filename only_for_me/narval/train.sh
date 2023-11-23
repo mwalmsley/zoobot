@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100:4
 
 nvidia-smi
 
@@ -30,15 +30,15 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # v100
 # effnet b0 256
 # maxvittiny_rw_224 64
-# tf_efficientnetv2_b0 256 - runs
+# tf_efficientnetv2_b0 256 - 50.55%, might squeeze x2
 # tf_efficientnetv2_s 64?
-# pit_xs_224 256?  42681961
-# pit_s_224 64?   42681996
+# pit_xs_224 256 - 40%, could do 512
+# pit_s_224 64? - 20%, could do x4 -> 256
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_s_224_1gpu \
-    --batch-size 64 \
-    --gpus 1 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_s_224_b256_4gpu \
+    --batch-size 256 \
+    --gpus 4 \
     --num-workers 10 \
     --architecture pit_s_224 \
     --color --wandb --mixed-precision --compile-encoder
