@@ -97,6 +97,12 @@ if __name__ == '__main__':
     else:
         wandb_logger = None
 
+    timm_kwargs = {}
+    if 'efficientnet' in args.architecture_name:
+        timm_kwargs.update({'drop_path_rate': 0.2})
+    if args.num_features != 1280:
+        timm_kwargs.update({'num_features': args.num_features})
+
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
         schema=schema,
@@ -104,7 +110,7 @@ if __name__ == '__main__':
         val_urls = val_urls,
         test_urls = None,
         architecture_name=args.architecture_name,
-        timm_kwargs={'drop_path_rate': 0.2, 'num_features': args.num_features},
+        timm_kwargs=timm_kwargs, 
         batch_size=args.batch_size,
         epochs=epochs,  # rely on early stopping
         patience=10,
