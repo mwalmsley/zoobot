@@ -48,11 +48,11 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # maxvit_rmlp_base_rw_224 - 32 (95%). Now scaling at 16 gpus
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu_5w \
     --batch-size 32 \
     --gpus 4 \
     --nodes 4 \
-    --num-workers 10 \
+    --num-workers 5 \
     --architecture maxvit_rmlp_base_rw_224 \
     --color --wandb --mixed-precision --compile-encoder
 

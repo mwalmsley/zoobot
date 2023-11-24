@@ -81,6 +81,9 @@ if __name__ == '__main__':
     # train_urls, val_urls = all_urls[:70], all_urls[70:]
     # train_urls, val_urls = all_urls[:60], all_urls[60:70]
     train_urls, val_urls = all_urls[:120], all_urls[120:140]    # all num shards must be divisible by workers * gpus e.g. 10*1, 10*2 
+    # train_urls, val_urls = all_urls[:112], all_urls[112:140]  # divisible by 16
+    train_urls = train_urls * 4
+    val_urls = val_urls * 4
     schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
