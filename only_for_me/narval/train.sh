@@ -37,13 +37,14 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # maxvit_small_224 32
 # vit_small_patch16_224 32?
 # vit_tiny_patch16_224 64?
+# maxvit_rmlp_small_rw 32?
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_xs_224_4gpu \
-    --batch-size 512 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_small_rw_4gpu \
+    --batch-size 32 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture pit_xs_224 \
+    --architecture maxvit_rmlp_small_rw \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
