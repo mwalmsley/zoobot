@@ -40,16 +40,17 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # maxvit_rmlp_small_rw_224 32?
 # https://huggingface.co/timm/convnextv2_nano.fcmae TODO with MAE
 # convnext_nano
-# convnext_tiny
-# efficientnet_b2
-# convnext_small 64?
+# convnext_tiny - 128
+# efficientnet_b2 - 32% at 64, can do 128
+# convnext_small 64 - 49.25%, MAYBE 128 
+# efficientnet_b4
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_small_rw_224_4gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_efficientnet_b4_4gpu \
     --batch-size 64 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture maxvit_rmlp_small_rw_224 \
+    --architecture efficientnet_b4 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
