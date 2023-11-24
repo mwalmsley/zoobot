@@ -28,7 +28,7 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 
 # batch sizes
 # v100
-# effnet b0 256
+# efficientnet_b0 256
 # maxvittiny_rw_224 64
 # tf_efficientnetv2_b0 256 - 50.55%, might squeeze x2
 # tf_efficientnetv2_s 64?
@@ -39,11 +39,11 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # vit_tiny_patch16_224 64?
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_tf_efficientnetv2_b0_4gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_efficientnet_b0_4gpu \
     --batch-size 256 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture tf_efficientnetv2_b0 \
+    --architecture efficientnet_b0 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
