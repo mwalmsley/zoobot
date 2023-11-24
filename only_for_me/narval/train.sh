@@ -41,7 +41,7 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # https://huggingface.co/timm/convnextv2_nano.fcmae TODO with MAE
 # convnext_nano
 # convnext_tiny
-efficientnet_b2
+# efficientnet_b2
 # convnext_small 64
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
