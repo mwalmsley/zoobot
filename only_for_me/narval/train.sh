@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=23:30:0  
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:4
+#SBATCH --gres=gpu:v100:1
 
 nvidia-smi
 
@@ -38,13 +38,16 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # vit_small_patch16_224 32?
 # vit_tiny_patch16_224 64?
 # maxvit_rmlp_small_rw 32?
+# https://huggingface.co/timm/convnextv2_nano.fcmae TODO with MAE
+# convnext_nano
+# convnext_tiny
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_pit_s_224_4gpu \
-    --batch-size 256 \
-    --gpus 4 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_convnext_tiny_1gpu \
+    --batch-size 128 \
+    --gpus 1 \
     --num-workers 10 \
-    --architecture pit_s_224 \
+    --architecture convnext_tiny \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
