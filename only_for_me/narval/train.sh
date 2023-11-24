@@ -37,20 +37,21 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # maxvit_small_224 32
 # vit_small_patch16_224 32? 17%, too small. TODO 128 (but pure vit is probably not great)
 # vit_tiny_patch16_224 64?
-# maxvit_rmlp_small_rw_224 32?
+# maxvit_rmlp_small_rw_224 64 (97% allocated and very good efficiency)
 # https://huggingface.co/timm/convnextv2_nano.fcmae TODO with MAE
 # convnext_nano
 # convnext_tiny - 128
 # efficientnet_b2 - 32% at 64, can do 128
 # convnext_small 64 - 49.25%, MAYBE 128 
-# efficientnet_b4
+# efficientnet_b4 - 48% at 64, could maybe do 128
+# efficientnet_b5 - 64?
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_efficientnet_b4_4gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_efficientnet_b5_4gpu \
     --batch-size 64 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture efficientnet_b4 \
+    --architecture efficientnet_b5 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
