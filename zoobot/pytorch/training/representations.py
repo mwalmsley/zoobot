@@ -12,4 +12,6 @@ class ZoobotEncoder(pl.LightningModule):
             raise NotImplementedError('Will eventually support resetting timm classifier to get FPN features')
 
     def forward(self, x):
+        if isinstance(x, list) and len(x) == 1:
+            return self(x[0])
         return self.encoder(x)

@@ -72,7 +72,7 @@ def load_hdf5s(hdf5_locs: List):
         'id_str': [p for metadata in prediction_metadata for p in metadata['id_str']],
         'hdf5_loc': [l for metadata in prediction_metadata for l in metadata['hdf5_loc']]
     }
-    assert len(prediction_metadata['id_str']) == len(predictions)
+    assert len(prediction_metadata['id_str']) == len(predictions), (len(prediction_metadata['id_str']), len(predictions))
 
     galaxy_id_df = pd.DataFrame(data=prediction_metadata)
 
@@ -163,10 +163,12 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     upper_edge_cols = [col + '_90pc-upper' for col in label_cols]
     proportion_asked_cols = [col + '_proportion-asked' for col in label_cols]
 
+
     # make friendly dataframe with just masked fraction and description string
     friendly_loc = save_loc.replace('.parquet', '_friendly.parquet')
     fraction_df = pd.DataFrame(data=masked_fractions, columns=fraction_cols)
     friendly_df = pd.concat([galaxy_id_df, fraction_df], axis=1)
+    friendly_df = convert_halfprecision_cols(friendly_df)
     friendly_df.to_parquet(friendly_loc, index=False)
     logging.info('Friendly summary table saved to {}'.format(friendly_loc))
 
@@ -177,8 +179,16 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     upper_edge_df = pd.DataFrame(data=all_upper_edges, columns=upper_edge_cols)
     proportion_df = pd.DataFrame(data=prob_of_asked_by_answer, columns=proportion_asked_cols)
     advanced_df = pd.concat([galaxy_id_df, fraction_df, lower_edge_df, upper_edge_df, proportion_df], axis=1)
+    advanced_df = convert_halfprecision_cols(advanced_df)
     advanced_df.to_parquet(advanced_loc, index=False)
     logging.info('Advanced summary table saved to {}'.format(advanced_loc))
+
+
+def convert_halfprecision_cols(df):
+    # convert any half-precision columns, parquet can't save these
+    half_floats = df.select_dtypes(include="float16")
+    df[half_floats.columns] = half_floats.astype("float32")
+    return df
 
 
 def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False):
