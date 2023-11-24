@@ -42,6 +42,10 @@ if __name__ == '__main__':
                         default=False, action='store_true')
     parser.add_argument('--wandb', dest='wandb',
                         default=False, action='store_true')
+    parser.add_argument('--weight-decay', dest='weight_decay',
+                        default=0.01, type=float)
+    parser.add_argument('--learning-rate', dest='learning_rate',
+                        default=1e-3, type=float)
     parser.add_argument('--seed', dest='random_state', default=1, type=int)
     args = parser.parse_args()
 
@@ -84,6 +88,11 @@ if __name__ == '__main__':
     # train_urls, val_urls = all_urls[:112], all_urls[112:140]  # divisible by 16
     train_urls = train_urls * 4
     val_urls = val_urls * 4
+    import random
+    random.shuffle(train_urls)
+    random.shuffle(val_urls)
+    # 120 * 4 = 480. 480 / 5 / 16 = 8 :)
+    # 20 * 4 = 80. 80 / 5 / 16 = 1 :)
     schema = schemas.decals_all_campaigns_ortho_schema
 
     # debug mode
@@ -135,7 +144,8 @@ if __name__ == '__main__':
         num_workers=args.num_workers,
         compile_encoder=args.compile_encoder,  # NEW
         random_state=random_state,
-        learning_rate=1e-3,
+        learning_rate=args.learning_rate,
+        weight_decay=args.weight_decay,
         cache_dir=cache_dir,
         crop_scale_bounds=(0.75, 0.85)  # slightly increased to compensate for 424-400px crop when saving webdataset
         # cache_dir='/tmp/cache'
