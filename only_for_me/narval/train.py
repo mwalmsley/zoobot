@@ -70,6 +70,11 @@ if __name__ == '__main__':
     else:
         search_str = '/home/walml/projects/def-bovy/walml/data/webdatasets/desi_labelled_300px_2048/desi_labelled_300px_2048_train_*.tar'
         cache_dir = os.environ['SLURM_TMPDIR'] + '/cache'
+        if not os.path.isdir(cache_dir):
+            try:
+                os.mkdir(cache_dir)
+            except FileExistsError:
+                pass  # race condition
 
     all_urls = glob.glob(search_str)
     assert len(all_urls) > 0, search_str
