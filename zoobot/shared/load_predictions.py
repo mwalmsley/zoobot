@@ -49,6 +49,7 @@ def load_hdf5s(hdf5_locs: List):
                         'id_str': f['id_str'].asstr()[:],
                         'hdf5_loc': [os.path.basename(loc) for _ in these_predictions]
                 }
+                    assert len(these_predictions) == len(these_prediction_metadata['id_str']), (loc, len(these_predictions), len(these_prediction_metadata['id_str']) )
                     predictions.append(these_predictions)  # will create a list where each element is 3D predictions stored in each hdf5
                     prediction_metadata.append(these_prediction_metadata)  # also track id_str, similarly
 
@@ -223,6 +224,7 @@ def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False):
     # copy over metadata (indices will align)
     prediction_df['id_str'] = galaxy_id_df['id_str']
     prediction_df['hdf5_loc'] = galaxy_id_df['hdf5_loc']
+    prediction_df = convert_halfprecision_cols(prediction_df)
     return prediction_df
 
 

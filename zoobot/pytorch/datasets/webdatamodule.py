@@ -97,6 +97,8 @@ class WebDataModule(pl.LightningDataModule):
     
 
     def make_loader(self, urls, mode="train"):
+        logging.info('Making loader with mode {}'.format(mode))
+
         dataset_size = getattr(self, f'{mode}_size')
         if mode == "train":
             shuffle = min(dataset_size, 5000)
@@ -108,18 +110,24 @@ class WebDataModule(pl.LightningDataModule):
 
         transform_label = self.make_label_transform()
 
-        dataset = (
+        dataset =  wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
             # https://webdataset.github.io/webdataset/multinode/ 
             # WDS 'knows' which worker it is running on and selects a subset of urls accordingly
-            wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func
-            )
-            .shuffle(shuffle)
-            .decode("rgb")
-        )
+           
+        if shuffle > 0:
+            dataset = dataset.shuffle(shuffle)
+
+        dataset = dataset.decode("rgb")
+    
         if mode == 'predict':
-            # dataset = dataset.extract_keys('image.jpg').map(transform_image)
-            dataset = dataset.to_tuple('image.jpg').map_tuple(transform_image)  # (im,) tuple. But map applied to all elements
-            # .map(get_first)
+            if self.label_cols != ['id_str']:
+                logging.info('Will return images only')
+                # dataset = dataset.extract_keys('image.jpg').map(transform_image)
+                dataset = dataset.to_tuple('image.jpg').map_tuple(transform_image)  # (im,) tuple. But map applied to all elements
+                # .map(get_first)
+            else:
+                logging.info('Will return id_str only')
+                dataset = dataset.to_tuple('__key__')
         else:
             dataset = (
                 dataset.to_tuple('image.jpg', 'labels.json')
