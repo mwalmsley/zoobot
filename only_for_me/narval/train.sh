@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --time=23:30:0  
-#SBATCH --nodes=1
+#SBATCH --nodes=4
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
@@ -44,13 +44,14 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # efficientnet_b2 - 32% at 64, can do 128
 # convnext_small 64 - 49.25%, MAYBE 128 
 # efficientnet_b4 - 48% at 64, could maybe do 128
-# efficientnet_b5 - 64?
-# maxvit_rmlp_base_rw_224 - 32?
+# efficientnet_b5 - 64. remember it expects bigger images tho, may not work great
+# maxvit_rmlp_base_rw_224 - 32 (95%). Now scaling at 16 gpus
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu \
     --batch-size 32 \
     --gpus 4 \
+    --nodes 4 \
     --num-workers 10 \
     --architecture maxvit_rmlp_base_rw_224 \
     --color --wandb --mixed-precision --compile-encoder
