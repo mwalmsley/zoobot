@@ -116,7 +116,7 @@ def train_default_zoobot_from_scratch(
     if not os.path.isdir(save_dir):
         try:
             os.mkdir(save_dir)
-        except FileExistsError():
+        except FileExistsError:
             pass # another gpu process may have just made it
     logging.info(f'Saving to {save_dir}')
 
