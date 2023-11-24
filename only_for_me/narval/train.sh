@@ -39,11 +39,11 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # vit_tiny_patch16_224 64?
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_vit_tiny_patch16_224_4gpu \
-    --batch-size 64 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_tf_efficientnetv2_b0_4gpu \
+    --batch-size 256 \
     --gpus 4 \
     --num-workers 10 \
-    --architecture vit_tiny_patch16_224 \
+    --architecture tf_efficientnetv2_b0 \
     --color --wandb --mixed-precision --compile-encoder
 
     # maxvit_small_tf_224 \
