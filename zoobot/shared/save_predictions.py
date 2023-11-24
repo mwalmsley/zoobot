@@ -10,6 +10,9 @@ import h5py
 def predictions_to_hdf5(predictions, id_str, label_cols, save_loc, compression="gzip"):
     logging.info(f'Saving predictions to {save_loc}')
     assert save_loc.endswith('.hdf5')
+    if label_cols is None:
+        label_cols = get_default_label_cols(predictions)
+    # sometimes throws a "could not lock file" error but still saves fine. I don't understand why
     with h5py.File(save_loc, "w") as f:
         f.create_dataset(name='predictions', data=predictions, compression=compression)
         # https://docs.h5py.org/en/stable/special.html#h5py.string_dtype
@@ -17,12 +20,13 @@ def predictions_to_hdf5(predictions, id_str, label_cols, save_loc, compression="
         # predictions_dset.attrs['label_cols'] = label_cols  # would be more conventional but is a little awkward
         f.create_dataset(name='id_str', data=id_str, dtype=dt)
         f.create_dataset(name='label_cols', data=label_cols, dtype=dt)
-        # sometimes throws a "could not lock file" error but still saves fine. I don't understand why
-
 
 def predictions_to_csv(predictions, id_str, label_cols, save_loc):
+    
     # not recommended - hdf5 is much more flexible and pretty easy to use once you check the package quickstart
     assert save_loc.endswith('.csv')
+    if label_cols is None:
+        label_cols = get_default_label_cols(predictions)
     data = [prediction_to_row(predictions[n], id_str[n], label_cols=label_cols) for n in range(len(predictions))]
     predictions_df = pd.DataFrame(data)
     # logging.info(predictions_df)
@@ -57,3 +61,8 @@ def prediction_to_row(prediction: np.ndarray, id_str: str, label_cols: List):
         else:
             row[answer + '_pred'] = json.dumps(list(answer_pred))  # it's not a scalar, write as json
     return row
+
+def get_default_label_cols(predictions):
+    logging.warning('No label_cols passed - using default names e.g. feat_0, feat_1...')
+    label_cols = [f'feat_{n}' for n in range(predictions.shape[1])]
+    return label_cols
