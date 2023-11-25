@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=23:30:0  
-#SBATCH --nodes=4
+#SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100:4
 
 nvidia-smi
 
@@ -48,13 +48,15 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # maxvit_rmlp_base_rw_224 - 32 (95%). Now scaling at 16 gpus
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu_debug \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu_w005 \
     --batch-size 32 \
     --gpus 4 \
-    --nodes 4 \
+    --nodes 1 \
     --num-workers 5 \
     --weight-decay 0.05 \
     --architecture maxvit_rmlp_base_rw_224 \
-    --color --wandb --mixed-precision --compile-encoder
+    --color --wandb --mixed-precision
+    
+    #  --compile-encoder
 
     # maxvit_small_tf_224 \
