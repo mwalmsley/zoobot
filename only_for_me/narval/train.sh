@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --time=03:30:0  
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks-per-node=4
 #SBATCH --cpus-per-task=10
 #SBATCH --mem-per-cpu 4G
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100:4
 
 nvidia-smi
 
@@ -26,11 +26,11 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 #     --color --wandb --mixed-precision 
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_tiny_rw_224_1gpu \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_tiny_rw_224_4gpu_terr \
     --batch-size 64 \
     --architecture maxvit_tiny_rw_224 \
     --terrestrial \
-    --gpus 1 \
+    --gpus 4 \
     --num-workers 10 \
     --color --wandb --mixed-precision 
     
