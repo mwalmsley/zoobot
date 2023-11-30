@@ -32,7 +32,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --terrestrial \
     --gpus 4 \
     --num-workers 10 \
-    --color --wandb --mixed-precision -compile-encoder
+    --color --wandb --mixed-precision --compile-encoder
 
 
 # batch sizes
