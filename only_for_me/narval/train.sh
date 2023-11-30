@@ -23,7 +23,16 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 #     --num-features 128 \
 #     --gpus 1 \
 #     --num-workers 10 \
-#     --color --wandb --mixed-precision --compile-encoder
+#     --color --wandb --mixed-precision 
+
+srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvittiny_1gpu \
+    --batch-size 64 \
+    --gpus 1 \
+    --num-workers 10 \
+    --color --wandb --mixed-precision 
+    
+    # \ --compile-encoder
 
 
 # batch sizes
@@ -47,15 +56,15 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 # efficientnet_b5 - 64. remember it expects bigger images tho, may not work great
 # maxvit_rmlp_base_rw_224 - 32 (95%). Now scaling at 16 gpus
 
-srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu_w005 \
-    --batch-size 32 \
-    --gpus 4 \
-    --nodes 1 \
-    --num-workers 5 \
-    --weight-decay 0.05 \
-    --architecture maxvit_rmlp_base_rw_224 \
-    --color --wandb --mixed-precision
+# srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
+#     --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_rmlp_base_rw_224_4gpu_w005 \
+#     --batch-size 32 \
+#     --gpus 4 \
+#     --nodes 1 \
+#     --num-workers 5 \
+#     --weight-decay 0.05 \
+#     --architecture maxvit_rmlp_base_rw_224 \
+#     --color --wandb --mixed-precision
     
     #  --compile-encoder
 

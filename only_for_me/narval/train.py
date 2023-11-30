@@ -25,6 +25,8 @@ if __name__ == '__main__':
     # parser.add_argument('--data-dir', dest='data_dir', type=str)
     # parser.add_argument('--dataset', dest='dataset', type=str, help='dataset to use, either "gz_decals_dr5" or "gz_evo"')
     parser.add_argument('--architecture', dest='architecture_name', default='efficientnet_b0', type=str)
+    parser.add_argument('--accumulate-gradients', dest='acculumate_gradients', default=1, type=int)
+    parser.add_argument('--terrestrial-init', dest='terrestrial', default=False, action='store_true')
     parser.add_argument('--resize-after-crop', dest='resize_after_crop',
                         type=int, default=224)
     parser.add_argument('--color', default=False, action='store_true')
@@ -119,6 +121,9 @@ if __name__ == '__main__':
         timm_kwargs.update({'drop_path_rate': 0.2})
     if args.num_features != 1280:
         timm_kwargs.update({'num_features': args.num_features})
+
+    if args.terrestrial:
+        timm_kwargs.update({'pretrained': True})
 
     train_with_pytorch_lightning.train_default_zoobot_from_scratch(
         save_dir=args.save_dir,
