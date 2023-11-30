@@ -147,7 +147,7 @@ class ZoobotTree(GenericLightningModule):
         # encoder args
         architecture_name="efficientnet_b0",
         channels=1,
-        use_imagenet_weights=False,
+        # use_imagenet_weights=False,
         test_time_dropout=True,
         compile_encoder=False,
         timm_kwargs={},  # passed to timm.create_model e.g. drop_path_rate=0.2 for effnet
@@ -189,7 +189,7 @@ class ZoobotTree(GenericLightningModule):
         self.encoder = get_pytorch_encoder(
             architecture_name,
             channels,
-            use_imagenet_weights=use_imagenet_weights,
+            # use_imagenet_weights=use_imagenet_weights,
             **timm_kwargs
         )
         if compile_encoder:

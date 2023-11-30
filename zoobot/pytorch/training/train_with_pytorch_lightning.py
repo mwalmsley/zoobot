@@ -260,7 +260,7 @@ def train_default_zoobot_from_scratch(
         question_index_groups=schema.question_index_groups,
         architecture_name=architecture_name,
         channels=channels,
-        use_imagenet_weights=False,
+        # use_imagenet_weights=False,
         test_time_dropout=True,
         dropout_rate=dropout_rate,
         learning_rate=learning_rate,
