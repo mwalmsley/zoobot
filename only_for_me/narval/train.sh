@@ -26,12 +26,13 @@ REPO_DIR=/project/def-bovy/walml/zoobot
 #     --color --wandb --mixed-precision 
 
 srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
-    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_efficientnet_b0_4gpu_terr \
-    --batch-size 256 \
-    --architecture efficientnet_b0 \
+    --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_tiny_rw_224_4gpu_terr_w5 \
+    --batch-size 64 \
+    --architecture maxvit_tiny_rw_224 \
     --terrestrial \
     --gpus 4 \
     --num-workers 10 \
+    --weight-decay 0.05 \
     --color --wandb --mixed-precision --compile-encoder
 
 
