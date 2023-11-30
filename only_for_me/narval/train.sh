@@ -29,6 +29,7 @@ srun $PYTHON $REPO_DIR/only_for_me/narval/train.py \
     --save-dir $REPO_DIR/only_for_me/narval/desi_300px_maxvit_tiny_rw_224_1gpu \
     --batch-size 64 \
     --architecture maxvit_tiny_rw_224 \
+    --terrestrial \
     --gpus 1 \
     --num-workers 10 \
     --color --wandb --mixed-precision 
