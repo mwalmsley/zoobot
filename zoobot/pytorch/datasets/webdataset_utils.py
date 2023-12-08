@@ -22,6 +22,25 @@ import webdataset as wds
 import zoobot.pytorch.datasets.webdatamodule as webdatamodule
 
 
+def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048):
+    for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
+        n_shards = len(catalog) // divisor
+        logging.info(n_shards)
+
+        catalog = catalog[:n_shards*divisor]
+        logging.info(len(catalog))
+
+        # wds_dir e.g. /home/walml/data/wds
+
+        save_loc = f"{wds_dir}/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
+        
+        df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=False)
+        # some tests, if you like
+        # webdataset_utils.load_wds_directly(save_loc)
+        # webdataset_utils.load_wds_with_augmentation(save_loc)
+        # webdataset_utils.load_wds_with_webdatamodule([save_loc], label_cols)
+
+
 def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: int):
     counter = 0
     shards = [os.path.join(save_dir, f'mock_shard_{shard_n}_{shard_size}.tar') for shard_n in range(n_shards)]
@@ -97,6 +116,7 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
 
 def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):
 
+    assert os.path.isfile(galaxy['file_loc']), galaxy['file_loc']
     im = cv2.imread(galaxy['file_loc'])
     # cv2 loads BGR for 'history', fix
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB) 
