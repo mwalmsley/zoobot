@@ -257,7 +257,10 @@ def train_default_zoobot_from_scratch(
     # these args are automatically logged
     lightning_model = define_model.ZoobotTree(
         output_dim=len(schema.label_cols),
-        question_index_groups=schema.question_index_groups,
+        # question_index_groups=schema.question_index_groups,
+        # NEW - pass these from schema, for better logging
+        question_answer_pairs=schema.question_answer_pairs,
+        dependencies=schema.dependencies,
         architecture_name=architecture_name,
         channels=channels,
         # use_imagenet_weights=False,
