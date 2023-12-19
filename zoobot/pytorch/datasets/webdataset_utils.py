@@ -22,7 +22,7 @@ import webdataset as wds
 import zoobot.pytorch.datasets.webdatamodule as webdatamodule
 
 
-def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048):
+def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048, overwrite=False):
     for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
         n_shards = len(catalog) // divisor
         logging.info(n_shards)
@@ -34,7 +34,7 @@ def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, tes
 
         save_loc = f"{wds_dir}/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
         
-        df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=False)
+        df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=overwrite)
         # some tests, if you like
         # webdataset_utils.load_wds_directly(save_loc)
         # webdataset_utils.load_wds_with_augmentation(save_loc)
@@ -107,6 +107,8 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
             if sparse_label_df is not None:
                 shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # auto-merge
 
+            assert not any(shard_df[label_cols].isna().max())
+
             # logging.info(shard_save_loc)
             sink = wds.TarWriter(shard_save_loc)
             for _, galaxy in shard_df.iterrows():
@@ -120,6 +122,7 @@ def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):
     im = cv2.imread(galaxy['file_loc'])
     # cv2 loads BGR for 'history', fix
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB) 
+    assert not np.any(np.isnan(np.array(im))), galaxy['file_loc']
     # if central_crop is not None:
     #     width, height, _ = im.shape
     #     # assert width == height, (width, height)
