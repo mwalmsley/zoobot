@@ -90,7 +90,7 @@ class WebDataModule(pl.LightningDataModule):
     def make_label_transform(self):
         if self.label_cols is not None:
             def label_transform(label_dict):
-                return torch.from_numpy(np.array([label_dict.get(col, 0) for col in self.label_cols]))
+                return torch.from_numpy(np.array([label_dict.get(col, 0) for col in self.label_cols])).double()
             return label_transform
         else:
             return identity  # do nothing
