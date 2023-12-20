@@ -5,7 +5,7 @@ from typing import List
 import torch
 from torch import nn
 import pytorch_lightning as pl
-from torchmetrics import Accuracy
+import torchmetrics
 import timm
 
 from zoobot.shared import schemas
@@ -56,15 +56,39 @@ class GenericLightningModule(pl.LightningModule):
         ):
         super().__init__()
         self.save_hyperparameters()  # saves all args by default
-        self.setup_metrics()
 
 
     def setup_metrics(self):
         # these are ignored unless output dim = 2
-        self.train_accuracy = Accuracy(task='binary')
-        self.val_accuracy = Accuracy(task='binary')
-        # self.log_on_step = False
-        # self.log_on_step is useful for debugging, but slower - best when log_every_n_steps is fairly large
+        self.accuracy_metrics = torchmetrics.MetricCollection({
+            'train/accuracy': torchmetrics.Accuracy(task='binary'),
+            'validation/accuracy': torchmetrics.Accuracy(task='binary'),
+        })
+        
+        self.val_accuracy = torchmetrics.Accuracy(task='binary')
+
+        self.loss_metrics = torchmetrics.MetricCollection({
+            'train/loss': torchmetrics.MeanMetric(nan_strategy='error'),
+            'validation/loss': torchmetrics.MeanMetric(nan_strategy='error'),
+        })
+        
+        # TODO handle when schema doesn't exist
+        question_metric_dict = {}
+        for step_name in ['train', 'validation']:
+            question_metric_dict.update({
+                step_name + '/question_loss/' + question.text: torchmetrics.MeanMetric(nan_strategy='ignore')
+                for question in self.schema.questions
+            })
+        self.question_loss_metrics = torchmetrics.MetricCollection(question_metric_dict)
+
+        campaigns = schema_to_campaigns(self.schema)
+        campaign_metric_dict = {}
+        for step_name in ['train', 'validation']:
+            campaign_metric_dict.update({
+                            step_name + '/campaign_loss/' + campaign: torchmetrics.MeanMetric(nan_strategy='ignore')
+                for campaign in campaigns
+            })
+        self.campaign_loss_metrics = torchmetrics.MetricCollection(campaign_metric_dict)
 
 
     def forward(self, x):
@@ -87,22 +111,45 @@ class GenericLightningModule(pl.LightningModule):
         return self.make_step(batch, step_name='train')
 
     def on_train_batch_end(self, outputs, *args):
-        self.log_outputs(outputs, step_name='train')
+        self.update_metrics(outputs, step_name='train')
 
     def validation_step(self, batch, batch_idx):
         return self.make_step(batch, step_name='validation')
 
     def on_validation_batch_end(self, outputs, *args):
-        self.log_outputs(outputs, step_name='validation')
-
-    def log_outputs(self, outputs, step_name):
-        raise NotImplementedError('Must be subclassed')
+        self.update_metrics(outputs, step_name='validation')
 
     def test_step(self, batch, batch_idx):
         return self.make_step(batch, step_name='test')
 
     def on_test_batch_end(self, outputs, *args):
-         self.log_outputs(outputs, step_name='test')
+         self.update_metrics(outputs, step_name='test')
+
+    def on_train_epoch_end(self) -> None:
+        self.log_all_metrics(step_name='train')
+
+    def on_validation_epoch_end(self) -> None:
+        self.log_all_metrics(step_name='validation')
+    
+    def update_metrics(self, outputs, step_name):
+        raise NotImplementedError('Must be subclassed')
+
+    def log_all_metrics(self, step_name):
+
+        self.log_dict(self.loss_metrics, on_epoch=True, on_step=False, prog_bar=True, logger=True)
+        self.log_dict(self.question_loss_metrics, on_step=False, on_epoch=True, logger=True)
+        self.log_dict(self.campaign_loss_metrics, on_step=False, on_epoch=True, logger=True)
+
+        if hasattr(self, 'accuracy_metrics'):
+            self.log_dict(
+                self.accuracy_metrics,
+                on_epoch=True,
+                on_step=False,
+                prog_bar=True,
+                logger=True
+            )
+
+
 
     
     def predict_step(self, batch, batch_idx, dataloader_idx=0):
@@ -196,6 +243,8 @@ class ZoobotTree(GenericLightningModule):
             # replace with schema-derived version
             question_index_groups = self.schema.question_index_groups
 
+        self.setup_metrics()
+
         # set attributes for learning rate, betas, used by self.configure_optimizers()
         # TODO refactor to optimizer params
         self.learning_rate = learning_rate
@@ -259,17 +308,17 @@ class ZoobotTree(GenericLightningModule):
                 min_lr=1e-6,
                 patience=self.scheduler_params.get('patience', 5)
             )
-            return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/epoch_loss'}
+            return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/loss'}
         else:
             logging.info('No scheduler used')
             return optimizer  # no scheduler
 
 
-    def log_outputs(self, outputs, step_name):
-        self.log("{}/epoch_loss".format(step_name), outputs['loss'], on_epoch=True, on_step=False,prog_bar=True, logger=True, sync_dist=True)
-        if outputs['predictions'].shape[1] == 2:  # will only do for binary classifications
-            self.log(
-                "{}_accuracy".format(step_name), self.train_accuracy(outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)), prog_bar=True, sync_dist=True)
+    def update_metrics(self, outputs, step_name):
+        self.loss_metrics[step_name + '/loss'](outputs['loss'])
+        
+        if outputs['predictions'].shape[1] == 2:
+            self.accuracy_metrics[step_name + '/accuracy'](outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)),
         
 
 
@@ -286,43 +335,26 @@ class ZoobotTree(GenericLightningModule):
             for question_n, question in enumerate(self.schema.questions):
                 # for logging comparison, want to ignore loss on unlablled examples, i.e. take mean ignoring zeros
                 # could sum, but then this would vary with batch size
-                nontrivial_loss_mask = multiq_loss[:, question_n] > 1e-5  # 'zero' seems to be ~5e-5 floor in practice
-                self.log(
-                    f'{prefix}/epoch_questions/loss_{question.text}',
-                    torch.mean(multiq_loss[nontrivial_loss_mask, question_n]),
-                    on_epoch=True,
-                    on_step=False,
-                    sync_dist=True
-                )
-                self.log(
-                    f'{prefix}/epoch_question_masks/loss_{question.text}_mask',
-                    torch.mean(nontrivial_loss_mask.float()),
-                    on_epoch=True,
-                    on_step=False,
-                    sync_dist=True
-                )
-                
+                nontrivial_loss_mask = multiq_loss[:, question_n] > 0  # 'zero' seems to be ~5e-5 floor in practice
 
-            campaigns = [question.text.split('-')[-1] for question in self.schema.questions]
+                this_question_metric = self.question_loss_metrics[prefix + '/question_loss/' + question.text]
+                this_question_metric(torch.mean(multiq_loss[nontrivial_loss_mask, question_n]))
+
+            campaigns = schema_to_campaigns(self.schema)
             for campaign in campaigns:
                 campaign_questions = [q for q in self.schema.questions if campaign in q.text]
                 campaign_q_indices = [self.schema.questions.index(q) for q in campaign_questions]  # shape (num q in this campaign e.g. 10)
 
                 # similarly to per-question, only include in mean if (any) q in this campaign has a non-trivial loss
-                nontrivial_loss_mask = multiq_loss[:, campaign_q_indices].sum(axis=1) > 1e-5 # shape batch size
+                nontrivial_loss_mask = multiq_loss[:, campaign_q_indices].sum(axis=1) > 0 # shape batch size
 
-                self.log(
-                    f'{prefix}/epoch_campaigns/loss_{campaign}',
-                    torch.mean(multiq_loss[nontrivial_loss_mask][:, campaign_q_indices]),
-                    on_epoch=True,
-                    on_step=False,
-                    sync_dist=True
-                )
+                this_campaign_metric = self.campaign_loss_metrics[prefix + '/campaign_loss/' + campaign]
+                this_campaign_metric(torch.mean(multiq_loss[nontrivial_loss_mask][:, campaign_q_indices]))
 
         else:
             # fallback to logging with question_n
             for question_n in range(multiq_loss.shape[1]):
-                self.log(f'{prefix}/epoch_questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, sync_dist=True)
+                self.log(f'{prefix}/questions/question_{question_n}_loss:0', torch.mean(multiq_loss[:, question_n]), on_epoch=True, on_step=False, sync_dist=True)
             
             
 
@@ -429,6 +461,11 @@ def get_pytorch_dirichlet_head(encoder_dim: int, output_dim: int, test_time_drop
     modules_to_use.append(efficientnet_custom.custom_top_dirichlet(encoder_dim, output_dim))
 
     return nn.Sequential(*modules_to_use)
+
+
+def schema_to_campaigns(schema):
+    # e.g. [gz2, dr12, ...]
+    return [question.text.split('-')[-1] for question in schema.questions]
 
 
 # class ToyEncoder(pl.LightningModule):
