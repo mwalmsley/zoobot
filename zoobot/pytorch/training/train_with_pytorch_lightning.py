@@ -298,6 +298,7 @@ def train_default_zoobot_from_scratch(
     # callbacks = None
 
     trainer = pl.Trainer(
+        num_sanity_val_steps=0,
         log_every_n_steps=150,
         accelerator=accelerator,
         devices=devices,  # per node
