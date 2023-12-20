@@ -288,7 +288,7 @@ class ZoobotTree(GenericLightningModule):
             for question_n, question in enumerate(self.schema.questions):
                 # for logging comparison, want to ignore loss on unlablled examples, i.e. take mean ignoring zeros
                 # could sum, but then this would vary with batch size
-                nontrivial_loss_mask = multiq_loss[:, question_n] > 1e-8
+                nontrivial_loss_mask = multiq_loss[:, question_n] > 1e-3  # 'zero' seems to be ~5e-5 floor in practice
                 self.log(
                     f'{prefix}/epoch_questions/loss_{question.text}',
                     torch.mean(multiq_loss[nontrivial_loss_mask, question_n]),
@@ -303,7 +303,7 @@ class ZoobotTree(GenericLightningModule):
                 campaign_q_indices = [self.schema.questions.index(q) for q in campaign_questions]  # shape (num q in this campaign e.g. 10)
 
                 # similarly to per-question, only include in mean if (any) q in this campaign has a non-trivial loss
-                nontrivial_loss_mask = multiq_loss[:, campaign_q_indices].sum(axis=1) > 1e-8 # shape batch size
+                nontrivial_loss_mask = multiq_loss[:, campaign_q_indices].sum(axis=1) > 1e-3 # shape batch size
 
                 self.log(
                     f'{prefix}/epoch_campaigns/loss_{campaign}',
