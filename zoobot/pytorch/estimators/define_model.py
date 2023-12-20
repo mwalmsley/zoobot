@@ -234,7 +234,6 @@ class ZoobotTree(GenericLightningModule):
     def calculate_and_log_loss(self, predictions, labels, step_name):
         # self.loss_func returns shape of (galaxy, question), mean to ()
         multiq_loss = self.loss_func(predictions, labels, sum_over_questions=False)
-        # if hasattr(self, 'schema'):
         self.log_loss_per_question(multiq_loss, prefix=step_name)
         # sum over questions and take a per-device mean
         # for DDP strategy, batch size is constant (batches are not divided, data pool is divided)
@@ -283,12 +282,11 @@ class ZoobotTree(GenericLightningModule):
         if hasattr(self, 'schema'):
             # use schema metadata to log intelligently
             # will have schema if question_answer_pairs and dependencies are passed to __init__
-
             # assume that questions are named like smooth-or-featured-CAMPAIGN
             for question_n, question in enumerate(self.schema.questions):
                 # for logging comparison, want to ignore loss on unlablled examples, i.e. take mean ignoring zeros
                 # could sum, but then this would vary with batch size
-                nontrivial_loss_mask = multiq_loss[:, question_n] > 1e-3  # 'zero' seems to be ~5e-5 floor in practice
+                nontrivial_loss_mask = multiq_loss[:, question_n] > 1e-5  # 'zero' seems to be ~5e-5 floor in practice
                 self.log(
                     f'{prefix}/epoch_questions/loss_{question.text}',
                     torch.mean(multiq_loss[nontrivial_loss_mask, question_n]),
@@ -296,6 +294,14 @@ class ZoobotTree(GenericLightningModule):
                     on_step=False,
                     sync_dist=True
                 )
+                self.log(
+                    f'{prefix}/epoch_question_masks/loss_{question.text}_mask',
+                    torch.mean(nontrivial_loss_mask.float()),
+                    on_epoch=True,
+                    on_step=False,
+                    sync_dist=True
+                )
+                
 
             campaigns = [question.text.split('-')[-1] for question in self.schema.questions]
             for campaign in campaigns:
@@ -303,7 +309,7 @@ class ZoobotTree(GenericLightningModule):
                 campaign_q_indices = [self.schema.questions.index(q) for q in campaign_questions]  # shape (num q in this campaign e.g. 10)
 
                 # similarly to per-question, only include in mean if (any) q in this campaign has a non-trivial loss
-                nontrivial_loss_mask = multiq_loss[:, campaign_q_indices].sum(axis=1) > 1e-3 # shape batch size
+                nontrivial_loss_mask = multiq_loss[:, campaign_q_indices].sum(axis=1) > 1e-5 # shape batch size
 
                 self.log(
                     f'{prefix}/epoch_campaigns/loss_{campaign}',
