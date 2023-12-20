@@ -291,7 +291,7 @@ def train_default_zoobot_from_scratch(
             save_top_k=save_top_k
     )
 
-    early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
+    early_stopping_callback = EarlyStopping(monitor='validation/loss', patience=patience, check_finite=True)
     callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
     # callbacks = None
 
