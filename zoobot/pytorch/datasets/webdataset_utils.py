@@ -136,7 +136,7 @@ def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):
     if transform is not None:
         im = transform(image=im)['image']
 
-    labels = json.dumps(galaxy[label_cols].to_dict())
+    labels = json.dumps(galaxy[label_cols].astype(np.int32).to_dict())
     id_str = str(galaxy['id_str'])
     return {
         "__key__": id_str,
