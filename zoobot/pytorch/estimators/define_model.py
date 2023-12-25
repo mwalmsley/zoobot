@@ -470,22 +470,3 @@ def get_pytorch_dirichlet_head(encoder_dim: int, output_dim: int, test_time_drop
 def schema_to_campaigns(schema):
     # e.g. [gz2, dr12, ...]
     return [question.text.split('-')[-1] for question in schema.questions]
-
-
-# class ToyEncoder(pl.LightningModule):
-
-#     def __init__(self):
-#         super(ToyEncoder, self).__init__()
-
-#         self.conv1 = nn.Conv2d(3, 6, 5)
-#         self.pool = nn.MaxPool2d(2, 2)
-#         self.conv2 = nn.Conv2d(6, 16, 5)
-#         # pool again
-#         self.fc1 = nn.Linear(16 * 5 * 5, 1280)  # dim 1280, like effnetb0
-
-#     def forward(self, x):
-#         x = self.pool(nn.functional.relu(self.conv1(x)))
-#         x = self.pool(nn.functional.relu(self.conv2(x)))
-#         x = x.view(-1, 16 * 5 * 5)
-#         x = nn.functional.relu(self.fc1(x))
-#         return x

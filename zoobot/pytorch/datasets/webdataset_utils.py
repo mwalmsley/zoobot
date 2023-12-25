@@ -22,23 +22,23 @@ import webdataset as wds
 import zoobot.pytorch.datasets.webdatamodule as webdatamodule
 
 
-def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048, overwrite=False):
-    for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
-        n_shards = len(catalog) // divisor
-        logging.info(n_shards)
+# def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048, overwrite=False):
+#     for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
+#         n_shards = len(catalog) // divisor
+#         logging.info(n_shards)
 
-        catalog = catalog[:n_shards*divisor]
-        logging.info(len(catalog))
+#         catalog = catalog[:n_shards*divisor]
+#         logging.info(len(catalog))
 
-        # wds_dir e.g. /home/walml/data/wds
+#         # wds_dir e.g. /home/walml/data/wds
 
-        save_loc = f"{wds_dir}/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
+#         save_loc = f"{wds_dir}/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
         
-        df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=overwrite)
-        # some tests, if you like
-        # webdataset_utils.load_wds_directly(save_loc)
-        # webdataset_utils.load_wds_with_augmentation(save_loc)
-        # webdataset_utils.load_wds_with_webdatamodule([save_loc], label_cols)
+#         df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=overwrite)
+#         # some tests, if you like
+#         # webdataset_utils.load_wds_directly(save_loc)
+#         # webdataset_utils.load_wds_with_augmentation(save_loc)
+#         # webdataset_utils.load_wds_with_webdatamodule([save_loc], label_cols)
 
 
 def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: int):
@@ -136,7 +136,7 @@ def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):
     if transform is not None:
         im = transform(image=im)['image']
 
-    labels = json.dumps(galaxy[label_cols].astype(np.int32).to_dict())
+    labels = json.dumps(galaxy[label_cols].to_dict())
     id_str = str(galaxy['id_str'])
     return {
         "__key__": id_str,
