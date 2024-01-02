@@ -159,7 +159,7 @@ def identity(x):
 def nodesplitter_func(urls):
     urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
-    logging.info(
+    logging.debug(
         f'''
         Splitting urls within webdatamodule with WORLD_SIZE: 
         {world_size}, RANK: {rank}, WORKER: {worker} of {num_workers}\n
@@ -169,6 +169,7 @@ def nodesplitter_func(urls):
     return urls_to_use
 
 def interpret_shard_size_from_url(url):
+    assert isinstance(url, str), TypeError(url)
     return int(url.rstrip('.tar').split('_')[-1])
 
 def interpret_dataset_size_from_urls(urls):

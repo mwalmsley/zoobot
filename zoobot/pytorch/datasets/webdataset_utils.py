@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import Union, Callable
 import os
 import cv2
 import json
@@ -41,7 +41,7 @@ import zoobot.pytorch.datasets.webdatamodule as webdatamodule
 #         # webdataset_utils.load_wds_with_webdatamodule([save_loc], label_cols)
 
 
-def make_mock_wds(save_dir: str, label_cols: List, n_shards: int, shard_size: int):
+def make_mock_wds(save_dir: str, label_cols: list, n_shards: int, shard_size: int):
     counter = 0
     shards = [os.path.join(save_dir, f'mock_shard_{shard_n}_{shard_size}.tar') for shard_n in range(n_shards)]
     for shard in shards:
@@ -103,46 +103,48 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
     for shard_n, shard_df in tqdm.tqdm(enumerate(shard_dfs), total=len(shard_dfs)):
         shard_save_loc = save_loc.replace('.tar', f'_{shard_n}_{len(shard_df)}.tar')
         if overwrite or not(os.path.isfile(shard_save_loc)):
-
             if sparse_label_df is not None:
-                shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # auto-merge
+                shard_df = pd.merge(shard_df, sparse_label_df, how='left', validate='one_to_one', suffixes=('', '_badlabelmerge'))  # type: ignore # auto-merge
 
-            assert not any(shard_df[label_cols].isna().max())
+            assert not any(shard_df[label_cols].isna().max()) # type: ignore
 
             # logging.info(shard_save_loc)
             sink = wds.TarWriter(shard_save_loc)
-            for _, galaxy in shard_df.iterrows():
+            for _, galaxy in shard_df.iterrows(): # type: ignore
                 sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
             sink.close()
 
 
-def galaxy_to_wds(galaxy: pd.Series, label_cols, transform=None):
+def galaxy_to_wds(galaxy: pd.Series, label_cols: Union[list[str],None]=None, metadata_cols: Union[list, None]=None, transform: Union[Callable, None]=None):
 
     assert os.path.isfile(galaxy['file_loc']), galaxy['file_loc']
     im = cv2.imread(galaxy['file_loc'])
     # cv2 loads BGR for 'history', fix
     im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB) 
     assert not np.any(np.isnan(np.array(im))), galaxy['file_loc']
-    # if central_crop is not None:
-    #     width, height, _ = im.shape
-    #     # assert width == height, (width, height)
-    #     mid = int(width/2)
-    #     half_central_crop = int(central_crop/2)
-    #     low_edge, high_edge = mid - half_central_crop, mid + half_central_crop
-    #     im = im[low_edge:high_edge, low_edge:high_edge]
-    #     assert im.shape == (central_crop, central_crop, 3)
 
-    # apply albumentations
+    id_str = str(galaxy['id_str'])
+
     if transform is not None:
         im = transform(image=im)['image']
-
-    labels = json.dumps(galaxy[label_cols].to_dict())
-    id_str = str(galaxy['id_str'])
+    
+    if label_cols is None:
+        labels = json.dumps({})
+    else:
+        labels = json.dumps(galaxy[label_cols].to_dict())
+  
+    if metadata_cols is None:
+        metadata = json.dumps({})
+    else:
+        metadata = json.dumps(galaxy[metadata_cols].to_dict())
+    
     return {
-        "__key__": id_str,
+        "__key__": id_str,  # silly wds bug where if __key__ ends .jpg, all keys get jpg. prepended?! use id_str instead
         "image.jpg": im,
-        "labels.json": labels
+        "labels.json": labels,
+        "metadata.json": metadata
     }
+
 
 # just for debugging
 def load_wds_directly(wds_loc, max_to_load=3):

@@ -278,3 +278,5 @@ desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies
 # so don't log anything during Schema.__init__!
 
 gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)
+
+gz_jwst_schema = Schema(label_metadata.jwst_ortho_pairs, label_metadata.jwst_ortho_dependencies)
