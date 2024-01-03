@@ -277,7 +277,7 @@ def train_default_zoobot_from_scratch(
     
     extra_callbacks = extra_callbacks if extra_callbacks else []
 
-    monitor_metric = 'validation/loss'
+    monitor_metric = 'validation/supervised_loss'
 
     # used later for checkpoint_callback.best_model_path
     checkpoint_callback = ModelCheckpoint(

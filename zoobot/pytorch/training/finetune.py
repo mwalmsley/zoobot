@@ -52,7 +52,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         weight_decay (float, optional): AdamW weight decay arg (i.e. L2 penalty). Defaults to 0.05.
         learning_rate (float, optional): AdamW learning rate arg. Defaults to 1e-4.
         dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
-        freeze_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
+        always_train_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.

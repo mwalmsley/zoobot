@@ -26,7 +26,6 @@ def calculate_multiquestion_loss(labels: torch.Tensor, predictions: torch.Tensor
         q_indices = question_index_groups[q_n]
         q_start = q_indices[0]
         q_end = q_indices[1]
-
         q_loss = dirichlet_loss(labels[:, q_start:q_end+1], predictions[:, q_start:q_end+1])
 
         q_losses.append(q_loss)

@@ -59,17 +59,11 @@ class GenericLightningModule(pl.LightningModule):
 
 
     def setup_metrics(self):
-        # these are ignored unless output dim = 2
-        self.accuracy_metrics = torch.nn.ModuleDict({
-            'train/accuracy': torchmetrics.Accuracy(task='binary'),
-            'validation/accuracy': torchmetrics.Accuracy(task='binary'),
-        })
-        
         self.val_accuracy = torchmetrics.Accuracy(task='binary')
 
         self.loss_metrics = torch.nn.ModuleDict({
-            'train/loss': torchmetrics.MeanMetric(nan_strategy='error'),
-            'validation/loss': torchmetrics.MeanMetric(nan_strategy='error'),
+            'train/supervised_loss': torchmetrics.MeanMetric(nan_strategy='error'),
+            'validation/supervised_loss': torchmetrics.MeanMetric(nan_strategy='error'),
         })
         
         # TODO handle when schema doesn't exist
@@ -100,7 +94,7 @@ class GenericLightningModule(pl.LightningModule):
         predictions = self(x)  # by default, these are Dirichlet concentrations
         loss = self.calculate_loss_and_update_loss_metrics(predictions, labels, step_name)      
         outputs = {'loss': loss, 'predictions': predictions, 'labels': labels}
-        self.update_other_metrics(outputs, step_name=step_name)
+        # self.update_other_metrics(outputs, step_name=step_name)
         return outputs
 
     def configure_optimizers(self):
@@ -143,15 +137,6 @@ class GenericLightningModule(pl.LightningModule):
         self.log_dict(self.loss_metrics, on_epoch=True, on_step=False, prog_bar=True, logger=True)
         self.log_dict(self.question_loss_metrics, on_step=False, on_epoch=True, logger=True)
         self.log_dict(self.campaign_loss_metrics, on_step=False, on_epoch=True, logger=True)
-
-        if hasattr(self, 'accuracy_metrics'):
-            self.log_dict(
-                self.accuracy_metrics,
-                on_epoch=True,
-                on_step=False,
-                prog_bar=True,
-                logger=True
-            )
 
 
 
@@ -292,7 +277,7 @@ class ZoobotTree(GenericLightningModule):
         # for DDP strategy, batch size is constant (batches are not divided, data pool is divided)
         # so this will be the global per-example mean
         loss = torch.mean(torch.sum(multiq_loss, axis=1))
-        self.loss_metrics[step_name + '/loss'](loss)
+        self.loss_metrics[step_name + '/supervised_loss'](loss)
         return loss
 
 
@@ -319,11 +304,6 @@ class ZoobotTree(GenericLightningModule):
             return optimizer  # no scheduler
 
 
-    def update_other_metrics(self, outputs, step_name):
-        
-        if outputs['predictions'].shape[1] == 2:
-            self.accuracy_metrics[step_name + '/accuracy'](outputs['predictions'], torch.argmax(outputs['labels'], dim=1, keepdim=False)),
-        
 
     def update_per_question_loss_metric(self, multiq_loss, step_name):
         # log questions individually
