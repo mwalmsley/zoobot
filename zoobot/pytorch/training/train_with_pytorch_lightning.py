@@ -235,6 +235,23 @@ def train_default_zoobot_from_scratch(
         )
     else:
         # this branch will use WebDataModule to load premade webdatasets
+
+        # temporary: use SSL-like transform
+        from foundation.models import transforms
+        # from omegaconf import DictConfig
+        # cfg = DictConfig({
+        #     'aug': {
+        #         'global_transform_0': {
+        #             'interpolation': 'bilinear',
+        #             'random_affine': {}  # etc
+        #         }
+                
+        #     }
+        # })
+        cfg = transforms.default_view_config()
+        cfg.output_size = resize_after_crop
+        transform = transforms.GalaxyViewTransform(cfg)
+
         datamodule = webdatamodule.WebDataModule(
             train_urls=train_urls,
             val_urls=val_urls,
@@ -246,10 +263,11 @@ def train_default_zoobot_from_scratch(
             prefetch_factor=prefetch_factor,
             cache_dir=cache_dir,
             # augmentation args
-            color=color,
-            crop_scale_bounds=crop_scale_bounds,
-            crop_ratio_bounds=crop_ratio_bounds,
-            resize_after_crop=resize_after_crop
+            transform=transform,
+            # color=color,
+            # crop_scale_bounds=crop_scale_bounds,
+            # crop_ratio_bounds=crop_ratio_bounds,
+            # resize_after_crop=resize_after_crop
         )
 
     datamodule.setup(stage='fit')

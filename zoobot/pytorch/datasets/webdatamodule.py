@@ -1,5 +1,5 @@
 import os
-import types
+from typing import Callable
 import logging
 import torch.utils.data
 import numpy as np
@@ -27,7 +27,8 @@ class WebDataModule(pl.LightningDataModule):
             color=False,
             crop_scale_bounds=(0.7, 0.8),
             crop_ratio_bounds=(0.9, 1.1),
-            resize_after_crop=224
+            resize_after_crop=224,
+            transform: Callable=None
             ):
         super().__init__()
 
@@ -59,6 +60,8 @@ class WebDataModule(pl.LightningDataModule):
         self.resize_after_crop = resize_after_crop
         self.crop_scale_bounds = crop_scale_bounds
         self.crop_ratio_bounds = crop_ratio_bounds
+
+        self.transform = transform
 
         for url_name in ['train', 'val', 'test', 'predict']:
             urls = getattr(self, f'{url_name}_urls')
@@ -98,7 +101,12 @@ class WebDataModule(pl.LightningDataModule):
             assert mode in ['val', 'test', 'predict'], mode
             shuffle = 0
 
-        transform_image = self.make_image_transform(mode=mode)
+        if self.transform is None:
+            logging.info('Using default transform')
+            transform_image = self.make_image_transform(mode=mode)
+        else:
+            logging.info('Ignoring hparams and using directly-passed transform')
+            transform_image = self.transform
 
         transform_label = dict_to_label_cols_factory(self.label_cols)
 
@@ -109,7 +117,8 @@ class WebDataModule(pl.LightningDataModule):
         if shuffle > 0:
             dataset = dataset.shuffle(shuffle)
 
-        dataset = dataset.decode("rgb")
+        # dataset = dataset.decode("rgb")  # np.array, for albumentations
+        dataset = dataset.decode("pilrgb")  # PIL Image, for torchvision
     
         if mode == 'predict':
             if self.label_cols != ['id_str']:
