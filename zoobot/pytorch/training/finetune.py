@@ -2,7 +2,7 @@
 # https://github.com/inigoval/finetune/blob/main/finetune.py
 import logging
 import os
-from typing import Any
+from typing import Any, Union
 import warnings
 from functools import partial
 
@@ -13,6 +13,7 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 import torch
 import torch.nn.functional as F
 import torchmetrics as tm
+import timm
 
 from zoobot.pytorch.training import losses
 from zoobot.pytorch.estimators import define_model
@@ -51,7 +52,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         weight_decay (float, optional): AdamW weight decay arg (i.e. L2 penalty). Defaults to 0.05.
         learning_rate (float, optional): AdamW learning rate arg. Defaults to 1e-4.
         dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
-        freeze_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
+        always_train_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.
@@ -59,11 +60,10 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def __init__(
         self,
-        # can provide either checkpoint_loc, and will load this model as encoder...
-        checkpoint_loc=None,
-        # ...or directly pass model to use as encoder
+        # can provide either zoobot_checkpoint_loc, and will load this model as encoder...
+        zoobot_checkpoint_loc=None,
+        # ...or directly pass any model to use as encoder (if you do this, you will need to keep it around for later)
         encoder=None,
-        encoder_dim=1280,  # as per current Zooot. TODO Could get automatically?
         n_epochs=100,  # TODO early stopping
         n_blocks=0,  # how many layers deep to FT
         lr_decay=0.75,
@@ -81,22 +81,24 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # adds every __init__ arg to model.hparams
         # will also add to wandb if using logging=wandb, I think
         # necessary if you want to reload!
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+        # with warnings.catch_warnings():
+            # warnings.simplefilter("ignore")
             # this raises a warning that encoder is already a Module hence saved in checkpoint hence no need to save as hparam
             # true - except we need it to instantiate this class, so it's really handy to have saved as well
             # therefore ignore the warning
-            self.save_hyperparameters()
+        self.save_hyperparameters(ignore=['encoder']) # never serialise the encoder, way too heavy
+            # if you need the encoder to recreate, pass when loading checkpoint e.g. 
+            # FinetuneableZoobotTree.load_from_checkpoint(loc, encoder=encoder)
 
-        if checkpoint_loc is not None:
+        if zoobot_checkpoint_loc is not None:
           assert encoder is None, 'Cannot pass both checkpoint to load and encoder to use'
-          self.encoder = load_pretrained_encoder(checkpoint_loc)
+          self.encoder = load_pretrained_zoobot(zoobot_checkpoint_loc)
         else:
-          assert checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
+          assert zoobot_checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
           assert encoder is not None, 'Must pass either checkpoint to load or encoder to use'
           self.encoder = encoder
 
-        self.encoder_dim = encoder_dim
+        self.encoder_dim = define_model.get_encoder_dim(self.encoder)
         self.n_blocks = n_blocks
 
         # for backwards compat.
@@ -128,31 +130,37 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         lr = self.learning_rate
         params = [{"params": self.head.parameters(), "lr": lr}]
 
-        if hasattr(self.encoder, 'blocks'):  
-            logging.info('Effnet detected')
-            # TODO this actually excludes the first conv layer/bn
-            encoder_blocks = self.encoder.blocks
-            blocks_to_tune = list(encoder_blocks)
-        elif hasattr(self.encoder, 'layer4'):
-            logging.info('Resnet detected')
-            # similarly, excludes first conv/bn
+        # architecture = self.encoder.default_config['architecture']
+        logging.info(f'Encoder architecture to finetune: {type(self.encoder)}')
+
+        # if 'efficientnet' in architecture:  
+        if isinstance(self.encoder, timm.models.EfficientNet):
+            # TODO for now, these count as separate layers, not ideal
+            early_tuneable_layers = [self.encoder.conv_stem, self.encoder.bn1]
+            encoder_blocks = list(self.encoder.blocks)
+            blocks_to_tune = early_tuneable_layers + encoder_blocks
+        elif isinstance(self.encoder, timm.models.ResNet):
+            # all timm resnets seem to have this structure
             blocks_to_tune = [
+                # similarly
+                self.encoder.conv1,
+                self.encoder.bn1,
                 self.encoder.layer1,
                 self.encoder.layer2,
                 self.encoder.layer3,
                 self.encoder.layer4
             ]
-        elif hasattr(self.encoder, 'stages'):
-            logging.info('Max-ViT Tiny detected')
-            blocks_to_tune = [
-                # getattr as obj.0 is not allowed (why does timm call them 0!?)
-                getattr(self.encoder.stages, '0'),
-                getattr(self.encoder.stages, '1'),
-                getattr(self.encoder.stages, '2'),
-                getattr(self.encoder.stages, '3'),
-            ]
+        elif isinstance(self.encoder, timm.models.MaxxVit):
+            blocks_to_tune = self.encoder.stem + [stage for stage in self.encoder.stages]
+            # [
+          # getattr as obj.0 is not allowed (why does timm call them 0!?)
+            #     getattr(self.encoder.stages, '0'),
+            #     getattr(self.encoder.stages, '1'),
+            #     getattr(self.encoder.stages, '2'),
+            #     getattr(self.encoder.stages, '3'),
+            # ]
         else:
-            raise ValueError('Encoder architecture not automatically recognised')
+            raise ValueError(f'Encoder architecture not automatically recognised: {type(self.encoder)}')
         
         assert self.n_blocks <= len(
             blocks_to_tune
@@ -239,7 +247,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_epoch=True
         )
 
-    def on_validation_batch_end(self, outputs, batch, batch_idx: int, dataloader_idx=0):
+    def on_validation_batch_end(self, outputs: dict, batch, batch_idx: int, dataloader_idx=0):
         self.val_loss_metric(outputs['loss'])
         self.log(
             "finetuning/val_loss", 
@@ -252,7 +260,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         if self.visualize_images:
           self.upload_images_to_wandb(outputs, batch, batch_idx)
 
-    def on_test_batch_end(self, outputs, batch, batch_idx: int, dataloader_idx=0):
+    def on_test_batch_end(self, outputs: dict, batch, batch_idx: int, dataloader_idx=0):
         self.test_loss_metric(outputs['loss'])
         self.log(
             "finetuning/test_loss", 
@@ -319,7 +327,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         self.test_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
         
     def step_to_dict(self, y, y_pred, loss):
-        y_class_preds = torch.argmax(y_pred, axis=1)
+        y_class_preds = torch.argmax(y_pred, axis=1) # type: ignore
         return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y, 'class_predictions': y_class_preds}
 
     def on_train_batch_end(self, step_output, *args):
@@ -359,11 +367,11 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         )
 
     
-    def predict_step(self, x, batch_idx):
+    def predict_step(self, x: Union[list[torch.Tensor], torch.Tensor], batch_idx):
         # see Abstract version
         if isinstance(x, list) and len(x) == 1:
             return self(x[0])
-        x = self.forward(x)  # logits from LinearClassifier
+        x = self.forward(x)  # type: ignore # logits from LinearClassifier
         # then applies softmax
         return F.softmax(x, dim=1)
 
@@ -377,7 +385,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             images = [img for img in x[:n_images]]
             captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(
                 y[:n_images], y_pred_softmax[:n_images])]
-            self.logger.log_image(
+            self.logger.log_image( # type: ignore
                 key='val_images',
                 images=images,
                 caption=captions)
@@ -462,20 +470,20 @@ class FinetunedZoobotClassifierBaseline(FinetuneableZoobotClassifier):
         return torch.optim.AdamW(head_params + encoder_params, lr=self.learning_rate)
 
 
-def load_pretrained_encoder(checkpoint_loc: str) -> torch.nn.Sequential:
+def load_pretrained_zoobot(checkpoint_loc: str) -> torch.nn.Module:
     """
     Args:
-        checkpoint_loc (str): path to saved LightningModule checkpoint, likely of :class:`ZoobotTree`, :class:`FinetuneableZoobotClassifier`, or :class:`FinetunabelZoobotTree`. Must have .encoder attribute.
+        checkpoint_loc (str): path to saved LightningModule checkpoint, likely of :class:`ZoobotTree`, :class:`FinetuneableZoobotClassifier`, or :class:`FinetunabelZoobotTree`. Must have .zoobot attribute.
 
     Returns:
-        torch.nn.Sequential: pretrained PyTorch encoder within that LightningModule.
+        torch.nn.Module: pretrained PyTorch encoder within that LightningModule.
     """
     if torch.cuda.is_available():
         map_location = None
     else:
         # necessary to load gpu-trained model on cpu
         map_location = torch.device('cpu')
-    return define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, map_location=map_location).encoder
+    return define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, map_location=map_location).encoder # type: ignore
     
 
 def get_trainer(

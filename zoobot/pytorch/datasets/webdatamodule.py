@@ -87,14 +87,6 @@ class WebDataModule(pl.LightningDataModule):
             return np.transpose(augmentation_transform(image=np.array(img))["image"], axes=[2, 0, 1]).astype(np.float32)
         return do_transform
 
-    def make_label_transform(self):
-        if self.label_cols is not None:
-            def label_transform(label_dict):
-                return torch.from_numpy(np.array([label_dict.get(col, 0) for col in self.label_cols])).double()
-            return label_transform
-        else:
-            return identity  # do nothing
-    
 
     def make_loader(self, urls, mode="train"):
         logging.info('Making loader with mode {}'.format(mode))
@@ -108,7 +100,7 @@ class WebDataModule(pl.LightningDataModule):
 
         transform_image = self.make_image_transform(mode=mode)
 
-        transform_label = self.make_label_transform()
+        transform_label = dict_to_label_cols_factory(self.label_cols)
 
         dataset =  wds.WebDataset(urls, cache_dir=self.cache_dir, shardshuffle=shuffle>0, nodesplitter=nodesplitter_func)
             # https://webdataset.github.io/webdataset/multinode/ 
@@ -138,17 +130,6 @@ class WebDataModule(pl.LightningDataModule):
         # so use the torch collate instead
         dataset = dataset.batched(self.batch_size, torch.utils.data.default_collate, partial=False) 
 
-        loader = wds.WebLoader(
-            dataset,
-            batch_size=None,  # already batched
-            shuffle=False,  # already shuffled
-            num_workers=self.num_workers,
-            pin_memory=True,
-            prefetch_factor=self.prefetch_factor
-        )
-
-        loader.length = dataset_size // self.batch_size
-
         # temp hack instead
         if mode in ['train', 'val']:
             assert dataset_size % self.batch_size == 0, (dataset_size, self.batch_size, dataset_size % self.batch_size)
@@ -158,6 +139,8 @@ class WebDataModule(pl.LightningDataModule):
             # ensure same number of batches in all clients
             # loader = loader.ddp_equalize(dataset_size // self.batch_size)
             # print("# loader length", len(loader))
+
+        loader = webdataset_to_webloader(dataset, self.num_workers, self.prefetch_factor)
 
         return loader
 
@@ -176,7 +159,7 @@ def identity(x):
 def nodesplitter_func(urls):
     urls_to_use = list(wds.split_by_node(urls))  # rely on WDS for the hard work
     rank, world_size, worker, num_workers = wds.utils.pytorch_worker_info()
-    logging.info(
+    logging.debug(
         f'''
         Splitting urls within webdatamodule with WORLD_SIZE: 
         {world_size}, RANK: {rank}, WORKER: {worker} of {num_workers}\n
@@ -186,6 +169,7 @@ def nodesplitter_func(urls):
     return urls_to_use
 
 def interpret_shard_size_from_url(url):
+    assert isinstance(url, str), TypeError(url)
     return int(url.rstrip('.tar').split('_')[-1])
 
 def interpret_dataset_size_from_urls(urls):
@@ -198,3 +182,26 @@ def custom_collate(x):
     if isinstance(x, list) and len(x) == 1:
         x = x[0]
     return torch.utils.data.default_collate(x)
+
+
+def webdataset_to_webloader(dataset, num_workers, prefetch_factor):
+    loader = wds.WebLoader(
+            dataset,
+            batch_size=None,  # already batched
+            shuffle=False,  # already shuffled
+            num_workers=num_workers,
+            pin_memory=True,
+            prefetch_factor=prefetch_factor
+        )
+
+    # loader.length = dataset_size // batch_size
+    return loader
+
+
+def dict_to_label_cols_factory(label_cols=None):
+    if label_cols is not None:
+        def label_transform(label_dict):
+            return torch.from_numpy(np.array([label_dict.get(col, 0) for col in label_cols])).double()  # gets cast to int in zoobot loss
+        return label_transform
+    else:
+        return identity  # do nothing

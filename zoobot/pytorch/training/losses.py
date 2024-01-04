@@ -26,7 +26,6 @@ def calculate_multiquestion_loss(labels: torch.Tensor, predictions: torch.Tensor
         q_indices = question_index_groups[q_n]
         q_start = q_indices[0]
         q_end = q_indices[1]
-
         q_loss = dirichlet_loss(labels[:, q_start:q_end+1], predictions[:, q_start:q_end+1])
 
         q_losses.append(q_loss)
@@ -54,7 +53,6 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
     # you will get image batches of shape [N/4, 64, 64, 1] and hence have the wrong number of images vs. labels (and meaningless images)
     # so check --shard-img-size carefully!
     total_count = torch.sum(labels_for_q, axis=1)
-    # logging.info(total_count)
 
     # pytorch dirichlet multinomial implementation will not accept zero total votes, need to handle separately
     return get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q)
@@ -105,5 +103,6 @@ def dirichlet_loss(labels_for_q, concentrations_for_q):
 
 def get_dirichlet_neg_log_prob(labels_for_q, total_count, concentrations_for_q):
     # https://docs.pyro.ai/en/stable/distributions.html#dirichletmultinomial
-    dist = pyro.distributions.DirichletMultinomial(total_count=total_count, concentration=concentrations_for_q, is_sparse=False)
-    return -dist.log_prob(labels_for_q)  # important minus sign
+    # .int()s avoid rounding errors causing loss of around 1e-5 for questions with 0 votes
+    dist = pyro.distributions.DirichletMultinomial(total_count=total_count.int(), concentration=concentrations_for_q, is_sparse=False, validate_args=False)
+    return -dist.log_prob(labels_for_q.int())  # important minus sign
