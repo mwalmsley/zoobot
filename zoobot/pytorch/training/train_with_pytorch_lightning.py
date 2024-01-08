@@ -248,9 +248,10 @@ def train_default_zoobot_from_scratch(
                 
         #     }
         # })
-        cfg = transforms.default_view_config()
-        cfg.output_size = resize_after_crop
-        transform = transforms.GalaxyViewTransform(cfg)
+        train_transform_cfg = transforms.default_view_config()
+        inference_transform_cfg = transforms.minimal_view_config()
+        train_transform_cfg.output_size = resize_after_crop
+        inference_transform_cfg.output_size = resize_after_crop
 
         datamodule = webdatamodule.WebDataModule(
             train_urls=train_urls,
@@ -263,7 +264,8 @@ def train_default_zoobot_from_scratch(
             prefetch_factor=prefetch_factor,
             cache_dir=cache_dir,
             # augmentation args
-            transform=transform,
+            train_transform=transforms.GalaxyViewTransform(train_transform_cfg),
+            inference_transform=transforms.GalaxyViewTransform(inference_transform_cfg),
             # color=color,
             # crop_scale_bounds=crop_scale_bounds,
             # crop_ratio_bounds=crop_ratio_bounds,

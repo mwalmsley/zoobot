@@ -21,42 +21,19 @@ import webdataset as wds
 
 import zoobot.pytorch.datasets.webdatamodule as webdatamodule
 
+def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048, overwrite=False):
+    for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
+        n_shards = len(catalog) // divisor
+        logging.info(n_shards)
 
-# def catalogs_to_webdataset(dataset_name, wds_dir, label_cols, train_catalog, test_catalog, sparse_label_df=None, divisor=2048, overwrite=False):
-#     for (catalog_name, catalog) in [('train', train_catalog), ('test', test_catalog)]:
-#         n_shards = len(catalog) // divisor
-#         logging.info(n_shards)
+        catalog = catalog[:n_shards*divisor]
+        logging.info(len(catalog))
 
-#         catalog = catalog[:n_shards*divisor]
-#         logging.info(len(catalog))
-
-#         # wds_dir e.g. /home/walml/data/wds
-
-#         save_loc = f"{wds_dir}/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
+        save_loc = f"{wds_dir}/{dataset_name}/{dataset_name}_{catalog_name}.tar"  # .tar replace automatically
         
-#         df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=overwrite)
-#         # some tests, if you like
-#         # webdataset_utils.load_wds_directly(save_loc)
-#         # webdataset_utils.load_wds_with_augmentation(save_loc)
-#         # webdataset_utils.load_wds_with_webdatamodule([save_loc], label_cols)
+        df_to_wds(catalog, label_cols, save_loc, n_shards=n_shards, sparse_label_df=sparse_label_df, overwrite=overwrite)
 
-
-def make_mock_wds(save_dir: str, label_cols: list, n_shards: int, shard_size: int):
-    counter = 0
-    shards = [os.path.join(save_dir, f'mock_shard_{shard_n}_{shard_size}.tar') for shard_n in range(n_shards)]
-    for shard in shards:
-        sink = wds.TarWriter(shard)
-        for galaxy_n in range(shard_size):
-            data = {
-                "__key__": f'id_{galaxy_n}',
-                "image.jpg": (np.random.rand(424, 424)*255.).astype(np.uint8),
-                "labels.json": json.dumps(dict(zip(label_cols, [np.random.randint(low=0, high=10) for _ in range(len(label_cols))])))
-            }
-            sink.write(data)
-            counter += 1
-    print(counter)
-    return shards
-
+    
 
 
 def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse_label_df=None, overwrite=False):
@@ -205,6 +182,25 @@ def load_wds_with_webdatamodule(save_loc, label_cols, batch_size=16, max_to_load
 def identity(x):
     # no lambda to be pickleable
     return x
+
+
+
+def make_mock_wds(save_dir: str, label_cols: list, n_shards: int, shard_size: int):
+    counter = 0
+    shards = [os.path.join(save_dir, f'mock_shard_{shard_n}_{shard_size}.tar') for shard_n in range(n_shards)]
+    for shard in shards:
+        sink = wds.TarWriter(shard)
+        for galaxy_n in range(shard_size):
+            data = {
+                "__key__": f'id_{galaxy_n}',
+                "image.jpg": (np.random.rand(424, 424)*255.).astype(np.uint8),
+                "labels.json": json.dumps(dict(zip(label_cols, [np.random.randint(low=0, high=10) for _ in range(len(label_cols))])))
+            }
+            sink.write(data)
+            counter += 1
+    print(counter)
+    return shards
+
 
 if __name__ == '__main__':
 
