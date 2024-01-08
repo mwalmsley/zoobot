@@ -120,7 +120,7 @@ class WebDataModule(pl.LightningDataModule):
             dataset = dataset.shuffle(shuffle)
 
         # dataset = dataset.decode("rgb")  # np.array, for albumentations
-        dataset = dataset.decode("pilrgb")  # PIL Image, for torchvision
+        dataset = dataset.decode("torchrgb")  # tensor, for torchvision
     
         if mode == 'predict':
             if self.label_cols != ['id_str']:
