@@ -28,7 +28,8 @@ class WebDataModule(pl.LightningDataModule):
             crop_scale_bounds=(0.7, 0.8),
             crop_ratio_bounds=(0.9, 1.1),
             resize_after_crop=224,
-            transform: Callable=None
+            train_transform: Callable=None,
+            inference_transform: Callable=None
             ):
         super().__init__()
 
@@ -61,7 +62,8 @@ class WebDataModule(pl.LightningDataModule):
         self.crop_scale_bounds = crop_scale_bounds
         self.crop_ratio_bounds = crop_ratio_bounds
 
-        self.transform = transform
+        self.train_transform = train_transform
+        self.inference_transform = inference_transform
 
         for url_name in ['train', 'val', 'test', 'predict']:
             urls = getattr(self, f'{url_name}_urls')
@@ -101,12 +103,12 @@ class WebDataModule(pl.LightningDataModule):
             assert mode in ['val', 'test', 'predict'], mode
             shuffle = 0
 
-        if self.transform is None:
+        if self.train_transform is None:
             logging.info('Using default transform')
             transform_image = self.make_image_transform(mode=mode)
         else:
-            logging.info('Ignoring hparams and using directly-passed transform')
-            transform_image = self.transform
+            logging.info('Ignoring hparams and using directly-passed transforms')
+            transform_image = self.train_transform if mode == 'train' else self.inference_transform
 
         transform_label = dict_to_label_cols_factory(self.label_cols)
 
@@ -130,6 +132,7 @@ class WebDataModule(pl.LightningDataModule):
                 logging.info('Will return id_str only')
                 dataset = dataset.to_tuple('__key__')
         else:
+            
             dataset = (
                 dataset.to_tuple('image.jpg', 'labels.json')
                 .map_tuple(transform_image, transform_label)
