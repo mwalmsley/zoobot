@@ -58,12 +58,12 @@ class GenericLightningModule(pl.LightningModule):
         self.save_hyperparameters()  # saves all args by default
 
 
-    def setup_metrics(self):
+    def setup_metrics(self, nan_strategy='error'):  # may sometimes want to ignore nan even in main metrics
         self.val_accuracy = torchmetrics.Accuracy(task='binary')
 
         self.loss_metrics = torch.nn.ModuleDict({
-            'train/supervised_loss': torchmetrics.MeanMetric(nan_strategy='error'),
-            'validation/supervised_loss': torchmetrics.MeanMetric(nan_strategy='error'),
+            'train/supervised_loss': torchmetrics.MeanMetric(nan_strategy=nan_strategy),
+            'validation/supervised_loss': torchmetrics.MeanMetric(nan_strategy=nan_strategy),
         })
         
         # TODO handle when schema doesn't exist
