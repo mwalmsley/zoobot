@@ -120,12 +120,13 @@ class GenericLightningModule(pl.LightningModule):
         # called *after* on_validation_epoch_end, confusingly
         # do NOT log_all_metrics here. 
         # logging a metric resets it, and on_validation_epoch_end just logged and reset everything, so you will only log nans
-        pass
+        self.log_all_metrics(subset='train')
 
     def on_validation_epoch_end(self) -> None:
-        # raise ValueError('val epoch end')
-        # called at end of val epoch, but BEFORE on_train_epoch_end
-        self.log_all_metrics()  # logs all metrics, so can do in val only
+        self.log_all_metrics(subset='validation')
+
+    def on_test_epoch_end(self) -> None:
+        self.log_all_metrics(subset='test')
     
     def calculate_loss_and_update_loss_metrics(self, predictions, labels, step_name):
         raise NotImplementedError('Must be subclassed')
@@ -133,11 +134,16 @@ class GenericLightningModule(pl.LightningModule):
     def update_other_metrics(self, outputs, step_name):
         raise NotImplementedError('Must be subclassed')
 
-    def log_all_metrics(self):
-
-        self.log_dict(self.loss_metrics, on_epoch=True, on_step=False, prog_bar=True, logger=True)
-        self.log_dict(self.question_loss_metrics, on_step=False, on_epoch=True, logger=True)
-        self.log_dict(self.campaign_loss_metrics, on_step=False, on_epoch=True, logger=True)
+    def log_all_metrics(self, subset=None):
+        if subset is not None:
+            for name, metric in self.loss_metrics.items():
+                if subset in name:
+                    print('logging', name)
+                    self.log(name, metric, on_epoch=True, on_step=False, prog_bar=True, logger=True)
+        else:  # just log everything
+            self.log_dict(self.loss_metrics, on_epoch=True, on_step=False, prog_bar=True, logger=True)
+            self.log_dict(self.question_loss_metrics, on_step=False, on_epoch=True, logger=True)
+            self.log_dict(self.campaign_loss_metrics, on_step=False, on_epoch=True, logger=True)
 
 
 
