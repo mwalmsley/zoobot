@@ -163,7 +163,7 @@ class WebDataModule(pl.LightningDataModule):
         return self.make_loader(self.val_urls, mode="val")
 
     def test_dataloader(self):
-        return self.make_loader(self.val_urls, mode="test")
+        return self.make_loader(self.test_urls, mode="test")
     
     def predict_dataloader(self):
         return self.make_loader(self.predict_urls, mode="predict")
