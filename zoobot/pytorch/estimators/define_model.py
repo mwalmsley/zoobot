@@ -64,11 +64,12 @@ class GenericLightningModule(pl.LightningModule):
         self.loss_metrics = torch.nn.ModuleDict({
             'train/supervised_loss': torchmetrics.MeanMetric(nan_strategy=nan_strategy),
             'validation/supervised_loss': torchmetrics.MeanMetric(nan_strategy=nan_strategy),
+            'test/supervised_loss': torchmetrics.MeanMetric(nan_strategy=nan_strategy),
         })
         
         # TODO handle when schema doesn't exist
         question_metric_dict = {}
-        for step_name in ['train', 'validation']:  # TODO test
+        for step_name in ['train', 'validation', 'test']:
             question_metric_dict.update({
                 step_name + '/question_loss/' + question.text: torchmetrics.MeanMetric(nan_strategy='ignore')
                 for question in self.schema.questions
@@ -77,7 +78,7 @@ class GenericLightningModule(pl.LightningModule):
 
         campaigns = schema_to_campaigns(self.schema)
         campaign_metric_dict = {}
-        for step_name in ['train', 'validation']:
+        for step_name in ['train', 'validation', 'test']:
             campaign_metric_dict.update({
                             step_name + '/campaign_loss/' + campaign: torchmetrics.MeanMetric(nan_strategy='ignore')
                 for campaign in campaigns
