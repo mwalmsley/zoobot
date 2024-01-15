@@ -217,3 +217,11 @@ def dict_to_label_cols_factory(label_cols=None):
         return label_transform
     else:
         return identity  # do nothing
+
+def dict_to_filled_dict_factory(label_cols):
+    # might be a little slow, but very safe
+    def label_transform(label_dict: dict):
+        # modifies inplace with 0 iff key missing
+        [label_dict.setdefault(col, 0) for col in label_cols]
+        return label_dict
+    return label_transform
