@@ -88,7 +88,11 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
             # logging.info(shard_save_loc)
             sink = wds.TarWriter(shard_save_loc)
             for _, galaxy in shard_df.iterrows(): # type: ignore
-                sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
+                try:
+                    sink.write(galaxy_to_wds(galaxy, label_cols, transform=transform))
+                except Exception as e:
+                    logging.critical(galaxy)
+                    raise(e)
             sink.close()
 
 
