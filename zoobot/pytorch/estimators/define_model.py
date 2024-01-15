@@ -126,7 +126,9 @@ class GenericLightningModule(pl.LightningModule):
         self.log_all_metrics(subset='validation')
 
     def on_test_epoch_end(self) -> None:
+        logging.info('start test epoch end')
         self.log_all_metrics(subset='test')
+        logging.info('end test epoch end')
     
     def calculate_loss_and_update_loss_metrics(self, predictions, labels, step_name):
         raise NotImplementedError('Must be subclassed')

@@ -351,10 +351,24 @@ def train_default_zoobot_from_scratch(
             #     datamodule=datamodule,
             #     ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
             # )
-            datamodule.setup(stage='test')
+            test_datamodule = webdatamodule.WebDataModule(
+                train_urls=None,
+                val_urls=None,
+                test_urls=test_urls,
+                label_cols=schema.label_cols,
+                batch_size=batch_size,
+                num_workers=num_workers,
+                prefetch_factor=prefetch_factor,
+                cache_dir=cache_dir,
+                color=color,
+                crop_scale_bounds=crop_scale_bounds,
+                crop_ratio_bounds=crop_ratio_bounds,
+                resize_after_crop=resize_after_crop
+            )
+            test_datamodule.setup(stage='test')
             test_trainer.test(
                 model=lightning_model,
-                datamodule=datamodule,
+                datamodule=test_datamodule,
                 ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
             )
             # TODO may need to remake on 1 gpu only
