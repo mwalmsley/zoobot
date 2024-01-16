@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 from typing import Callable
 import logging
 import torch.utils.data
@@ -89,6 +90,8 @@ class WebDataModule(pl.LightningDataModule):
 
 
         def do_transform(img):
+            assert img.shape[2] < 4  # 1 or 3 channels in shape[2] dim, i.e. numpy/pil HWC convention
+            # if not, check decode mode is 'rgb' not 'torchrgb'
             return np.transpose(augmentation_transform(image=np.array(img))["image"], axes=[2, 0, 1]).astype(np.float32)
         return do_transform
 
@@ -105,10 +108,13 @@ class WebDataModule(pl.LightningDataModule):
 
         if self.train_transform is None:
             logging.info('Using default transform')
+            decode_mode = 'rgb' # np.array, for albumentations
             transform_image = self.make_image_transform(mode=mode)
         else:
             logging.info('Ignoring hparams and using directly-passed transforms')
+            decode_mode = 'torchrgb'  # tensor, for torchvision
             transform_image = self.train_transform if mode == 'train' else self.inference_transform
+
 
         transform_label = dict_to_label_cols_factory(self.label_cols)
 
@@ -119,8 +125,7 @@ class WebDataModule(pl.LightningDataModule):
         if shuffle > 0:
             dataset = dataset.shuffle(shuffle)
 
-        # dataset = dataset.decode("rgb")  # np.array, for albumentations
-        dataset = dataset.decode("torchrgb")  # tensor, for torchvision
+        dataset = dataset.decode(decode_mode)
     
         if mode == 'predict':
             if self.label_cols != ['id_str']:
@@ -222,9 +227,18 @@ def dict_to_label_cols_factory(label_cols=None):
         return identity  # do nothing
 
 def dict_to_filled_dict_factory(label_cols):
+    logging.info(f'label cols: {label_cols}')
     # might be a little slow, but very safe
     def label_transform(label_dict: dict):
+
         # modifies inplace with 0 iff key missing
-        [label_dict.setdefault(col, 0) for col in label_cols]
+        # [label_dict.setdefault(col, 0) for col in label_cols]
+
+        for col in label_cols:
+            label_dict[col] = label_dict.get(col, 0)
+
+        # label_dict_with_default = defaultdict(0)
+        # label_dict_with_default.update(label_dict)
+
         return label_dict
     return label_transform
