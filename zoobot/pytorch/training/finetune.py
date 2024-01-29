@@ -322,7 +322,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         super().__init__(**super_kwargs)
 
         logging.info('Using classification head and cross-entropy loss')
-        self.head = LinearClassifier(
+        self.head = LinearHead(
             input_dim=self.encoder_dim,
             output_dim=num_classes,
             dropout_prob=self.dropout_prob
@@ -387,7 +387,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         # see Abstract version
         if isinstance(x, list) and len(x) == 1:
             return self(x[0])
-        x = self.forward(x)  # type: ignore # logits from LinearClassifier
+        x = self.forward(x)  # type: ignore # logits from LinearHead
         # then applies softmax
         return F.softmax(x, dim=1)
 
@@ -405,6 +405,98 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
                 key='val_images',
                 images=images,
                 caption=captions)
+
+
+
+class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
+    """
+    Pretrained Zoobot model intended for finetuning on a regression problem.    
+
+    See FinetuneableZoobotClassifier, above
+
+    Args:
+        None besides those from FinetuneableZoobotAbstract, above (1 class, MSE error, for now)
+        
+    """
+
+    def __init__(
+            self,
+            **super_kwargs) -> None:
+
+        super().__init__(**super_kwargs)
+
+        logging.info('Using classification head and cross-entropy loss')
+        self.head = LinearHead(
+            input_dim=self.encoder_dim,
+            output_dim=1,
+            dropout_prob=self.dropout_prob
+        )
+        self.loss = mse_loss
+        # rmse metrics. loss is mse already.
+        self.train_rmse = tm.MeanSquaredError(squared=False)
+        self.val_rmse = tm.MeanSquaredError(squared=False)
+        self.test_rmse = tm.MeanSquaredError(squared=False)
+        
+    def step_to_dict(self, y, y_pred, loss):
+        return {'loss': loss.mean(), 'predictions': y_pred, 'labels': y}
+
+    def on_train_batch_end(self, step_output, *args):
+        super().on_train_batch_end(step_output, *args)
+
+        self.train_rmse(step_output['predictions'], step_output['labels'])
+        self.log(
+            'finetuning/train_rmse',
+            self.train_rmse,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=self.prog_bar
+        )
+    
+    def on_validation_batch_end(self, step_output, *args):
+        super().on_validation_batch_end(step_output, *args)
+
+        self.val_rmse(step_output['predictions'], step_output['labels'])
+        self.log(
+            'finetuning/val_rmse',
+            self.val_rmse,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=self.prog_bar
+        )
+
+    def on_test_batch_end(self, step_output, *args) -> None:
+        super().on_test_batch_end(step_output, *args)
+
+        self.test_rmse(step_output['predictions'], step_output['labels'])
+        self.log(
+            "finetuning/test_rmse",
+            self.test_rmse,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=self.prog_bar
+        )
+
+    
+    def predict_step(self, x: Union[list[torch.Tensor], torch.Tensor], batch_idx):
+        # see Abstract version
+        if isinstance(x, list) and len(x) == 1:
+            return self(x[0])
+        return self.forward(x)
+
+    # TODO
+    # def upload_images_to_wandb(self, outputs, batch, batch_idx):
+    #   # self.logger is set by pl.Trainer(logger=) argument
+    #     if (self.logger is not None) and (batch_idx == 0):
+    #         x, y = batch
+    #         y_pred_softmax = F.softmax(outputs['predictions'], dim=1)
+    #         n_images = 5
+    #         images = [img for img in x[:n_images]]
+    #         captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(
+    #             y[:n_images], y_pred_softmax[:n_images])]
+    #         self.logger.log_image( # type: ignore
+    #             key='val_images',
+    #             images=images,
+    #             caption=captions)
 
 
 class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
@@ -447,10 +539,11 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
     # other functions are simply inherited from FinetunedZoobotAbstract
 
 # https://github.com/inigoval/byol/blob/1da1bba7dc5cabe2b47956f9d7c6277decd16cc7/byol_main/networks/models.py#L29
-class LinearClassifier(torch.nn.Module):
+class LinearHead(torch.nn.Module):
     def __init__(self, input_dim, output_dim, dropout_prob=0.5):
         # input dim is representation dim, output_dim is num classes
-        super(LinearClassifier, self).__init__()
+        super(LinearHead, self).__init__()
+        self.output_dim = output_dim
         self.dropout = torch.nn.Dropout(p=dropout_prob)
         self.linear = torch.nn.Linear(input_dim, output_dim)
 
@@ -458,7 +551,11 @@ class LinearClassifier(torch.nn.Module):
         # returns logits, as recommended for CrossEntropy loss
         x = self.dropout(x)
         x = self.linear(x)
-        return x
+        if self.output_dim == 1:
+            return x.squeeze()
+        else:
+            return x
+
 
 
 def cross_entropy_loss(y_pred, y, label_smoothing=0., weight=None):
@@ -467,6 +564,13 @@ def cross_entropy_loss(y_pred, y, label_smoothing=0., weight=None):
     # returns loss of shape (batch)
     # will reduce myself
     return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, weight=weight, reduction='none')
+
+def mse_loss(y_pred, y):
+    # y should be shape (batch) and ints
+    # y_pred should be shape (batch, classes)
+    # returns loss of shape (batch)
+    # will reduce myself
+    return F.mse_loss(y_pred, y, reduction='none')
 
 
 def dirichlet_loss(y_pred, y, question_index_groups):
