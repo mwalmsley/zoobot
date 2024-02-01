@@ -370,7 +370,7 @@ def dirichlet_loss(preds, labels, question_index_groups, sum_over_questions=Fals
 
     # multiquestion_loss returns loss of shape (batch, question)
     # torch.sum(multiquestion_loss, axis=1) gives loss of shape (batch). Equiv. to non-log product of question likelihoods.
-    multiq_loss = losses.calculate_multiquestion_loss(labels, preds, question_index_groups)
+    multiq_loss = losses.calculate_multiquestion_loss(labels, preds, question_index_groups, careful=True)
     if sum_over_questions:
         return torch.sum(multiq_loss, axis=1)
     else:

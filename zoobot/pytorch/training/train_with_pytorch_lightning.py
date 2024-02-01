@@ -268,13 +268,11 @@ def train_default_zoobot_from_scratch(
     # these args are automatically logged
     lightning_model = define_model.ZoobotTree(
         output_dim=len(schema.label_cols),
-        # question_index_groups=schema.question_index_groups,
         # NEW - pass these from schema, for better logging
         question_answer_pairs=schema.question_answer_pairs,
         dependencies=schema.dependencies,
         architecture_name=architecture_name,
         channels=channels,
-        # use_imagenet_weights=False,
         test_time_dropout=True,
         dropout_rate=dropout_rate,
         learning_rate=learning_rate,
@@ -306,7 +304,6 @@ def train_default_zoobot_from_scratch(
 
     early_stopping_callback = EarlyStopping(monitor=monitor_metric, patience=patience, check_finite=True)
     callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
-    # callbacks = None
 
     trainer = pl.Trainer(
         num_sanity_val_steps=0,
@@ -321,13 +318,8 @@ def train_default_zoobot_from_scratch(
         max_epochs=epochs,
         default_root_dir=save_dir,
         plugins=plugins,
-        gradient_clip_val=1.  # new, for large models
-        # ,
-        # limit_train_batches=1,
-        # limit_val_batches=1
-        # use_distributed_sampler=use_distributed_sampler
+        gradient_clip_val=.3  # reduced from 1 to .3, having some nan issues
     )
-
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
 
@@ -337,44 +329,13 @@ def train_default_zoobot_from_scratch(
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
     if datamodule.test_dataloader is not None:
         logging.info(f'Testing on {checkpoint_callback.best_model_path} with single GPU. Be careful not to overfit your choices to the test data...')
-    #     # test_trainer.validate(
-    #     #     model=lightning_model,
-    #     #     datamodule=datamodule,
-    #     #     ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-    #     # )
-    #     test_trainer = pl.Trainer(
-    #         accelerator=accelerator,
-    #         devices=1,
-    #         precision=precision,
-    #         logger=wandb_logger,
-    #         default_root_dir=save_dir
-    #     )
-        # if test_trainer.is_global_zero:
-                # test_datamodule = webdatamodule.WebDataModule(
-                #     train_urls=None,
-                #     val_urls=None,
-                #     test_urls=test_urls,
-                #     label_cols=schema.label_cols,
-                #     batch_size=batch_size,
-                #     num_workers=1,  # 20 / 5 == 4, /2=2
-                #     prefetch_factor=prefetch_factor,
-                #     cache_dir=None,
-                #     color=color,
-                #     crop_scale_bounds=crop_scale_bounds,
-                #     crop_ratio_bounds=crop_ratio_bounds,
-                #     resize_after_crop=resize_after_crop
-                # )
         datamodule.setup(stage='test')
+        # TODO with webdataset, no need for new trainer/datamodule (actually it breaks), but might still be needed with normal dataset?
         trainer.test(
             model=lightning_model,
             datamodule=datamodule,
             ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
         )
-    #     else:
-    #         logging.info('Not global zero, skipping test metrics')
-    # else:
-    #     logging.info('No test dataloader found, skipping test metrics')
-
 
     # explicitly update the model weights to the best checkpoint before returning
     # (assumes only one checkpoint callback, very likely in practice)
