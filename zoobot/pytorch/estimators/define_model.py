@@ -238,7 +238,7 @@ class ZoobotTree(GenericLightningModule):
 
         if question_answer_pairs is not None:
             logging.info('question_index_groups/dependencies passed to Zoobot, constructing schema in __init__')
-            assert question_index_groups is None,  "Don't pass both question_index_groups and question_answer_pairs/dependencies"
+            # assert question_index_groups is None,  "Don't pass both question_index_groups and question_answer_pairs/dependencies"
             assert dependencies is not None
             self.schema = schemas.Schema(question_answer_pairs, dependencies)
             # replace with schema-derived version
