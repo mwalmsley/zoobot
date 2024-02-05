@@ -30,7 +30,7 @@ Download the code using git:
 
     git clone git@github.com:mwalmsley/zoobot.git
 
-And then pick one of the three commands below to install Zoobot and either PyTorch (recommended) or TensorFlow:
+And then pick one of the three commands below to install Zoobot and PyTorch:
 
     # Zoobot with PyTorch and a GPU. Requires CUDA 12.1 (or CUDA 11.8, if you use `_cu118` instead)
     pip install -e "zoobot[pytorch-cu121]" --extra-index-url https://download.pytorch.org/whl/cu121
@@ -40,9 +40,6 @@ And then pick one of the three commands below to install Zoobot and either PyTor
 
     # OR Zoobot with PyTorch on Mac with M1 chip
     pip install -e "zoobot[pytorch-m1]"
-
-    # OR Zoobot with TensorFlow. Works with and without a GPU, but if you have a GPU, you need CUDA 11.2.
-    pip install -e "zoobot[tensorflow]
 
 This installs the downloaded Zoobot code using pip [editable mode](https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs) so you can easily change the code locally. Zoobot is also available directly from pip (`pip install zoobot[option]`). Only use this if you are sure you won't be making changes to Zoobot itself. For Google Colab, use `pip install zoobot[pytorch_colab]`
 
@@ -115,12 +112,6 @@ PyTorch (recommended):
 - [pytorch/examples/representations/get_representations.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/representations/get_representations.py)
 - [pytorch/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/train_model_on_catalog.py) (only necessary to train from scratch)
 
-TensorFlow:
-- [tensorflow/examples/train_model_on_catalog.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/train_model_on_catalog.py) (only necessary to train from scratch)
-- [tensorflow/examples/make_predictions.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/make_predictions.py)
-- [tensorflow/examples/finetune_minimal.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_minimal.py)
-- [tensorflow/examples/finetune_advanced.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples/finetune_advanced.py)
-
 There is more explanation and an API reference on the [docs](https://zoobot.readthedocs.io/).
 
 I also [include](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) the scripts used to create and benchmark our pretrained models. Many pretrained models are available [already](https://zoobot.readthedocs.io/en/latest/data_notes.html), but if you need one trained on e.g. different input image sizes or with a specific architecture, I can probably make it for you.
@@ -129,44 +120,30 @@ When trained with a decision tree head (ZoobotTree, FinetuneableZoobotTree), Zoo
 
 
 
-### (Optional) Install PyTorch or TensorFlow, with CUDA
+### (Optional) Install PyTorch with CUDA
 <a name="install_cuda"></a>
 
-*If you're not using a GPU, skip this step. Use the pytorch_cpu or tensorflow_cpu options in the section below.*
+*If you're not using a GPU, skip this step. Use the pytorch-cpu option in the section below.*
 
-Install PyTorch 1.12.1 or Tensorflow 2.10.0 and compatible CUDA drivers. I highly recommend using [conda](https://docs.conda.io/en/latest/miniconda.html) to do this. Conda will handle both creating a new virtual environment (`conda create`) and installing CUDA (`cudatoolkit`, `cudnn`)
+Install PyTorch 2.1.0 or Tensorflow 2.10.0 and compatible CUDA drivers. I highly recommend using [conda](https://docs.conda.io/en/latest/miniconda.html) to do this. Conda will handle both creating a new virtual environment (`conda create`) and installing CUDA (`cudatoolkit`, `cudnn`)
 
-CUDA 11.3 for PyTorch:
+CUDA 12.1 for PyTorch 2.1.0:
 
-    conda create --name zoobot38_torch python==3.8
-    conda activate zoobot38_torch
-    conda install -c conda-forge cudatoolkit=11.3
+    conda create --name zoobot39_torch python==3.9
+    conda activate zoobot39_torch
+    conda install -c conda-forge cudatoolkit=12.1
 
-CUDA 11.2 and CUDNN 8.1 for TensorFlow 2.10.0:
 
-    conda create --name zoobot38_tf python==3.8
-    conda activate zoobot38_tf
-    conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/  # add this environment variable
+### Recent release features (v2.0.0)
 
-### Latest minor features (v1.0.4)
-
-- Now supports multi-class finetuning. See `pytorch/examples/finetuning/finetune_multiclass_classification.py`
-- Removed `simplejpeg` dependency due to M1 install issue. 
-- Pinned `timm` version to ensure MaX-ViT models load correctly. Models supporting the latest `timm` will follow.
-- (internal until published) GZ Evo v2 now includes Cosmic Dawn (HSC). Significant performance improvement on HSC finetuning.
-
-### Latest major features (v1.0.0)
-
-v1.0.0 recognises that most of the complexity in this repo is training Zoobot from scratch, but most non-GZ users will probably simply want to load the pretrained Zoobot and finetune it on their data.
-
-- Adds new finetuning interface (`finetune.run_finetuning()`), examples.
-- Refocuses docs on finetuning rather than training from scratch.
-- Rework installation process to separate CUDA from Zoobot (simpler, easier)
-- Better wandb logging throughout, to monitor training
-- Remove need to make TFRecords. Now TF directly uses images.
-- Refactor out augmentations and datasets to `galaxy-datasets` repo. TF and Torch now use identical augmentations (via albumentations).
-- Many small quality-of-life improvements
+- New pretrained architectures: EfficientnetV2 S/M/L, MaxViT tiny/small/base, ViT tiny/small, and more.
+- Reworked finetuning procedure. All these architectures are finetuneable through a common method.
+- Now supports regression finetuning (as well as multi-class and binary). See `pytorch/examples/finetuning`
+- Updated `timm` to 0.9.10, allowing latest model architectures. Previously downloaded checkpoints may not load correctly!
+- (internal until published) GZ Evo v2 now includes Cosmic Dawn (HSC H2O). Significant performance improvement on HSC finetuning. Also now includes GZ UKIDSS (dragged from our archives).
+- Updated `pytorch` to `2.1.0`
+- Added option to compile encoder for max speed (not recommended for finetuning, only for pretraining).
+- Deprecates TensorFlow. The CS research community focuses on PyTorch and new frameworks like JAX.
 
 Contributions are very welcome and will be credited in any future work. Please get in touch! See [CONTRIBUTING.md](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) for more.
 
@@ -175,6 +152,8 @@ Contributions are very welcome and will be credited in any future work. Please g
 The [benchmarks](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) folder contains slurm and Python scripts to train Zoobot from scratch. We use these scripts to make sure new code versions work well, and that TensorFlow and PyTorch achieve similar performance.
 
 Training Zoobot using the GZ DECaLS dataset option will create models very similar to those used for the GZ DECaLS catalogue and shared with the early versions of this repo. The GZ DESI Zoobot model is trained on additional data (GZD-1, GZD-2), as the GZ Evo Zoobot model (GZD-1/2/5, Hubble, Candels, GZ2).
+
+**Pretraining is becoming increasingly complex and is now partially refactored out to a separate repository. We are gradually migrating this `zoobot` repository to focus on finetuning.**
 
 ### Citing
 
@@ -189,10 +168,9 @@ You might be interested in reading papers using Zoobot:
 - [Practical Galaxy Morphology Tools from Deep Supervised Representation Learning](https://arxiv.org/abs/2110.12735) (2022)
 - [Towards Foundation Models for Galaxy Morphology](https://arxiv.org/abs/2206.11927) (2022)
 - [Harnessing the Hubble Space Telescope Archives: A Catalogue of 21,926 Interacting Galaxies](https://arxiv.org/abs/2303.00366) (2023)
-- [Astronomaly at Scale: Searching for Anomalies Amongst 4 Million Galaxies](https://arxiv.org/abs/2309.08660) (2023)
 - [Galaxy Zoo DESI: Detailed morphology measurements for 8.7M galaxies in the DESI Legacy Imaging Surveys](https://academic.oup.com/mnras/advance-article/doi/10.1093/mnras/stad2919/7283169?login=false) (2023)
 - [Galaxy mergers in Subaru HSC-SSP: A deep representation learning approach for identification, and the role of environment on merger incidence](https://doi.org/10.1051/0004-6361/202346743) (2023)
-
-<!-- submitted papers: simulated merger classification, unsupervised anomaly detection, starforming clump localisation, and morphological segmentation. -->
+- [Astronomaly at Scale: Searching for Anomalies Amongst 4 Million Galaxies](https://arxiv.org/abs/2309.08660) (2023, submitted)
+- [Transfer learning for galaxy feature detection: Finding Giant Star-forming Clumps in low redshift galaxies using Faster R-CNN](https://arxiv.org/abs/2312.03503) (2023, submitted)
 
 Many other works use Zoobot indirectly via the [Galaxy Zoo DECaLS](https://arxiv.org/abs/2102.08414) catalog (and now via the new [Galaxy Zoo DESI](https://academic.oup.com/mnras/advance-article/doi/10.1093/mnras/stad2919/7283169?login=false) catalog).
