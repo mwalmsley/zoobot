@@ -175,7 +175,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 self.encoder.layer4
             ]
         elif isinstance(self.encoder, timm.models.MaxxVit):
-            blocks_to_tune = self.encoder.stem + [stage for stage in self.encoder.stages]
+            blocks_to_tune = [self.encoder.stem] + [stage for stage in self.encoder.stages]
         else:
             raise ValueError(f'Encoder architecture not automatically recognised: {type(self.encoder)}')
             
