@@ -4,6 +4,7 @@ from typing import Tuple
 
 import torch
 import pytorch_lightning as pl
+from pytorch_lightning.plugins import TorchSyncBatchNorm
 from pytorch_lightning.strategies.ddp import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -49,6 +50,7 @@ def train_default_zoobot_from_scratch(
     # hardware parameters
     nodes=1,
     gpus=2,
+    sync_batchnorm=False,
     num_workers=4,
     prefetch_factor=4,
     mixed_precision=False,
@@ -283,6 +285,11 @@ def train_default_zoobot_from_scratch(
         weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
+
+    if sync_batchnorm:
+        logging.info('Using sync batchnorm')
+        lightning_model = TorchSyncBatchNorm.apply(lightning_model)
+    
     
     extra_callbacks = extra_callbacks if extra_callbacks else []
 
