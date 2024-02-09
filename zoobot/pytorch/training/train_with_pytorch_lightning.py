@@ -288,7 +288,7 @@ def train_default_zoobot_from_scratch(
 
     if sync_batchnorm:
         logging.info('Using sync batchnorm')
-        lightning_model = TorchSyncBatchNorm.apply(lightning_model)
+        lightning_model = TorchSyncBatchNorm().apply(lightning_model)
     
     
     extra_callbacks = extra_callbacks if extra_callbacks else []

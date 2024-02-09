@@ -264,6 +264,7 @@ class ZoobotTree(GenericLightningModule):
             self.encoder = torch.compile(self.encoder)
 
         # bit lazy assuming 224 input size
+        # logging.warning(channels)
         self.encoder_dim = get_encoder_dim(self.encoder, channels)
         # typically encoder_dim=1280 for effnetb0
         logging.info('encoder dim: {}'.format(self.encoder_dim))
@@ -378,17 +379,21 @@ def dirichlet_loss(preds, labels, question_index_groups, sum_over_questions=Fals
 
 
 # input_size doesn't matter as long as it's large enough to not be pooled to zero
-# channels doesn't matter at all
+# channels doesn't matter at all but has to match encoder channels or shape error
 def get_encoder_dim(encoder, channels=3):
     try:
-        x = torch.randn(1, channels, 224, 224) # BCHW
+        x = torch.randn(2, channels, 224, 224, device=encoder.device) # BCHW
         return encoder(x).shape[-1]
-    except RuntimeError:   # tensor might not be on same device as model, just try the only other option
-        x = torch.randn(1, channels, 224, 224).to('cuda')
-        return encoder(x).shape[-1]
+    except RuntimeError as e:
+        if 'channels instead' in str(e):
+            logging.info('encoder dim search failed on channels, trying with channels=1')
+            channels = 1
+            x = torch.randn(2, channels, 224, 224, device=encoder.device) # BCHW
+            return encoder(x).shape[-1]
+        else:
+            raise e
 
-
-
+        
 def get_pytorch_encoder(
     architecture_name='efficientnet_b0',
     channels=1,
