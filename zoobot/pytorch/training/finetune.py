@@ -555,8 +555,7 @@ class LinearHead(torch.nn.Module):
         self.output_dim = output_dim
         self.dropout = torch.nn.Dropout(p=dropout_prob)
         self.linear = torch.nn.Linear(input_dim, output_dim)
-        if activation is not None:
-            self.activation = activation
+        self.activation = activation
 
     def forward(self, x):
         # returns logits, as recommended for CrossEntropy loss
