@@ -108,12 +108,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         else:
             self.encoder_dim = define_model.get_encoder_dim(self.encoder)
         self.n_blocks = n_blocks
+        logging.info('Blocks to finetune: {}'.format(n_layers))
 
         # for backwards compat.
         if n_layers:
             logging.warning('FinetuneableZoobot(n_layers) is now renamed to n_blocks, please update to pass n_blocks instead! For now, setting n_blocks=n_layers')
             self.n_blocks = n_layers
-        logging.info('Layers to finetune: {}'.format(n_layers))
+            logging.info('Layers to finetune: {}'.format(n_layers))
 
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
