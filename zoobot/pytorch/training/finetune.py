@@ -177,7 +177,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             ]
         elif isinstance(self.encoder, timm.models.MaxxVit):
             blocks_to_tune = [self.encoder.stem] + [stage for stage in self.encoder.stages]
-        elif isinstance(self.encoder, timm.models.ConvNeXt):  # stem + 3 blocks, for all sizes
+        elif isinstance(self.encoder, timm.models.ConvNeXt):  # stem + 4 blocks, for all sizes
             # https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/convnext.py#L264
             blocks_to_tune = [self.encoder.stem] + [stage for stage in self.encoder.stages]
         else:
