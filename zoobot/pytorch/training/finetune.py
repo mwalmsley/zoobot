@@ -159,7 +159,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
         logging.info(f'Encoder architecture to finetune: {type(self.encoder)}')
 
-        if isinstance(self.encoder, timm.models.EfficientNet):
+        if isinstance(self.encoder, timm.models.EfficientNet): # includes v2
             # TODO for now, these count as separate layers, not ideal
             early_tuneable_layers = [self.encoder.conv_stem, self.encoder.bn1]
             encoder_blocks = list(self.encoder.blocks)
@@ -176,6 +176,9 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 self.encoder.layer4
             ]
         elif isinstance(self.encoder, timm.models.MaxxVit):
+            blocks_to_tune = [self.encoder.stem] + [stage for stage in self.encoder.stages]
+        elif isinstance(self.encoder, timm.models.ConvNeXt):  # stem + 3 blocks, for all sizes
+            # https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/convnext.py#L264
             blocks_to_tune = [self.encoder.stem] + [stage for stage in self.encoder.stages]
         else:
             raise ValueError(f'Encoder architecture not automatically recognised: {type(self.encoder)}')
