@@ -79,7 +79,9 @@ class WebDataModule(pl.LightningDataModule):
             crop_scale_bounds=self.crop_scale_bounds,
             crop_ratio_bounds=self.crop_ratio_bounds,
             resize_after_crop=self.resize_after_crop,
-            pytorch_greyscale=not self.color
+            pytorch_greyscale=not self.color,
+            to_float=True  # wrong, webdataset rgb decoder already converts to 0-1 float
+            # TODO this must be changed! will be different for new model training runs
         )  # A.Compose object
 
         # logging.warning('Minimal augmentations for speed test')
@@ -90,8 +92,12 @@ class WebDataModule(pl.LightningDataModule):
 
 
         def do_transform(img):
+            # img is 0-1 np array, intended for albumentations
             assert img.shape[2] < 4  # 1 or 3 channels in shape[2] dim, i.e. numpy/pil HWC convention
             # if not, check decode mode is 'rgb' not 'torchrgb'
+            # TODO could likely use torch ToTensorV2 here instead of returning np float32
+            # TODO or could transform in uint8 as I do with torchvision
+            # TODO need to generally rationalise my transform options
             return np.transpose(augmentation_transform(image=np.array(img))["image"], axes=[2, 0, 1]).astype(np.float32)
         return do_transform
 
@@ -108,7 +114,7 @@ class WebDataModule(pl.LightningDataModule):
 
         if self.train_transform is None:
             logging.info('Using default transform')
-            decode_mode = 'rgb' # np.array, for albumentations
+            decode_mode = 'rgb' # loads 0-1 np.array, for albumentations
             transform_image = self.make_image_transform(mode=mode)
         else:
             logging.info('Ignoring hparams and using directly-passed transforms')
