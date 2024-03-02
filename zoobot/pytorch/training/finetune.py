@@ -245,12 +245,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         logging.info('param groups: {}'.format(len(params)))
         for param_group_n, param_group in enumerate(params):
             shapes_within_param_group = [p.shape for p in list(param_group['params'])]
-            logging.info('param group {}: {}'.format(param_group_n, shapes_within_param_group))
+            logging.debug('param group {}: {}'.format(param_group_n, shapes_within_param_group))
         # print('head params to optimize', [p.shape for p in params[0]['params']])  # head only
         # print(list(param_group['params']) for param_group in params)
         # exit()
         # Initialize AdamW optimizer
         opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
+        logging.info('Optimizer ready, configuring scheduler')
 
         if self.cosine_schedule:
             # logging.info('Using cosine schedule, warmup for {} epochs, max for {} epochs'.format(self.warmup_epochs, self.max_cosine_epochs))
@@ -282,6 +283,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 }
             }
         else:
+            logging.info('Learning rate scheduler not used')
             return opt
         
 
