@@ -253,6 +253,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
 
         if self.cosine_schedule:
+            logging.info('Using cosine schedule, warmup for {} epochs, max for {} epochs'.format(self.warmup_epochs, self.max_cosine_epochs))
             from lightly.utils.scheduler import CosineWarmupScheduler  # new dependency for zoobot, TBD - maybe just copy
             return {
                 "optimizer": opt,
