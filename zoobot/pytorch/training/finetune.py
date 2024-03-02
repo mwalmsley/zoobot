@@ -220,9 +220,9 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         logging.info('blocks that will be tuned: {}'.format(self.n_blocks))
         blocks_to_tune = tuneable_blocks[:self.n_blocks]
         # optionally, can finetune batchnorm params in remaining layers
-        remaining_blocks = tuneable_blocks[self.n_blocks:]
-        logging.info('Remaining blocks: {}'.format(len(remaining_blocks)))
-        assert not any([block in remaining_blocks for block in blocks_to_tune]), 'Some blocks are in both tuneable and remaining'
+        # remaining_blocks = tuneable_blocks[self.n_blocks:]
+        # logging.info('Remaining blocks: {}'.format(len(remaining_blocks)))
+        # assert not any([block in remaining_blocks for block in blocks_to_tune]), 'Some blocks are in both tuneable and remaining'
 
         # Append parameters of layers for finetuning along with decayed learning rate
         for i, block in enumerate(blocks_to_tune):  # _ is the block name e.g. '3'
@@ -232,9 +232,9 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 })
 
         # optionally, for the remaining layers (not otherwise finetuned) you can choose to still FT the batchnorm layers
-        for i, block in enumerate(remaining_blocks):
-            if self.always_train_batchnorm:
-                raise NotImplementedError
+        # for i, block in enumerate(remaining_blocks):
+        #     if self.always_train_batchnorm:
+        #         raise NotImplementedError
                 # _, block_batch_norm_params = get_batch_norm_params_lighting(block)
                 # params.append({
                 #     "params": block_batch_norm_params,
@@ -242,10 +242,10 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 # })
 
 
-        logging.info('param groups: {}'.format(len(params)))
-        for param_group_n, param_group in enumerate(params):
-            shapes_within_param_group = [p.shape for p in list(param_group['params'])]
-            logging.debug('param group {}: {}'.format(param_group_n, shapes_within_param_group))
+        # logging.info('param groups: {}'.format(len(params)))
+        # for param_group_n, param_group in enumerate(params):
+        #     shapes_within_param_group = [p.shape for p in list(param_group['params'])]
+        #     logging.debug('param group {}: {}'.format(param_group_n, shapes_within_param_group))
         # print('head params to optimize', [p.shape for p in params[0]['params']])  # head only
         # print(list(param_group['params']) for param_group in params)
         # exit()
@@ -253,38 +253,38 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
         logging.info('Optimizer ready, configuring scheduler')
 
-        if self.cosine_schedule:
-            # logging.info('Using cosine schedule, warmup for {} epochs, max for {} epochs'.format(self.warmup_epochs, self.max_cosine_epochs))
-            # from lightly.utils.scheduler import CosineWarmupScheduler  # new dependency for zoobot, TBD - maybe just copy
-            # # https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.core.LightningModule.html#lightning.pytorch.core.LightningModule.configure_optimizers
-            # # Dictionary, with an "optimizer" key, and (optionally) a "lr_scheduler" key whose value is a single LR scheduler or lr_scheduler_config.
-            # lr_scheduler = CosineWarmupScheduler(
-            #     optimizer=opt,
-            #     warmup_epochs=self.warmup_epochs,
-            #     max_epochs=self.max_cosine_epochs,
-            #     start_value=self.learning_rate,
-            #     end_value=self.learning_rate * self.max_learning_rate_reduction_factor,
-            # )
+        # if self.cosine_schedule:
+        #     # logging.info('Using cosine schedule, warmup for {} epochs, max for {} epochs'.format(self.warmup_epochs, self.max_cosine_epochs))
+        #     # from lightly.utils.scheduler import CosineWarmupScheduler  # new dependency for zoobot, TBD - maybe just copy
+        #     # # https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.core.LightningModule.html#lightning.pytorch.core.LightningModule.configure_optimizers
+        #     # # Dictionary, with an "optimizer" key, and (optionally) a "lr_scheduler" key whose value is a single LR scheduler or lr_scheduler_config.
+        #     # lr_scheduler = CosineWarmupScheduler(
+        #     #     optimizer=opt,
+        #     #     warmup_epochs=self.warmup_epochs,
+        #     #     max_epochs=self.max_cosine_epochs,
+        #     #     start_value=self.learning_rate,
+        #     #     end_value=self.learning_rate * self.max_learning_rate_reduction_factor,
+        #     # )
 
-            logging.info('Using cosine schedule, warmup not supported, max for {} epochs'.format(self.max_cosine_epochs))
-            lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-                optimizer=opt,
-                T_max=self.max_cosine_epochs,
-                eta_min=self.learning_rate * self.max_learning_rate_reduction_factor
-            )
+        #     logging.info('Using cosine schedule, warmup not supported, max for {} epochs'.format(self.max_cosine_epochs))
+        #     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        #         optimizer=opt,
+        #         T_max=self.max_cosine_epochs,
+        #         eta_min=self.learning_rate * self.max_learning_rate_reduction_factor
+        #     )
 
-            # lr_scheduler_config default is frequency=1, interval=epoch
-            return {
-                "optimizer": opt,
-                "lr_scheduler": {
-                    'scheduler': lr_scheduler,
-                    'interval': 'epoch',
-                    'frequency': 1
-                }
-            }
-        else:
-            logging.info('Learning rate scheduler not used')
-            return opt
+        #     # lr_scheduler_config default is frequency=1, interval=epoch
+        #     return {
+        #         "optimizer": opt,
+        #         "lr_scheduler": {
+        #             'scheduler': lr_scheduler,
+        #             'interval': 'epoch',
+        #             'frequency': 1
+        #         }
+        #     }
+        # else:
+        #     logging.info('Learning rate scheduler not used')
+        return opt
         
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
