@@ -112,14 +112,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             # self.encoder_dim = 9216
         else:
             self.encoder_dim = define_model.get_encoder_dim(self.encoder)
-        self.n_blocks = n_blocks
-        logging.info('Blocks to finetune: {}'.format(n_layers))
 
         # for backwards compat.
         if n_layers:
             logging.warning('FinetuneableZoobot(n_layers) is now renamed to n_blocks, please update to pass n_blocks instead! For now, setting n_blocks=n_layers')
             self.n_blocks = n_layers
-            logging.info('Layers to finetune: {}'.format(n_layers))
+        else:
+            self.n_blocks = n_blocks
 
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
@@ -243,6 +242,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
 
         logging.info('param groups: {}'.format(len(params)))
+
+        # because it iterates through the generators, THIS BREAKS TRAINING so only uncomment to debug params
         # for param_group_n, param_group in enumerate(params):
         #     shapes_within_param_group = [p.shape for p in list(param_group['params'])]
         #     logging.debug('param group {}: {}'.format(param_group_n, shapes_within_param_group))
@@ -250,6 +251,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # print(list(param_group['params']) for param_group in params)
         # exit()
         # Initialize AdamW optimizer
+
         opt = torch.optim.AdamW(params, weight_decay=self.weight_decay)  # lr included in params dict
         logging.info('Optimizer ready, configuring scheduler')
 
