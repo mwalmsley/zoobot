@@ -104,11 +104,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
           self.encoder = encoder
 
         # TODO read as encoder property
-        if isinstance(self.encoder, CustomMAEEncoder):
-            self.encoder_dim = 256  # vit hidden dim, assuming average pool over seq dim
-            # self.encoder_dim = 9216
-        else:
-            self.encoder_dim = define_model.get_encoder_dim(self.encoder)
+        # if isinstance(self.encoder, CustomMAEEncoder):
+        #     self.encoder_dim = 256  # vit hidden dim, assuming average pool over seq dim
+        #     # self.encoder_dim = 9216
+        # else:
+        self.encoder_dim = define_model.get_encoder_dim(self.encoder)
 
         # for backwards compat.
         if n_layers:
