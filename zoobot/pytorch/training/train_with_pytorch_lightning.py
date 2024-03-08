@@ -4,13 +4,17 @@ from typing import Tuple
 
 import torch
 import pytorch_lightning as pl
+from pytorch_lightning.plugins import TorchSyncBatchNorm
 from pytorch_lightning.strategies.ddp import DDPStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pytorch_lightning.loggers import CSVLogger
 
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 
 from zoobot.pytorch.estimators import define_model
+from zoobot.pytorch.datasets import webdatamodule
+
 
 
 def train_default_zoobot_from_scratch(    
@@ -22,14 +26,18 @@ def train_default_zoobot_from_scratch(
     train_catalog=None,
     val_catalog=None,
     test_catalog=None,
+    train_urls=None,
+    val_urls=None,
+    test_urls=None,
+    cache_dir=None,  # only works with webdataset urls
     # training time parameters
     epochs=1000,
     patience=8,
     # model hparams
-    architecture_name='efficientnet_b0',  # recently changed
+    architecture_name='efficientnet_b0',
+    timm_kwargs = {}, # e.g. {'drop_path_rate': 0.2, 'num_features': 1280}. Passed to timm model init method, depends on arch.
     batch_size=128,
     dropout_rate=0.2,
-    drop_connect_rate=0.2,
     learning_rate=1e-3,
     betas=(0.9, 0.999),
     weight_decay=0.01,
@@ -42,9 +50,11 @@ def train_default_zoobot_from_scratch(
     # hardware parameters
     nodes=1,
     gpus=2,
+    sync_batchnorm=False,
     num_workers=4,
     prefetch_factor=4,
     mixed_precision=False,
+    compile_encoder=False,
     # checkpointing / logging
     wandb_logger=None,
     checkpoint_file_template=None,
@@ -106,7 +116,11 @@ def train_default_zoobot_from_scratch(
 
     assert save_dir is not None
     if not os.path.isdir(save_dir):
-        os.mkdir(save_dir)
+        try:
+            os.mkdir(save_dir)
+        except FileExistsError:
+            pass # another gpu process may have just made it
+    logging.info(f'Saving to {save_dir}')
 
     if color:
         logging.warning(
@@ -167,22 +181,6 @@ def train_default_zoobot_from_scratch(
             Suggest reducing num_workers."""
         )
         
-    
-    if catalog is not None:
-        assert train_catalog is None
-        assert val_catalog is None
-        assert test_catalog is None
-        catalogs_to_use = {
-            'catalog': catalog
-        }
-    else:
-        assert catalog is None
-        catalogs_to_use = {
-            'train_catalog': train_catalog,
-            'val_catalog': val_catalog,
-            'test_catalog': test_catalog  # may be None
-        }
-
     if wandb_logger is not None:
         wandb_logger.log_hyperparams({
             'random_state': random_state,
@@ -200,45 +198,107 @@ def train_default_zoobot_from_scratch(
             'prefetch_factor': prefetch_factor,
             'framework': 'pytorch'
         })
+    else:
+        logging.warning('No wandb_logger passed. Using CSV logging only')
+        wandb_logger = CSVLogger(save_dir=save_dir)
 
-    datamodule = GalaxyDataModule(
-        label_cols=schema.label_cols,
-        # can take either a catalog (and split it), or a pre-split catalog
-        **catalogs_to_use,
-        # augmentations parameters
-        greyscale=not color,
-        crop_scale_bounds=crop_scale_bounds,
-        crop_ratio_bounds=crop_ratio_bounds,
-        resize_after_crop=resize_after_crop,
-        # hardware parameters
-        batch_size=batch_size, # on 2xA100s, 256 with DDP, 512 with distributed (i.e. split batch)
-        num_workers=num_workers,
-        prefetch_factor=prefetch_factor
-    )
+    # work out what dataset the user has passed
+    single_catalog = catalog is not None
+    split_catalogs = train_catalog is not None
+    webdatasets = train_urls is not None
+
+    if single_catalog or split_catalogs:
+        # this branch will use GalaxyDataModule to load catalogs
+        assert not webdatasets
+        if single_catalog:
+            assert not split_catalogs
+            data_to_use = {
+                'catalog': catalog
+            }
+        else:
+            data_to_use = {
+                'train_catalog': train_catalog,
+                'val_catalog': val_catalog,
+                'test_catalog': test_catalog  # may be None
+            }
+        datamodule = GalaxyDataModule(
+            label_cols=schema.label_cols,
+            # can take either a catalog (and split it), or a pre-split catalog
+            **data_to_use,
+            # augmentations parameters
+            greyscale=not color,
+            crop_scale_bounds=crop_scale_bounds,
+            crop_ratio_bounds=crop_ratio_bounds,
+            resize_after_crop=resize_after_crop,
+            # hardware parameters
+            batch_size=batch_size, # on 2xA100s, 256 with DDP, 512 with distributed (i.e. split batch)
+            num_workers=num_workers,
+            prefetch_factor=prefetch_factor
+        )
+    else:
+        # this branch will use WebDataModule to load premade webdatasets
+
+        # temporary: use SSL-like transform
+        # from foundation.models import transforms
+        # train_transform_cfg = transforms.default_view_config()
+        # inference_transform_cfg = transforms.minimal_view_config()
+        # train_transform_cfg.output_size = resize_after_crop
+        # inference_transform_cfg.output_size = resize_after_crop
+
+        datamodule = webdatamodule.WebDataModule(
+            train_urls=train_urls,
+            val_urls=val_urls,
+            test_urls=test_urls,
+            label_cols=schema.label_cols,
+            # hardware
+            batch_size=batch_size,
+            num_workers=num_workers,
+            prefetch_factor=prefetch_factor,
+            cache_dir=cache_dir,
+            # augmentation args
+            color=color,
+            crop_scale_bounds=crop_scale_bounds,
+            crop_ratio_bounds=crop_ratio_bounds,
+            resize_after_crop=resize_after_crop,
+            # temporary: use SSL-like transform
+            # train_transform=transforms.GalaxyViewTransform(train_transform_cfg),
+            # inference_transform=transforms.GalaxyViewTransform(inference_transform_cfg),
+        )
+
     datamodule.setup(stage='fit')
 
     # these args are automatically logged
     lightning_model = define_model.ZoobotTree(
         output_dim=len(schema.label_cols),
-        question_index_groups=schema.question_index_groups,
+        # NEW - pass these from schema, for better logging
+        question_answer_pairs=schema.question_answer_pairs,
+        dependencies=schema.dependencies,
         architecture_name=architecture_name,
         channels=channels,
-        use_imagenet_weights=False,
         test_time_dropout=True,
         dropout_rate=dropout_rate,
         learning_rate=learning_rate,
-        timm_kwargs={'drop_path_rate': drop_connect_rate},
+        # https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/efficientnet.py#L75C9-L75C17
+        timm_kwargs=timm_kwargs,
+        compile_encoder=compile_encoder,
         betas=betas,
         weight_decay=weight_decay,
         scheduler_params=scheduler_params
     )
+
+    if sync_batchnorm:
+        logging.info('Using sync batchnorm')
+        lightning_model = TorchSyncBatchNorm().apply(lightning_model)
+    
     
     extra_callbacks = extra_callbacks if extra_callbacks else []
+
+    monitor_metric = 'validation/supervised_loss'
 
     # used later for checkpoint_callback.best_model_path
     checkpoint_callback = ModelCheckpoint(
             dirpath=os.path.join(save_dir, 'checkpoints'),
-            monitor="validation/epoch_loss",
+            monitor=monitor_metric,
             save_weights_only=True,
             mode='min',
             # custom filename for checkpointing due to / in metric
@@ -249,12 +309,12 @@ def train_default_zoobot_from_scratch(
             save_top_k=save_top_k
     )
 
-    early_stopping_callback = EarlyStopping(monitor='validation/epoch_loss', patience=patience, check_finite=True)
-
+    early_stopping_callback = EarlyStopping(monitor=monitor_metric, patience=patience, check_finite=True)
     callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
 
     trainer = pl.Trainer(
-        log_every_n_steps=150,  # at batch 512 (A100 MP max), DR5 has ~161 train steps
+        num_sanity_val_steps=0,
+        log_every_n_steps=150,
         accelerator=accelerator,
         devices=devices,  # per node
         num_nodes=nodes,
@@ -264,34 +324,21 @@ def train_default_zoobot_from_scratch(
         callbacks=callbacks,
         max_epochs=epochs,
         default_root_dir=save_dir,
-        plugins=plugins
+        plugins=plugins,
+        gradient_clip_val=.3  # reduced from 1 to .3, having some nan issues
     )
-
-    logging.info((trainer.strategy, trainer.world_size,
-                 trainer.local_rank, trainer.global_rank, trainer.node_rank))
 
     trainer.fit(lightning_model, datamodule)  # uses batch size of datamodule
-
-    test_trainer = pl.Trainer(
-        accelerator=accelerator,
-        devices=1,
-        precision=precision,
-        logger=wandb_logger,
-        default_root_dir=save_dir
-    )
 
     best_model_path = trainer.checkpoint_callback.best_model_path
 
     # can test as per the below, but note that datamodule must have a test dataset attribute as per pytorch lightning docs.
     # also be careful not to test regularly, as this breaks train/val/test conceptual separation and may cause hparam overfitting
-    if test_catalog is not None:
+    if datamodule.test_dataloader is not None:
         logging.info(f'Testing on {checkpoint_callback.best_model_path} with single GPU. Be careful not to overfit your choices to the test data...')
-        test_trainer.validate(
-            model=lightning_model,
-            datamodule=datamodule,
-            ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
-        )
-        test_trainer.test(
+        datamodule.setup(stage='test')
+        # TODO with webdataset, no need for new trainer/datamodule (actually it breaks), but might still be needed with normal dataset?
+        trainer.test(
             model=lightning_model,
             datamodule=datamodule,
             ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"

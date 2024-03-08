@@ -130,7 +130,7 @@ def set_dependencies(questions, dependencies):
 
 
 class Schema():
-    def __init__(self, question_answer_pairs:dict, dependencies):
+    def __init__(self, question_answer_pairs:dict, dependencies: dict):
         """
         Relate the df label columns tor question/answer groups and to tfrecod label indices
         Requires that labels be continguous by question - easily satisfied
@@ -278,3 +278,6 @@ desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies
 # so don't log anything during Schema.__init__!
 
 gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)
+
+gz_ukidss_schema = Schema(label_metadata.ukidss_ortho_pairs, label_metadata.ukidss_ortho_dependencies)
+gz_jwst_schema = Schema(label_metadata.jwst_ortho_pairs, label_metadata.jwst_ortho_dependencies)
