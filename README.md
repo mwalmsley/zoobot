@@ -133,15 +133,18 @@ CUDA 12.1 for PyTorch 2.1.0:
     conda activate zoobot39_torch
     conda install -c conda-forge cudatoolkit=12.1
 
-
 ### Recent release features (v2.0.0)
 
-- New pretrained architectures: EfficientnetV2 S/M/L, MaxViT tiny/small/base, ViT tiny/small, and more.
+- New pretrained architectures: ConvNeXT, EfficientNetV2, MaxViT, and more. Each in several sizes.
 - Reworked finetuning procedure. All these architectures are finetuneable through a common method.
+- Reworked finetuning options. Batch norm finetuning removed. Cosine schedule option added.
+- Reworked finetuning saving/loading. Auto-downloads encoder from HuggingFace.
 - Now supports regression finetuning (as well as multi-class and binary). See `pytorch/examples/finetuning`
 - Updated `timm` to 0.9.10, allowing latest model architectures. Previously downloaded checkpoints may not load correctly!
 - (internal until published) GZ Evo v2 now includes Cosmic Dawn (HSC H2O). Significant performance improvement on HSC finetuning. Also now includes GZ UKIDSS (dragged from our archives).
 - Updated `pytorch` to `2.1.0`
+- Added support for webdatasets (only recommended for large-scale distributed training)
+- Improved per-question logging when training from scratch
 - Added option to compile encoder for max speed (not recommended for finetuning, only for pretraining).
 - Deprecates TensorFlow. The CS research community focuses on PyTorch and new frameworks like JAX.
 
