@@ -79,7 +79,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         cosine_schedule=False,
         warmup_epochs=10,
         max_cosine_epochs=100,
-        max_learning_rate_reduction_factor=0.01
+        max_learning_rate_reduction_factor=0.01,
+        from_scratch=False
     ):
         super().__init__()
 
@@ -123,6 +124,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.max_cosine_epochs = max_cosine_epochs
         self.max_learning_rate_reduction_factor = max_learning_rate_reduction_factor
 
+        self.from_scratch = from_scratch
+
         self.always_train_batchnorm = always_train_batchnorm
         if self.always_train_batchnorm:
             raise NotImplementedError('Temporarily deprecated, always_train_batchnorm=True not supported')
@@ -158,6 +161,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         params = [{"params": self.head.parameters(), "lr": lr}]
 
         logging.info(f'Encoder architecture to finetune: {type(self.encoder)}')
+
+        if self.from_scratch:
+            logging.warning('self.from_scratch is True, training everything and ignoring all settings')
+            params += [{"params": self.encoder.parameters(), "lr": lr}]
+            return torch.optim.AdamW(params, weight_decay=self.weight_decay)
 
         if isinstance(self.encoder, timm.models.EfficientNet): # includes v2
             # TODO for now, these count as separate layers, not ideal
