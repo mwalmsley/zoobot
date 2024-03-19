@@ -377,6 +377,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       raise NotImplementedError('Must be subclassed')
+    
+    @classmethod
+    def load_from_name(cls, name: str, **kwargs):
+        downloaded_loc = download_from_name(cls.__name__, name, **kwargs)
+        return cls.load_from_checkpoint(downloaded_loc, **kwargs)  # trained on GPU, may need map_location='cpu' if you get a device error
+
+
 
 
 
@@ -395,6 +402,8 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         label_smoothing (float, optional): See torch cross_entropy_loss docs. Defaults to 0.
         
     """
+
+
 
     def __init__(
             self,
@@ -762,3 +771,18 @@ def get_trainer(
     )
 
     return trainer
+
+
+def download_from_name(class_name: str, hub_name: str, **kwargs):
+    from huggingface_hub import hf_hub_download
+
+    if hub_name.startswith('hf_hub:'):
+        logging.info('Passed name with hf_hub: prefix, dropping prefix')
+        repo_id = hub_name.split('hf_hub:')[1]
+    else:
+        repo_id = hub_name
+    downloaded_loc = hf_hub_download(
+        repo_id=repo_id,
+        filename=f"{class_name}.ckpt"
+    )
+    return downloaded_loc

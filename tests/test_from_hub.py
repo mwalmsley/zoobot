@@ -16,7 +16,7 @@ def test_get_finetuned():
     from huggingface_hub import hf_hub_download
 
     REPO_ID = "mwalmsley/zoobot-finetuned-is_tidal"
-    FILENAME = "4.ckpt"
+    FILENAME = "FinetuneableZoobotClassifier.ckpt"
 
     downloaded_loc = hf_hub_download(
         repo_id=REPO_ID,
@@ -26,7 +26,12 @@ def test_get_finetuned():
     model = finetune.FinetuneableZoobotClassifier.load_from_checkpoint(downloaded_loc, map_location='cpu') #  hub_name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano',
     assert model(torch.rand(1, 3, 224, 224)).shape == (1, 2)
 
+def test_get_finetuned_class_method():
 
+    from zoobot.pytorch.training import finetune
+
+    model = finetune.FinetuneableZoobotClassifier.load_from_name('mwalmsley/zoobot-finetuned-is_tidal', map_location='cpu')
+    assert model(torch.rand(1, 3, 224, 224)).shape == (1, 2)
 
 # def test_get_finetuned_from_local():
 #     # checkpoint_loc = '/home/walml/repos/zoobot/tests/convnext_nano_finetuned_linear_is-lsb.ckpt'
