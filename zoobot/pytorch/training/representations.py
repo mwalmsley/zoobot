@@ -28,26 +28,4 @@ class ZoobotEncoder(pl.LightningModule):
         """
         timm_model = create_model(name)
         return cls(timm_model)
-
-
-
-
-
-class ZoobotEncoder(pl.LightningModule):
-    # very simple wrapper to turn pytorch model into lightning module
-    # useful when we want to use lightning to make predictions with our encoder
-    # (i.e. to get representations)
-
-    # pretrained_cfg, pretrained_cfg_overlay=timm_kwargs
-    def __init__(self, architecture_name=None, channels=None, timm_kwargs={}) -> None:
-        super().__init__()
-
-        logging.info('ZoobotEncoder: using timm encoder')
-        self.encoder = 
-
-        # if pyramid:
-        #     raise NotImplementedError('Will eventually support resetting timm classifier to get FPN features')
-
-
-# def save_timm_encoder():
     
