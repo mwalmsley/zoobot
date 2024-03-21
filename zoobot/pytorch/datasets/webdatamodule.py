@@ -80,8 +80,8 @@ class WebDataModule(pl.LightningDataModule):
             crop_ratio_bounds=self.crop_ratio_bounds,
             resize_after_crop=self.resize_after_crop,
             pytorch_greyscale=not self.color,
-            to_float=True  # wrong, webdataset rgb decoder already converts to 0-1 float
-            # TODO this must be changed! will be different for new model training runs
+            to_float=False  # True was wrong, webdataset rgb decoder already converts to 0-1 float
+            # TODO now changed on dev branch will be different for new model training runs
         )  # A.Compose object
 
         # logging.warning('Minimal augmentations for speed test')

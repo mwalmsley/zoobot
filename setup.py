@@ -20,7 +20,7 @@ setuptools.setup(
         "Environment :: GPU :: NVIDIA CUDA"
     ],
     packages=setuptools.find_packages(),
-    python_requires=">=3.8",  # recommend 3.9 for new users. TF needs >=3.7.2, torchvision>=3.8
+    python_requires=">=3.9",  # bumped to 3.9 for typing
     extras_require={
         'pytorch-cpu': [
             # A100 GPU currently only seems to support cuda 11.3 on manchester cluster, let's stick with this version for now
@@ -112,7 +112,9 @@ setuptools.setup(
         'pyarrow',  # to read parquet, which is very handy for big datasets
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
+        'webdataset',  # for reading webdataset files
+        'huggingface_hub',  # login may be required
         'setuptools',  # no longer pinned
-        'galaxy-datasets>=0.0.15'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
+        'galaxy-datasets>=0.0.17'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )

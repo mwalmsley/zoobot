@@ -265,7 +265,15 @@ def train_default_zoobot_from_scratch(
             # inference_transform=transforms.GalaxyViewTransform(inference_transform_cfg),
         )
 
+    # debug - check range of loaded images, should be 0-1
     datamodule.setup(stage='fit')
+    for (images, _) in datamodule.train_dataloader():
+        logging.info(f'Using batches of {images.shape[0]} images for training')
+        logging.info('First batch image min/max: {}/{}'.format(images.min(), images.max()))
+        assert images.max() <= 1.0
+        assert images.min() >= 0.0
+        break
+    # exit()
 
     # these args are automatically logged
     lightning_model = define_model.ZoobotTree(

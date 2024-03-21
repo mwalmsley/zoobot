@@ -63,6 +63,8 @@ def df_to_wds(df: pd.DataFrame, label_cols, save_loc: str, n_shards: int, sparse
         # in augs that could be 0.x-1.0, and here a pre-crop to 0.8 i.e. 340px
         # but this would change the centering
         # let's stick to small boundary crop and 0.75-0.85 in augs
+
+        # turn these off for current euclidized images, already 300x300
         A.CenterCrop(
             height=400,
             width=400,

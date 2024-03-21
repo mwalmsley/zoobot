@@ -43,11 +43,17 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
     Both :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`
     can (and should) be passed any of these arguments to customise finetuning.
 
-    You could subclass this class to solve new finetuning tasks (like regression) - see :ref:`advanced_finetuning`.
+    Any FinetuneableZoobot model can be loaded in one of three ways:
+        - HuggingFace name e.g. FinetuneableZoobotX(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
+        - Any PyTorch model in memory e.g. FinetuneableZoobotX(encoder=some_model, ...)
+        - ZoobotTree checkpoint e.g. FinetuneableZoobotX(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
+
+    You could subclass this class to solve new finetuning tasks - see :ref:`advanced_finetuning`.
 
     Args:
-        checkpoint_loc (str, optional): Path to encoder checkpoint to load (likely a saved ZoobotTree). Defaults to None.
-        encoder (pl.LightningModule, optional): Alternatively, pass an encoder directly. Load with :func:`zoobot.pytorch.training.finetune.load_pretrained_encoder`.
+        name (str, optional): Name of a model on HuggingFace Hub e.g.'hf_hub:mwalmsley/zoobot-encoder-convnext_nano'. Defaults to None.
+        encoder (torch.nn.Module, optional): A PyTorch model already loaded in memory
+        zoobot_checkpoint_loc (str, optional): Path to ZoobotTree lightning checkpoint to load. Loads with Load with :func:`zoobot.pytorch.training.finetune.load_pretrained_encoder`. Defaults to None.
         encoder_dim (int, optional): Output dimension of encoder. Defaults to 1280 (EfficientNetB0's encoder dim).
         lr_decay (float, optional): For each layer i below the head, reduce the learning rate by lr_decay ^ i. Defaults to 0.75.
         weight_decay (float, optional): AdamW weight decay arg (i.e. L2 penalty). Defaults to 0.05.
@@ -61,25 +67,39 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def __init__(
         self,
-        # can provide either zoobot_checkpoint_loc, and will load this model as encoder...
-        zoobot_checkpoint_loc=None,
+
+        # load a pretrained timm encoder saved on huggingface hub
+        # (aimed at most users, easiest way to load published models)
+        name=None,
+
         # ...or directly pass any model to use as encoder (if you do this, you will need to keep it around for later)
-        encoder=None,
+        # (aimed at tinkering with new architectures e.g. SSL)
+        encoder=None,  # use any torch model already loaded in memory (must have .forward() method)
+
+        # load a pretrained zoobottree model and grab the encoder (a timm model)
+        # requires the exact same zoobot version used for training, not very portable
+        # (aimed at supervised experiments)
+        zoobot_checkpoint_loc=None,  
+
+        # finetuning settings
         n_blocks=0,  # how many layers deep to FT
         lr_decay=0.75,
         weight_decay=0.05,
         learning_rate=1e-4,  # 10x lower than typical, you may like to experiment
         dropout_prob=0.5,
         always_train_batchnorm=False,  # temporarily deprecated
-        prog_bar=True,
-        visualize_images=False,  # upload examples to wandb, good for debugging
-        seed=42,
         n_layers=0,  # for backward compat., n_blocks preferred
         # these args are for the optional learning rate scheduler, best not to use unless you've tuned everything else already
         cosine_schedule=False,
         warmup_epochs=10,
         max_cosine_epochs=100,
-        max_learning_rate_reduction_factor=0.01
+        max_learning_rate_reduction_factor=0.01,
+        # escape hatch for 'from scratch' baselines
+        from_scratch=False,
+        # debugging utils
+        prog_bar=True,
+        visualize_images=False,  # upload examples to wandb, good for debugging
+        seed=42
     ):
         super().__init__()
 
@@ -94,17 +114,22 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.save_hyperparameters(ignore=['encoder']) # never serialise the encoder, way too heavy
             # if you need the encoder to recreate, pass when loading checkpoint e.g. 
             # FinetuneableZoobotTree.load_from_checkpoint(loc, encoder=encoder)
+        
+        if name is not None:
+            assert encoder is None, 'Cannot pass both name and encoder to use'
+            self.encoder = timm.create_model(name, pretrained=True)
+            self.encoder_dim = self.encoder.num_features
 
-        if zoobot_checkpoint_loc is not None:
-          assert encoder is None, 'Cannot pass both checkpoint to load and encoder to use'
-          self.encoder = load_pretrained_zoobot(zoobot_checkpoint_loc)
+        elif zoobot_checkpoint_loc is not None:
+            assert encoder is None, 'Cannot pass both checkpoint to load and encoder to use'
+            self.encoder = load_pretrained_zoobot(zoobot_checkpoint_loc)  # extracts the timm encoder
+            self.encoder_dim = self.encoder.num_features
         else:
-          assert zoobot_checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
-          assert encoder is not None, 'Must pass either checkpoint to load or encoder to use'
-          self.encoder = encoder
-
-        # TODO read as encoder property
-        self.encoder_dim = define_model.get_encoder_dim(self.encoder)
+            assert zoobot_checkpoint_loc is None, 'Cannot pass both checkpoint to load and encoder to use'
+            assert encoder is not None, 'Must pass either checkpoint to load or encoder to use'
+            self.encoder = encoder
+            # work out encoder dim 'manually'
+            self.encoder_dim = define_model.get_encoder_dim(self.encoder)
 
         # for backwards compat.
         if n_layers:
@@ -122,6 +147,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.warmup_epochs = warmup_epochs
         self.max_cosine_epochs = max_cosine_epochs
         self.max_learning_rate_reduction_factor = max_learning_rate_reduction_factor
+
+        self.from_scratch = from_scratch
 
         self.always_train_batchnorm = always_train_batchnorm
         if self.always_train_batchnorm:
@@ -158,6 +185,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         params = [{"params": self.head.parameters(), "lr": lr}]
 
         logging.info(f'Encoder architecture to finetune: {type(self.encoder)}')
+
+        if self.from_scratch:
+            logging.warning('self.from_scratch is True, training everything and ignoring all settings')
+            params += [{"params": self.encoder.parameters(), "lr": lr}]
+            return torch.optim.AdamW(params, weight_decay=self.weight_decay)
 
         if isinstance(self.encoder, timm.models.EfficientNet): # includes v2
             # TODO for now, these count as separate layers, not ideal
@@ -345,6 +377,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
       raise NotImplementedError('Must be subclassed')
+    
+    @classmethod
+    def load_from_name(cls, name: str, **kwargs):
+        downloaded_loc = download_from_name(cls.__name__, name, **kwargs)
+        return cls.load_from_checkpoint(downloaded_loc, **kwargs)  # trained on GPU, may need map_location='cpu' if you get a device error
+
+
 
 
 
@@ -363,6 +402,8 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         label_smoothing (float, optional): See torch cross_entropy_loss docs. Defaults to 0.
         
     """
+
+
 
     def __init__(
             self,
@@ -730,3 +771,18 @@ def get_trainer(
     )
 
     return trainer
+
+
+def download_from_name(class_name: str, hub_name: str, **kwargs):
+    from huggingface_hub import hf_hub_download
+
+    if hub_name.startswith('hf_hub:'):
+        logging.info('Passed name with hf_hub: prefix, dropping prefix')
+        repo_id = hub_name.split('hf_hub:')[1]
+    else:
+        repo_id = hub_name
+    downloaded_loc = hf_hub_download(
+        repo_id=repo_id,
+        filename=f"{class_name}.ckpt"
+    )
+    return downloaded_loc

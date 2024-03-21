@@ -168,3 +168,4 @@ hparams.yaml
 data/pretrained_models
 
 *.tar
+*.ckpt
