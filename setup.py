@@ -114,6 +114,6 @@ setuptools.setup(
         'wandb',
         'huggingface_hub',  # login may be required
         'setuptools',  # no longer pinned
-        'galaxy-datasets>=0.0.15'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
+        'galaxy-datasets>=0.0.16'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )
