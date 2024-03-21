@@ -481,3 +481,6 @@ if __name__ == '__main__':
     encoder = get_pytorch_encoder(channels=1)
     dim = get_encoder_dim(encoder, channels=1)
     print(dim)
+
+
+    ZoobotTree.load_from_checkpoint

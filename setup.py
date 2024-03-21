@@ -112,6 +112,7 @@ setuptools.setup(
         'pyarrow',  # to read parquet, which is very handy for big datasets
         # for saving metrics to weights&biases (cloud service, free within limits)
         'wandb',
+        'huggingface_hub',  # login may be required
         'setuptools',  # no longer pinned
         'galaxy-datasets>=0.0.15'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
