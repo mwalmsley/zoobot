@@ -1,8 +1,6 @@
-# Based on Inigo's BYOL FT step
-# https://github.com/inigoval/finetune/blob/main/finetune.py
 import logging
 import os
-from typing import Any, Union
+from typing import Any, Union, Optional
 import warnings
 from functools import partial
 
@@ -35,13 +33,13 @@ def freeze_batchnorm_layers(model):
 
 class FinetuneableZoobotAbstract(pl.LightningModule):
     """
-    Parent class of :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`.
+    Parent class of :class:`FinetuneableZoobotClassifier`, :class:`FinetuneableZoobotRegressor`, :class:`FinetuneableZoobotTree`.
     You cannot use this class directly - you must use the child classes above instead.
 
-    This class defines the finetuning methods that those child classes both use.
-    For example: when provided `checkpoint_loc`, it will load the encoder from that checkpoint.
-    Both :class:`FinetuneableZoobotClassifier` and :class:`FinetuneableZoobotTree`
-    can (and should) be passed any of these arguments to customise finetuning.
+    This class defines the shared finetuning args and methods used by those child classes.
+    For example: 
+    - When provided `name`, it will load the HuggingFace encoder with that name (see below for more).
+    - When provided `learning_rate` it will set the optimizer to use that learning rate.
 
     Any FinetuneableZoobot model can be loaded in one of three ways:
         - HuggingFace name e.g. FinetuneableZoobotX(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
@@ -54,12 +52,17 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         name (str, optional): Name of a model on HuggingFace Hub e.g.'hf_hub:mwalmsley/zoobot-encoder-convnext_nano'. Defaults to None.
         encoder (torch.nn.Module, optional): A PyTorch model already loaded in memory
         zoobot_checkpoint_loc (str, optional): Path to ZoobotTree lightning checkpoint to load. Loads with Load with :func:`zoobot.pytorch.training.finetune.load_pretrained_encoder`. Defaults to None.
-        encoder_dim (int, optional): Output dimension of encoder. Defaults to 1280 (EfficientNetB0's encoder dim).
+        
+        n_blocks (int, optional): 
         lr_decay (float, optional): For each layer i below the head, reduce the learning rate by lr_decay ^ i. Defaults to 0.75.
         weight_decay (float, optional): AdamW weight decay arg (i.e. L2 penalty). Defaults to 0.05.
         learning_rate (float, optional): AdamW learning rate arg. Defaults to 1e-4.
         dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
-        always_train_batchnorm (bool, optional): If True, do not update batchnorm stats during finetuning. Defaults to True.
+        always_train_batchnorm (bool, optional): Temporarily deprecated. Previously, if True, do not update batchnorm stats during finetuning. Defaults to True.
+        cosine_schedule (bool, optional): Reduce the learning rate each epoch according to a cosine schedule, after warmup_epochs. Defaults to False.
+        warmup_epochs (int, optional): Linearly increase the learning rate from 0 to `learning_rate` over the first `warmup_epochs` epochs, before applying cosine schedule. No effect if cosine_schedule=False.
+        max_cosine_epochs (int, optional): Epochs for the scheduled learning rate to decay to final learning rate (below). Warmup epochs don't count. No effect if `cosine_schedule=False`.
+        max_learning_rate_reduction_factor (float, optional): 
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.
@@ -88,10 +91,10 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         learning_rate=1e-4,  # 10x lower than typical, you may like to experiment
         dropout_prob=0.5,
         always_train_batchnorm=False,  # temporarily deprecated
-        n_layers=0,  # for backward compat., n_blocks preferred
+        # n_layers=0,  # for backward compat., n_blocks preferred. Now removed in v2.
         # these args are for the optional learning rate scheduler, best not to use unless you've tuned everything else already
         cosine_schedule=False,
-        warmup_epochs=10,
+        warmup_epochs=0,
         max_cosine_epochs=100,
         max_learning_rate_reduction_factor=0.01,
         # escape hatch for 'from scratch' baselines
@@ -264,24 +267,24 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         logging.info('Optimizer ready, configuring scheduler')
 
         if self.cosine_schedule:
-            # logging.info('Using lightly cosine schedule, warmup for {} epochs, max for {} epochs'.format(self.warmup_epochs, self.max_cosine_epochs))
-            # from lightly.utils.scheduler import CosineWarmupScheduler  # new dependency for zoobot, TBD - maybe just copy
-            # # https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.core.LightningModule.html#lightning.pytorch.core.LightningModule.configure_optimizers
-            # # Dictionary, with an "optimizer" key, and (optionally) a "lr_scheduler" key whose value is a single LR scheduler or lr_scheduler_config.
-            # lr_scheduler = CosineWarmupScheduler(
-            #     optimizer=opt,
-            #     warmup_epochs=self.warmup_epochs,
-            #     max_epochs=self.max_cosine_epochs,
-            #     start_value=self.learning_rate,
-            #     end_value=self.learning_rate * self.max_learning_rate_reduction_factor,
-            # )
-
-            logging.info('Using CosineAnnealingLR schedule, warmup not supported, max for {} epochs'.format(self.max_cosine_epochs))
-            lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            logging.info('Using lightly cosine schedule, warmup for {} epochs, max for {} epochs'.format(self.warmup_epochs, self.max_cosine_epochs))
+            # from lightly.utils.scheduler import CosineWarmupScheduler  #copied from here to avoid dependency
+            # https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.core.LightningModule.html#lightning.pytorch.core.LightningModule.configure_optimizers
+            # Dictionary, with an "optimizer" key, and (optionally) a "lr_scheduler" key whose value is a single LR scheduler or lr_scheduler_config.
+            lr_scheduler = CosineWarmupScheduler(
                 optimizer=opt,
-                T_max=self.max_cosine_epochs,
-                eta_min=self.learning_rate * self.max_learning_rate_reduction_factor
+                warmup_epochs=self.warmup_epochs,
+                max_epochs=self.max_cosine_epochs,
+                start_value=self.learning_rate,
+                end_value=self.learning_rate * self.max_learning_rate_reduction_factor,
             )
+
+            # logging.info('Using CosineAnnealingLR schedule, warmup not supported, max for {} epochs'.format(self.max_cosine_epochs))
+            # lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            #     optimizer=opt,
+            #     T_max=self.max_cosine_epochs,
+            #     eta_min=self.learning_rate * self.max_learning_rate_reduction_factor
+            # )
 
             return {
                 "optimizer": opt,
@@ -786,3 +789,145 @@ def download_from_name(class_name: str, hub_name: str, **kwargs):
         filename=f"{class_name}.ckpt"
     )
     return downloaded_loc
+
+
+
+
+def cosine_schedule(
+    step: int,
+    max_steps: int,
+    start_value: float,
+    end_value: float,
+    period: Optional[int] = None,
+) -> float:
+    """Use cosine decay to gradually modify start_value to reach target end_value during
+    iterations.
+
+    Args:
+        step:
+            Current step number.
+        max_steps:
+            Total number of steps.
+        start_value:
+            Starting value.
+        end_value:
+            Target value.
+        period (optional):
+            The number of steps over which the cosine function completes a full cycle.
+            If not provided, it defaults to max_steps.
+
+    Returns:
+        Cosine decay value.
+
+    """
+    if step < 0:
+        raise ValueError("Current step number can't be negative")
+    if max_steps < 1:
+        raise ValueError("Total step number must be >= 1")
+    if period is None and step > max_steps:
+        warnings.warn(
+            f"Current step number {step} exceeds max_steps {max_steps}.",
+            category=RuntimeWarning,
+        )
+    if period is not None and period <= 0:
+        raise ValueError("Period must be >= 1")
+
+    decay: float
+    if period is not None:  # "cycle" based on period, if provided
+        decay = (
+            end_value
+            - (end_value - start_value) * (np.cos(2 * np.pi * step / period) + 1) / 2
+        )
+    elif max_steps == 1:
+        # Avoid division by zero
+        decay = end_value
+    elif step == max_steps:
+        # Special case for Pytorch Lightning which updates LR scheduler also for epoch
+        # after last training epoch.
+        decay = end_value
+    else:
+        decay = (
+            end_value
+            - (end_value - start_value)
+            * (np.cos(np.pi * step / (max_steps - 1)) + 1)
+            / 2
+        )
+    return decay
+
+
+class CosineWarmupScheduler(torch.optim.lr_scheduler.LambdaLR):
+    """Cosine warmup scheduler for learning rate.
+
+    Args:
+        optimizer:
+            Optimizer object to schedule the learning rate.
+        warmup_epochs:
+            Number of warmup epochs or steps.
+        max_epochs:
+            Total number of training epochs or steps.
+        last_epoch:
+            The index of last epoch or step. Default: -1
+        start_value:
+            Starting learning rate scale. Default: 1.0
+        end_value:
+            Target learning rate scale. Default: 0.001
+        verbose:
+            If True, prints a message to stdout for each update. Default: False.
+
+    Note: The `epoch` arguments do not necessarily have to be epochs. Any step or index
+    can be used. The naming follows the Pytorch convention to use `epoch` for the steps
+    in the scheduler.
+    """
+
+    def __init__(
+        self,
+        optimizer: torch.optim.Optimizer,
+        warmup_epochs: int,
+        max_epochs: int,
+        last_epoch: int = -1,
+        start_value: float = 1.0,
+        end_value: float = 0.001,
+        period: Optional[int] = None,
+        verbose: bool = False,
+    ) -> None:
+        self.warmup_epochs = warmup_epochs
+        self.max_epochs = max_epochs
+        self.start_value = start_value
+        self.end_value = end_value
+        self.period = period
+        super().__init__(
+            optimizer=optimizer,
+            lr_lambda=self.scale_lr,
+            last_epoch=last_epoch,
+            verbose=verbose,
+        )
+
+    def scale_lr(self, epoch: int) -> float:
+        """
+        Scale learning rate according to the current epoch number.
+
+        Args:
+            epoch:
+                Current epoch number.
+
+        Returns:
+            Scaled learning rate.
+
+        """
+        if epoch < self.warmup_epochs:
+            return self.start_value * (epoch + 1) / self.warmup_epochs
+        elif self.period is not None:
+            return cosine_schedule(
+                step=epoch - self.warmup_epochs,
+                max_steps=1,
+                start_value=self.start_value,
+                end_value=self.end_value,
+                period=self.period,
+            )
+        else:
+            return cosine_schedule(
+                step=epoch - self.warmup_epochs,
+                max_steps=self.max_epochs - self.warmup_epochs,
+                start_value=self.start_value,
+                end_value=self.end_value,
+            )
