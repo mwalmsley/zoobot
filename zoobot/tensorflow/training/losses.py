@@ -12,7 +12,7 @@ def get_multiquestion_loss(question_index_groups, sum_over_questions=True, reduc
     tf.keras.losses.Reduction.SUM will simply add everything up, so divide by the global batch size externally with tf.reduce_sum
 
     Args:
-        question_index_groups (list): Answer indices for each question i.e. [(question.start_index, question.end_index), ...] for all questions. Useful for slicing model predictions by question.
+        question_index_groups (list): Answer indices for each question i.e. [(question.start_index, question.end_index), ...] for all questions. Useful for slicing model predictions by question. See :ref:`schemas`.
 
     Returns:
         MultiquestionLoss: see above.
@@ -36,7 +36,7 @@ def calculate_multiquestion_loss(labels, predictions, question_index_groups, sum
     Args:
         labels (tf.Tensor): (galaxy, k successes) where k successes dimension is indexed by question_index_groups.
         predictions (tf.Tensor):  Dirichlet concentrations, matching shape of labels
-        question_index_groups (list): Paired (tuple) integers of (first, last) indices of answers to each question, listed for all questions.
+        question_index_groups (list): Answer indices for each question i.e. [(question.start_index, question.end_index), ...] for all questions. Useful for slicing model predictions by question. See :ref:`schemas`.
     
     Returns:
         tf.Tensor: neg. log likelihood of shape (batch, question).

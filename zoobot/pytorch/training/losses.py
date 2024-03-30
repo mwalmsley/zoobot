@@ -15,7 +15,7 @@ def calculate_multiquestion_loss(labels: torch.Tensor, predictions: torch.Tensor
     Args:
         labels (torch.Tensor): (galaxy, k successes) where k successes dimension is indexed by question_index_groups.
         predictions (torch.Tensor):  Dirichlet concentrations, matching shape of labels
-        question_index_groups (list): Paired (tuple) integers of (first, last) indices of answers to each question, listed for all questions. See :ref:`schemas`.
+        question_index_groups (list): Answer indices for each question i.e. [(question.start_index, question.end_index), ...] for all questions. Useful for slicing model predictions by question. See :ref:`schemas`.
     
     Returns:
         torch.Tensor: neg. log likelihood of shape (batch, question).

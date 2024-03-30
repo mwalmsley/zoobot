@@ -4,6 +4,7 @@ from typing import Any, Union, Optional
 import warnings
 from functools import partial
 
+import numpy as np
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
@@ -62,7 +63,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         cosine_schedule (bool, optional): Reduce the learning rate each epoch according to a cosine schedule, after warmup_epochs. Defaults to False.
         warmup_epochs (int, optional): Linearly increase the learning rate from 0 to `learning_rate` over the first `warmup_epochs` epochs, before applying cosine schedule. No effect if cosine_schedule=False.
         max_cosine_epochs (int, optional): Epochs for the scheduled learning rate to decay to final learning rate (below). Warmup epochs don't count. No effect if `cosine_schedule=False`.
-        max_learning_rate_reduction_factor (float, optional): 
+        max_learning_rate_reduction_factor (float, optional): Set final learning rate as `learning_rate` * `max_learning_rate_reduction_factor`. No effect if `cosine_schedule=False`.
+        from_scratch (bool, optional): Ignore all settings above and train from scratch at `learning_rate` for all layers. Useful for a quick baseline. Defaults to False.
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.
@@ -134,12 +136,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             # work out encoder dim 'manually'
             self.encoder_dim = define_model.get_encoder_dim(self.encoder)
 
-        # for backwards compat.
-        if n_layers:
-            logging.warning('FinetuneableZoobot(n_layers) is now renamed to n_blocks, please update to pass n_blocks instead! For now, setting n_blocks=n_layers')
-            self.n_blocks = n_layers
-        else:
-            self.n_blocks = n_blocks
+        self.n_blocks = n_blocks
 
         self.learning_rate = learning_rate
         self.lr_decay = lr_decay
@@ -394,19 +391,21 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     """
     Pretrained Zoobot model intended for finetuning on a classification problem.
 
-    You must also pass either ``checkpoint_loc`` (to a saved encoder checkpoint)
-    or `encoder` (to a pytorch model already loaded in memory).
-    See :class:FinetuneableZoobotAbstract for more options.
+    Any args not listed below are passed to :class:``FinetuneableZoobotAbstract`` (for example, `learning_rate`).
+    These are shared between classifier, regressor, and tree models.
+    See the docstring of :class:``FinetuneableZoobotAbstract`` for more.
 
-    Any args not in the list below are passed to :class:``FinetuneableZoobotAbstract`` (usually to specify how to carry out the finetuning)
+    Models can be loaded in one of three ways:
+    - HuggingFace name e.g. FinetuneableZoobotClassifier(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
+    - Any PyTorch model in memory e.g. FinetuneableZoobotClassifier(encoder=some_model, ...)
+    - ZoobotTree checkpoint e.g. FinetuneableZoobotClassifier(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
 
     Args:
         num_classes (int): num. of target classes (e.g. 2 for binary classification).
         label_smoothing (float, optional): See torch cross_entropy_loss docs. Defaults to 0.
+        class_weights (arraylike, optional): See torch cross_entropy_loss docs. Defaults to None.
         
     """
-
-
 
     def __init__(
             self,
@@ -508,10 +507,18 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
     """
     Pretrained Zoobot model intended for finetuning on a regression problem.    
 
-    See FinetuneableZoobotClassifier, above
+    Any args not listed below are passed to :class:``FinetuneableZoobotAbstract`` (for example, `learning_rate`).
+    These are shared between classifier, regressor, and tree models.
+    See the docstring of :class:``FinetuneableZoobotAbstract`` for more.
+
+    Models can be loaded in one of three ways:
+    - HuggingFace name e.g. FinetuneableZoobotRegressor(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
+    - Any PyTorch model in memory e.g. FinetuneableZoobotRegressor(encoder=some_model, ...)
+    - ZoobotTree checkpoint e.g. FinetuneableZoobotRegressor(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
+
 
     Args:
-        None besides those from FinetuneableZoobotAbstract, above (1 class, MSE error, for now)
+        unit_interval (bool, optional): If True, use sigmoid activation for the final layer, ensuring predictions between 0 and 1. Defaults to False.
         
     """
 
@@ -606,11 +613,23 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
 
 class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
     """
-    Pretrained Zoobot model intended for finetuning on a decision tree (i.e. GZ-like) problem.
+    Pretrained Zoobot model intended for finetuning on a decision tree (i.e. GZ-like) problem. 
+    Uses Dirichlet-Multinomial loss introduced in GZ DECaLS.
+    Briefly: predicts a Dirichlet distribution for the probability of a typical volunteer giving each answer, 
+    and uses the Dirichlet-Multinomial loss to compare the predicted distribution of votes (given k volunteers were asked) to the true distribution.
 
-    You must also pass either ``checkpoint_loc`` (to a saved encoder checkpoint)
-    or ``encoder`` (to a pytorch model already loaded in memory).
-    See :class:FinetuneableZoobotAbstract for more options.
+    Does not produce accuracy or MSE metrics, as these are not relevant for this task. Loss logging only.
+
+    If you're using this, you're probably working on a Galaxy Zoo catalog, and you should Slack Mike!
+
+    Any args not listed below are passed to :class:``FinetuneableZoobotAbstract`` (for example, `learning_rate`).
+    These are shared between classifier, regressor, and tree models.
+    See the docstring of :class:``FinetuneableZoobotAbstract`` for more.
+
+    Models can be loaded in one of three ways:
+    - HuggingFace name e.g. FinetuneableZoobotRegressor(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
+    - Any PyTorch model in memory e.g. FinetuneableZoobotRegressor(encoder=some_model, ...)
+    - ZoobotTree checkpoint e.g. FinetuneableZoobotRegressor(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
 
     Args:
         schema (schemas.Schema): description of the layout of the decision tree. See :class:`zoobot.shared.schemas.Schema`.
@@ -639,16 +658,30 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
         self.loss = define_model.get_dirichlet_loss_func(self.schema.question_index_groups)
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
-      pass  # not yet implemented
+      raise NotImplementedError
 
     # other functions are simply inherited from FinetunedZoobotAbstract
 
-# https://github.com/inigoval/byol/blob/1da1bba7dc5cabe2b47956f9d7c6277decd16cc7/byol_main/networks/models.py#L29
 class LinearHead(torch.nn.Module):
-    def __init__(self, input_dim, output_dim, dropout_prob=0.5, activation=None):
+    def __init__(self, input_dim: int, output_dim: int, dropout_prob=0.5, activation=None):
+        """
+        Small utility class for a linear head with dropout and optional choice of activation.
+
+        - Apply dropout to features before the final linear layer.
+        - Apply a final linear layer
+        - Optionally, apply `activation` callable
+
+        Args:
+            input_dim (int): input dim of the linear layer (i.e. the encoder output dimension)
+            output_dim (int): output dim of the linear layer (often e.g. N for N classes, or 1 for regression)
+            dropout_prob (float, optional): Dropout probability. Defaults to 0.5.
+            activation (callable, optional): callable expecting tensor e.g. torch softmax. Defaults to None.
+        """
         # input dim is representation dim, output_dim is num classes
         super(LinearHead, self).__init__()
+        self.input_dim = input_dim
         self.output_dim = output_dim
+
         self.dropout = torch.nn.Dropout(p=dropout_prob)
         self.linear = torch.nn.Linear(input_dim, output_dim)
         self.activation = activation
@@ -666,36 +699,54 @@ class LinearHead(torch.nn.Module):
 
 
 
-def cross_entropy_loss(y_pred, y, label_smoothing=0., weight=None):
-    # y should be shape (batch) and ints
-    # y_pred should be shape (batch, classes)
-    # returns loss of shape (batch)
-    # will reduce myself
+def cross_entropy_loss(y_pred: torch.Tensor, y: torch.Tensor, label_smoothing: float=0., weight=None):
+    """
+    Calculate cross-entropy loss with optional label smoothing and class weights. No aggregation applied.
+    Trivial wrapper of torch.nn.functional.cross_entropy with reduction='none'.
+
+    Args:
+        y_pred (torch.Tensor): ints of shape (batch)
+        y (torch.Tensor): predictions of shape (batch, classes)
+        label_smoothing (float, optional): See docstring of torch.nn.functional.cross_entropy. Defaults to 0..
+        weight (arraylike, optional): See docstring of torch.nn.functional.cross_entropy. Defaults to None.
+
+    Returns:
+        torch.Tensor: unreduced cross-entropy loss
+    """
     return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, weight=weight, reduction='none')
 
+
 def mse_loss(y_pred, y):
-    # y should be shape (batch) and ints
-    # y_pred should be shape (batch, classes)
-    # returns loss of shape (batch)
-    # will reduce myself
+    """
+    Trivial wrapper of torch.nn.functional.mse_loss with reduction='none'.
+
+    Args:
+        y_pred (torch.Tensor): See docstring of torch.nn.functional.mse_loss.
+        y (torch.Tensor): See docstring of torch.nn.functional.mse_loss.
+
+    Returns:
+        torch.Tensor: See docstring of torch.nn.functional.mse_loss.
+    """
     return F.mse_loss(y_pred, y, reduction='none')
 
 
-def dirichlet_loss(y_pred, y, question_index_groups):
-    # aggregation equiv. to sum(axis=1).mean(), but fewer operations
-    # returns loss of shape (batch)
+def dirichlet_loss(y_pred: torch.Tensor, y: torch.Tensor, question_index_groups):
+    """
+    Calculate Dirichlet-Multinomial loss for a batch of predictions and labels.
+    Returns a scalar loss (ready for gradient descent) by summing across answers and taking a mean across the batch.
+    Reduction equivalent to sum(axis=1).mean(), but with fewer operations.
+
+    Args:
+        y_pred (torch.Tensor): Predicted dirichlet distribution, of shape (batch, answers)
+        y (torch.Tensor): Count of volunteer votes for each answer, of shape (batch, answers)
+        question_index_groups (list): Answer indices for each question i.e. [(question.start_index, question.end_index), ...] for all questions. Useful for slicing model predictions by question. See :ref:`schemas`.
+
+    Returns:
+        torch.Tensor: Dirichlet-Multinomial loss. Scalar, summing across answers and taking a mean across the batch i.e. sum(axis=1).mean())
+    """
     # my func uses sklearn convention y, y_pred
     return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean()*len(question_index_groups)
 
-
-class FinetunedZoobotClassifierBaseline(FinetuneableZoobotClassifier):
-    # exactly as the Finetuned model above, but with a simple single learning rate
-    # useful for training from-scratch model exactly as if it were finetuned, as a baseline
-
-    def configure_optimizers(self):
-        head_params = list(self.head.parameters())
-        encoder_params = list(self.encoder.parameters())
-        return torch.optim.AdamW(head_params + encoder_params, lr=self.learning_rate)
 
 
 def load_pretrained_zoobot(checkpoint_loc: str) -> torch.nn.Module:
@@ -726,8 +777,17 @@ def get_trainer(
     **trainer_kwargs
 ) -> pl.Trainer:
     """
-    PyTorch Lightning Trainer that carries out the finetuning process.
+    Convenience wrapper to create a PyTorch Lightning Trainer that carries out the finetuning process.
     Use like so: trainer.fit(model, datamodule)
+
+    `get_trainer` args are for common Trainer settings e.g. early stopping checkpointing, etc. By default:
+    - Saves the top-k models based on validation loss
+    - Uses early stopping with `patience` i.e. end training if validation loss does not improve after `patience` epochs.
+    - Monitors the learning rate (useful when using a learning rate scheduler)
+
+    Any extra args not listed below are passed directly to the PyTorch Lightning Trainer.
+    Use this to add any custom configuration not covered by the `get_trainer` args.
+    See https://lightning.ai/docs/pytorch/stable/common/trainer.html
 
     Args:
         save_dir (str): folder in which to save checkpoints and logs.
@@ -776,7 +836,22 @@ def get_trainer(
     return trainer
 
 
-def download_from_name(class_name: str, hub_name: str, **kwargs):
+def download_from_name(class_name: str, hub_name: str):
+    """
+    Download a finetuned model from the HuggingFace Hub by name.
+    Used to load pretrained Zoobot models by name, e.g. FinetuneableZoobotClassifier(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...).
+
+    Downloaded models are saved to the HuggingFace cache directory for later use (typically ~/.cache/huggingface).
+
+    You shouldn't need to call this; it's used internally by the FinetuneableZoobot classes.
+
+    Args:
+        class_name (str): one of FinetuneableZoobotClassifier, FinetuneableZoobotRegressor, FinetuneableZoobotTree
+        hub_name (str): e.g. mwalmsley/zoobot-encoder-convnext_nano
+
+    Returns:
+        str: path to downloaded model (in HuggingFace cache directory). Likely then loaded by Lightning.
+    """
     from huggingface_hub import hf_hub_download
 
     if hub_name.startswith('hf_hub:'):
@@ -800,8 +875,10 @@ def cosine_schedule(
     end_value: float,
     period: Optional[int] = None,
 ) -> float:
-    """Use cosine decay to gradually modify start_value to reach target end_value during
+    """
+    Use cosine decay to gradually modify start_value to reach target end_value during
     iterations.
+    Copied from lightly library (thank you for open sourcing)
 
     Args:
         step:
