@@ -28,7 +28,7 @@ setuptools.setup(
             'torch == 2.1.0+cpu',
             'torchvision == 0.16.0+cpu',
             'torchaudio >= 2.1.0',
-            'pytorch-lightning >= 2.0.0',
+            'lightning >= 2.0.0',
             # 'simplejpeg',
             'albumentations',
             'pyro-ppl >= 1.8.6',
@@ -41,7 +41,7 @@ setuptools.setup(
             'torch == 2.1.0',
             'torchvision == 0.16.0',
             'torchaudio >= 2.1.0',
-            'pytorch-lightning >= 2.0.0',
+            'lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
@@ -54,7 +54,7 @@ setuptools.setup(
             'torch == 2.1.0+cu118',
             'torchvision == 0.16.0+cu118',
             'torchaudio >= 2.1.0',
-            'pytorch-lightning >= 2.0.0',
+            'lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
@@ -64,7 +64,7 @@ setuptools.setup(
             'torch == 2.1.0+cu121',
             'torchvision == 0.16.0+cu121',
             'torchaudio >= 2.1.0',
-            'pytorch-lightning >= 2.0.0',
+            'lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
@@ -72,14 +72,14 @@ setuptools.setup(
         ],        
         'pytorch-colab': [
             # colab includes pytorch already
-            'pytorch-lightning >= 2.0.0',
+            'lightning >= 2.0.0',
             'albumentations',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
-            'timm == 0.9.10'
+            'timm >= 0.9.10'
         ],
         # TODO may add narval/Digital Research Canada config
-        'tensorflow': [
+        'tensorflow': [ # WARNING now deprecated
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
             'tensorflow_probability == 0.18.0',  # 0.19 requires tf 2.11
