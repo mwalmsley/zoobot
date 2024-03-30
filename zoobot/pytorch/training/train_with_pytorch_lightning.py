@@ -135,19 +135,18 @@ def train_default_zoobot_from_scratch(
     if (gpus is not None) and (gpus > 1):
         strategy = DDPStrategy(find_unused_parameters=False)  # static_graph=True TODO
         logging.info('Using multi-gpu training')
-        if nodes > 1:  # I assume nobody is doing multi-node cpu training...
-            logging.info('Using multi-node training')  # purely for your info
+        # if nodes > 1:  # I assume nobody is doing multi-node cpu training...
+            # logging.info('Using multi-node training')  # purely for your info
             # this is only needed for multi-node training
             # our cluster sets TASKS_PER_NODE not NTASKS_PER_NODE
             # (with srun, SLURM_STEP_TASKS_PER_NODE)
             # https://slurm.schedmd.com/srun.html#OPT_SLURM_STEP_TASKS_PER_NODE
-            if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
-                os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
-                # from lightning_lite.plugins.environments import SLURMEnvironment
-                from zoobot.pytorch import manchester
-                logging.warning('Using custom slurm environment')
-                # https://pytorch-lightning.readthedocs.io/en/stable/clouds/cluster_advanced.html#enable-auto-wall-time-resubmitions
-                plugins = [manchester.ManchesterEnvironment(auto_requeue=False)]
+        if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
+            os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
+            from zoobot.pytorch import manchester
+            logging.warning('Using custom slurm environment')
+            # https://pytorch-lightning.readthedocs.io/en/stable/clouds/cluster_advanced.html#enable-auto-wall-time-resubmitions
+            plugins = [manchester.GalahadEnvironment(auto_requeue=False)]
 
     if gpus > 0:
         accelerator = 'gpu'
