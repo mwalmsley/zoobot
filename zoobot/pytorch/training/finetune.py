@@ -518,13 +518,15 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
 
 
     Args:
+        loss (str, optional): Loss function to use. Must be one of 'mse', 'mae'. Defaults to 'mse'.
         unit_interval (bool, optional): If True, use sigmoid activation for the final layer, ensuring predictions between 0 and 1. Defaults to False.
         
     """
 
     def __init__(
             self,
-            unit_interval=False, 
+            loss:str='mse',
+            unit_interval:bool=False, 
             **super_kwargs) -> None:
 
         super().__init__(**super_kwargs)
@@ -543,7 +545,13 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
             dropout_prob=self.dropout_prob,
             activation=head_activation
         )
-        self.loss = mse_loss
+        if loss in ['mse', 'mean_squared_error']:
+            self.loss = mse_loss
+        elif loss in ['mae', 'mean_absolute_error', 'l1', 'l1_loss']:
+            self.loss = l1_loss
+        else:
+            raise ValueError(f'Loss {loss} not recognised. Must be one of mse, mae')
+
         # rmse metrics. loss is mse already.
         self.train_rmse = tm.MeanSquaredError(squared=False)
         self.val_rmse = tm.MeanSquaredError(squared=False)
@@ -594,21 +602,6 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
         if isinstance(x, list) and len(x) == 1:
             return self(x[0])
         return self.forward(x)
-
-    # TODO
-    # def upload_images_to_wandb(self, outputs, batch, batch_idx):
-    #   # self.logger is set by pl.Trainer(logger=) argument
-    #     if (self.logger is not None) and (batch_idx == 0):
-    #         x, y = batch
-    #         y_pred_softmax = F.softmax(outputs['predictions'], dim=1)
-    #         n_images = 5
-    #         images = [img for img in x[:n_images]]
-    #         captions = [f'Ground Truth: {y_i} \nPrediction: {y_p_i}' for y_i, y_p_i in zip(
-    #             y[:n_images], y_pred_softmax[:n_images])]
-    #         self.logger.log_image( # type: ignore
-    #             key='val_images',
-    #             images=images,
-    #             caption=captions)
 
 
 class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
@@ -728,6 +721,19 @@ def mse_loss(y_pred, y):
         torch.Tensor: See docstring of torch.nn.functional.mse_loss.
     """
     return F.mse_loss(y_pred, y, reduction='none')
+
+def l1_loss(y_pred, y):
+    """
+    Trivial wrapper of torch.nn.functional.l1_loss with reduction='none'.
+
+    Args:
+        y_pred (torch.Tensor): See docstring of torch.nn.functional.l1_loss.
+        y (torch.Tensor): See docstring of torch.nn.functional.l1_loss.
+
+    Returns:
+        torch.Tensor: See docstring of torch.nn.functional.l1_loss.
+    """
+    return F.l1_loss(y_pred, y, reduction='none')
 
 
 def dirichlet_loss(y_pred: torch.Tensor, y: torch.Tensor, question_index_groups):
