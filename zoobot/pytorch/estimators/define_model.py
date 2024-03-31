@@ -309,6 +309,8 @@ class ZoobotTree(GenericLightningModule):
                 patience=self.scheduler_params.get('patience', 5)
             )
             return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/loss'}
+        # TODO add cosine scheduler support here, same args as FinetuneableZoobot
+        # work on this for big model sweep
         else:
             logging.info('No scheduler used')
             return optimizer  # no scheduler
