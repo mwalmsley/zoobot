@@ -7,6 +7,7 @@ from timm import create_model
 class ZoobotEncoder(pl.LightningModule):
 
     def __init__(self, encoder):
+        super().__init__()
         logging.info('ZoobotEncoder: using provided in-memory encoder')
         self.encoder = encoder  # plain pytorch module e.g. Sequential
 
@@ -26,6 +27,6 @@ class ZoobotEncoder(pl.LightningModule):
         Returns:
             nn.Module: timm model
         """
-        timm_model = create_model(name)
+        timm_model = create_model(name, pretrained=True)
         return cls(timm_model)
     
