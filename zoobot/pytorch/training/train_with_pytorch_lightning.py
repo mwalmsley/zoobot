@@ -144,7 +144,7 @@ def train_default_zoobot_from_scratch(
         if 'SLURM_NTASKS_PER_NODE' not in os.environ.keys():
             os.environ['SLURM_NTASKS_PER_NODE'] = os.environ['SLURM_TASKS_PER_NODE']
             from zoobot.pytorch import manchester
-            logging.warning('Using custom slurm environment')
+            logging.warning(f'Using custom slurm environment, --n-tasks-per-node={os.environ["SLURM_NTASKS_PER_NODE"]}')
             # https://pytorch-lightning.readthedocs.io/en/stable/clouds/cluster_advanced.html#enable-auto-wall-time-resubmitions
             plugins = [manchester.GalahadEnvironment(auto_requeue=False)]
 

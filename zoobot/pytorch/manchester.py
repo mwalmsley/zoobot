@@ -35,6 +35,7 @@ class GalahadEnvironment(SLURMEnvironment):
     def __init__(self, **kwargs):
         ntasks_per_node = os.environ["SLURM_TASKS_PER_NODE"].split("(")[0]
         os.environ["SLURM_NTASKS_PER_NODE"] = ntasks_per_node
+        logging.warning(f'Within custom slurm environment, --n-tasks-per-node={ntasks_per_node}')
         # os.environ["SLURM_NTASKS"] = str(os.environ["SLURM_NTASKS_PER_NODE"])
         super().__init__(**kwargs)
         self.nnodes = int(os.environ["SLURM_NNODES"])
