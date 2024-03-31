@@ -255,7 +255,7 @@ def train_default_zoobot_from_scratch(
             prefetch_factor=prefetch_factor,
             cache_dir=cache_dir,
             # augmentation args
-            color=color,
+            greyscale=not color,
             crop_scale_bounds=crop_scale_bounds,
             crop_ratio_bounds=crop_ratio_bounds,
             resize_after_crop=resize_after_crop,
