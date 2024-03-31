@@ -25,7 +25,7 @@ class WebDataModule(pl.LightningDataModule):
             num_workers=4,
             prefetch_factor=4,
             cache_dir=None,
-            color=False,
+            greyscale=False,
             crop_scale_bounds=(0.7, 0.8),
             crop_ratio_bounds=(0.9, 1.1),
             resize_after_crop=224,
@@ -58,7 +58,7 @@ class WebDataModule(pl.LightningDataModule):
         self.cache_dir = cache_dir
 
         # could use mixin
-        self.color = color
+        self.greyscale = greyscale
         self.resize_after_crop = resize_after_crop
         self.crop_scale_bounds = crop_scale_bounds
         self.crop_ratio_bounds = crop_ratio_bounds
@@ -79,7 +79,7 @@ class WebDataModule(pl.LightningDataModule):
             crop_scale_bounds=self.crop_scale_bounds,
             crop_ratio_bounds=self.crop_ratio_bounds,
             resize_after_crop=self.resize_after_crop,
-            pytorch_greyscale=not self.color,
+            pytorch_greyscale=self.greyscale,
             to_float=False  # True was wrong, webdataset rgb decoder already converts to 0-1 float
             # TODO now changed on dev branch will be different for new model training runs
         )  # A.Compose object
