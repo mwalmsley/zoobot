@@ -10,7 +10,7 @@ import timm
 
 from zoobot.shared import schemas
 from zoobot.pytorch.estimators import efficientnet_custom, custom_layers
-from zoobot.pytorch.training import losses
+from zoobot.pytorch.training import losses, schedulers
 
 # overall strategy
 # timm for defining complicated pytorch modules
@@ -309,8 +309,16 @@ class ZoobotTree(GenericLightningModule):
                 patience=self.scheduler_params.get('patience', 5)
             )
             return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/loss'}
-        # TODO add cosine scheduler support here, same args as FinetuneableZoobot
-        # work on this for big model sweep
+        elif self.scheduler_params.get('cosine_schedule', False):
+            logging.info('Using cosine schedule')
+            scheduler = schedulers.CosineWarmupScheduler(
+                optimizer=optimizer,
+                warmup_epochs=self.scheduler_params['warmup_epochs'],
+                max_epochs=self.scheduler_params['max_cosine_epochs'],
+                start_value=self.learning_rate,
+                end_value=self.learning_rate * self.scheduler_params['max_learning_rate_reduction_factor']
+            )
+            return {'optimizer': optimizer, 'lr_scheduler': scheduler, 'monitor': 'validation/loss'}
         else:
             logging.info('No scheduler used')
             return optimizer  # no scheduler
