@@ -22,6 +22,7 @@ Zoobot is trained using millions of answers by Galaxy Zoo volunteers. This code 
 - [Documentation](https://zoobot.readthedocs.io/) (for understanding/reference)
 
 ## Installation
+
 <a name="installation"></a>
 
 You can retrain Zoobot in the cloud with a free GPU using this [Google Colab notebook](https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing). To install locally, keep reading.
@@ -47,13 +48,14 @@ To use a GPU, you must *already* have CUDA installed and matching the versions a
 I share my install steps [here](#install_cuda). GPUs are optional - Zoobot will run retrain fine on CPU, just slower.
 
 ## Quickstart
+
 <a name="quickstart"></a>
 
 The [Colab notebook](https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing) is the quickest way to get started. Alternatively, the minimal example below illustrates how Zoobot works.
 
 Let's say you want to find ringed galaxies and you have a small labelled dataset of 500 ringed or not-ringed galaxies. You can retrain Zoobot to find rings like so:
 
-```python
+    ```python
 
     import pandas as pd
     from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
@@ -74,11 +76,11 @@ Let's say you want to find ringed galaxies and you have a small labelled dataset
     # retrain to find rings
     trainer = finetune.get_trainer(save_dir)
     trainer.fit(model, datamodule)
-```
+    ```
 
 Then you can make predict if new galaxies have rings:
 
-```python
+    ```python
     from zoobot.pytorch.predictions import predict_on_catalog
 
     # csv with 'file_loc' column (path to image). Zoobot will predict the labels.
@@ -90,11 +92,12 @@ Then you can make predict if new galaxies have rings:
       label_cols=['ring'],  # only used for 
       save_loc='/your/path/finetuned_predictions.csv'
     )
-```
+    ```
 
 Zoobot includes many guides and working examples - see the [Getting Started](#getting-started) section below.
 
 ## Getting Started
+
 <a name="getting_started"></a>
 
 I suggest starting with the [Colab notebook](https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing) or the worked examples below, which you can copy and adapt.
@@ -104,9 +107,11 @@ For context and explanation, see the [documentation](https://zoobot.readthedocs.
 Pretrained models are listed [here](https://zoobot.readthedocs.io/en/latest/pretrained_models.html) and available on [HuggingFace](https://huggingface.co/collections/mwalmsley/zoobot-encoders-65fa14ae92911b173712b874)
 
 ### Worked Examples
+
 <a name="worked_examples"></a>
 
 PyTorch (recommended):
+
 - [pytorch/examples/finetuning/finetune_binary_classification.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py)
 - [pytorch/examples/finetuning/finetune_counts_full_tree.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py)
 - [pytorch/examples/representations/get_representations.py](https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/representations/get_representations.py)
@@ -119,8 +124,8 @@ I also [include](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) the s
 When trained with a decision tree head (ZoobotTree, FinetuneableZoobotTree), Zoobot can learn from volunteer labels of varying confidence and predict posteriors for what the typical volunteer might say. Specifically, this Zoobot mode predicts the parameters for distributions, not simple class labels! For a demonstration of how to interpret these predictions, see the [gz_decals_data_release_analysis_demo.ipynb](https://github.com/mwalmsley/zoobot/blob/main/gz_decals_data_release_analysis_demo.ipynb).
 
 
-
 ### (Optional) Install PyTorch with CUDA
+
 <a name="install_cuda"></a>
 
 *If you're not using a GPU, skip this step. Use the pytorch-cpu option in the section below.*

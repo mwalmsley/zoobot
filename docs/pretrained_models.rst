@@ -107,7 +107,7 @@ All these models are much larger and need cluster-grade GPUs (e.g. V100 or above
 
 Other models are included for reference or as benchmarks.
 EfficientNetB0 is equivalent to the model used in the GZ DECaLS and GZ DESI papers.
-ResNet18 and ResNet50 are classics of the genre and may be useful for comparison or as part of other frameworks (like detectron2, for segmentation).
+ResNet18 and ResNet50 are classics of the genre and may be useful for comparison or as part of other frameworks (like as an `object detection backbone <https://arxiv.org/abs/2312.03503>`_).
 
 
 How were the models trained?
