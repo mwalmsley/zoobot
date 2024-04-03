@@ -61,10 +61,10 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
         always_train_batchnorm (bool, optional): Temporarily deprecated. Previously, if True, do not update batchnorm stats during finetuning. Defaults to True.
         cosine_schedule (bool, optional): Reduce the learning rate each epoch according to a cosine schedule, after warmup_epochs. Defaults to False.
-        warmup_epochs (int, optional): Linearly increase the learning rate from 0 to `learning_rate` over the first `warmup_epochs` epochs, before applying cosine schedule. No effect if cosine_schedule=False.
-        max_cosine_epochs (int, optional): Epochs for the scheduled learning rate to decay to final learning rate (below). Warmup epochs don't count. No effect if `cosine_schedule=False`.
-        max_learning_rate_reduction_factor (float, optional): Set final learning rate as `learning_rate` * `max_learning_rate_reduction_factor`. No effect if `cosine_schedule=False`.
-        from_scratch (bool, optional): Ignore all settings above and train from scratch at `learning_rate` for all layers. Useful for a quick baseline. Defaults to False.
+        warmup_epochs (int, optional): Linearly increase the learning rate from 0 to ``learning_rate`` over the first ``warmup_epochs`` epochs, before applying cosine schedule. No effect if cosine_schedule=False.
+        max_cosine_epochs (int, optional): Epochs for the scheduled learning rate to decay to final learning rate (below). Warmup epochs don't count. No effect if ``cosine_schedule=False``.
+        max_learning_rate_reduction_factor (float, optional): Set final learning rate as ``learning_rate`` * ``max_learning_rate_reduction_factor``. No effect if ``cosine_schedule=False``.
+        from_scratch (bool, optional): Ignore all settings above and train from scratch at ``learning_rate`` for all layers. Useful for a quick baseline. Defaults to False.
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.

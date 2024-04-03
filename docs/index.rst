@@ -24,12 +24,23 @@ For more explanation, read on.
 User Guides
 -------------
 
-We've written these guides to add explanation and context.
+These introductory guides add context to the demo Colab notebooks.
+
+.. toctree::
+   :maxdepth: 1
+
+   /guides/finetuning
+   /guides/choosing_parameters
+   /guides/loading_data
+   /guides/training_on_vote_counts
+   
+These advanced guides explain how to integrate Zoobot into other ML projects.
 
 .. toctree::
    :maxdepth: 2
 
-   /guides/guides
+   /guides/advanced_finetuning
+   /guides/how_the_code_fits_together
 
 Pretrained Models
 ------------------
