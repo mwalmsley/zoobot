@@ -17,7 +17,7 @@ Zoobot is trained using millions of answers by Galaxy Zoo volunteers. This code 
 - [Install](#installation)
 - [Quickstart](#quickstart)
 - [Worked Examples](#worked-examples)
-- [Pretrained Weights](https://zoobot.readthedocs.io/en/latest/data_notes.html)
+- [Pretrained Weights](https://zoobot.readthedocs.io/en/latest/pretrained_models.html)
 - [Datasets](https://www.github.com/mwalmsley/galaxy-datasets)
 - [Documentation](https://zoobot.readthedocs.io/) (for understanding/reference)
 
@@ -101,7 +101,7 @@ I suggest starting with the [Colab notebook](https://colab.research.google.com/d
 
 For context and explanation, see the [documentation](https://zoobot.readthedocs.io/).
 
-For pretrained model weights, precalculated representations, catalogues, and so forth, see the [data notes](https://zoobot.readthedocs.io/en/latest/data_notes.html) in particular.
+Pretrained models are listed [here](https://zoobot.readthedocs.io/en/latest/pretrained_models.html) and available on [HuggingFace](https://huggingface.co/collections/mwalmsley/zoobot-encoders-65fa14ae92911b173712b874)
 
 ### Worked Examples
 <a name="worked_examples"></a>

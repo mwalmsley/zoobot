@@ -50,7 +50,21 @@ To choose and download a pretrained model, see here.
 .. toctree::
    :maxdepth: 2
 
-   data_notes
+   pretrained_models
+
+
+Science-Ready Data
+------------------
+
+You can find our science outputs (e.g. morphology catalogs, precalculated representations) here.
+
+.. toctree::
+   :maxdepth: 2
+
+   science_data
+
+We are working on releasing the compiled GZ Evo dataset and will update this page when it is available. 
+Estimated public release is Q4 2024. Please reach out if you'd like early access.
 
 
 API reference

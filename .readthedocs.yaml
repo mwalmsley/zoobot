@@ -1,14 +1,13 @@
 version: 2
 
 python:
-  version: 3.8
+  version: 3.9
   install:
     - method: pip
       path: .
       extra_requirements:
         - docs
-        - pytorch_m1
-        - tensorflow
+        - pytorch_cpu
 
 sphinx:
   fail_on_warning: true

@@ -65,7 +65,7 @@ These files are called checkpoints (like video game save files - computer scient
       n_layers=0
     )
 
-You can download a checkpoint file from :ref:`datanotes`.
+You can download a checkpoint file from :ref:`pretrainedmodels`.
 
 What about the other arguments?
 When loading the checkpoint, FinetuneableZoobotClassifier will automatically change the head layer to suit a classification problem (hence, ``Classifier``).

@@ -96,7 +96,7 @@ utility function used for making predictions with a full Zoobot model.
 See `zoobot/pytorch/examples/representations <https://github.com/mwalmsley/zoobot/tree/main/zoobot/pytorch/examples/representations>`_ for a full working example.
 
 We are sharing precalculated representations for all our DESI galaxies, and soon for HSC as well.
-Check the data notes at :doc:/data_notes
+Check the data notes at :doc:/data_access.
 
 The representations are typically quite high-dimensional (e.g. 1280 for EfficientNetB0) and therefore highly redundant.
 We suggest using PCA to compress them down to a more reasonable dimension (e.g. 40) while preserving most of the information.
