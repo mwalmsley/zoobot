@@ -97,7 +97,8 @@ setuptools.setup(
             'Sphinx',
             'sphinxcontrib-napoleon',
             'furo',
-            'docutils<0.18'
+            'docutils<0.18',
+            'spinxemoji'
         ]
     },
     install_requires=[

@@ -79,12 +79,12 @@ Zoobot includes weights for the following pretrained models:
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-tf_efficientnetv2_s>`__
    * - ResNet18
      - 11.7M
-     - 19.43
+     - 19.83
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-resnet18>`__
    * - ResNet50
      - 25.6M
-     - 19.83
+     - 19.43
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-resnet50>`__
 
@@ -97,39 +97,26 @@ Zoobot includes weights for the following pretrained models:
 Which model should I use?
 ===========================
 
-We suggest the PyTorch EfficientNetB0 224-pixel model for most users.
+We suggest starting with ConvNeXT-Nano for most users.
+ConvNeXT-Nano performs very well while still being small enough to train on a single gaming GPU.
+You will be able to experiment quickly.
 
-Zoobot will prioritise PyTorch going forward. For more, see here.
-The TensorFlow models currently perform just as well as the PyTorch equivalents but will not benefit from any future updates.
+For maximum performance, you could swap ConvNeXT-Nano for ConvNeXT-Small or ConvNeXT-Base.
+MaxViT-Base also performs well and includes an ingenious attention mechanism, if you're interested in that.
+All these models are much larger and need cluster-grade GPUs (e.g. V100 or above).
 
-EfficientNetB0 is a small yet capable modern architecture. 
-The ResNet50 models perform slightly worse than EfficientNet, but are a very common architecture and may be useful as benchmarks or as part of other frameworks (like detectron2, for segmentation).
-
-It's unclear if color information improves overall performance at predicting GZ votes.
-For CNNs, the change in performance is not significant. For ViT, it is measureable but small.
-We suggesst including color if it is expected to be important to your specific task, such as hunting green peas.
-
-Larger input images (300px vs 224px) may provide a small boost in performance at predicting GZ votes.
-However, the models require more memory and train/finetune slightly more slowly.
-You may want to start with a 224px model and experiment with "upgrading" once you're happy everything works.
+Other models are included for reference or as benchmarks.
+EfficientNetB0 is equivalent to the model used in the GZ DECaLS and GZ DESI papers.
+ResNet18 and ResNet50 are classics of the genre and may be useful for comparison or as part of other frameworks (like detectron2, for segmentation).
 
 
-All models are trained on the GZ Evo dataset described in the `Towards Foundation Models paper <https://arxiv.org/abs/2206.11927>`_.
-This dataset includes 550k galaxy images and 92M votes drawn from every major Galaxy Zoo campaign: GZ2, GZ Hubble, GZ CANDELS, and GZ DECaLS/DESI.
+How were the models trained?
+===============================
 
-All models are trained on the same images shown to Galaxy Zoo volunteers.
-These are typically 424 pixels across.
-The images are transformed using the galaxy-datasets default transforms (random off-center crop/zoom, flips, rotation) and then resized to the desired input size (224px or 300px) and, for 1-channel models, channel-averaged.
+The models were trained as part of the report `Scaling Laws for Galaxy Images <TODO>`_.
+This report systematically investigates how increasing labelled galaxy data and model size improves performance
+and leads to adaptable models that generalise well to new tasks and new telescopes.
 
-We also include a few additional ad-hoc models `on Dropbox <https://www.dropbox.com/scl/fo/l1l7frgy12wtmsbm0hihb/h?dl=0&rlkey=sq5wevuhxs7ku5ki4cwhbhm5j>`_.
-
-- EfficientNetB0 models pretrained only on GZ DECaLS GZD-5. For reference/comparison.
-- EfficientNetB0 models pretrained with smaller images (128px and 64px). For debugging.
-
-
-
-.. What about the images?
-.. --------------------------
-
-.. You can find most of our datasets on the `galaxy-datasets repo <https://github.com/mwalmsley/galaxy-datasets>`_.
-.. The datasets are self-downloading and have loading functions for both PyTorch and TensorFlow.
+All models are trained on the GZ Evo dataset,
+which includes 820k images and 100M+ volunteer votes drawn from every major Galaxy Zoo campaign: GZ2, GZ UKIDSS (unpublished), GZ Hubble, GZ CANDELS, GZ DECaLS/DESI, and GZ Cosmic Dawn (HSC, in prep.).
+They learn an adaptable representation of galaxy images by training to answer every Galaxy Zoo question at once.
