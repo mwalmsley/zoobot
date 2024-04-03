@@ -11,7 +11,7 @@ python:
       path: .
       extra_requirements:
         - docs
-        - pytorch_cpu
+        - pytorch_m1
 
 sphinx:
   fail_on_warning: true
