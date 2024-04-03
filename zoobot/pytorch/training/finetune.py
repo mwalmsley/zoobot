@@ -43,16 +43,16 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
     - When provided `learning_rate` it will set the optimizer to use that learning rate.
 
     Any FinetuneableZoobot model can be loaded in one of three ways:
-        - HuggingFace name e.g. FinetuneableZoobotX(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
-        - Any PyTorch model in memory e.g. FinetuneableZoobotX(encoder=some_model, ...)
-        - ZoobotTree checkpoint e.g. FinetuneableZoobotX(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
+        - HuggingFace name e.g. `FinetuneableZoobotX(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...)`. Recommended.
+        - Any PyTorch model in memory e.g. `FinetuneableZoobotX(encoder=some_model, ...)`
+        - ZoobotTree checkpoint e.g. `FinetuneableZoobotX(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)`
 
     You could subclass this class to solve new finetuning tasks - see :ref:`advanced_finetuning`.
 
     Args:
         name (str, optional): Name of a model on HuggingFace Hub e.g.'hf_hub:mwalmsley/zoobot-encoder-convnext_nano'. Defaults to None.
         encoder (torch.nn.Module, optional): A PyTorch model already loaded in memory
-        zoobot_checkpoint_loc (str, optional): Path to ZoobotTree lightning checkpoint to load. Loads with Load with :func:`zoobot.pytorch.training.finetune.load_pretrained_encoder`. Defaults to None.
+        zoobot_checkpoint_loc (str, optional): Path to ZoobotTree lightning checkpoint to load. Loads with Load with :func:`zoobot.pytorch.training.finetune.load_pretrained_zoobot`. Defaults to None.
         
         n_blocks (int, optional): 
         lr_decay (float, optional): For each layer i below the head, reduce the learning rate by lr_decay ^ i. Defaults to 0.75.
@@ -174,11 +174,11 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         and then pick the top self.n_blocks to finetune
         
         weight_decay is applied to both the head and (if relevant) the encoder
-        learning rate decay is applied to the encoder only: lr * (lr_decay**block_n), ignoring the head (block 0)
+        learning rate decay is applied to the encoder only: lr x (lr_decay^block_n), ignoring the head (block 0)
 
         What counts as a "block" is a bit fuzzy, but I generally use the self.encoder.stages from timm. I also count the stem as a block.
 
-        *batch norm layers may optionally still have updated statistics using always_train_batchnorm
+        batch norm layers may optionally still have updated statistics using always_train_batchnorm
         """
 
         lr = self.learning_rate
@@ -395,10 +395,8 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     These are shared between classifier, regressor, and tree models.
     See the docstring of :class:``FinetuneableZoobotAbstract`` for more.
 
-    Models can be loaded in one of three ways:
-    - HuggingFace name e.g. FinetuneableZoobotClassifier(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
-    - Any PyTorch model in memory e.g. FinetuneableZoobotClassifier(encoder=some_model, ...)
-    - ZoobotTree checkpoint e.g. FinetuneableZoobotClassifier(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
+    Models can be loaded with `FinetuneableZoobotClassifier(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...)`.
+    See :class:``FinetuneableZoobotAbstract`` for other loading options (e.g. in-memory models or local checkpoints).
 
     Args:
         num_classes (int): num. of target classes (e.g. 2 for binary classification).
@@ -511,10 +509,8 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
     These are shared between classifier, regressor, and tree models.
     See the docstring of :class:``FinetuneableZoobotAbstract`` for more.
 
-    Models can be loaded in one of three ways:
-    - HuggingFace name e.g. FinetuneableZoobotRegressor(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
-    - Any PyTorch model in memory e.g. FinetuneableZoobotRegressor(encoder=some_model, ...)
-    - ZoobotTree checkpoint e.g. FinetuneableZoobotRegressor(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
+    Models can be loaded with `FinetuneableZoobotRegressor(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...)`.
+    See :class:``FinetuneableZoobotAbstract`` for other loading options (e.g. in-memory models or local checkpoints).
 
 
     Args:
@@ -619,10 +615,8 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
     These are shared between classifier, regressor, and tree models.
     See the docstring of :class:``FinetuneableZoobotAbstract`` for more.
 
-    Models can be loaded in one of three ways:
-    - HuggingFace name e.g. FinetuneableZoobotRegressor(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...). Recommended.
-    - Any PyTorch model in memory e.g. FinetuneableZoobotRegressor(encoder=some_model, ...)
-    - ZoobotTree checkpoint e.g. FinetuneableZoobotRegressor(zoobot_checkpoint_loc='path/to/zoobot_tree.ckpt', ...)
+    Models can be loaded with `FinetuneableZoobotTree(name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano', ...)`.
+    See :class:``FinetuneableZoobotAbstract`` for other loading options (e.g. in-memory models or local checkpoints).
 
     Args:
         schema (schemas.Schema): description of the layout of the decision tree. See :class:`zoobot.shared.schemas.Schema`.
@@ -680,7 +674,15 @@ class LinearHead(torch.nn.Module):
         self.activation = activation
 
     def forward(self, x):
-        # returns logits, as recommended for CrossEntropy loss
+        """returns logits, as recommended for CrossEntropy loss
+
+        Args:
+            x (torch.Tensor): encoded representation
+
+        Returns:
+            torch.Tensor: result (see docstring of LinearHead)
+        """
+        # 
         x = self.dropout(x)
         x = self.linear(x)
         if self.activation is not None:

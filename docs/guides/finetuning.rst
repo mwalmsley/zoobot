@@ -30,7 +30,7 @@ Examples
 
 Zoobot includes many working examples of finetuning: 
 
-- `Google Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`__ (for binary classification in the cloud)
+- `Google Colab notebook <https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing>`__ (for binary classification in the cloud)
 - `finetune_binary_classification.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py>`__ (script version of the Colab notebook)
 - `finetune_counts_full_tree.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py>`__ (for finetuning on a complicated GZ-style decision tree)
 
