@@ -10,7 +10,7 @@
 <a href="https://ascl.net/2203.027"><img src="https://img.shields.io/badge/ascl-2203.027-blue.svg?colorB=262255" alt="ascl:2203.027" /></a>
 
 ---
-### :tada: Zoobot 2.0 is now available. We added bigger and better models with streamlined finetuning. :tada:
+### :tada: Zoobot 2.0 is now available. We added bigger and better models with streamlined finetuning. [Blog](https://walmsley.dev/posts/zoobot-scaling-laws). :tada:
 ---
 
 Zoobot classifies galaxy morphology with deep learning.
