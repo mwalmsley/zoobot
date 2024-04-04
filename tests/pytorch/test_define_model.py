@@ -10,6 +10,7 @@ def schema():
 def test_ZoobotTree_init(schema):
     model = define_model.ZoobotTree(
         output_dim=12,
-        question_index_groups=schema.question_index_groups,
+        question_answer_pairs=schema.question_answer_pairs,
+        dependencies=schema.dependencies
     )
 

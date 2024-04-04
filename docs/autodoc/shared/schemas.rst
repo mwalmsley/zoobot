@@ -26,6 +26,5 @@ See :ref:`training_on_vote_counts` for full explanation.
 |
 
 .. autoclass:: zoobot.shared.schemas.Schema
-    :members:
 
 |

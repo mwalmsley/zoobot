@@ -49,6 +49,7 @@ def load_hdf5s(hdf5_locs: List):
                         'id_str': f['id_str'].asstr()[:],
                         'hdf5_loc': [os.path.basename(loc) for _ in these_predictions]
                 }
+                    assert len(these_predictions) == len(these_prediction_metadata['id_str']), (loc, len(these_predictions), len(these_prediction_metadata['id_str']) )
                     predictions.append(these_predictions)  # will create a list where each element is 3D predictions stored in each hdf5
                     prediction_metadata.append(these_prediction_metadata)  # also track id_str, similarly
 
@@ -72,7 +73,7 @@ def load_hdf5s(hdf5_locs: List):
         'id_str': [p for metadata in prediction_metadata for p in metadata['id_str']],
         'hdf5_loc': [l for metadata in prediction_metadata for l in metadata['hdf5_loc']]
     }
-    assert len(prediction_metadata['id_str']) == len(predictions)
+    assert len(prediction_metadata['id_str']) == len(predictions), (len(prediction_metadata['id_str']), len(predictions))
 
     galaxy_id_df = pd.DataFrame(data=prediction_metadata)
 
@@ -163,10 +164,12 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     upper_edge_cols = [col + '_90pc-upper' for col in label_cols]
     proportion_asked_cols = [col + '_proportion-asked' for col in label_cols]
 
+
     # make friendly dataframe with just masked fraction and description string
     friendly_loc = save_loc.replace('.parquet', '_friendly.parquet')
     fraction_df = pd.DataFrame(data=masked_fractions, columns=fraction_cols)
     friendly_df = pd.concat([galaxy_id_df, fraction_df], axis=1)
+    friendly_df = convert_halfprecision_cols(friendly_df)
     friendly_df.to_parquet(friendly_loc, index=False)
     logging.info('Friendly summary table saved to {}'.format(friendly_loc))
 
@@ -177,11 +180,19 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     upper_edge_df = pd.DataFrame(data=all_upper_edges, columns=upper_edge_cols)
     proportion_df = pd.DataFrame(data=prob_of_asked_by_answer, columns=proportion_asked_cols)
     advanced_df = pd.concat([galaxy_id_df, fraction_df, lower_edge_df, upper_edge_df, proportion_df], axis=1)
+    advanced_df = convert_halfprecision_cols(advanced_df)
     advanced_df.to_parquet(advanced_loc, index=False)
     logging.info('Advanced summary table saved to {}'.format(advanced_loc))
 
 
-def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False):
+def convert_halfprecision_cols(df):
+    # convert any half-precision columns, parquet can't save these
+    half_floats = df.select_dtypes(include="float16")
+    df[half_floats.columns] = half_floats.astype("float32")
+    return df
+
+
+def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False, subset_frac=None):
     """
     Load predictions (or representations) saved as hdf5 into pd.DataFrame with id_str and label_cols columns
 
@@ -197,9 +208,11 @@ def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False):
         _type_: _description_
     """
     galaxy_id_df, predictions, label_cols = load_hdf5s(hdf5_locs)
+    logging.info('HDF5s loaded.')
 
     predictions = predictions.squeeze()
-    
+
+
     if len(predictions.shape) > 2:
         if drop_extra_dims:
             predictions = predictions[:, :, 0]
@@ -210,9 +223,18 @@ def single_forward_pass_hdf5s_to_df(hdf5_locs: List, drop_extra_dims=False):
                 I suggest using load_hdf5s directly to work with np.arrays, not with DataFrame - see docstring'
             )
     prediction_df = pd.DataFrame(data=predictions, columns=label_cols)
+
+    if subset_frac is not None:
+        logging.warning('Selecting a random subset: {}'.format(subset_frac))
+        prediction_df = prediction_df.sample(frac=subset_frac, random_state=42)
+    
+
+    del predictions
+    logging.info('Saving')
     # copy over metadata (indices will align)
     prediction_df['id_str'] = galaxy_id_df['id_str']
     prediction_df['hdf5_loc'] = galaxy_id_df['hdf5_loc']
+    prediction_df = convert_halfprecision_cols(prediction_df)
     return prediction_df
 
 

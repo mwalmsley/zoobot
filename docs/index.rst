@@ -5,7 +5,7 @@ Zoobot Documentation
 ====================
 
 Zoobot makes it easy to finetune a state-of-the-art deep learning classifier to solve your galaxy morphology problem.
-For example, you can finetune a classifier to find ring galaxies with `just a few hundred examples <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`_.
+For example, you can finetune a classifier to find ring galaxies with `just a few hundred examples <https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing>`_.
 
 .. figure:: finetuning_rings.png
    :alt: Ring galaxies found using Zoobot
@@ -15,19 +15,32 @@ For example, you can finetune a classifier to find ring galaxies with `just a fe
 
 The easiest way to learn to use Zoobot is simply to use Zoobot. 
 We suggest you start with our worked examples.
-The `Colab notebook <https://colab.research.google.com/drive/17bb_KbA2J6yrIm4p4Ue_lEBHMNC1I9Jd?usp=sharing>`_ is the fastest way to get started.
-See the README for many scripts that you can run and adapt locally.
 
+* This `Colab notebook <https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing>`_ will walk you through using Zoobot to classify galaxy images.
+* There's a similar `notebook <https://colab.research.google.com/drive/1MmsjkEvNPvnLRTlJ9Yxm7sZ2uVsfplhD?usp=sharing>`_ for using Zoobot for regression on galaxy images.
 
-Guides
+For more explanation, read on.
+
+User Guides
 -------------
 
-If you'd like more explanation and context, we've written these guides.
+These introductory guides add context to the demo Colab notebooks.
+
+.. toctree::
+   :maxdepth: 1
+
+   /guides/finetuning
+   /guides/choosing_parameters
+   /guides/loading_data
+   /guides/training_on_vote_counts
+   
+These advanced guides explain how to integrate Zoobot into other ML projects.
 
 .. toctree::
    :maxdepth: 2
 
-   /guides/guides
+   /guides/advanced_finetuning
+   /guides/how_the_code_fits_together
 
 Pretrained Models
 ------------------
@@ -37,30 +50,37 @@ To choose and download a pretrained model, see here.
 .. toctree::
    :maxdepth: 2
 
-   data_notes
+   pretrained_models
+
+
+Science-Ready Data
+------------------
+
+You can find our science outputs (e.g. morphology catalogs, precalculated representations) here.
+
+.. toctree::
+   :maxdepth: 2
+
+   science_data
+
+We are working on releasing the compiled GZ Evo dataset and will update this page when it is available. 
+Estimated public release is Q4 2024. Please reach out if you'd like early access.
 
 
 API reference
 --------------
 
-Look here for information on a specific function, class or
-method.
+We've added docstrings to all the key methods you might use. Feel free to check the code or reach out if you have questions.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
-   autodoc/api
+   autodoc/pytorch
+.. different level to not expand schema too much
+.. toctree::
+   :maxdepth: 3
 
-
-.. You do not need to be a machine learning expert to use Zoobot. 
-.. Zoobot includes :ref:`components <overview_components>` for common tasks like loading images, managing training, and making predictions.
-.. You simply need to assemble these together. 
-
-.. .. toctree::
-..    :maxdepth: 2
-
-..    components/overview
-
+   autodoc/shared
 
 
 .. Indices
@@ -78,6 +98,7 @@ method.
 
 .. To build:
 .. install sphinx https://www.sphinx-doc.org/en/master/usage/installation.html is confusing, you can just use pip install -U sphinx
+.. and pip install furo
 .. run from in docs folder:    make html
 
 .. can also check docs with

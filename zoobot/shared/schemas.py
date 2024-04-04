@@ -130,7 +130,8 @@ def set_dependencies(questions, dependencies):
 
 
 class Schema():
-    def __init__(self, question_answer_pairs:dict, dependencies):
+    
+    def __init__(self, question_answer_pairs:dict, dependencies: dict):
         """
         Relate the df label columns tor question/answer groups and to tfrecod label indices
         Requires that labels be continguous by question - easily satisfied
@@ -140,6 +141,23 @@ class Schema():
         - second entry should be the last answer to that question, similarly
         - answers in between will be included: these are used to slice
         - df columns must be contigious by question (e.g. not smooth_yes, bar_no, smooth_no) for this to work!
+
+        The following schemas are available via the module (e.g. `from zoobot.shared.schemas import decals_dr5_ortho_schema`):
+        - decals_dr5_ortho_schema
+        - decals_dr8_ortho_schema
+        - decals_all_campaigns_ortho_schema
+        - gz2_ortho_schema
+        - gz_candels_ortho_schema
+        - gz_hubble_ortho_schema
+        - cosmic_dawn_ortho_schema
+        - cosmic_dawn_schema
+        - gz_rings_schema
+        - desi_schema
+        - gz_evo_v1_schema (this is the schema currently used for pretraining)
+        - gz_ukidss_schema
+        - gz_jwst_schema
+
+        "ortho" refers to the orthogonal question suffix (-cd, -dr8, etc).
 
         Args:
             question_answer_pairs (dict): e.g. {'smooth-or-featured: ['_smooth, _featured-or-disk, ...], ...}
@@ -278,3 +296,6 @@ desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies
 # so don't log anything during Schema.__init__!
 
 gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)
+
+gz_ukidss_schema = Schema(label_metadata.ukidss_ortho_pairs, label_metadata.ukidss_ortho_dependencies)
+gz_jwst_schema = Schema(label_metadata.jwst_ortho_pairs, label_metadata.jwst_ortho_dependencies)

@@ -38,14 +38,14 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     # crucial to specify the stage, or will error (as missing other catalogs)
     predict_datamodule.setup(stage='predict')  
     # for images in predict_datamodule.predict_dataloader():
-    #     print(images)
-    #     print(images.shape)
+        # print(images)
+        # print(images.shape)
+        # exit()
 
 
     # set up trainer (again)
     trainer = pl.Trainer(
         max_epochs=-1,  # does nothing in this context, suppresses warning
-        inference_mode=True,  # no grads needed
         **trainer_kwargs  # e.g. gpus
     )
 
@@ -85,3 +85,5 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     end = datetime.datetime.fromtimestamp(time.time())
     logging.info('Completed at: {}'.format(end.strftime('%Y-%m-%d %H:%M:%S')))
     logging.info('Time elapsed: {}'.format(end - start))
+
+    return predictions
