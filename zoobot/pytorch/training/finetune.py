@@ -68,6 +68,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.
+        n_layers: No effect, deprecated. Use n_blocks instead.
     """
 
     def __init__(
@@ -104,7 +105,8 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # debugging utils
         prog_bar=True,
         visualize_images=False,  # upload examples to wandb, good for debugging
-        seed=42
+        seed=42,
+        n_layers=None,  # deprecated, no effect
     ):
         super().__init__()
 
@@ -380,7 +382,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
     
     @classmethod
     def load_from_name(cls, name: str, **kwargs):
-        downloaded_loc = download_from_name(cls.__name__, name, **kwargs)
+        downloaded_loc = download_from_name(cls.__name__, name)
         return cls.load_from_checkpoint(downloaded_loc, **kwargs)  # trained on GPU, may need map_location='cpu' if you get a device error
 
 
