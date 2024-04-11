@@ -32,19 +32,29 @@ Zoobot includes weights for the following pretrained models:
      - Test loss
      - Finetune
      - HF |:hugging:|
+   * - ConvNeXT-Pico
+     - 9.1M
+     - 19.33
+     - Yes
+     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-convnext_pico>`__
    * - ConvNeXT-Nano
      - 15.6M
      - 19.23
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-convnext_nano>`__
+   * - ConvNeXT-Tiny
+     - 44.6M
+     - 19.08
+     - Yes
+     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-convnext_tiny>`__
    * - ConvNeXT-Small 
      - 58.5M
-     - 19.14 
+     - 19.06 
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-convnext_small>`__
    * - ConvNeXT-Base 
      - 88.6M
-     - **19.04**
+     - **19.05**
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-convnext_base>`__
    * - ConvNeXT-Large 
@@ -52,6 +62,11 @@ Zoobot includes weights for the following pretrained models:
      - 19.09
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-convnext_large>`__
+   * - MaxViT-Tiny
+     - 29.1M
+     - 19.22
+     - Yes
+     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-maxvit_rmlp_tiny_rw_224>`__
    * - MaxViT-Small
      - 64.9M
      - 19.20
@@ -61,7 +76,7 @@ Zoobot includes weights for the following pretrained models:
      - 124.5
      - 19.09
      - Yes
-     - TODO
+     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-maxvit_base_rw_224>`__
    * - Max-ViT-Large
      - 211.8M
      - 19.18
@@ -71,12 +86,12 @@ Zoobot includes weights for the following pretrained models:
      - 5.33M
      - 19.48
      - Yes
-     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-efficientnet_b0>`__
+     - WIP
    * - EfficientNetV2-S
      - 48.3M
      - 19.33
      - Yes
-     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-tf_efficientnetv2_s>`__
+     - WIP
    * - ResNet18
      - 11.7M
      - 19.83
@@ -87,6 +102,11 @@ Zoobot includes weights for the following pretrained models:
      - 19.43
      - Yes
      - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-resnet50>`__
+   * - ResNet101
+     - 44.5M
+     - 19.37
+     - Yes
+     - `Link <https://huggingface.co/mwalmsley/zoobot-encoder-resnet101>`__
 
 
 .. note:: 
