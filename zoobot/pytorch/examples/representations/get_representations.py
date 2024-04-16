@@ -1,32 +1,45 @@
 import logging
 import os
 
+import timm
+
 from galaxy_datasets import demo_rings
 
 from zoobot.pytorch.training import finetune, representations
 from zoobot.pytorch.estimators import define_model
 from zoobot.pytorch.predictions import predict_on_catalog
+from zoobot.pytorch.training import finetune
 from zoobot.shared import load_predictions, schemas
 
 
-def main(catalog, checkpoint_loc, save_dir):
+def main(catalog, save_dir, name="hf_hub:mwalmsley/zoobot-encoder-convnext_nano"):
 
     assert all([os.path.isfile(x) for x in catalog['file_loc']])
     
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
-    # can load from either ZoobotTree checkpoint (if trained from scratch)
-    encoder = define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc).encoder
-    # or FinetuneableZoobotTree (if finetuned)
-    # currently, FinetuneableZoobotTree checkpoints should be loaded as ZoobotTree with the args below
-    # this is a bit awkward and I'm working on a clearer method - but it does work.
-    # encoder = define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, output_dim=TODO, question_index_groups=[]).encoder
+    # load the encoder
 
-    # convert to simple pytorch lightning model
-    model = representations.ZoobotEncoder(encoder=encoder, pyramid=False)
+    # OPTION 1
+    # Load a pretrained model from HuggingFace, with no finetuning, only as published
+    model = representations.ZoobotEncoder.load_from_name(name)
+    # or equivalently (the above is just a wrapper for these two lines below)
+    # encoder = timm.create_model(model_name=name, pretrained=True)
+    # model = representations.ZoobotEncoder(encoder=encoder)
 
-    label_cols = [f'feat_{n}' for n in range(1280)]
+    """
+    # OPTION 2
+
+    # Load a model that has been finetuned on your own data
+    # (...do your usual finetuning..., or load a finetuned model with finetune.FinetuneableZoobotClassifier(checkpoint_loc=....ckpt)
+    encoder = finetuned_model.encoder
+    # and then convert to simple pytorch lightning model. You can use any pytorch model here.
+    model = representations.ZoobotEncoder(encoder=encoder)
+    """
+
+    encoder_dim = define_model.get_encoder_dim(model.encoder)
+    label_cols = [f'feat_{n}' for n in range(encoder_dim)]
     save_loc = os.path.join(save_dir, 'representations.hdf5')
 
     accelerator = 'cpu'  # or 'gpu' if available
@@ -52,20 +65,17 @@ if __name__ == '__main__':
     
     logging.basicConfig(level=logging.INFO)
 
-    # load the gz evo model for representations
-    checkpoint_loc = '/home/walml/repos/gz-decals-classifiers/results/benchmarks/pytorch/evo/evo_py_gr_11941/checkpoints/epoch=73-step=42698.ckpt'
-
     # use this demo dataset
     # TODO change this to wherever you'd like, it will auto-download
-    data_dir = '/home/walml/repos/galaxy-datasets/roots/demo_rings'
+    data_dir = '/Users/user/repos/galaxy-datasets/roots/demo_rings'
     catalog, _ = demo_rings(root=data_dir, download=True, train=True)
     print(catalog.head())
     # zoobot expects id_str and file_loc columns, so add these if needed
 
     # save the representations here
     # TODO change this to wherever you'd like
-    save_dir = os.path.join('/home/walml/repos/zoobot/results/pytorch/representations/example')
+    save_dir = os.path.join('/Users/user/repos/zoobot/results/pytorch/representations/example')
 
-    representations_loc = main(catalog, checkpoint_loc, save_dir)
+    representations_loc = main(catalog, save_dir)
     rep_df = load_predictions.single_forward_pass_hdf5s_to_df(representations_loc)
     print(rep_df)
