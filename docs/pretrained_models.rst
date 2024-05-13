@@ -113,6 +113,9 @@ Zoobot includes weights for the following pretrained models:
 
     Missing a model you need? Reach out! There's a good chance we can train any model supported by `timm <https://github.com/huggingface/pytorch-image-models>`_.
 
+.. note:: 
+
+    New in Zoobot v2.0.1: greyscale (single channel) versions are available `here <https://huggingface.co/collections/mwalmsley/zoobot-encoders-greyscale-66427c51133285ca01b490c6>`_.
 
 Which model should I use?
 ===========================
