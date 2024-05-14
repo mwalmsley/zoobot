@@ -138,6 +138,7 @@ CUDA 12.1 for PyTorch 2.1.0:
 
 ### Recent release features (v2.0.0)
 
+- **New in 2.0.1** Add greyscale encoders. Use `hf_hub:mwalmsley/zoobot-encoder-greyscale-convnext_nano` or [similar](https://huggingface.co/collections/mwalmsley/zoobot-encoders-greyscale-66427c51133285ca01b490c6).
 - New pretrained architectures: ConvNeXT, EfficientNetV2, MaxViT, and more. Each in several sizes.
 - Reworked finetuning procedure. All these architectures are finetuneable through a common method.
 - Reworked finetuning options. Batch norm finetuning removed. Cosine schedule option added.

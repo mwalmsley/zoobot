@@ -124,7 +124,14 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         
         if name is not None:
             assert encoder is None, 'Cannot pass both name and encoder to use'
-            self.encoder = timm.create_model(name, num_classes=0, pretrained=True)
+            if 'greyscale' in name:
+                # I'm not sure why timm is happy to convert color model stem to greyscale 
+                # but doesn't correctly load greyscale model without this hack
+                logging.info('Loading greyscale model (auto-detected from name)')
+                timm_kwargs = {'in_chans': 1}
+            else:
+                timm_kwargs = {}
+            self.encoder = timm.create_model(name, num_classes=0, pretrained=True, **timm_kwargs)
             self.encoder_dim = self.encoder.num_features
 
         elif zoobot_checkpoint_loc is not None:

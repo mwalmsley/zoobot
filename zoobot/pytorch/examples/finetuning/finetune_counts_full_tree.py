@@ -10,6 +10,7 @@ from galaxy_datasets.shared.demo_gz_candels import demo_gz_candels
 from zoobot.pytorch.training import finetune
 from zoobot.pytorch.predictions import predict_on_catalog
 from zoobot.shared.schemas import gz_candels_ortho_schema
+from zoobot.shared.load_predictions import prediction_hdf5_to_summary_parquet
 
 """
 Example for finetuning Zoobot on counts of volunteer responses throughout a complex decision tree (here, GZ CANDELS).
@@ -67,12 +68,12 @@ if __name__ == '__main__':
         resize_after_crop=resize_after_crop  
     )
 
-    checkpoint_loc = os.path.join(
-        # TODO replace with path to downloaded checkpoints. See Zoobot README for download links.
-        repo_dir, 'gz-decals-classifiers/results/benchmarks/pytorch/evo/uploaded/effnetb0_greyscale_224px.ckpt')  # decals hparams
-
-    model = finetune.FinetuneableZoobotTree(checkpoint_loc=checkpoint_loc, schema=schema)
-
+    model = finetune.FinetuneableZoobotTree(
+        name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano',
+        schema=schema
+    )
+    
+    # TODO set this to wherever you'd like to save your results
     save_dir = os.path.join(
         repo_dir, f'gz-decals-classifiers/results/finetune_{np.random.randint(1e8)}')
 
@@ -86,12 +87,16 @@ if __name__ == '__main__':
     # now save predictions on test set to evaluate performance
     datamodule_kwargs = {'batch_size': batch_size, 'resize_after_crop': resize_after_crop}
     trainer_kwargs = {'devices': 1, 'accelerator': accelerator}
+
+    hdf5_loc = os.path.join(save_dir, 'test_predictions.hdf5')
     predict_on_catalog.predict(
         test_catalog,
         model,
         n_samples=1,
         label_cols=schema.label_cols,
-        save_loc=os.path.join(save_dir, 'test_predictions.csv'),
+        save_loc=hdf5_loc,
         datamodule_kwargs=datamodule_kwargs,
         trainer_kwargs=trainer_kwargs
     )
+
+    prediction_hdf5_to_summary_parquet(hdf5_loc=hdf5_loc, save_loc=hdf5_loc.replace('.hdf5', 'summary.parquet'), schema=schema)
