@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="2.0.0",
+    version="2.0.1",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -117,6 +117,6 @@ setuptools.setup(
         'webdataset',  # for reading webdataset files
         'huggingface_hub',  # login may be required
         'setuptools',  # no longer pinned
-        'galaxy-datasets>=0.0.17'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
+        'galaxy-datasets>=0.0.18'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )
