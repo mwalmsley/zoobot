@@ -176,11 +176,13 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.prog_bar = prog_bar
         self.visualize_images = visualize_images
 
-        # Remove head if it exists
-        if hasattr(self.encoder, "head"):
+        # Remove ViT head if it exists
+        if hasattr(self.encoder, "head") and isinstance(
+            self.encoder, timm.models.VisionTransformer
+        ):
             # If the encoder has a 'head' attribute, replace it with Identity()
             self.encoder.head = torch.nn.Identity()
-            print("Replaced encoder.head with Identity()")
+            logging.info("Replaced encoder.head with Identity()")
 
     def configure_optimizers(self):
         """
