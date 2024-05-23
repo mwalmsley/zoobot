@@ -113,9 +113,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # this raises a warning that encoder is already a Module hence saved in checkpoint hence no need to save as hparam
         # true - except we need it to instantiate this class, so it's really handy to have saved as well
         # therefore ignore the warning
-        self.save_hyperparameters(
-            ignore=["encoder"]
-        )  # never serialise the encoder, way too heavy
+        self.save_hyperparameters(ignore=["encoder"])  # never serialise the encoder, way too heavy
         # if you need the encoder to recreate, pass when loading checkpoint e.g.
         # FinetuneableZoobotTree.load_from_checkpoint(loc, encoder=encoder)
 
@@ -125,9 +123,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             self.encoder_dim = self.encoder.num_features
 
         elif zoobot_checkpoint_loc is not None:
-            assert (
-                encoder is None
-            ), "Cannot pass both checkpoint to load and encoder to use"
+            assert encoder is None, "Cannot pass both checkpoint to load and encoder to use"
             self.encoder = load_pretrained_zoobot(
                 zoobot_checkpoint_loc
             )  # extracts the timm encoder
@@ -137,9 +133,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             assert (
                 zoobot_checkpoint_loc is None
             ), "Cannot pass both checkpoint to load and encoder to use"
-            assert (
-                encoder is not None
-            ), "Must pass either checkpoint to load or encoder to use"
+            assert encoder is not None, "Must pass either checkpoint to load or encoder to use"
             self.encoder = encoder
             # work out encoder dim 'manually'
             if isinstance(self.encoder, timm.models.VisionTransformer):
@@ -231,20 +225,12 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
                 self.encoder.layer4,
             ]
         elif isinstance(self.encoder, timm.models.MaxxVit):
-            tuneable_blocks = [self.encoder.stem] + [
-                stage for stage in self.encoder.stages
-            ]
-        elif isinstance(
-            self.encoder, timm.models.ConvNeXt
-        ):  # stem + 4 blocks, for all sizes
+            tuneable_blocks = [self.encoder.stem] + [stage for stage in self.encoder.stages]
+        elif isinstance(self.encoder, timm.models.ConvNeXt):  # stem + 4 blocks, for all sizes
             # https://github.com/huggingface/pytorch-image-models/blob/main/timm/models/convnext.py#L264
-            tuneable_blocks = [self.encoder.stem] + [
-                stage for stage in self.encoder.stages
-            ]
+            tuneable_blocks = [self.encoder.stem] + [stage for stage in self.encoder.stages]
         elif isinstance(self.encoder, timm.models.VisionTransformer):
-            tuneable_blocks = [self.encoder.patch_embed] + [
-                block for block in self.encoder.blocks
-            ]
+            tuneable_blocks = [self.encoder.patch_embed] + [block for block in self.encoder.blocks]
         else:
             raise ValueError(
                 f"Encoder architecture not automatically recognised: {type(self.encoder)}"
@@ -389,9 +375,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_epoch=True,
         )
 
-    def on_validation_batch_end(
-        self, outputs: dict, batch, batch_idx: int, dataloader_idx=0
-    ):
+    def on_validation_batch_end(self, outputs: dict, batch, batch_idx: int, dataloader_idx=0):
         self.val_loss_metric(outputs["loss"])
         self.log(
             "finetuning/val_loss",
@@ -473,9 +457,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
         else:
             logging.info("Using multi-class classification")
             task = "multiclass"
-        self.train_acc = tm.Accuracy(
-            task=task, average="micro", num_classes=num_classes
-        )
+        self.train_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
         self.val_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
         self.test_acc = tm.Accuracy(task=task, average="micro", num_classes=num_classes)
 
@@ -572,9 +554,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
                 f"Ground Truth: {y_i} \nPrediction: {y_p_i}"
                 for y_i, y_p_i in zip(y[:n_images], y_pred_softmax[:n_images])
             ]
-            self.logger.log_image(  # type: ignore
-                key="val_images", images=images, caption=captions
-            )
+            self.logger.log_image(key="val_images", images=images, caption=captions)  # type: ignore
 
 
 class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
@@ -595,17 +575,13 @@ class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
 
     """
 
-    def __init__(
-        self, loss: str = "mse", unit_interval: bool = False, **super_kwargs
-    ) -> None:
+    def __init__(self, loss: str = "mse", unit_interval: bool = False, **super_kwargs) -> None:
 
         super().__init__(**super_kwargs)
 
         self.unit_interval = unit_interval
         if self.unit_interval:
-            logging.info(
-                "unit_interval=True, using sigmoid activation for finetunng head"
-            )
+            logging.info("unit_interval=True, using sigmoid activation for finetunng head")
             head_activation = torch.nn.functional.sigmoid
         else:
             head_activation = None
@@ -713,9 +689,7 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
             dropout_rate=self.dropout_prob,
         )
 
-        self.loss = define_model.get_dirichlet_loss_func(
-            self.schema.question_index_groups
-        )
+        self.loss = define_model.get_dirichlet_loss_func(self.schema.question_index_groups)
 
     def upload_images_to_wandb(self, outputs, batch, batch_idx):
         raise NotImplementedError
@@ -724,9 +698,7 @@ class FinetuneableZoobotTree(FinetuneableZoobotAbstract):
 
 
 class LinearHead(torch.nn.Module):
-    def __init__(
-        self, input_dim: int, output_dim: int, dropout_prob=0.5, activation=None
-    ):
+    def __init__(self, input_dim: int, output_dim: int, dropout_prob=0.5, activation=None):
         """
         Small utility class for a linear head with dropout and optional choice of activation.
 
@@ -837,9 +809,9 @@ def dirichlet_loss(y_pred: torch.Tensor, y: torch.Tensor, question_index_groups)
         torch.Tensor: Dirichlet-Multinomial loss. Scalar, summing across answers and taking a mean across the batch i.e. sum(axis=1).mean())
     """
     # my func uses sklearn convention y, y_pred
-    return losses.calculate_multiquestion_loss(
-        y, y_pred, question_index_groups
-    ).mean() * len(question_index_groups)
+    return losses.calculate_multiquestion_loss(y, y_pred, question_index_groups).mean() * len(
+        question_index_groups
+    )
 
 
 def load_pretrained_zoobot(checkpoint_loc: str) -> torch.nn.Module:
