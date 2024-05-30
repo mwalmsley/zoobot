@@ -68,7 +68,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.
-        n_layers: No effect, deprecated. Use n_blocks instead.
     """
 
     def __init__(
@@ -90,7 +89,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         learning_rate=1e-4,  # 10x lower than typical, you may like to experiment
         dropout_prob=0.5,
         always_train_batchnorm=False,  # temporarily deprecated
-        # n_layers=0,  # for backward compat., n_blocks preferred. Now removed in v2.
         # these args are for the optional learning rate scheduler, best not to use unless you've tuned everything else already
         cosine_schedule=False,
         warmup_epochs=0,
@@ -101,6 +99,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # debugging utils
         prog_bar=True,
         visualize_images=False,  # upload examples to wandb, good for debugging
+        n_layers=0, # deprecated (no effect) but can't remove yet as is an arg in some saved checkpoints
         seed=42,
     ):
         super().__init__()

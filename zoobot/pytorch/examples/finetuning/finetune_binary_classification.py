@@ -44,7 +44,7 @@ if __name__ == '__main__':
     model = finetune.FinetuneableZoobotClassifier(
       name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano',
       num_classes=2,
-      n_layers=0  # only updating the head weights. Set e.g. 1, 2 to finetune deeper. 
+      n_blocks=0  # only updating the head weights. Set e.g. 1, 2 to finetune deeper. 
     )
     # under the hood, this does:
     # encoder = finetune.load_pretrained_encoder(checkpoint_loc)
