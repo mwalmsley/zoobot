@@ -304,26 +304,11 @@ def train_default_zoobot_from_scratch(
         lightning_model = TorchSyncBatchNorm().apply(lightning_model)
     
     
-    extra_callbacks = extra_callbacks if extra_callbacks else []
-
-    monitor_metric = 'validation/supervised_loss'
 
     # used later for checkpoint_callback.best_model_path
-    checkpoint_callback = ModelCheckpoint(
-            dirpath=os.path.join(save_dir, 'checkpoints'),
-            monitor=monitor_metric,
-            save_weights_only=True,
-            mode='min',
-            # custom filename for checkpointing due to / in metric
-            filename=checkpoint_file_template,
-            # https://pytorch-lightning.readthedocs.io/en/stable/api/pytorch_lightning.callbacks.ModelCheckpoint.html#pytorch_lightning.callbacks.ModelCheckpoint.params.auto_insert_metric_name
-            # avoids extra folders from the checkpoint name
-            auto_insert_metric_name=auto_insert_metric_name,
-            save_top_k=save_top_k
-    )
-
-    early_stopping_callback = EarlyStopping(monitor=monitor_metric, patience=patience, check_finite=True)
-    callbacks = [checkpoint_callback, early_stopping_callback] + extra_callbacks
+    checkpoint_callback, callbacks = get_default_callbacks(save_dir, patience, checkpoint_file_template, auto_insert_metric_name, save_top_k)
+    if extra_callbacks:
+        callbacks += extra_callbacks 
 
     trainer = pl.Trainer(
         num_sanity_val_steps=0,
@@ -367,6 +352,27 @@ def train_default_zoobot_from_scratch(
     define_model.ZoobotTree.load_from_checkpoint(best_model_path)  # or .best_model_path, eventually
 
     return lightning_model, trainer
+
+def get_default_callbacks(save_dir, patience=8, checkpoint_file_template=None, auto_insert_metric_name=True, save_top_k=3):
+    
+    monitor_metric = 'validation/supervised_loss'
+    
+    checkpoint_callback = ModelCheckpoint(
+            dirpath=os.path.join(save_dir, 'checkpoints'),
+            monitor=monitor_metric,
+            save_weights_only=True,
+            mode='min',
+            # custom filename for checkpointing due to / in metric
+            filename=checkpoint_file_template,
+            # https://pytorch-lightning.readthedocs.io/en/stable/api/pytorch_lightning.callbacks.ModelCheckpoint.html#pytorch_lightning.callbacks.ModelCheckpoint.params.auto_insert_metric_name
+            # avoids extra folders from the checkpoint name
+            auto_insert_metric_name=auto_insert_metric_name,
+            save_top_k=save_top_k
+    )
+
+    early_stopping_callback = EarlyStopping(monitor=monitor_metric, patience=patience, check_finite=True)
+    callbacks = [checkpoint_callback, early_stopping_callback]
+    return checkpoint_callback,callbacks
 
 
 
