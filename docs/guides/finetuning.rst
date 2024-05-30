@@ -60,7 +60,7 @@ These files are called checkpoints (like video game save files - computer scient
     model = finetune.FinetuneableZoobotClassifier(
       name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano',  # which pretrained model to download
       num_classes=2,
-      n_layers=0
+      n_blocks=0
     )
 
 You can see the list of pretrained models at :doc:`/pretrained_models`.
@@ -68,8 +68,8 @@ You can see the list of pretrained models at :doc:`/pretrained_models`.
 What about the other arguments?
 When loading the checkpoint, FinetuneableZoobotClassifier will automatically change the head layer to suit a classification problem (hence, ``Classifier``).
 ``num_classes=2`` specifies how many classes we have, Here, two classes (a.k.a. binary classification).
-``n_layers=0`` specifies how many layers (other than the output layer) we want to finetune.
-0 indicates no other layers, so we will only be changing the weights of the output layer.
+``n_blocks=0`` specifies how many inner blocks (groups of layers, excluding the output layer) we want to finetune.
+0 indicates no other blocks, so we will only be changing the weights of the output layer.
 
 
 Prepare Galaxy Data
