@@ -77,7 +77,7 @@ setuptools.setup(
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
             'timm >= 0.9.10',
-            'galaxy_datasets == 0.0.19'
+            'galaxy_datasets>=0.0.19'
         ],
         # TODO may add narval/Digital Research Canada config
         'tensorflow': [ # WARNING now deprecated
@@ -117,6 +117,6 @@ setuptools.setup(
         'webdataset',  # for reading webdataset files
         'huggingface_hub',  # login may be required
         'setuptools',  # no longer pinned
-        'galaxy-datasets>=0.0.18'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
+        'galaxy-datasets>=0.0.19'  # for dataset loading in both TF and Torch (see github/mwalmsley/galaxy-datasets)
     ]
 )
