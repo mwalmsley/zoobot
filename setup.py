@@ -76,8 +76,7 @@ setuptools.setup(
             'albumentations',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
-            'timm >= 0.9.10',
-            'galaxy_datasets>=0.0.19'
+            'timm >= 0.9.10'
         ],
         # TODO may add narval/Digital Research Canada config
         'tensorflow': [ # WARNING now deprecated
