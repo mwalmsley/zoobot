@@ -19,11 +19,11 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'Zoobot'
-copyright = '2023, Mike Walmsley'
+copyright = '2024, Mike Walmsley'
 author = 'Mike Walmsley'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.4'
+release = '2.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,7 +33,8 @@ release = '0.0.4'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',  # import docs from code
-    'sphinx.ext.napoleon'  # google docstrings
+    'sphinx.ext.napoleon',  # google docstrings
+    'sphinxemoji.sphinxemoji',  # emoji support https://sphinxemojicodes.readthedocs.io/en/stable/
 ]
 
 # Add any paths that contain templates here, relative to this directory.

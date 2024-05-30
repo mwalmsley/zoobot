@@ -299,3 +299,6 @@ gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_
 
 gz_ukidss_schema = Schema(label_metadata.ukidss_ortho_pairs, label_metadata.ukidss_ortho_dependencies)
 gz_jwst_schema = Schema(label_metadata.jwst_ortho_pairs, label_metadata.jwst_ortho_dependencies)
+
+euclid_ortho_schema = Schema(label_metadata.euclid_ortho_pairs , label_metadata.euclid_ortho_dependencies)
+euclid_schema = Schema(label_metadata.euclid_pairs , label_metadata.euclid_dependencies)

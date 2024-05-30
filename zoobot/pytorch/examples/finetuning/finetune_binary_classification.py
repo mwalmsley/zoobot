@@ -26,11 +26,6 @@ if __name__ == '__main__':
     # For binary classification, the label column should have binary (0 or 1) labels for your classes
     # To support more complicated labels, Zoobot expects a list of columns. A list with one element works fine.
    
-    # load a pretrained checkpoint saved here
-    # https://www.dropbox.com/s/7ixwo59imjfz4ay/effnetb0_greyscale_224px.ckpt?dl=0
-    # see https://zoobot.readthedocs.io/en/latest/data_notes.html for more options
-    checkpoint_loc = os.path.join(zoobot_dir, 'data/pretrained_models/pytorch/effnetb0_greyscale_224px.ckpt')
-
     # save the finetuning results here
     save_dir = os.path.join(zoobot_dir, 'results/pytorch/finetune/finetune_binary_classification')
 
@@ -47,7 +42,7 @@ if __name__ == '__main__':
 
   
     model = finetune.FinetuneableZoobotClassifier(
-      checkpoint_loc=checkpoint_loc,
+      name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano',
       num_classes=2,
       n_layers=0  # only updating the head weights. Set e.g. 1, 2 to finetune deeper. 
     )

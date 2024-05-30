@@ -30,11 +30,9 @@ Examples
 
 Zoobot includes many working examples of finetuning: 
 
-- `Google Colab notebook <https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing>`__ (for binary classification in the cloud)
+- `Google Colab notebook <https://colab.research.google.com/drive/1A_-M3Sz5maQmyfW2A7rEu-g_Zi0RMGz5?usp=sharing>`__ (recommended starting point)
 - `finetune_binary_classification.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_binary_classification.py>`__ (script version of the Colab notebook)
 - `finetune_counts_full_tree.py <https://github.com/mwalmsley/zoobot/blob/main/zoobot/pytorch/examples/finetuning/finetune_counts_full_tree.py>`__ (for finetuning on a complicated GZ-style decision tree)
-
-There are also  `examples <https://github.com/mwalmsley/zoobot/blob/main/zoobot/tensorflow/examples>`__  with the TensorFlow version of Zoobot. But this is no longer actively developed so we strongly suggest using the PyTorch version if possible.
 
 Below, for less familiar readers, we walk through the ``finetune_binary_classification.py`` example in detail.
 
@@ -60,12 +58,12 @@ These files are called checkpoints (like video game save files - computer scient
 .. code-block:: python
 
     model = finetune.FinetuneableZoobotClassifier(
-      checkpoint_loc=checkpoint_loc,  # loads weights from here
+      name='hf_hub:mwalmsley/zoobot-encoder-convnext_nano',  # which pretrained model to download
       num_classes=2,
       n_layers=0
     )
 
-You can download a checkpoint file from :ref:`datanotes`.
+You can see the list of pretrained models at :doc:`/pretrained_models`.
 
 What about the other arguments?
 When loading the checkpoint, FinetuneableZoobotClassifier will automatically change the head layer to suit a classification problem (hence, ``Classifier``).

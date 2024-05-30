@@ -62,13 +62,14 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         dropout_prob (float, optional): P of dropout before final output layer. Defaults to 0.5.
         always_train_batchnorm (bool, optional): Temporarily deprecated. Previously, if True, do not update batchnorm stats during finetuning. Defaults to True.
         cosine_schedule (bool, optional): Reduce the learning rate each epoch according to a cosine schedule, after warmup_epochs. Defaults to False.
-        warmup_epochs (int, optional): Linearly increase the learning rate from 0 to `learning_rate` over the first `warmup_epochs` epochs, before applying cosine schedule. No effect if cosine_schedule=False.
-        max_cosine_epochs (int, optional): Epochs for the scheduled learning rate to decay to final learning rate (below). Warmup epochs don't count. No effect if `cosine_schedule=False`.
-        max_learning_rate_reduction_factor (float, optional): Set final learning rate as `learning_rate` * `max_learning_rate_reduction_factor`. No effect if `cosine_schedule=False`.
-        from_scratch (bool, optional): Ignore all settings above and train from scratch at `learning_rate` for all layers. Useful for a quick baseline. Defaults to False.
+        warmup_epochs (int, optional): Linearly increase the learning rate from 0 to ``learning_rate`` over the first ``warmup_epochs`` epochs, before applying cosine schedule. No effect if cosine_schedule=False.
+        max_cosine_epochs (int, optional): Epochs for the scheduled learning rate to decay to final learning rate (below). Warmup epochs don't count. No effect if ``cosine_schedule=False``.
+        max_learning_rate_reduction_factor (float, optional): Set final learning rate as ``learning_rate`` * ``max_learning_rate_reduction_factor``. No effect if ``cosine_schedule=False``.
+        from_scratch (bool, optional): Ignore all settings above and train from scratch at ``learning_rate`` for all layers. Useful for a quick baseline. Defaults to False.
         prog_bar (bool, optional): Print progress bar during finetuning. Defaults to True.
         visualize_images (bool, optional): Upload example images to WandB. Good for debugging but slow. Defaults to False.
         seed (int, optional): random seed to use. Defaults to 42.
+        n_layers: No effect, deprecated. Use n_blocks instead.
     """
 
     def __init__(
@@ -118,8 +119,15 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # FinetuneableZoobotTree.load_from_checkpoint(loc, encoder=encoder)
 
         if name is not None:
-            assert encoder is None, "Cannot pass both name and encoder to use"
-            self.encoder = timm.create_model(name, num_classes=0, pretrained=True)
+            assert encoder is None, 'Cannot pass both name and encoder to use'
+            if 'greyscale' in name:
+                # I'm not sure why timm is happy to convert color model stem to greyscale 
+                # but doesn't correctly load greyscale model without this hack
+                logging.info('Loading greyscale model (auto-detected from name)')
+                timm_kwargs = {'in_chans': 1}
+            else:
+                timm_kwargs = {}
+            self.encoder = timm.create_model(name, num_classes=0, pretrained=True, **timm_kwargs)
             self.encoder_dim = self.encoder.num_features
 
         elif zoobot_checkpoint_loc is not None:
@@ -408,7 +416,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     @classmethod
     def load_from_name(cls, name: str, **kwargs):
-        downloaded_loc = download_from_name(cls.__name__, name, **kwargs)
+        downloaded_loc = download_from_name(cls.__name__, name)
         return cls.load_from_checkpoint(
             downloaded_loc, **kwargs
         )  # trained on GPU, may need map_location='cpu' if you get a device error

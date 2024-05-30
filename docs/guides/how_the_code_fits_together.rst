@@ -10,6 +10,7 @@ The Map
 -------------------------
 
 The Zoobot package has two roles:
+
 1. **Finetuning**: ``pytorch/training/finetune.py`` is the heart of the package. You will use these classes to load pretrained models and finetune them on new data.
 2. **Training from Scratch** ``pytorch/estimators/define_model.py`` and ``pytorch/training/train_with_pytorch_lightning.py`` create and train the Zoobot models from scratch. These are *not required* for finetuning and will eventually be migrated out.
 
@@ -20,6 +21,7 @@ Finetuning with Zoobot Classes
 
 
 There are three Zoobot classes for finetuning:
+
 1. :class:`FinetuneableZoobotClassifier <zoobot.pytorch.training.finetune.FinetuneableZoobotClassifier>` for classification tasks (including multi-class). 
 2. :class:`FinetuneableZoobotRegressor <zoobot.pytorch.training.finetune.FinetuneableZoobotRegressor>` for regression tasks (including on a unit interval e.g. a fraction).
 3. :class:`FinetuneableZoobotTree <zoobot.pytorch.training.finetune.FinetuneableZoobotTree>` for training on a tree of labels (e.g. Galaxy Zoo vote counts). 
