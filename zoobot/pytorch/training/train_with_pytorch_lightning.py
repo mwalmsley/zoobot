@@ -11,9 +11,9 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.loggers import CSVLogger
 
 from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
+from galaxy_datasets.pytorch.webdatamodule import WebDataModule
 
 from zoobot.pytorch.estimators import define_model
-from zoobot.pytorch.datasets import webdatamodule
 
 
 
@@ -250,7 +250,7 @@ def train_default_zoobot_from_scratch(
         # train_transform_cfg.output_size = resize_after_crop
         # inference_transform_cfg.output_size = resize_after_crop
 
-        datamodule = webdatamodule.WebDataModule(
+        datamodule = WebDataModule(
             train_urls=train_urls,
             val_urls=val_urls,
             test_urls=test_urls,

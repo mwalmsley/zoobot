@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="zoobot",
-    version="2.0.1",
+    version="2.0.3",
     author="Mike Walmsley",
     author_email="walmsleymk1@gmail.com",
     description="Galaxy morphology classifiers",
@@ -84,7 +84,7 @@ setuptools.setup(
             'tensorflow == 2.10.0',  # 2.11.0 turns on XLA somewhere which then fails on multi-GPU...TODO
             'keras_applications',
             'tensorflow_probability == 0.18.0',  # 0.19 requires tf 2.11
-            'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
+        'protobuf <= 3.19'  # tensorflow incompatible above this (usually resolved by pip automatically)
         ],
         # for GPU, you will also need cudatoolkit=11.2 and cudnn=8.1.0 (note - 11.3 NOT supported by TF)
         # https://www.tensorflow.org/install/pip#step-by-step_instructions
