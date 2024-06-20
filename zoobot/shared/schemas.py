@@ -2,13 +2,12 @@ import logging
 from typing import List
 
 import numpy as np
-
 from galaxy_datasets.shared import label_metadata
 
 
-class Question():
+class Question:
 
-    def __init__(self, question_text:str, answer_text: List, label_cols:List):
+    def __init__(self, question_text: str, answer_text: List, label_cols: List):
         """
         Class representing decision tree question.
         Requires ``label_cols`` as an input in order to find the index (vs. all questions and answers) of this question and each answer.
@@ -19,7 +18,9 @@ class Question():
             label_cols (List): list of all questions and answers e.g. ['smooth-or-featured_smooth', 'smooth-or-featured_featured-or-disk', ...]
         """
         self.text = question_text
-        self.answers = create_answers(self, answer_text, label_cols)  # passing a reference to self, will stay up-to-date
+        self.answers = create_answers(
+            self, answer_text, label_cols
+        )  # passing a reference to self, will stay up-to-date
 
         self.start_index = min(a.index for a in self.answers)
         self.end_index = max(a.index for a in self.answers)
@@ -32,10 +33,10 @@ class Question():
         return self._asked_after
 
     def __repr__(self):
-        return f'{self.text}, indices {self.start_index} to {self.end_index}, asked after {self.asked_after}'
+        return f"{self.text}, indices {self.start_index} to {self.end_index}, asked after {self.asked_after}"
 
 
-class Answer():
+class Answer:
 
     def __init__(self, text, question, index):
         """
@@ -58,14 +59,14 @@ class Answer():
     @property
     def next_question(self):
         """
-        
+
         Returns:
             Question: question that follows after this answer. None initially, added by ``set_dependancies``.
         """
         return self._next_question
 
     def __repr__(self):
-        return f'{self.text}, index {self.index}'
+        return f"{self.text}, index {self.index}"
 
     @property
     def pretty_text(self):
@@ -73,10 +74,10 @@ class Answer():
         Returns:
             str: Nicely formatted text for plots etc
         """
-        return self.text.replace('-',' ').replace('_', ' ').title()
+        return self.text.replace("-", " ").replace("_", " ").title()
 
 
-def create_answers(question:Question, answers_texts:List, label_cols:List) -> List[Answer]:
+def create_answers(question: Question, answers_texts: List, label_cols: List) -> List[Answer]:
     """
     Instantiate the Answer classes for a given ``Question``.
     Each answer includes the answer text (often used as a column header),
@@ -97,12 +98,14 @@ def create_answers(question:Question, answers_texts:List, label_cols:List) -> Li
             Answer(
                 text=question_text + answer_text,  # e.g. smooth-or-featured_smooth
                 question=question,
-                index=label_cols.index(question_text + answer_text)  # will hopefully throw value error if not found?
+                index=label_cols.index(
+                    question_text + answer_text
+                ),  # will hopefully throw value error if not found?
                 # _next_question not set, set later with dependancies
             )
         )
     return answers
-    
+
 
 def set_dependencies(questions, dependencies):
     """
@@ -122,16 +125,18 @@ def set_dependencies(questions, dependencies):
         if prev_answer_text is not None:
             try:
                 # look through every answer, find those with the same text as "prev answer text" - will be exactly one match
-                prev_answer = [a for q in questions for a in q.answers if a.text == prev_answer_text][0] 
+                prev_answer = [
+                    a for q in questions for a in q.answers if a.text == prev_answer_text
+                ][0]
             except IndexError:
-                raise ValueError(f'{prev_answer_text} not found in dependencies')
+                raise ValueError(f"{prev_answer_text} not found in dependencies")
             prev_answer._next_question = question
             question._asked_after = prev_answer
 
 
-class Schema():
-    
-    def __init__(self, question_answer_pairs:dict, dependencies: dict):
+class Schema:
+
+    def __init__(self, question_answer_pairs: dict, dependencies: dict):
         """
         Relate the df label columns tor question/answer groups and to tfrecod label indices
         Requires that labels be continguous by question - easily satisfied
@@ -167,13 +172,15 @@ class Schema():
         _, self.label_cols = label_metadata.extract_questions_and_label_cols(question_answer_pairs)
         self.dependencies = dependencies
 
-        self.questions = [Question(question_text, answers_text, self.label_cols) for question_text, answers_text in question_answer_pairs.items()]
+        self.questions = [
+            Question(question_text, answers_text, self.label_cols)
+            for question_text, answers_text in question_answer_pairs.items()
+        ]
         if len(self.questions) > 1:
             set_dependencies(self.questions, self.dependencies)
 
         assert len(self.question_index_groups) > 0
         assert len(self.questions) == len(self.question_index_groups)
-
 
     def get_answer(self, answer_text):
         """
@@ -188,10 +195,11 @@ class Schema():
             Answer: the answer with matching answer_text e.g. Answer('smooth-or-featured_smooth')
         """
         try:
-            return [a for q in self.questions for a in q.answers if a.text == answer_text][0]  # will be exactly one match
+            return [a for q in self.questions for a in q.answers if a.text == answer_text][
+                0
+            ]  # will be exactly one match
         except IndexError:
-            raise ValueError('Answer not found: ', answer_text)
-
+            raise ValueError("Answer not found: ", answer_text)
 
     def get_question(self, question_text):
         """
@@ -206,10 +214,11 @@ class Schema():
             Question: the question with matching question_text e.g. Question('smooth-or-featured')
         """
         try:
-            return [q for q in self.questions if q.text == question_text][0]  # will be exactly one match
-        except  IndexError:
-            raise ValueError('Question not found: ', question_text)
-    
+            return [q for q in self.questions if q.text == question_text][
+                0
+            ]  # will be exactly one match
+        except IndexError:
+            raise ValueError("Question not found: ", question_text)
 
     @property
     def question_index_groups(self):
@@ -219,19 +228,17 @@ class Schema():
             Paired (tuple) integers of (first, last) indices of answers to each question, listed for all questions.
             Useful for slicing model predictions by question.
         """
-         # start and end indices of answers to each question in label_cols e.g. [[0, 1]. [1, 3]] 
+        # start and end indices of answers to each question in label_cols e.g. [[0, 1]. [1, 3]]
         return [(q.start_index, q.end_index) for q in self.questions]
-
 
     @property
     def named_index_groups(self):
         """
-        
+
         Returns:
             dict: mapping each question to the start and end index of its answers in label_cols, e.g. {Question('smooth-or-featured'): [0, 2], ...}
         """
         return dict(zip(self.questions, self.question_index_groups))
-
 
     def joint_p(self, prob_of_answers, answer_text):
         """
@@ -253,7 +260,9 @@ class Schema():
         answer = self.get_answer(answer_text)
         p_answer_given_question = prob_of_answers[:, answer.index]
         if all(np.isnan(p_answer_given_question)):
-            logging.warning(f'All p_answer_given_question for {answer_text} ({answer.index}) are nan i.e. all fractions are nan - check that labels for this question are appropriate')
+            logging.warning(
+                f"All p_answer_given_question for {answer_text} ({answer.index}) are nan i.e. all fractions are nan - check that labels for this question are appropriate"
+            )
 
         question = answer.question
         prev_answer = question.asked_after
@@ -262,7 +271,6 @@ class Schema():
         else:
             p_prev_answer = self.joint_p(prob_of_answers, prev_answer.text)  # recursive
             return p_answer_given_question * p_prev_answer
-
 
     @property
     def answers(self):
@@ -279,27 +287,47 @@ class Schema():
 
 
 # and define each schema here, for convenience
-decals_dr5_ortho_schema = Schema(label_metadata.decals_dr5_ortho_pairs , label_metadata.decals_ortho_dependencies)
-decals_dr8_ortho_schema = Schema(label_metadata.decals_dr8_ortho_pairs , label_metadata.decals_ortho_dependencies)
-decals_all_campaigns_ortho_schema = Schema(label_metadata.decals_all_campaigns_ortho_pairs , label_metadata.decals_ortho_dependencies)
-gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs , label_metadata.gz2_ortho_dependencies)
-gz_candels_ortho_schema = Schema(label_metadata.candels_ortho_pairs, label_metadata.candels_ortho_dependencies)
-gz_hubble_ortho_schema = Schema(label_metadata.hubble_ortho_pairs, label_metadata.hubble_ortho_dependencies)
-cosmic_dawn_ortho_schema = Schema(label_metadata.cosmic_dawn_ortho_pairs , label_metadata.cosmic_dawn_ortho_dependencies)
+decals_dr5_ortho_schema = Schema(
+    label_metadata.decals_dr5_ortho_pairs, label_metadata.decals_ortho_dependencies
+)
+decals_dr8_ortho_schema = Schema(
+    label_metadata.decals_dr8_ortho_pairs, label_metadata.decals_ortho_dependencies
+)
+decals_all_campaigns_ortho_schema = Schema(
+    label_metadata.decals_all_campaigns_ortho_pairs, label_metadata.decals_ortho_dependencies
+)
+gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs, label_metadata.gz2_ortho_dependencies)
+gz_candels_ortho_schema = Schema(
+    label_metadata.candels_ortho_pairs, label_metadata.candels_ortho_dependencies
+)
+gz_hubble_ortho_schema = Schema(
+    label_metadata.hubble_ortho_pairs, label_metadata.hubble_ortho_dependencies
+)
+cosmic_dawn_ortho_schema = Schema(
+    label_metadata.cosmic_dawn_ortho_pairs, label_metadata.cosmic_dawn_ortho_dependencies
+)
 
 # schemas without orthogonal question suffix (-cd, -dr8, etc)
-cosmic_dawn_schema = Schema(label_metadata.cosmic_dawn_pairs , label_metadata.cosmic_dawn_dependencies)
+cosmic_dawn_schema = Schema(
+    label_metadata.cosmic_dawn_pairs, label_metadata.cosmic_dawn_dependencies
+)
 gz_rings_schema = Schema(label_metadata.rings_pairs, label_metadata.rings_dependencies)
-desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies)  # for DESI data release prediction users, not for ML training - no -dr5, -dr8, etc
-# note that as this is a call to Schema (and Question and Answer), any logging within those will 
+desi_schema = Schema(
+    label_metadata.desi_pairs, label_metadata.desi_dependencies
+)  # for DESI data release prediction users, not for ML training - no -dr5, -dr8, etc
+# note that as this is a call to Schema (and Question and Answer), any logging within those will
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
 
 gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)
-gz_evo_v1_public_schema = Schema(label_metadata.gz_evo_v1_public_pairs, label_metadata.gz_evo_v1_public_dependencies)
+# gz_evo_v1_public_schema = Schema(label_metadata.gz_evo_v1_public_pairs, label_metadata.gz_evo_v1_public_dependencies)
 
-gz_ukidss_schema = Schema(label_metadata.ukidss_ortho_pairs, label_metadata.ukidss_ortho_dependencies)
+gz_ukidss_schema = Schema(
+    label_metadata.ukidss_ortho_pairs, label_metadata.ukidss_ortho_dependencies
+)
 gz_jwst_schema = Schema(label_metadata.jwst_ortho_pairs, label_metadata.jwst_ortho_dependencies)
 
-euclid_ortho_schema = Schema(label_metadata.euclid_ortho_pairs , label_metadata.euclid_ortho_dependencies)
-euclid_schema = Schema(label_metadata.euclid_pairs , label_metadata.euclid_dependencies)
+# euclid_ortho_schema = Schema(
+#     label_metadata.euclid_ortho_pairs, label_metadata.euclid_ortho_dependencies
+# )
+# euclid_schema = Schema(label_metadata.euclid_pairs, label_metadata.euclid_dependencies)

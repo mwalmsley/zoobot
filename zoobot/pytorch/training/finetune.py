@@ -394,9 +394,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             on_step=False,
             on_epoch=True,
         )
-        # unique to val batch end
-        if self.visualize_images:
-            self.upload_images_to_wandb(outputs, batch, batch_idx)
 
     def on_test_batch_end(self, outputs: dict, batch, batch_idx: int, dataloader_idx=0):
         self.test_loss_metric(outputs["loss"])
@@ -511,6 +508,9 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             on_epoch=True,
             prog_bar=self.prog_bar,
         )
+        # unique to val batch end
+        if self.visualize_images:
+            self.upload_images_to_wandb(step_output, *args)
 
     def on_test_batch_end(self, step_output, *args) -> None:
         super().on_test_batch_end(step_output, *args)
@@ -894,6 +894,7 @@ def get_trainer(
 
     checkpoint_callback = ModelCheckpoint(
         monitor="finetuning/val_loss",
+        mode="min",
         every_n_epochs=1,
         save_on_train_epoch_end=True,
         auto_insert_metric_name=False,
