@@ -72,6 +72,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
 
     def __init__(
         self,
+        backbone_name="",
         # load a pretrained timm encoder saved on huggingface hub
         # (aimed at most users, easiest way to load published models)
         name=None,
@@ -99,7 +100,7 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         # debugging utils
         prog_bar=True,
         visualize_images=False,  # upload examples to wandb, good for debugging
-        n_layers=0, # deprecated (no effect) but can't remove yet as is an arg in some saved checkpoints
+        n_layers=0,  # deprecated (no effect) but can't remove yet as is an arg in some saved checkpoints
         seed=42,
     ):
         super().__init__()
@@ -115,14 +116,15 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         self.save_hyperparameters(ignore=["encoder"])  # never serialise the encoder, way too heavy
         # if you need the encoder to recreate, pass when loading checkpoint e.g.
         # FinetuneableZoobotTree.load_from_checkpoint(loc, encoder=encoder)
+        self.backbone_name = backbone_name
 
         if name is not None:  # will load from Hub
-            assert encoder is None, 'Cannot pass both name and encoder to use'
-            if 'greyscale' in name:
-                # I'm not sure why timm is happy to convert color model stem to greyscale 
+            assert encoder is None, "Cannot pass both name and encoder to use"
+            if "greyscale" in name:
+                # I'm not sure why timm is happy to convert color model stem to greyscale
                 # but doesn't correctly load greyscale model without this hack
-                logging.info('Loading greyscale model (auto-detected from name)')
-                timm_kwargs = {'in_chans': 1}
+                logging.info("Loading greyscale model (auto-detected from name)")
+                timm_kwargs = {"in_chans": 1}
             else:
                 timm_kwargs = {}
             self.encoder = timm.create_model(name, num_classes=0, pretrained=True, **timm_kwargs)
@@ -142,10 +144,10 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
             assert encoder is not None, "Must pass either checkpoint to load or encoder to use"
             self.encoder = encoder
             # find out encoder dimension
-            if hasattr(self.encoder, 'num_features'):  # timm models generally use this
+            if hasattr(self.encoder, "num_features"):  # timm models generally use this
                 self.encoder_dim = self.encoder.num_features
-            elif hasattr(self.encoder, 'embed_dim'):  # timm.models.VisionTransformer uses this
-                self.encoder_dim = self.encoder.embed_dim 
+            elif hasattr(self.encoder, "embed_dim"):  # timm.models.VisionTransformer uses this
+                self.encoder_dim = self.encoder.embed_dim
             else:  # resort to manual estimate
                 self.encoder_dim = define_model.get_encoder_dim(self.encoder)
 
@@ -422,7 +424,6 @@ class FinetuneableZoobotAbstract(pl.LightningModule):
         )  # trained on GPU, may need map_location='cpu' if you get a device error
 
 
-
 class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     """
     Pretrained Zoobot model intended for finetuning on a classification problem.
@@ -443,7 +444,12 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
     """
 
     def __init__(
-        self, num_classes: int, label_smoothing=0.0, class_weights=None, run_linear_sanity_check=False, **super_kwargs
+        self,
+        num_classes: int,
+        label_smoothing=0.0,
+        class_weights=None,
+        run_linear_sanity_check=False,
+        **super_kwargs,
     ) -> None:
 
         super().__init__(**super_kwargs)
@@ -481,7 +487,6 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             "labels": y,
             "class_predictions": y_class_preds,
         }
-
 
     def on_train_batch_end(self, step_output, *args):
         super().on_train_batch_end(step_output, *args)
@@ -541,9 +546,10 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             self.logger.log_image(key="val_images", images=images, caption=captions)  # type: ignore
 
         # Sanity check embeddings with linear evaluation first
+
     def on_train_start(self) -> None:
-       if self.run_linear_sanity_check:  # default False
-           self.linear_sanity_check()
+        if self.run_linear_sanity_check:  # default False
+            self.linear_sanity_check()
 
     def linear_sanity_check(self):
         # only implemented on Zoobot...Classifier as assumes accuracy
@@ -573,6 +579,7 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
                 accuracy_score(labels["train"], model.predict(embeddings["train"])),
             )
             # doesn't need to be torchmetric, only happens in one go? but distributed
+
 
 class FinetuneableZoobotRegressor(FinetuneableZoobotAbstract):
     """
