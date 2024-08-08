@@ -40,7 +40,11 @@ def predict(catalog: pd.DataFrame, model: pl.LightningModule, n_samples: int, la
     # for images in predict_datamodule.predict_dataloader():
         # print(images)
         # print(images.shape)
+        # print(images.min(), images.max())
         # exit()
+        # import matplotlib.pyplot as plt
+        # plt.imshow(images[0].permute(1, 2, 0))
+        # plt.show()
 
 
     # set up trainer (again)
