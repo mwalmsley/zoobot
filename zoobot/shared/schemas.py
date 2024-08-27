@@ -279,6 +279,7 @@ class Schema():
 
 
 # and define each schema here, for convenience
+decals_dr12_ortho_schema = Schema(label_metadata.decals_dr12_ortho_pairs , label_metadata.decals_ortho_dependencies)
 decals_dr5_ortho_schema = Schema(label_metadata.decals_dr5_ortho_pairs , label_metadata.decals_ortho_dependencies)
 decals_dr8_ortho_schema = Schema(label_metadata.decals_dr8_ortho_pairs , label_metadata.decals_ortho_dependencies)
 decals_all_campaigns_ortho_schema = Schema(label_metadata.decals_all_campaigns_ortho_pairs , label_metadata.decals_ortho_dependencies)
