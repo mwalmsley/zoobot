@@ -244,11 +244,12 @@ def train_default_zoobot_from_scratch(
         # this branch will use WebDataModule to load premade webdatasets
 
         # temporary: use SSL-like transform
-        # from foundation.models import transforms
-        # train_transform_cfg = transforms.default_view_config()
-        # inference_transform_cfg = transforms.minimal_view_config()
-        # train_transform_cfg.output_size = resize_after_crop
-        # inference_transform_cfg.output_size = resize_after_crop
+        # ADDED BACK FOR EUCLID
+        from foundation.models import transforms
+        train_transform_cfg = transforms.default_view_config()
+        inference_transform_cfg = transforms.minimal_view_config()
+        train_transform_cfg.output_size = resize_after_crop
+        inference_transform_cfg.output_size = resize_after_crop
 
         datamodule = WebDataModule(
             train_urls=train_urls,
@@ -266,8 +267,8 @@ def train_default_zoobot_from_scratch(
             crop_ratio_bounds=crop_ratio_bounds,
             resize_after_crop=resize_after_crop,
             # temporary: use SSL-like transform
-            # train_transform=transforms.GalaxyViewTransform(train_transform_cfg),
-            # inference_transform=transforms.GalaxyViewTransform(inference_transform_cfg),
+            train_transform=transforms.GalaxyViewTransform(train_transform_cfg),
+            inference_transform=transforms.GalaxyViewTransform(inference_transform_cfg),
         )
 
     # debug - check range of loaded images, should be 0-1
