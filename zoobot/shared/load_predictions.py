@@ -171,7 +171,10 @@ def prediction_hdf5_to_summary_parquet(hdf5_loc: str, save_loc: str, schema: sch
     friendly_df = pd.concat([galaxy_id_df, fraction_df], axis=1)
     friendly_df = convert_halfprecision_cols(friendly_df)
     friendly_df.to_parquet(friendly_loc, index=False)
-    logging.info('Friendly summary table saved to {}'.format(friendly_loc))
+    logging.info('Friendly summary table PARQUET saved to {}'.format(friendly_loc))
+    # also save a csv to help users
+    friendly_df.to_csv(friendly_loc.replace('.parquet', '.csv'), index=False)
+    logging.info('Friendly summary table CSV saved to {}'.format(friendly_loc))
 
     # make advanced dataframe with unmasked fractions, error bars, proportion_asked
     advanced_loc = save_loc.replace('.parquet', '_advanced.parquet')
