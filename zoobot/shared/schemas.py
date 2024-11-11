@@ -286,6 +286,7 @@ decals_all_campaigns_ortho_schema = Schema(label_metadata.decals_all_campaigns_o
 gz2_ortho_schema = Schema(label_metadata.gz2_ortho_pairs , label_metadata.gz2_ortho_dependencies)
 gz_candels_ortho_schema = Schema(label_metadata.candels_ortho_pairs, label_metadata.candels_ortho_dependencies)
 gz_hubble_ortho_schema = Schema(label_metadata.hubble_ortho_pairs, label_metadata.hubble_ortho_dependencies)
+gz_hubble_v2_ortho_schema = Schema(label_metadata.hubble_v2_ortho_pairs, label_metadata.hubble_v2_ortho_dependencies)
 cosmic_dawn_ortho_schema = Schema(label_metadata.cosmic_dawn_ortho_pairs , label_metadata.cosmic_dawn_ortho_dependencies)
 
 # schemas without orthogonal question suffix (-cd, -dr8, etc)
@@ -296,11 +297,17 @@ desi_schema = Schema(label_metadata.desi_pairs, label_metadata.desi_dependencies
 # trigger basicConfig() and prevent user setting their own logging.
 # so don't log anything during Schema.__init__!
 
-gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)
-gz_evo_v1_public_schema = Schema(label_metadata.gz_evo_v1_public_pairs, label_metadata.gz_evo_v1_public_dependencies)
 
 gz_ukidss_schema = Schema(label_metadata.ukidss_ortho_pairs, label_metadata.ukidss_ortho_dependencies)
 gz_jwst_schema = Schema(label_metadata.jwst_ortho_pairs, label_metadata.jwst_ortho_dependencies)
 
 euclid_ortho_schema = Schema(label_metadata.euclid_ortho_pairs , label_metadata.euclid_ortho_dependencies)
 euclid_schema = Schema(label_metadata.euclid_pairs , label_metadata.euclid_dependencies)
+
+
+gz_evo_v1_schema = Schema(label_metadata.gz_evo_v1_pairs, label_metadata.gz_evo_v1_dependencies)
+gz_evo_v1_public_schema = Schema(label_metadata.gz_evo_v1_public_pairs, label_metadata.gz_evo_v1_public_dependencies)
+
+# adds Euclid, replaces Hubble with Hubble V2. May also add UKIDSS.
+gz_evo_v2_schema = Schema(label_metadata.gz_evo_v2_pairs, label_metadata.gz_evo_v2_dependencies)
+gz_evo_v2_public_schema = Schema(label_metadata.gz_evo_v2_public_pairs, label_metadata.gz_evo_v2_public_dependencies)
