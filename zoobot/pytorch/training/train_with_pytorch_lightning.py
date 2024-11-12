@@ -249,7 +249,14 @@ def train_default_zoobot_from_scratch(
 
         train_transform_cfg = transforms.default_view_config()
         train_transform_cfg.greyscale = not color
+        # train_transform_cfg.random_affine['scale'] = crop_scale_bounds  # no, just use 1.2-1.4 default
+        train_transform_cfg.random_affine['scale'] = (1.1, 1.2)
+        train_transform_cfg.random_affine['shear'] = None  # disable
+        train_transform_cfg.random_affine['shift'] = 0  # disable
+        train_transform_cfg.erase_iterations = 0  # disable
+
         # train_transform_cfg = transforms.minimal_view_config()
+        
         inference_transform_cfg = transforms.minimal_view_config()
         inference_transform_cfg.greyscale = not color
 
