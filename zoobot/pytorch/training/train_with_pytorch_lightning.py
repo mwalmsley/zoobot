@@ -246,8 +246,13 @@ def train_default_zoobot_from_scratch(
         # temporary: use SSL-like transform
         # ADDED BACK FOR EUCLID
         from foundation.models import transforms
+
         train_transform_cfg = transforms.default_view_config()
+        train_transform_cfg.greyscale = not color
+        # train_transform_cfg = transforms.minimal_view_config()
         inference_transform_cfg = transforms.minimal_view_config()
+        inference_transform_cfg.greyscale = not color
+
         train_transform_cfg.output_size = resize_after_crop
         inference_transform_cfg.output_size = resize_after_crop
 
@@ -255,6 +260,7 @@ def train_default_zoobot_from_scratch(
             train_urls=train_urls,
             val_urls=val_urls,
             test_urls=test_urls,
+            predict_urls=test_urls,  # will make test predictions
             label_cols=schema.label_cols,
             # hardware
             batch_size=batch_size,
@@ -342,6 +348,27 @@ def train_default_zoobot_from_scratch(
             datamodule=datamodule,
             ckpt_path=checkpoint_callback.best_model_path  # can optionally point to a specific checkpoint here e.g. "/share/nas2/walml/repos/gz-decals-classifiers/results/early_stopping_1xgpu_greyscale/checkpoints/epoch=26-step=16847.ckpt"
         )
+
+        # TODO this will ONLY work with webdatasets
+        if isinstance('datamodule', WebDataModule):
+            predictions = trainer.predict(
+                model=lightning_model,
+                datamodule=datamodule,
+                ckpt_path=checkpoint_callback.best_model_path
+            )  # list of batches, each shaped like [batch_size, model_head]
+            predictions = torch.concatenate(predictions, dim=-1).numpy()
+            logging.info(predictions.shape)
+
+            datamodule.label_cols = ['id_str']  # triggers webdataset to return only id_str
+            datamodule.setup(stage='predict')
+            id_strs = [id_str[0] for batch in datamodule.predict_dataloader() for id_str in batch]  # [0] because each id_str is within a vector of length 1
+            # logging.info(id_strs[0])
+            # logging.info(len(id_strs))
+
+            from zoobot.shared import save_predictions
+            save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + '/test_predictions.csv')
+
+        
 
     # explicitly update the model weights to the best checkpoint before returning
     # (assumes only one checkpoint callback, very likely in practice)
