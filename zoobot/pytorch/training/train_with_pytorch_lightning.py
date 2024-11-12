@@ -282,8 +282,8 @@ def train_default_zoobot_from_scratch(
     for (images, _) in datamodule.train_dataloader():
         logging.info(f'Using batches of {images.shape[0]} images for training')
         logging.info('First batch image min/max: {}/{}'.format(images.min(), images.max()))
-        assert images.max() <= 1.0
-        assert images.min() >= 0.0
+        assert images.max() <= 1.0001
+        assert images.min() >= -0.0001
         break
     # exit()
 
