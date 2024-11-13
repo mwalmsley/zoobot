@@ -227,6 +227,7 @@ def train_default_zoobot_from_scratch(
                 'val_catalog': val_catalog,
                 'test_catalog': test_catalog  # may be None
             }
+        assert crop_scale_bounds[1] < 1  # zoom in for albumentations
         datamodule = GalaxyDataModule(
             label_cols=schema.label_cols,
             # can take either a catalog (and split it), or a pre-split catalog
@@ -254,7 +255,7 @@ def train_default_zoobot_from_scratch(
         train_transform_cfg.random_affine['scale'] = crop_scale_bounds  # no, just use 1.2-1.4 default
         # train_transform_cfg.random_affine['scale'] = (1.1, 1.2)
         train_transform_cfg.random_affine['shear'] = None  # disable
-        train_transform_cfg.random_affine['shift'] = 0  # disable
+        train_transform_cfg.random_affine['translate'] = 0  # disable
         train_transform_cfg.erase_iterations = 0  # disable
 
         # train_transform_cfg = transforms.minimal_view_config()
