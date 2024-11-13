@@ -14,7 +14,7 @@ from galaxy_datasets.pytorch.galaxy_datamodule import GalaxyDataModule
 from galaxy_datasets.pytorch.webdatamodule import WebDataModule
 
 from zoobot.pytorch.estimators import define_model
-
+from zoobot.shared import save_predictions
 
 
 def train_default_zoobot_from_scratch(    
@@ -371,16 +371,15 @@ def train_default_zoobot_from_scratch(
                 ckpt_path=checkpoint_callback.best_model_path
             )  # list of batches, each shaped like [batch_size, model_head]
             predictions = torch.concatenate(predictions, dim=-1).numpy()
-            logging.info(predictions.shape)
 
             datamodule.label_cols = ['id_str']  # triggers webdataset to return only id_str
             datamodule.setup(stage='predict')
             id_strs = [id_str[0] for batch in datamodule.predict_dataloader() for id_str in batch]  # [0] because each id_str is within a vector of length 1
-            # logging.info(id_strs[0])
-            # logging.info(len(id_strs))
-
-            from zoobot.shared import save_predictions
-            save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + '/test_predictions.csv')
+            logging.info(predictions.shape)
+            logging.info(len(id_strs))
+            logging.info(predictions[0])
+            logging.info(id_strs[0])
+            save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + f'/test_predictions+_{torch.distributed.get_rank()}.csv')
         else:
             logging.info(f'Not a webdatamodule, skipping predictions, {datamodule.__class__}')
         
