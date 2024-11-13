@@ -374,11 +374,11 @@ def train_default_zoobot_from_scratch(
 
             datamodule.label_cols = ['id_str']  # triggers webdataset to return only id_str
             datamodule.setup(stage='predict')
-            id_strs = [id_str for batch in datamodule.predict_dataloader() for id_str in batch]  # [0] because each id_str is within a vector of length 1
+            id_strs = [id_str for batch in datamodule.predict_dataloader() for id_str in batch[0]]  # [0] because each batch is a tuple
             logging.info(predictions.shape)
-            logging.info(len(id_strs), len(predictions))
-            logging.info(predictions[0])
-            logging.info(id_strs[0])
+            logging.info(len(id_strs), len(predictions))  # id_strs is 2...
+            logging.info(predictions[0])  # this is good, 256
+            logging.info(id_strs[0])  # this seems to still be a batch
             save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + f'/test_predictions+_{torch.distributed.get_rank()}.csv')
         else:
             logging.info(f'Not a webdatamodule, skipping predictions, {datamodule.__class__}')
