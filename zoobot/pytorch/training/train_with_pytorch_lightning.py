@@ -114,7 +114,7 @@ def train_default_zoobot_from_scratch(
     Returns:
         Tuple[define_model.ZoobotTree, pl.Trainer]: Trained ZoobotTree model, and Trainer with which it was trained.
     """
-    logging.info('home: {}'.format(os.getenv('HOME')))
+    logging.info('home within Zoobot: {}'.format(os.getenv('HOME')))
     # some optional logging.debug calls recording cluster environment
     slurm_debugging_logs()
 
@@ -243,6 +243,7 @@ def train_default_zoobot_from_scratch(
             prefetch_factor=prefetch_factor
         )
     else:
+        assert webdatasets  # train_urls is not None
         # this branch will use WebDataModule to load premade webdatasets
 
         # temporary: use SSL-like transform
@@ -361,7 +362,8 @@ def train_default_zoobot_from_scratch(
         )
 
         # TODO this will ONLY work with webdatasets
-        if isinstance('datamodule', WebDataModule):
+        # if isinstance('datamodule', WebDataModule):
+        if webdatasets:
             logging.info('Webdatamodule, running predictions')
             predictions = trainer.predict(
                 model=lightning_model,
@@ -380,7 +382,7 @@ def train_default_zoobot_from_scratch(
             from zoobot.shared import save_predictions
             save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + '/test_predictions.csv')
         else:
-            logging.info('Not a webdatamodule, skipping predictions')
+            logging.info(f'Not a webdatamodule, skipping predictions, {datamodule.__class__}')
         
 
     # explicitly update the model weights to the best checkpoint before returning
