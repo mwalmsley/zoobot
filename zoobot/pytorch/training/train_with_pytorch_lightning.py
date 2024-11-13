@@ -362,6 +362,7 @@ def train_default_zoobot_from_scratch(
 
         # TODO this will ONLY work with webdatasets
         if isinstance('datamodule', WebDataModule):
+            logging.info('Webdatamodule, running predictions')
             predictions = trainer.predict(
                 model=lightning_model,
                 datamodule=datamodule,
@@ -378,7 +379,8 @@ def train_default_zoobot_from_scratch(
 
             from zoobot.shared import save_predictions
             save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + '/test_predictions.csv')
-
+        else:
+            logging.info('Not a webdatamodule, skipping predictions')
         
 
     # explicitly update the model weights to the best checkpoint before returning
