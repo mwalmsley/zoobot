@@ -381,8 +381,6 @@ def train_default_zoobot_from_scratch(
             logging.info(f'id_str: {len(id_strs)}, preds: {len(predictions)})')
             logging.info(predictions[0])
             logging.info(id_strs[0])
-            print(id_strs[:5])
-            print(id_strs[256:261])
             save_predictions.predictions_to_csv(predictions, id_strs, schema.label_cols, save_loc=save_dir + f'/test_predictions+_{torch.distributed.get_rank()}.csv')
         else:
             logging.info(f'Not a webdatamodule, skipping predictions, {datamodule.__class__}')
