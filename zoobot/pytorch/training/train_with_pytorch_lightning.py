@@ -370,8 +370,8 @@ def train_default_zoobot_from_scratch(
                 datamodule=datamodule,
                 ckpt_path=checkpoint_callback.best_model_path
             )  # list of batches, each shaped like [batch_size, model_head]
-            logging.info('Preds before concat: {}'.format(predictions.shape))
-            predictions = torch.concatenate(predictions, dim=-1).numpy()
+            logging.info('Preds before concat: {}'.format(len(predictions)))
+            predictions = torch.concatenate(predictions, dim=0).numpy()
             logging.info('Preds after concat: {}'.format(predictions.shape))
 
             datamodule.label_cols = ['id_str']  # triggers webdataset to return only id_str
