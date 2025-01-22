@@ -430,8 +430,18 @@ class FinetuneableZoobotClassifier(FinetuneableZoobotAbstract):
             dropout_prob=self.dropout_prob
         )
         self.label_smoothing = label_smoothing
+
+        # if isinstance(class_weights, list) or isinstance(class_weights, np.ndarray):
+        if class_weights is not None:
+            # https://lightning.ai/docs/pytorch/stable/accelerators/accelerator_prepare.html#init-tensors-using-tensor-to-and-register-buffer
+            self.register_buffer("class_weights", torch.Tensor(class_weights))
+            print(self.class_weights, self.class_weights.device)
+            # can now use self.class_weights in forward pass and will be on correct device (because treated as model parameters)
+        else:
+            self.class_weights = None
+
         self.loss = partial(cross_entropy_loss,
-                            weight=class_weights,
+                            weight=self.class_weights,
                             label_smoothing=self.label_smoothing)
         logging.info(f'num_classes: {num_classes}')
         if num_classes == 2:
@@ -717,7 +727,8 @@ def cross_entropy_loss(y_pred: torch.Tensor, y: torch.Tensor, label_smoothing: f
     Returns:
         torch.Tensor: unreduced cross-entropy loss
     """
-    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, weight=weight, reduction='none')
+    # added .to(y) to ensure weights are on same device, bit of a hack but self.register_buffer() doesn't work as I expected
+    return F.cross_entropy(y_pred, y.long(), label_smoothing=label_smoothing, weight=weight.to(y), reduction='none')  
 
 
 def mse_loss(y_pred, y):
