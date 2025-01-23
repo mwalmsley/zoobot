@@ -267,6 +267,9 @@ def train_default_zoobot_from_scratch(
         train_transform_cfg.output_size = resize_after_crop
         inference_transform_cfg.output_size = resize_after_crop
 
+        logging.info(f'Using train_transform_cfg: {train_transform_cfg}')
+        logging.info(f'Using inference_transform_cfg: {inference_transform_cfg}')
+
         datamodule = WebDataModule(
             train_urls=train_urls,
             val_urls=val_urls,
