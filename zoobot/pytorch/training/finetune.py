@@ -790,7 +790,14 @@ def load_pretrained_zoobot(checkpoint_loc: str) -> torch.nn.Module:
     else:
         # necessary to load gpu-trained model on cpu
         map_location = torch.device('cpu')
-    return define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, map_location=map_location).encoder # type: ignore
+
+    # changed
+    try:
+        logging.info('Attempting to load ZoobotTree from checkpoint')
+        return define_model.ZoobotTree.load_from_checkpoint(checkpoint_loc, map_location=map_location).encoder # type: ignore
+    except TypeError:
+        logging.info('Attempting to load FinetuneableZoobotTree from checkpoint')
+        return FinetuneableZoobotTree.load_from_checkpoint(checkpoint_loc, map_location=map_location).encoder # type: ignore
     
 
 def get_trainer(
