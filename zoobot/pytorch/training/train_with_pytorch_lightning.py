@@ -248,7 +248,9 @@ def train_default_zoobot_from_scratch(
 
         # temporary: use SSL-like transform
         # ADDED BACK FOR EUCLID
-        from foundation.models import transforms
+        # from foundation.models import transforms
+        # moved to galaxy_datasets (public)
+        from galaxy_datasets import transforms
 
         train_transform_cfg = transforms.default_view_config()
         train_transform_cfg.greyscale = not color
