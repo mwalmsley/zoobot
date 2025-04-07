@@ -30,7 +30,7 @@ setuptools.setup(
             'torchaudio >= 2.1.0',
             'lightning >= 2.0.0',
             # 'simplejpeg',
-            'albumentations',
+            'albumentations < 2.0.0',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
             'timm == 0.9.10'
@@ -42,7 +42,7 @@ setuptools.setup(
             'torchvision == 0.16.0',
             'torchaudio >= 2.1.0',
             'lightning >= 2.0.0',
-            'albumentations',
+            'albumentations < 2.0.0',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
             'timm >= 0.9.10'
@@ -55,7 +55,7 @@ setuptools.setup(
             'torchvision == 0.16.0+cu118',
             'torchaudio >= 2.1.0',
             'lightning >= 2.0.0',
-            'albumentations',
+            'albumentations < 2.0.0',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
             'timm >= 0.9.10'
@@ -65,7 +65,7 @@ setuptools.setup(
             'torchvision == 0.16.0+cu121',
             'torchaudio >= 2.1.0',
             'lightning >= 2.0.0',
-            'albumentations',
+            'albumentations < 2.0.0',
             'pyro-ppl >= 1.8.6',
             'torchmetrics == 0.11.0',
             'timm >= 0.9.10'
@@ -73,7 +73,7 @@ setuptools.setup(
         'pytorch-colab': [
             # colab includes pytorch already
             'lightning >= 2.0.0',
-            'albumentations',
+            'albumentations < 2.0.0',
             'pyro-ppl>=1.8.0',
             'torchmetrics==0.11.0',
             'timm >= 0.9.10'
