@@ -152,7 +152,7 @@ CUDA 12.1 for PyTorch 2.1.0:
 - Added option to compile encoder for max speed (not recommended for finetuning, only for pretraining).
 - Deprecates TensorFlow. The CS research community focuses on PyTorch and new frameworks like JAX.
 
-Contributions are very welcome and will be credited in any future work. Please get in touch! See [CONTRIBUTING.md](https://github.com/mwalmsley/zoobot/blob/main/benchmarks) for more.
+Contributions are very welcome and will be credited in any future work. Please get in touch! See [CODE_OF_CONDUCT.md](https://github.com/mwalmsley/zoobot/blob/main/CODE_OF_CONDUCT.md) for more.
 
 ### Benchmarks and Replication - Training from Scratch
 
